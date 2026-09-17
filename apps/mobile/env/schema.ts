@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const MOBILE_SCHEME = "expo-starter";
+export const MOBILE_SCHEME = "selfbox";
 
 const optionalBoolean = z.preprocess((value) => {
   if (typeof value !== "string") return value;

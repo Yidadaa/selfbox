@@ -15,9 +15,9 @@ vi.mock("expo-secure-store", () => ({
   },
 }));
 vi.mock("expo-constants", () => ({
-  default: { expoConfig: { scheme: "expo-starter" } },
+  default: { expoConfig: { scheme: "selfbox" } },
 }));
-vi.mock("expo-linking", () => ({ createURL: () => "expo-starter://" }));
+vi.mock("expo-linking", () => ({ createURL: () => "selfbox://" }));
 vi.mock("react-native", () => ({
   Platform: { OS: "ios" },
   AppState: { addEventListener: () => ({ remove() {} }) },
@@ -68,7 +68,7 @@ test("Expo auth stores cookies securely, restores them, isolates hosts, and clea
   });
   expect(result.error).toBeNull();
   expect(requests[0]?.url).toBe("http://localhost:3000/api/auth/sign-in/email");
-  expect(requests[0]?.headers.get("expo-origin")).toBe("expo-starter://");
+  expect(requests[0]?.headers.get("expo-origin")).toBe("selfbox://");
   expect(requests[0]?.credentials).toBe("omit");
   expect(await first.getCookie()).toContain(
     "better-auth.session_token=test-token",

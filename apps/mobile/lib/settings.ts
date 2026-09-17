@@ -21,7 +21,7 @@ export function createSettingsStore(storage: StateStorage) {
         reset: () => set({ devHost: null }),
       }),
       {
-        name: "expo-starter.dev-settings",
+        name: "selfbox.dev-settings",
         version: 1,
         storage: createJSONStorage(() => storage),
         partialize: ({ devHost }) => ({ devHost }),

@@ -20,7 +20,7 @@ test("Expo email login authenticates protected tRPC and sign-out revokes the ses
         method: "POST",
         headers: {
           "content-type": "application/json",
-          "expo-origin": "expo-starter://",
+          "expo-origin": "selfbox://",
           "x-skip-oauth-proxy": "true",
           cookie,
         },

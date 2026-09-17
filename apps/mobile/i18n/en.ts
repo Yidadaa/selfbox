@@ -1,8 +1,9 @@
 // 与现有 Web 界面保持英文；集中维护文案，便于后续接入语言切换。
 export const messages = {
-  brand: "expo-starter.",
+  brand: "selfbox.",
+  defaultUserName: "selfbox user",
   loading: "Loading…",
-  loginTitle: "Welcome to Expo Starter",
+  loginTitle: "Welcome to selfbox",
   loginDescription: "Log in with your email and password.",
   signupTitle: "Create your account",
   signupDescription: "Use 8–128 characters for your password.",
@@ -13,7 +14,7 @@ export const messages = {
   login: "Log in",
   signup: "Create account",
   submitting: "Please wait…",
-  switchSignup: "New to Expo Starter? Create an account",
+  switchSignup: "New to selfbox? Create an account",
   switchLogin: "Already have an account? Log in",
   devLink: "Developer settings",
   noHost: "The server is not configured. Please contact support.",
@@ -27,7 +28,7 @@ export const messages = {
   networkError:
     "Unable to connect. Check the server address and your connection.",
   homeTitle: "You’re signed in",
-  homeDescription: "Your session is connected to Expo Starter.",
+  homeDescription: "Your session is connected to selfbox.",
   profileTitle: "Account",
   profileDescription: "Loaded through the protected user.me tRPC endpoint.",
   profileError:

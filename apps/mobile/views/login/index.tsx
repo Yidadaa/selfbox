@@ -34,7 +34,7 @@ function LoginForm({ auth }: { auth: MobileAuth }) {
       const result = signup
         ? await auth.signUp.email({
             ...credentials,
-            name: credentials.email.split("@")[0] || "Expo Starter user",
+            name: credentials.email.split("@")[0] || messages.defaultUserName,
           })
         : await auth.signIn.email(credentials);
       if (result.error) setError(authErrorMessage(result.error.code));

@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "selfbox"
+  },
+  "android": {
+    "app_name": "selfbox"
+  }
+}

@@ -24,9 +24,7 @@ test("persists dev host, restores on launch, and resets to configured host", asy
   expect(second.persist.hasHydrated()).toBe(false);
   await second.persist.rehydrate();
   expect(second.getState().devHost).toBe("http://192.168.1.20:3000");
-  expect(
-    JSON.parse(storage.values.get("expo-starter.dev-settings") ?? ""),
-  ).toEqual({
+  expect(JSON.parse(storage.values.get("selfbox.dev-settings") ?? "")).toEqual({
     state: { devHost: "http://192.168.1.20:3000" },
     version: 1,
   });
@@ -38,7 +36,7 @@ test("persists dev host, restores on launch, and resets to configured host", asy
 test("discards malformed persisted hosts and rejects invalid edits", async () => {
   const storage = memoryStorage();
   storage.values.set(
-    "expo-starter.dev-settings",
+    "selfbox.dev-settings",
     JSON.stringify({ state: { devHost: "file:///private" }, version: 1 }),
   );
   const store = createSettingsStore(storage);

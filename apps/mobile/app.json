@@ -1,15 +1,22 @@
 {
   "expo": {
-    "name": "Expo Starter",
-    "slug": "expo-starter",
+    "name": "selfbox",
+    "slug": "selfbox",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "expo-starter",
+    "scheme": "selfbox",
+    "locales": {
+      "en": "./i18n/native/en.json",
+      "zh-Hans": "./i18n/native/zh-Hans.json"
+    },
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.expo.starter"
+      "bundleIdentifier": "com.selfbox.app",
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +26,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.expo.starter"
+      "package": "com.selfbox.app"
     },
     "plugins": [
       "expo-router",

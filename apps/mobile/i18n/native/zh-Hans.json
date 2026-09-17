@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "留话"
+  },
+  "android": {
+    "app_name": "留话"
+  }
+}

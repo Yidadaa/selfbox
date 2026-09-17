@@ -10,8 +10,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   });
   return {
     ...config,
-    name: "Expo Starter",
-    slug: "expo-starter",
+    name: "selfbox",
+    slug: "selfbox",
     scheme: MOBILE_SCHEME,
     // extra 会写入客户端，只放公开配置。
     extra: {

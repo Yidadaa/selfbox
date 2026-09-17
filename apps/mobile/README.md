@@ -1,6 +1,12 @@
 # Mobile
 
-Expo SDK 57 + Expo Router 移动端应用。
+selfbox 移动端应用，使用 Expo SDK 57 + Expo Router。
+
+- 默认应用名称、Expo slug 和 URL scheme：`selfbox`。
+- 桌面名称跟随系统语言：简体中文为「留话」，英文及未匹配语言默认为 `selfbox`；原生名称翻译集中在 `i18n/native/`，通过 `app.json` 的 `locales` 配置生成。
+- iOS Bundle ID / Android 包名：`com.selfbox.app`。
+- 本地设置和会话使用 `selfbox` 前缀；旧模板的数据不会自动迁移。
+- 修改原生标识或桌面名称翻译后需重新构建安装包，Expo Go 和 OTA 更新无法验证或更新桌面名称。App Store / Google Play 商品页名称分别在 App Store Connect / Play Console 中配置。
 
 ## 首次设置
 

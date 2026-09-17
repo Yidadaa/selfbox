@@ -31,7 +31,7 @@ export function resolveHost(
 
 export function sessionStoragePrefix(baseURL: string) {
   // 无损编码 origin，确保不同主机、端口和协议的会话不会串用。
-  return `expo-starter.${Array.from(normalizeHost(baseURL), (character) =>
+  return `selfbox.${Array.from(normalizeHost(baseURL), (character) =>
     character.charCodeAt(0).toString(16).padStart(4, "0"),
   ).join("")}`;
 }
