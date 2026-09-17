@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, expect, test } from "vitest";
 import { migrateDatabase } from "../migrate";
+import { createPayload, editPayload } from "../payload";
 import { createRepository, defaultChatId } from "../repository";
 import { generatedMigrations, openTestDatabase } from "./sqlite";
 
@@ -111,6 +112,53 @@ test("clears messages and chats atomically and recreates one empty monologue", a
   ]);
   expect(repository.listMessages(id)).toEqual([]);
   expect(repository.imageFiles()).toEqual([]);
+});
+
+test("persists albums, edits individual photos and tracks all referenced files", async () => {
+  const folder = mkdtempSync(join(tmpdir(), "selfbox-album-"));
+  cleanups.push(() => rmSync(folder, { recursive: true, force: true }));
+  const path = join(folder, "selfbox.db");
+  const { repository } = await setup(path);
+  const images = [
+    { file: "first.jpg", width: 800, height: 600 },
+    { file: "second.jpg", width: 600, height: 800 },
+    { file: "third.png", width: 600, height: 600 },
+  ];
+  const album = createPayload("album", images);
+  const id = repository.send(defaultChatId, album);
+  const legacy = repository.send(
+    defaultChatId,
+    createPayload("", images.slice(0, 1)),
+  );
+  cleanups.pop()?.();
+  const next = (await setup(path)).repository;
+  expect(
+    next.listMessages(defaultChatId).find((message) => message.id === id)
+      ?.payload,
+  ).toEqual(album);
+  expect(next.imageFiles().sort()).toEqual([
+    "first.jpg",
+    "first.jpg",
+    "second.jpg",
+    "third.png",
+  ]);
+  next.edit(id, editPayload(album, "edited"));
+  next.togglePin(id);
+  expect(next.listPinned(defaultChatId)[0]?.payload).toEqual({
+    ...album,
+    caption: "edited",
+  });
+  next.edit(id, createPayload("", images.slice(1)));
+  expect(next.listChats()[0]?.latest?.id).toBe(legacy);
+  next.deleteMessage(legacy);
+  expect(next.listChats()[0]?.latest?.payload).toEqual(
+    createPayload("", images.slice(1)),
+  );
+  expect(next.imageFiles().sort()).toEqual(["second.jpg", "third.png"]);
+  next.edit(id, createPayload("caption only", []));
+  expect(next.imageFiles()).toEqual([]);
+  next.deleteMessage(id);
+  expect(next.listMessages(defaultChatId)).toEqual([]);
 });
 
 test("rejects invalid data before writing", async () => {

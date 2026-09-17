@@ -1,7 +1,46 @@
 import { randomUUID } from "expo-crypto";
 import { Directory, File, Paths } from "expo-file-system";
 import type { ImagePickerAsset } from "expo-image-picker";
-import { type ImageAttachment, imageSchema } from "@/db/payload";
+import { createPayload, type ImageAttachment, imageSchema } from "@/db/payload";
+
+export type DraftPhoto = ImageAttachment | ImagePickerAsset;
+
+export function photoUri(photo: DraftPhoto) {
+  return "uri" in photo ? photo.uri : attachmentUri(photo);
+}
+
+export function appendPhotos(
+  current: DraftPhoto[],
+  picked: ImagePickerAsset[],
+) {
+  const uris = new Set(current.map(photoUri));
+  const assetIds = new Set(
+    current.flatMap((photo) =>
+      "assetId" in photo && photo.assetId ? [photo.assetId] : [],
+    ),
+  );
+  return [
+    ...current,
+    ...picked.filter((photo) => {
+      if (
+        uris.has(photo.uri) ||
+        (photo.assetId && assetIds.has(photo.assetId))
+      ) {
+        return false;
+      }
+      uris.add(photo.uri);
+      if (photo.assetId) assetIds.add(photo.assetId);
+      return true;
+    }),
+  ];
+}
+
+export function savePhotos(text: string, photos: DraftPhoto[]) {
+  return createPayload(
+    text,
+    photos.map((photo) => ("uri" in photo ? importAttachment(photo) : photo)),
+  );
+}
 
 const directory = () => new Directory(Paths.document, "attachments");
 

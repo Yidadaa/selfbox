@@ -1,10 +1,11 @@
 import type { BlurViewProps } from "expo-blur";
 import { Button } from "heroui-native/button";
-import { ArrowUp, Camera, Check, Pencil, X } from "lucide-react-native";
+import { ArrowUp, Camera, Check, Pencil, X, XIcon } from "lucide-react-native";
 import { type RefObject, useState } from "react";
 import {
   ActivityIndicator,
   Image,
+  ScrollView,
   Text,
   TextInput,
   useWindowDimensions,
@@ -19,11 +20,10 @@ export function Composer({
   blurTarget,
   inputRef,
   text,
-  imageUri,
+  imageUris,
   editing,
   busy,
   canSend,
-  canRemoveImage,
   availableHeight,
   onChangeText,
   onPickImage,
@@ -34,15 +34,14 @@ export function Composer({
   blurTarget: BlurViewProps["blurTarget"];
   inputRef: RefObject<TextInput | null>;
   text: string;
-  imageUri?: string;
+  imageUris: string[];
   editing: Message | null;
   busy: boolean;
   canSend: boolean;
-  canRemoveImage: boolean;
   availableHeight: number;
   onChangeText: (text: string) => void;
   onPickImage: () => void;
-  onRemoveImage: () => void;
+  onRemoveImage: (index: number) => void;
   onCancelEdit: () => void;
   onSend: () => void;
 }) {
@@ -51,7 +50,9 @@ export function Composer({
   const [contentHeight, setContentHeight] = useState(44);
   const [editHeaderHeight, setEditHeaderHeight] = useState(0);
   const minInputHeight = Math.max(44, Math.ceil(24 * fontScale + 20));
-  const previewHeight = imageUri ? Math.min(152, availableHeight * 0.3) : 0;
+  const previewHeight = imageUris.length
+    ? Math.max(64, Math.min(100, availableHeight * 0.3))
+    : 0;
   // 留出照片、编辑栏和一小段消息区域；横屏或键盘展开时仍可操作。
   const maxInputHeight = Math.max(
     minInputHeight,
@@ -72,53 +73,47 @@ export function Composer({
         className="rounded-[28px] border"
         style={{ borderColor: editing ? colors.accent : colors.border }}
       >
-        {imageUri && (
-          <View
-            className="flex-row items-start gap-1 pl-3 pt-2"
-            style={{ height: previewHeight }}
+        {imageUris.length > 0 && (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{
+              gap: 8,
+              paddingHorizontal: 12,
+              paddingTop: 8,
+            }}
+            style={{ height: previewHeight, flexGrow: 0 }}
           >
-            <View
-              className="rounded-xl border border-border bg-surface p-1.5 pb-3"
-              style={{
-                width: previewHeight * 0.88,
-                height: previewHeight - 22,
-                transform: [{ rotate: "-3deg" }],
-                boxShadow: dark
-                  ? "0 6px 16px rgba(0, 0, 0, 0.28), 0 1px 3px rgba(0, 0, 0, 0.2)"
-                  : "0 6px 16px rgba(24, 32, 44, 0.1), 0 1px 3px rgba(24, 32, 44, 0.08)",
-              }}
-            >
-              <View className="flex-1 overflow-hidden rounded-lg bg-elevated">
-                <Image
-                  accessibilityLabel={messages.image}
-                  source={{ uri: imageUri }}
-                  resizeMode="cover"
-                  className="h-full w-full"
-                />
-                <View
-                  pointerEvents="none"
-                  className="absolute inset-0 rounded-lg"
-                  style={{
-                    borderWidth: 1,
-                    borderColor: "rgba(255, 255, 255, 0.18)",
-                    borderBottomColor: "rgba(0, 0, 0, 0.08)",
-                  }}
-                />
-              </View>
-            </View>
-            {canRemoveImage && (
-              <Button
-                accessibilityLabel={messages.removeImage}
-                isIconOnly
-                variant="ghost"
-                className="h-11 w-11 rounded-full"
-                isDisabled={busy}
-                onPress={onRemoveImage}
+            {imageUris.map((uri, index) => (
+              <View
+                key={uri}
+                className="overflow-hidden rounded-xl border border-border bg-background"
+                style={{
+                  width: previewHeight - 12,
+                  height: previewHeight - 12,
+                }}
               >
-                <X size={18} color={colors.muted} strokeWidth={1.8} />
-              </Button>
-            )}
-          </View>
+                <Image
+                  accessibilityLabel={`${messages.image} ${index + 1}/${imageUris.length}`}
+                  source={{ uri }}
+                  resizeMode="cover"
+                  className="h-full w-full rounded-lg"
+                />
+                <Button
+                  accessibilityLabel={`${messages.removeImage} ${index + 1}`}
+                  isIconOnly
+                  variant="ghost"
+                  className="absolute right-0 top-0 opacity-80"
+                  isDisabled={busy}
+                  size="sm"
+                  onPress={() => onRemoveImage(index)}
+                >
+                  <XIcon color={colors.background} size={14} />
+                </Button>
+              </View>
+            ))}
+          </ScrollView>
         )}
         <View className="p-1.5">
           {editing && (
@@ -160,9 +155,11 @@ export function Composer({
                 editing ? messages.editing : messages.messagePlaceholder
               }
               placeholder={
-                imageUri ? messages.imageCaption : messages.messagePlaceholder
+                imageUris.length
+                  ? messages.imageCaption
+                  : messages.messagePlaceholder
               }
-              placeholderTextColor={colors.muted}
+              placeholderTextColor={colors.border}
               selectionColor={colors.accent}
               keyboardAppearance={dark ? "dark" : "light"}
               multiline
@@ -198,7 +195,7 @@ export function Composer({
                 editing ? messages.saveMessage : messages.send
               }
               isIconOnly
-              className="h-11 w-11 rounded-full"
+              className="h-9 mb-1 mr-1 w-9 rounded-full"
               isDisabled={!canSend}
               onPress={onSend}
             >
@@ -209,13 +206,13 @@ export function Composer({
                 />
               ) : editing ? (
                 <Check
-                  size={21}
+                  size={18}
                   color={colors.accentForeground}
                   strokeWidth={2}
                 />
               ) : (
                 <ArrowUp
-                  size={21}
+                  size={18}
                   color={colors.accentForeground}
                   strokeWidth={2}
                 />

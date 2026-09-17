@@ -1,10 +1,14 @@
 import { router } from "expo-router";
 import { Button } from "heroui-native/button";
 import { Dialog } from "heroui-native/dialog";
+import { Label } from "heroui-native/label";
+import { ListGroup } from "heroui-native/list-group";
+import { Radio } from "heroui-native/radio";
+import { RadioGroup } from "heroui-native/radio-group";
+import { Separator } from "heroui-native/separator";
 import { Surface } from "heroui-native/surface";
+import { Typography } from "heroui-native/text";
 import {
-  Check,
-  ChevronRight,
   Code2,
   Languages,
   MessageCircle,
@@ -15,8 +19,8 @@ import {
   Trash2,
   UserRound,
 } from "lucide-react-native";
-import { useState } from "react";
-import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import { Fragment, useState } from "react";
+import { ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { preferencesStore, useAppearance } from "@/components/appearance";
 import { useDatabase } from "@/components/database";
@@ -29,10 +33,32 @@ export default function SettingsPage() {
   const [section, setSection] = useState<
     "theme" | "language" | "chatStyle" | null
   >(null);
+  const [clearDialog, setClearDialog] = useState<
+    "confirm" | "success" | "error" | null
+  >(null);
   const insets = useSafeAreaInsets();
-  const chevron = (
-    <ChevronRight size={17} color={colors.muted} strokeWidth={1.6} />
-  );
+  const settings = [
+    {
+      key: "theme",
+      icon: Palette,
+      value: messages[preferences.theme],
+    },
+    {
+      key: "language",
+      icon: Languages,
+      value:
+        preferences.language === "system"
+          ? messages.system
+          : preferences.language === "zh"
+            ? messages.chinese
+            : messages.english,
+    },
+    {
+      key: "chatStyle",
+      icon: MessageCircle,
+      value: messages[preferences.chatStyle],
+    },
+  ] as const;
   const options =
     section === "theme"
       ? ([
@@ -51,25 +77,18 @@ export default function SettingsPage() {
             { value: "green", label: messages.green, icon: MessageCircle },
             { value: "mono", label: messages.mono, icon: MessageCircle },
           ] as const);
+
   function clearData() {
-    Alert.alert(messages.clearDataTitle, messages.clearDataHint, [
-      { text: messages.cancel, style: "cancel" },
-      {
-        text: messages.delete,
-        style: "destructive",
-        onPress: () => {
-          try {
-            repository.clear();
-            refresh();
-            pruneAttachments([]);
-            Alert.alert(messages.clearDataDone);
-          } catch {
-            Alert.alert(messages.saveError);
-          }
-        },
-      },
-    ]);
+    try {
+      repository.clear();
+      refresh();
+      pruneAttachments([]);
+      setClearDialog("success");
+    } catch {
+      setClearDialog("error");
+    }
   }
+
   return (
     <SafeAreaView
       edges={["top", "left", "right"]}
@@ -79,180 +98,212 @@ export default function SettingsPage() {
         contentContainerStyle={{
           padding: 24,
           paddingBottom: insets.bottom + 112,
+          gap: 28,
         }}
       >
-        <Text className="mb-7 mt-3 text-4xl font-bold tracking-tight text-foreground">
+        <Typography.Heading className="mt-3">
           {messages.settings}
-        </Text>
-        <Surface className="rounded-3xl p-0 bg-surface">
-          <Pressable
+        </Typography.Heading>
+
+        <ListGroup className="shadow-none">
+          <ListGroup.Item
             accessibilityRole="button"
             onPress={() => router.push("/account")}
-            className="flex-row items-center gap-4 p-5"
           >
-            <View className="h-14 w-14 items-center justify-center">
-              <UserRound size={29} color={colors.muted} strokeWidth={1.6} />
-            </View>
-            <View className="flex-1 gap-1.5">
-              <Text className="text-lg font-semibold text-accent">
-                {messages.accountHint}
-              </Text>
-              <Text className="text-xs text-muted">
+            <ListGroup.ItemPrefix>
+              <UserRound size={24} color={colors.accent} strokeWidth={1.8} />
+            </ListGroup.ItemPrefix>
+            <ListGroup.ItemContent>
+              <ListGroup.ItemTitle>{messages.accountHint}</ListGroup.ItemTitle>
+              <ListGroup.ItemDescription>
                 {messages.accountDescription}
-              </Text>
-            </View>
-            {chevron}
-          </Pressable>
-        </Surface>
-        <Text className="mb-2.5 ml-3 mt-8 text-xs font-medium text-muted">
-          {messages.appearance}
-        </Text>
-        <Surface className="overflow-hidden rounded-3xl p-0 bg-surface">
-          <Button
-            variant="ghost"
-            className="min-h-16 flex-row justify-start gap-3 px-4 py-3"
-            onPress={() => setSection("theme")}
-          >
-            <Palette size={19} color={colors.accent} />
-            <Text className="flex-1 text-base text-foreground">
-              {messages.theme}
-            </Text>
-            <Text className="text-sm text-muted">
-              {messages[preferences.theme]}
-            </Text>
-            {chevron}
-          </Button>
-          <View className="ml-15 h-px bg-border" />
-          <Button
-            variant="ghost"
-            className="min-h-16 flex-row justify-start gap-3 px-4 py-3"
-            onPress={() => setSection("language")}
-          >
-            <Languages size={19} color={colors.accent} />
-            <Text className="flex-1 text-base text-foreground">
-              {messages.language}
-            </Text>
-            <Text className="text-sm text-muted">
-              {preferences.language === "system"
-                ? messages.system
-                : preferences.language === "zh"
-                  ? messages.chinese
-                  : messages.english}
-            </Text>
-            {chevron}
-          </Button>
-          <View className="ml-15 h-px bg-border" />
-          <Button
-            variant="ghost"
-            className="min-h-16 flex-row justify-start gap-3 px-4 py-3"
-            onPress={() => setSection("chatStyle")}
-          >
-            <MessageCircle size={19} color={colors.accent} />
-            <Text className="flex-1 text-base text-foreground">
-              {messages.chatStyle}
-            </Text>
-            <Text className="text-sm text-muted">
-              {messages[preferences.chatStyle]}
-            </Text>
-            {chevron}
-          </Button>
-        </Surface>
-        <Text className="mb-2.5 ml-3 mt-8 text-xs font-medium text-muted">
-          {messages.data}
-        </Text>
-        <Surface className="overflow-hidden rounded-3xl p-0 bg-surface">
-          <Button
-            variant="ghost"
-            className="min-h-16 flex-row justify-start gap-3 px-4 py-3"
-            onPress={clearData}
-          >
-            <Trash2 size={19} color={colors.danger} />
-            <Text className="flex-1 text-base text-danger">
-              {messages.clearData}
-            </Text>
-            {chevron}
-          </Button>
-        </Surface>
-        <Text className="ml-3 mt-3 text-xs text-muted">
-          {messages.localOnly}
-        </Text>
+              </ListGroup.ItemDescription>
+            </ListGroup.ItemContent>
+            <ListGroup.ItemSuffix />
+          </ListGroup.Item>
+        </ListGroup>
+
+        <View className="gap-3">
+          <Typography.Heading type="h6" color="muted" className="px-4">
+            {messages.appearance}
+          </Typography.Heading>
+          <ListGroup className="shadow-none">
+            {settings.map(({ key, icon: Icon, value }, index) => (
+              <Fragment key={key}>
+                {index > 0 && <Separator className="mx-4" />}
+                <ListGroup.Item
+                  accessibilityRole="button"
+                  onPress={() => setSection(key)}
+                >
+                  <ListGroup.ItemPrefix>
+                    <Icon size={22} color={colors.accent} strokeWidth={1.8} />
+                  </ListGroup.ItemPrefix>
+                  <ListGroup.ItemContent>
+                    <ListGroup.ItemTitle>{messages[key]}</ListGroup.ItemTitle>
+                    <ListGroup.ItemDescription>
+                      {value}
+                    </ListGroup.ItemDescription>
+                  </ListGroup.ItemContent>
+                  <ListGroup.ItemSuffix />
+                </ListGroup.Item>
+              </Fragment>
+            ))}
+          </ListGroup>
+        </View>
+
+        <View className="gap-3">
+          <Typography.Heading type="h6" color="muted" className="px-4">
+            {messages.data}
+          </Typography.Heading>
+          <ListGroup className="shadow-none">
+            <ListGroup.Item
+              accessibilityRole="button"
+              onPress={() => setClearDialog("confirm")}
+            >
+              <ListGroup.ItemPrefix>
+                <Trash2 size={22} color={colors.danger} strokeWidth={1.8} />
+              </ListGroup.ItemPrefix>
+              <ListGroup.ItemContent>
+                <ListGroup.ItemTitle className="text-danger">
+                  {messages.clearData}
+                </ListGroup.ItemTitle>
+              </ListGroup.ItemContent>
+              <ListGroup.ItemSuffix />
+            </ListGroup.Item>
+          </ListGroup>
+          <Typography type="body-xs" color="muted" className="px-4">
+            {messages.localOnly}
+          </Typography>
+        </View>
+
         {__DEV__ && (
-          <Surface className="mt-8 overflow-hidden rounded-3xl p-0 bg-surface">
-            <Button
-              variant="ghost"
-              className="min-h-16 flex-row justify-start gap-3 px-4 py-3"
+          <ListGroup className="shadow-none">
+            <ListGroup.Item
+              accessibilityRole="button"
               onPress={() => router.push("/dev")}
             >
-              <Code2 size={19} color={colors.accent} />
-              <Text className="flex-1 text-base text-foreground">
-                {messages.devLink}
-              </Text>
-              {chevron}
-            </Button>
-          </Surface>
+              <ListGroup.ItemPrefix>
+                <Code2 size={22} color={colors.accent} strokeWidth={1.8} />
+              </ListGroup.ItemPrefix>
+              <ListGroup.ItemContent>
+                <ListGroup.ItemTitle>{messages.devLink}</ListGroup.ItemTitle>
+              </ListGroup.ItemContent>
+              <ListGroup.ItemSuffix />
+            </ListGroup.Item>
+          </ListGroup>
         )}
-        <View className="items-center gap-2 pt-10">
-          <Text className="text-lg font-semibold tracking-tight text-muted">
+
+        <View className="gap-1 pb-2">
+          <Typography type="h5" color="muted" align="center">
             {messages.brand}
-          </Text>
-          <Text className="text-xs text-muted">{messages.about}</Text>
+          </Typography>
+          <Typography type="body-xs" color="muted" align="center">
+            {messages.about}
+          </Typography>
         </View>
       </ScrollView>
+
       <Dialog
         isOpen={section !== null}
         onOpenChange={(open) => !open && setSection(null)}
       >
         <Dialog.Portal>
           <Dialog.Overlay />
-          <Dialog.Content className="w-[90%] rounded-3xl bg-surface p-5">
-            <Dialog.Close variant="ghost" />
-            <Dialog.Title className="mb-4 text-xl font-semibold text-foreground">
-              {section ? messages[section] : ""}
-            </Dialog.Title>
+          <Dialog.Content className="gap-5">
+            <View className="flex-row items-center justify-between gap-3">
+              <Dialog.Title className="flex-1">
+                {section ? messages[section] : ""}
+              </Dialog.Title>
+              <Dialog.Close accessibilityLabel={messages.close} />
+            </View>
             {section === "chatStyle" && (
-              <View
-                className="mb-5 self-end rounded-[22px] px-5 py-3"
+              <Surface
+                className="self-end shadow-none"
                 style={{ backgroundColor: bubble }}
               >
-                <Text style={{ color: bubbleText }}>
+                <Typography style={{ color: bubbleText }}>
                   {messages.previewMessage}
-                </Text>
-              </View>
+                </Typography>
+              </Surface>
             )}
-            {options.map(({ value, label, icon: Icon }) => (
-              <Button
-                key={value}
-                variant="ghost"
-                className="min-h-16 flex-row justify-start gap-3 px-4 py-3"
-                onPress={() => {
-                  if (
-                    section === "theme" &&
-                    (value === "system" ||
-                      value === "light" ||
-                      value === "dark")
-                  )
-                    preferencesStore.getState().update({ theme: value });
-                  if (
-                    section === "language" &&
-                    (value === "system" || value === "zh" || value === "en")
-                  )
-                    preferencesStore.getState().update({ language: value });
-                  if (
-                    section === "chatStyle" &&
-                    (value === "blue" || value === "green" || value === "mono")
-                  )
-                    preferencesStore.getState().update({ chatStyle: value });
-                }}
-              >
-                <Icon size={19} color={colors.accent} />
-                <Text className="flex-1 text-base text-foreground">
-                  {label}
-                </Text>
-                {section && preferences[section] === value ? (
-                  <Check size={21} color={colors.accent} />
-                ) : null}
+            <RadioGroup
+              accessibilityLabel={section ? messages[section] : undefined}
+              value={section ? preferences[section] : undefined}
+              onValueChange={(value) => {
+                if (
+                  section === "theme" &&
+                  (value === "system" || value === "light" || value === "dark")
+                )
+                  preferencesStore.getState().update({ theme: value });
+                if (
+                  section === "language" &&
+                  (value === "system" || value === "zh" || value === "en")
+                )
+                  preferencesStore.getState().update({ language: value });
+                if (
+                  section === "chatStyle" &&
+                  (value === "blue" || value === "green" || value === "mono")
+                )
+                  preferencesStore.getState().update({ chatStyle: value });
+              }}
+            >
+              {options.map(({ value, label, icon: Icon }) => (
+                <RadioGroup.Item key={value} value={value} className="min-h-12">
+                  {({ isSelected }) => (
+                    <>
+                      <Icon
+                        size={22}
+                        color={isSelected ? colors.accent : colors.muted}
+                        strokeWidth={1.8}
+                      />
+                      <Label className="flex-1">{label}</Label>
+                      <Radio />
+                    </>
+                  )}
+                </RadioGroup.Item>
+              ))}
+            </RadioGroup>
+            <Button onPress={() => setSection(null)}>{messages.done}</Button>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog>
+
+      <Dialog
+        isOpen={clearDialog !== null}
+        onOpenChange={(open) => !open && setClearDialog(null)}
+      >
+        <Dialog.Portal>
+          <Dialog.Overlay />
+          <Dialog.Content className="gap-5">
+            <View className="flex-row items-center justify-between gap-3">
+              <Dialog.Title className="flex-1">
+                {clearDialog === "confirm"
+                  ? messages.clearDataTitle
+                  : messages.clearData}
+              </Dialog.Title>
+              <Dialog.Close accessibilityLabel={messages.close} />
+            </View>
+            <Dialog.Description accessibilityLiveRegion="polite">
+              {clearDialog === "confirm"
+                ? messages.clearDataHint
+                : clearDialog === "success"
+                  ? messages.clearDataDone
+                  : messages.saveError}
+            </Dialog.Description>
+            {clearDialog === "confirm" ? (
+              <View className="gap-3">
+                <Button variant="danger" onPress={clearData}>
+                  {messages.delete}
+                </Button>
+                <Button variant="tertiary" onPress={() => setClearDialog(null)}>
+                  {messages.cancel}
+                </Button>
+              </View>
+            ) : (
+              <Button onPress={() => setClearDialog(null)}>
+                {messages.done}
               </Button>
-            ))}
+            )}
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog>

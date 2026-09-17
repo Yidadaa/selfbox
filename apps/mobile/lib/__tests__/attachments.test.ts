@@ -57,15 +57,75 @@ vi.mock("expo-file-system", () => {
 });
 
 import {
+  appendPhotos,
   attachmentUri,
   importAttachment,
+  photoUri,
   pruneAttachments,
+  savePhotos,
 } from "../attachments";
+
+test("appends multiple selections in order and skips repeated assets or URIs", () => {
+  const first = {
+    uri: "file:///cache/one.jpg",
+    width: 800,
+    height: 600,
+    assetId: "one",
+  };
+  const second = { uri: "file:///cache/two.jpg", width: 800, height: 600 };
+  const third = {
+    uri: "file:///cache/three.jpg",
+    width: 800,
+    height: 600,
+    assetId: "three",
+  };
+  expect(
+    appendPhotos(
+      [first],
+      [{ ...first, uri: "file:///cache/one-again.jpg" }, second, second, third],
+    ),
+  ).toEqual([first, second, third]);
+  expect(appendPhotos([first], [])).toEqual([first]);
+  expect(appendPhotos([], [first, second])).toEqual([first, second]);
+});
 
 beforeEach(() => {
   state.files.clear();
   state.sequence = 0;
   state.document = "file:///container-a/documents";
+});
+
+test("saves mixed existing and picked photos in order without copying existing attachments", () => {
+  const existing = { file: "existing.jpg", width: 800, height: 600 };
+  const picked = {
+    uri: "file:///cache/new.png",
+    width: 600,
+    height: 800,
+    mimeType: "image/png",
+  };
+  state.files.set(attachmentUri(existing), "existing bytes");
+  state.files.set(picked.uri, "new bytes");
+  expect(photoUri(existing)).toBe(attachmentUri(existing));
+  expect(photoUri(picked)).toBe(picked.uri);
+  expect(savePhotos(" album ", [existing, picked])).toEqual({
+    version: 1,
+    type: "images",
+    images: [existing, { file: "photo-1.png", width: 600, height: 800 }],
+    caption: "album",
+  });
+  expect(state.sequence).toBe(1);
+  pruneAttachments([existing.file, "photo-1.png"]);
+  expect(state.files.get(attachmentUri(existing))).toBe("existing bytes");
+  expect(
+    state.files.get(
+      attachmentUri({ file: "photo-1.png", width: 600, height: 800 }),
+    ),
+  ).toBe("new bytes");
+  expect(savePhotos("caption only", [])).toEqual({
+    version: 1,
+    type: "text",
+    text: "caption only",
+  });
 });
 
 test("copies picked photos out of cache, keeps referenced files and prunes orphans", () => {

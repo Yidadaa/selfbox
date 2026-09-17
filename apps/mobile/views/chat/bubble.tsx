@@ -1,19 +1,15 @@
 import { useMenu } from "heroui-native/menu";
-import { ImageOff, Pin } from "lucide-react-native";
-import { memo, useMemo, useRef, useState } from "react";
-import {
-  Image,
-  Pressable,
-  Text,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { Pin } from "lucide-react-native";
+import { memo, useMemo, useRef } from "react";
+import { Pressable, Text, useWindowDimensions, View } from "react-native";
 import { useMarkdown } from "react-native-marked";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
 import { useAppearance } from "@/components/appearance";
+import { messageImages } from "@/db/payload";
 import type { Message } from "@/db/schema";
 import { formatTime } from "@/i18n";
-import { attachmentUri } from "@/lib/attachments";
+import { MessageImages } from "./images";
 
 function MarkdownText({ text, color }: { text: string; color: string }) {
   const { dark, colors } = useAppearance();
@@ -59,9 +55,12 @@ export const MessageBubble = memo(function MessageBubble({
   const own = message.role === "user";
   const background = own ? bubble : colors.incoming;
   const foreground = own ? bubbleText : colors.text;
-  const [imageFailed, setImageFailed] = useState(false);
+  const insets = useSafeAreaInsets();
   const target = useRef<View>(null);
-  const imageWidth = Math.min(width * 0.65, 280);
+  const imageWidth = Math.min(
+    (width - insets.left - insets.right - 40) * 0.84 - 10,
+    300,
+  );
 
   function openMenu(pageX: number, pageY: number) {
     // 使用屏幕触点作为零尺寸锚点，避免菜单按整块气泡定位。
@@ -114,8 +113,10 @@ export const MessageBubble = memo(function MessageBubble({
           style={{
             backgroundColor: background,
             borderRadius: 21,
-            paddingHorizontal: message.payload.type === "image" ? 5 : 14,
-            paddingVertical: message.payload.type === "image" ? 5 : 9,
+            width:
+              message.payload.type === "text" ? undefined : imageWidth + 10,
+            paddingHorizontal: message.payload.type === "text" ? 14 : 5,
+            paddingVertical: message.payload.type === "text" ? 9 : 5,
             overflow: "hidden",
           }}
         >
@@ -123,36 +124,11 @@ export const MessageBubble = memo(function MessageBubble({
             <MarkdownText text={message.payload.text} color={foreground} />
           ) : (
             <>
-              {imageFailed ? (
-                <View
-                  className="items-center justify-center gap-2 p-5"
-                  style={{ width: imageWidth, height: 150 }}
-                >
-                  <ImageOff color={foreground} size={26} />
-                  <Text style={{ color: foreground }}>
-                    {messages.imageUnavailable}
-                  </Text>
-                </View>
-              ) : (
-                <Image
-                  accessibilityLabel={messages.image}
-                  source={{ uri: attachmentUri(message.payload.image) }}
-                  onError={() => setImageFailed(true)}
-                  style={{
-                    width: imageWidth,
-                    height: Math.min(
-                      340,
-                      Math.max(
-                        110,
-                        (imageWidth * message.payload.image.height) /
-                          message.payload.image.width,
-                      ),
-                    ),
-                    borderRadius: 17,
-                  }}
-                  resizeMode="cover"
-                />
-              )}
+              <MessageImages
+                images={messageImages(message.payload)}
+                width={imageWidth}
+                color={foreground}
+              />
               {!!message.payload.caption && (
                 <View className="px-2.5 pb-1.5 pt-2">
                   <MarkdownText

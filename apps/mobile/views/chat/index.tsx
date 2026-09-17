@@ -29,13 +29,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAppearance } from "@/components/appearance";
 import { useDatabase } from "@/components/database";
 import { SafeAreaView } from "@/components/safe-area";
-import { editPayload, messageText, type Payload } from "@/db/payload";
+import { messageImages, messageText } from "@/db/payload";
 import type { Message } from "@/db/schema";
 import { formatDate } from "@/i18n";
 import {
-  attachmentUri,
-  importAttachment,
+  appendPhotos,
+  type DraftPhoto,
+  photoUri,
   pruneAttachments,
+  savePhotos,
 } from "@/lib/attachments";
 import { MessageBubble } from "./bubble";
 import { Composer } from "./composer";
@@ -79,7 +81,7 @@ export default function ChatPage() {
     };
   }, []);
   const [text, setText] = useState("");
-  const [photo, setPhoto] = useState<ImagePicker.ImagePickerAsset | null>(null);
+  const [photos, setPhotos] = useState<DraftPhoto[]>([]);
   const [selected, setSelected] = useState<Message | null>(null);
   const [editing, setEditing] = useState<Message | null>(null);
   const [showPins, setShowPins] = useState(false);
@@ -90,48 +92,31 @@ export default function ChatPage() {
   const [error, setError] = useState<string | null>(null);
   const draft = useRef<{
     text: string;
-    photo: ImagePicker.ImagePickerAsset | null;
+    photos: DraftPhoto[];
   } | null>(null);
 
   function finishEdit() {
     setEditing(null);
     setText(draft.current?.text ?? "");
-    setPhoto(draft.current?.photo ?? null);
+    setPhotos(draft.current?.photos ?? []);
     draft.current = null;
     setError(null);
   }
   function send() {
     if (busyRef.current || !chat) return;
-    if (!text.trim() && !photo && editing?.payload.type !== "image") return;
+    if (!text.trim() && photos.length === 0) return;
     busyRef.current = true;
     setBusy(true);
     setError(null);
     try {
+      const payload = savePhotos(text, photos);
       if (editing) {
-        repository.edit(
-          editing.id,
-          photo
-            ? {
-                version: 1,
-                type: "image",
-                image: importAttachment(photo),
-                caption: text,
-              }
-            : editPayload(editing.payload, text),
-        );
+        repository.edit(editing.id, payload);
         finishEdit();
       } else {
-        const payload: Payload = photo
-          ? {
-              version: 1,
-              type: "image",
-              image: importAttachment(photo),
-              caption: text,
-            }
-          : { version: 1, type: "text", text };
         repository.send(id, payload);
         setText("");
-        setPhoto(null);
+        setPhotos([]);
       }
       refresh();
       try {
@@ -155,9 +140,13 @@ export default function ChatPage() {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
+        allowsMultipleSelection: true,
+        orderedSelection: true,
         quality: 0.9,
       });
-      if (!result.canceled && result.assets[0]) setPhoto(result.assets[0]);
+      if (!result.canceled) {
+        setPhotos((current) => appendPhotos(current, result.assets));
+      }
     } catch {
       setError(messages.imageError);
     } finally {
@@ -199,16 +188,15 @@ export default function ChatPage() {
     ]);
   }
   function startEdit(message: Message) {
-    if (!editing) draft.current = { text, photo };
+    if (!editing) draft.current = { text, photos };
     setEditing(message);
     setSelected(null);
-    setPhoto(null);
+    setPhotos(messageImages(message.payload));
     setText(messageText(message.payload));
     setError(null);
     requestAnimationFrame(() => input.current?.focus());
   }
-  const canSend =
-    !busy && (!!text.trim() || !!photo || editing?.payload.type === "image");
+  const canSend = !busy && (!!text.trim() || photos.length > 0);
   return (
     <Menu
       asChild
@@ -346,20 +334,18 @@ export default function ChatPage() {
                   blurTarget={blurTarget}
                   inputRef={input}
                   text={text}
-                  imageUri={
-                    photo?.uri ??
-                    (editing?.payload.type === "image"
-                      ? attachmentUri(editing.payload.image)
-                      : undefined)
-                  }
+                  imageUris={photos.map(photoUri)}
                   editing={editing}
                   busy={busy}
                   canSend={canSend}
-                  canRemoveImage={!!photo}
                   availableHeight={Math.max(0, availableHeight - headerHeight)}
                   onChangeText={setText}
                   onPickImage={() => void pickPhoto()}
-                  onRemoveImage={() => setPhoto(null)}
+                  onRemoveImage={(index) =>
+                    setPhotos((current) =>
+                      current.filter((_, i) => i !== index),
+                    )
+                  }
                   onCancelEdit={finishEdit}
                   onSend={send}
                 />

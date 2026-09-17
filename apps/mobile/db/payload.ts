@@ -49,12 +49,36 @@ export const payloadSchema = z.discriminatedUnion("type", [
     image: imageSchema,
     caption: z.string().trim().max(50_000).default(""),
   }),
+  z.object({
+    version: z.literal(1),
+    type: z.literal("images"),
+    images: z.array(imageSchema).min(1),
+    caption: z.string().trim().max(50_000).default(""),
+  }),
 ]);
 export const roleSchema = z.enum(["user", "bot"]);
 export type ChatIcon = z.infer<typeof chatIconSchema>;
 export type Payload = z.infer<typeof payloadSchema>;
 export type ImageAttachment = z.infer<typeof imageSchema>;
 export type Role = z.infer<typeof roleSchema>;
+
+export function messageImages(payload: Payload): ImageAttachment[] {
+  if (payload.type === "text") return [];
+  return payload.type === "image" ? [payload.image] : payload.images;
+}
+
+export function createPayload(
+  text: string,
+  images: ImageAttachment[],
+): Payload {
+  return payloadSchema.parse(
+    images.length === 0
+      ? { version: 1, type: "text", text }
+      : images.length === 1
+        ? { version: 1, type: "image", image: images[0], caption: text }
+        : { version: 1, type: "images", images, caption: text },
+  );
+}
 
 export function messageText(payload: Payload) {
   return payload.type === "text" ? payload.text : payload.caption;

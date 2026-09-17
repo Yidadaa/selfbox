@@ -3,6 +3,7 @@ import type { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import {
   chatIconSchema,
   chatInputSchema,
+  messageImages,
   type Payload,
   payloadSchema,
   type Role,
@@ -162,7 +163,7 @@ export function createRepository(
         .all()
         .flatMap(({ payload }) => {
           const parsed = payloadSchema.parse(payload);
-          return parsed.type === "image" ? [parsed.image.file] : [];
+          return messageImages(parsed).map((image) => image.file);
         });
     },
     clear() {
