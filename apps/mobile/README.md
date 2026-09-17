@@ -4,7 +4,7 @@ Expo SDK 57 + Expo Router 移动端应用。
 
 ## 首次设置
 
-1. 登录 [Expo](https://expo.dev/) 账号。没有账号时，请使用公司邮箱注册，并加入对应的 Expo 组织。
+1. 登录 [Expo](https://expo.dev/) 账号，没有账号时可自行注册。
 2. 在仓库根目录安装依赖并启动开发环境：
 
 	```sh
