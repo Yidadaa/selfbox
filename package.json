@@ -15,7 +15,8 @@
     "check-types": "turbo run check-types",
     "test": "turbo run test",
     "lint:fix": "biome check . --write",
-    "ui:add": "pnpm --filter @repo/ui exec shadcn add --cwd ../../apps/web"
+    "ui:add": "pnpm --filter @repo/ui exec shadcn add --cwd ../../apps/web",
+    "db:generate:mobile": "pnpm --filter mobile db:generate"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.13",

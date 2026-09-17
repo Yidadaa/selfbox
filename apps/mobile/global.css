@@ -4,3 +4,84 @@
 
 @source "./views";
 @source "./components";
+
+/* 与 HeroUI 共用语义变量；light / dark 由 Uniwind 注册，system 自动跟随系统。 */
+@layer theme {
+  :root {
+    @variant light {
+      --background: #f6f7f9;
+      --foreground: #18202c;
+      --surface: #ffffff;
+      --surface-secondary: #eceff3;
+      --surface-shadow: 0 0 0 0 transparent;
+      --overlay: #ffffff;
+      --muted: #7a8493;
+      --border: #e7eaf0;
+      --separator: #e7eaf0;
+      --accent: #2577e8;
+      --accent-foreground: #ffffff;
+      --accent-soft: #e8f1ff;
+      --default: #eceff3;
+      --default-foreground: #18202c;
+      --field-background: #ffffff;
+      --field-foreground: #18202c;
+      --danger: #d6404d;
+      --incoming: #e9ecf1;
+      --bubble-blue: #2478ed;
+      --bubble-blue-foreground: #ffffff;
+      --bubble-green: #248454;
+      --bubble-green-foreground: #ffffff;
+      --bubble-mono: #303845;
+      --bubble-mono-foreground: #ffffff;
+      --markdown-code: #00000016;
+      --backdrop: #00000055;
+    }
+  }
+}
+
+@layer theme {
+  :root {
+    @variant dark {
+      --background: #111315;
+      --foreground: #f5f6f8;
+      --surface: #1d2024;
+      --surface-secondary: #292d32;
+      --surface-shadow: 0 0 0 0 transparent;
+      --overlay: #1d2024;
+      --muted: #969da7;
+      --border: #30343a;
+      --separator: #30343a;
+      --accent: #5da5ff;
+      --accent-foreground: #18202c;
+      --accent-soft: #20344f;
+      --default: #292d32;
+      --default-foreground: #f5f6f8;
+      --field-background: #1d2024;
+      --field-foreground: #f5f6f8;
+      --danger: #ff737a;
+      --incoming: #2b2f35;
+      --bubble-blue: #2478ed;
+      --bubble-blue-foreground: #ffffff;
+      --bubble-green: #248454;
+      --bubble-green-foreground: #ffffff;
+      --bubble-mono: #dde1e8;
+      --bubble-mono-foreground: #18202c;
+      --markdown-code: #00000030;
+      --backdrop: #00000088;
+    }
+  }
+}
+
+/* static 保留 Markdown、SVG 等通过 useCSSVariable 读取的变量。 */
+@theme static {
+  --color-elevated: var(--surface-secondary);
+  --color-accent-soft: var(--accent-soft);
+  --color-incoming: var(--incoming);
+  --color-bubble-blue: var(--bubble-blue);
+  --color-bubble-blue-foreground: var(--bubble-blue-foreground);
+  --color-bubble-green: var(--bubble-green);
+  --color-bubble-green-foreground: var(--bubble-green-foreground);
+  --color-bubble-mono: var(--bubble-mono);
+  --color-bubble-mono-foreground: var(--bubble-mono-foreground);
+  --color-markdown-code: var(--markdown-code);
+}

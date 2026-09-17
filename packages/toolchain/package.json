@@ -4,6 +4,7 @@
   "type": "module",
   "private": true,
   "exports": {
+    "./babel/expo": "./babel/expo.cjs",
     "./biome": "./biome/base.json",
     "./typescript/base.json": "./typescript/base.json",
     "./typescript/expo.json": "./typescript/expo.json",

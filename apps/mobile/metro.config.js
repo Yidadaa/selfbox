@@ -1,6 +1,9 @@
 const { getDefaultConfig } = require("expo/metro-config");
 const { withUniwindConfig } = require("uniwind/metro");
 
-module.exports = withUniwindConfig(getDefaultConfig(__dirname), {
+const config = getDefaultConfig(__dirname);
+config.resolver.sourceExts.push("sql");
+
+module.exports = withUniwindConfig(config, {
   cssEntryFile: "./global.css",
 });

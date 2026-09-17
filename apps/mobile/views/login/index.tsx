@@ -5,13 +5,14 @@ import { Label } from "heroui-native/label";
 import { TextField } from "heroui-native/text-field";
 import { useState } from "react";
 import { Text, View } from "react-native";
+import { useAppearance } from "@/components/appearance";
 import { useBackend } from "@/components/providers";
 import { ErrorMessage, Screen } from "@/components/screen";
-import { messages } from "@/i18n/en";
 import type { MobileAuth } from "@/lib/auth";
 import { authErrorMessage, validateCredentials } from "./validation";
 
 function LoginForm({ auth }: { auth: MobileAuth }) {
+  const { messages } = useAppearance();
   const [signup, setSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,6 +26,7 @@ function LoginForm({ auth }: { auth: MobileAuth }) {
       email,
       password,
       signup ? confirmation : undefined,
+      messages,
     );
     setError(validation);
     if (validation) return;
@@ -37,7 +39,7 @@ function LoginForm({ auth }: { auth: MobileAuth }) {
             name: credentials.email.split("@")[0] || messages.defaultUserName,
           })
         : await auth.signIn.email(credentials);
-      if (result.error) setError(authErrorMessage(result.error.code));
+      if (result.error) setError(authErrorMessage(result.error.code, messages));
       else {
         setPassword("");
         setConfirmation("");
@@ -125,6 +127,7 @@ function LoginForm({ auth }: { auth: MobileAuth }) {
 }
 
 export default function LoginPage() {
+  const { messages } = useAppearance();
   const backend = useBackend();
   return (
     <Screen>

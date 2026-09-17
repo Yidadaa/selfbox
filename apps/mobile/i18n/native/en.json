@@ -1,6 +1,7 @@
 {
   "ios": {
-    "CFBundleDisplayName": "selfbox"
+    "CFBundleDisplayName": "selfbox",
+    "NSPhotoLibraryUsageDescription": "Allow selfbox to attach photos to your chats."
   },
   "android": {
     "app_name": "selfbox"

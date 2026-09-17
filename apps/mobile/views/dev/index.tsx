@@ -8,14 +8,15 @@ import { TextField } from "heroui-native/text-field";
 import { useRef, useState } from "react";
 import { Platform, Text } from "react-native";
 import { useStore } from "zustand";
+import { useAppearance } from "@/components/appearance";
 import { defaultHost, settingsStore, useBackend } from "@/components/providers";
 import { ErrorMessage, Screen } from "@/components/screen";
 import { config } from "@/env/client";
-import { messages } from "@/i18n/en";
 import { normalizeHost } from "@/lib/config";
 import { createMobileTRPC } from "@/lib/trpc";
 
 export default function DevPage() {
+  const { messages } = useAppearance();
   const backend = useBackend();
   const devHost = useStore(settingsStore, (state) => state.devHost);
   const [host, setHost] = useState(devHost ?? backend?.baseURL ?? "");
@@ -52,7 +53,7 @@ export default function DevPage() {
     const baseURL = validate();
     if (!baseURL) return;
     settingsStore.getState().setDevHost(baseURL);
-    router.replace("/login");
+    router.replace("/");
   }
   return (
     <Screen>
@@ -98,7 +99,7 @@ export default function DevPage() {
         onPress={() => {
           settingsStore.getState().reset();
           setHost(defaultHost ?? "");
-          router.replace("/login");
+          router.replace("/");
         }}
       >
         {messages.reset}
@@ -132,7 +133,7 @@ export default function DevPage() {
         variant="ghost"
         onPress={() => {
           if (router.canGoBack()) router.back();
-          else router.replace("/login");
+          else router.replace("/");
         }}
       >
         {messages.back}

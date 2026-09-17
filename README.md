@@ -5,10 +5,10 @@
 ## 目录
 
 - `apps/web`：Web 应用。
-- `apps/mobile`：Expo 移动应用，集成 HeroUI Native、Better Auth 和 tRPC，详见 [Mobile 文档](apps/mobile/README.md)。
+- `apps/mobile`：selfbox（留话），基于 Expo、HeroUI Native 和 SQLite 的本地聊天记录应用，保留 auth / tRPC 基建，详见 [Mobile 文档](apps/mobile/README.md)。
 - `packages/ui`：共享组件、工具函数和主题样式。
 - `packages/server`：tRPC、Drizzle / Neon 数据库和 Better Auth 服务模块。
-- `packages/toolchain`：Biome 与 TypeScript 共享配置。
+- `packages/toolchain`：Biome、TypeScript 与 Expo Babel 共享配置。
 
 ## 开发
 
@@ -25,10 +25,11 @@ pnpm lint          # 检查代码、格式和导入顺序
 pnpm lint:fix      # 自动修复
 pnpm format        # 格式化
 pnpm check-types   # 类型检查
-pnpm test          # Vitest 服务层测试（内存 PGlite，无需数据库配置）
+pnpm test          # Vitest 测试（本地 SQLite / 内存 PGlite，无需数据库配置）
 pnpm ui:add dialog # 添加 shadcn 组件
 pnpm --filter @repo/server test:watch # 监听服务层测试
-pnpm db:generate   # 生成数据库迁移
+pnpm db:generate   # 生成 Web 数据库迁移
+pnpm db:generate:mobile # 生成 Mobile SQLite 迁移，随应用发布并在设备启动时执行
 pnpm db:migrate    # 应用迁移至 Web 应用配置的数据库
 pnpm db:push       # 将 schema 直接同步至 Web 应用配置的数据库
 pnpm db:studio     # 启动数据库管理界面

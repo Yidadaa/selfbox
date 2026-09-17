@@ -11,13 +11,14 @@ import {
 import { ActivityIndicator, Text } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Uniwind } from "uniwind";
 import { useStore } from "zustand";
 import { config } from "@/env/client";
-import { messages } from "@/i18n/en";
 import { createMobileAuth, type MobileAuth } from "@/lib/auth";
 import { resolveHost } from "@/lib/config";
 import { createSettingsStore } from "@/lib/settings";
 import { createMobileTRPC, TRPCProvider } from "@/lib/trpc";
+import { preferencesStore, useAppearance } from "./appearance";
 import { Screen } from "./screen";
 
 export const settingsStore = createSettingsStore(AsyncStorage);
@@ -77,6 +78,7 @@ export function QueryProvider({
 }
 
 export function Providers({ children }: { children: ReactNode }) {
+  const { messages } = useAppearance();
   const devHost = useStore(settingsStore, (state) => state.devHost);
   const [ready, setReady] = useState(false);
   const [storageError, setStorageError] = useState(false);
@@ -84,12 +86,22 @@ export function Providers({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true;
+    const unsubscribe = preferencesStore.subscribe((current, previous) => {
+      if (current.theme !== previous.theme) Uniwind.setTheme(current.theme);
+    });
     async function hydrate() {
       try {
-        await settingsStore.persist.rehydrate();
+        await Promise.all([
+          settingsStore.persist.rehydrate(),
+          preferencesStore.persist.rehydrate(),
+        ]);
       } finally {
         if (active) {
-          setStorageError(!settingsStore.persist.hasHydrated());
+          Uniwind.setTheme(preferencesStore.getState().theme);
+          setStorageError(
+            !settingsStore.persist.hasHydrated() ||
+              !preferencesStore.persist.hasHydrated(),
+          );
           setReady(true);
         }
       }
@@ -97,6 +109,7 @@ export function Providers({ children }: { children: ReactNode }) {
     void hydrate();
     return () => {
       active = false;
+      unsubscribe();
     };
   }, []);
 

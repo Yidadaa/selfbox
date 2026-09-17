@@ -3,6 +3,7 @@
 集中管理共享开发配置：
 
 - `biome/base.json`：代码检查、格式化和导入排序，由根目录 `biome.json` 加载。
+- `babel/expo.cjs`：Expo Babel preset 及 Drizzle SQL 内联，应用保留转发入口。
 - `typescript/base.json`：TypeScript 基础配置。
 - `typescript/nextjs.json`：Next.js 配置。
 - `typescript/expo.json`：Expo 项目规则，与应用安装的 `expo/tsconfig.base` 一起继承。

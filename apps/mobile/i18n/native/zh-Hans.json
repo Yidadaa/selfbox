@@ -1,6 +1,7 @@
 {
   "ios": {
-    "CFBundleDisplayName": "留话"
+    "CFBundleDisplayName": "留话",
+    "NSPhotoLibraryUsageDescription": "允许留话将你选择的照片添加到聊天。"
   },
   "android": {
     "app_name": "留话"
