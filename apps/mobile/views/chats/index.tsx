@@ -34,7 +34,7 @@ export default function ChatsPage() {
       className="flex-1 bg-background"
     >
       <View className="px-6 pb-5 pt-6">
-        <View className="mt-6 flex-row items-center gap-2.5 rounded-2xl px-4 bg-elevated">
+        <View className="mt-6 flex-row items-center gap-2.5 rounded-2xl px-4 bg-accent-foreground">
           <Search color={colors.muted} size={18} strokeWidth={1.8} />
           <TextInput
             accessibilityLabel={messages.searchChats}

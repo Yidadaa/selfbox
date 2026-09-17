@@ -74,7 +74,7 @@ export const messages = {
   chinese: "简体中文",
   english: "English",
   blue: "Classic blue",
-  green: "Soft green",
+  green: "Weixin green",
   mono: "Graphite",
   previewMessage: "A little thought worth keeping.",
   data: "Storage",

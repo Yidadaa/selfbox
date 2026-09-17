@@ -9,7 +9,7 @@
 @layer theme {
   :root {
     @variant light {
-      --background: #f6f7f9;
+      --background: #eef0f3;
       --foreground: #18202c;
       --surface: #ffffff;
       --surface-secondary: #eceff3;
@@ -29,8 +29,8 @@
       --incoming: #e9ecf1;
       --bubble-blue: #2478ed;
       --bubble-blue-foreground: #ffffff;
-      --bubble-green: #248454;
-      --bubble-green-foreground: #ffffff;
+      --bubble-green: #95ec69;
+      --bubble-green-foreground: #000000;
       --bubble-mono: #303845;
       --bubble-mono-foreground: #ffffff;
       --markdown-code: #00000016;
@@ -62,8 +62,8 @@
       --incoming: #2b2f35;
       --bubble-blue: #2478ed;
       --bubble-blue-foreground: #ffffff;
-      --bubble-green: #248454;
-      --bubble-green-foreground: #ffffff;
+      --bubble-green: #95ec69;
+      --bubble-green-foreground: #000000;
       --bubble-mono: #dde1e8;
       --bubble-mono-foreground: #18202c;
       --markdown-code: #00000030;

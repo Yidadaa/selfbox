@@ -41,14 +41,14 @@ export function FloatingTabs({
     >
       <Surface
         variant="transparent"
-        className="h-[66px] flex-1 flex-row items-center overflow-hidden rounded-full border border-border/60 p-1"
+        className="h-[66px] shadow-2xl flex-1 flex-row items-center overflow-hidden rounded-full border border-border/60 p-1"
       >
         <BlurView
           pointerEvents="none"
           blurTarget={blurTarget}
           blurMethod="dimezisBlurViewSdk31Plus"
-          intensity={40}
-          tint={dark ? "systemThinMaterialDark" : "systemThinMaterialLight"}
+          intensity={90}
+          tint={dark ? "dark" : "light"}
           style={StyleSheet.absoluteFill}
         />
         {state.routes.map((route, index) => {
@@ -93,14 +93,14 @@ export function FloatingTabs({
       </Surface>
       <Surface
         variant="transparent"
-        className="overflow-hidden rounded-full border border-border/60 p-1"
+        className="overflow-hidden shadow-2xl rounded-full border border-border/60 p-1"
       >
         <BlurView
           pointerEvents="none"
           blurTarget={blurTarget}
           blurMethod="dimezisBlurViewSdk31Plus"
-          intensity={40}
-          tint={dark ? "systemThinMaterialDark" : "systemThinMaterialLight"}
+          intensity={90}
+          tint={dark ? "dark" : "light"}
           style={StyleSheet.absoluteFill}
         />
         <Pressable

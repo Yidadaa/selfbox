@@ -11,13 +11,16 @@ export function Glass({
   const { dark } = useAppearance();
 
   return (
-    <View {...props} className={`overflow-hidden ${className ?? ""}`}>
+    <View
+      {...props}
+      className={`overflow-hidden shadow-2xl ${className ?? ""}`}
+    >
       <BlurView
         pointerEvents="none"
         blurTarget={blurTarget}
         blurMethod="dimezisBlurViewSdk31Plus"
-        intensity={70}
-        tint={dark ? "systemThinMaterialDark" : "systemThinMaterialLight"}
+        intensity={90}
+        tint={dark ? "dark" : "light"}
         style={StyleSheet.absoluteFill}
       />
       {children}
