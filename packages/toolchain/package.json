@@ -1,0 +1,13 @@
+{
+  "name": "@repo/toolchain",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./biome": "./biome/base.json",
+    "./typescript/base.json": "./typescript/base.json",
+    "./typescript/expo.json": "./typescript/expo.json",
+    "./typescript/nextjs.json": "./typescript/nextjs.json",
+    "./typescript/react-library.json": "./typescript/react-library.json"
+  }
+}

@@ -1,0 +1,30 @@
+@import "@repo/ui/globals.css";
+
+@layer base {
+  body {
+    @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 5px;
+  }
+
+  ::selection {
+    background: #dce5dc;
+    color: #171717;
+  }
+}
+
+@layer components {
+  .nav-link {
+    @apply transition-colors hover:text-muted-foreground;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}

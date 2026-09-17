@@ -1,0 +1,29 @@
+{
+  "name": "expo-starter",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "dev:mobile": "pnpm --filter mobile dev",
+    "dev:web": "pnpm --filter web dev",
+    "db:generate": "pnpm --filter web db:generate",
+    "db:migrate": "pnpm --filter web db:migrate",
+    "db:push": "pnpm --filter web db:push",
+    "db:studio": "pnpm --filter web db:studio",
+    "lint": "biome check . --error-on-warnings",
+    "format": "biome format . --write",
+    "check-types": "turbo run check-types",
+    "test": "turbo run test",
+    "lint:fix": "biome check . --write",
+    "ui:add": "pnpm --filter @repo/ui exec shadcn add --cwd ../../apps/web"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.13",
+    "turbo": "^2.10.12",
+    "typescript": "7.0.2"
+  },
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24"
+  }
+}

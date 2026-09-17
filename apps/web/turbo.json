@@ -1,0 +1,11 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": ["DATABASE_URL", "BETTER_AUTH_SECRET", "BASE_URL", "VERCEL_URL"]
+    },
+    "dev": {
+      "env": ["DATABASE_URL", "BETTER_AUTH_SECRET", "BASE_URL", "VERCEL_URL"]
+    }
+  }
+}

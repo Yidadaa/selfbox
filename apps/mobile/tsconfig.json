@@ -1,0 +1,16 @@
+{
+  "extends": ["expo/tsconfig.base", "@repo/toolchain/typescript/expo.json"],
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}

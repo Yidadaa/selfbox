@@ -1,0 +1,38 @@
+{
+  "name": "@repo/server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./auth": "./src/auth/index.ts",
+    "./db": "./src/db/index.ts",
+    "./db/schema": "./src/db/schema/index.ts",
+    "./trpc": "./src/trpc/index.ts"
+  },
+  "scripts": {
+    "lint": "biome check . --error-on-warnings",
+    "check-types": "tsc --noEmit",
+    "lint:fix": "biome check . --write",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@better-auth/drizzle-adapter": "1.7.4",
+    "@neondatabase/serverless": "1.1.0",
+    "@trpc/server": "11.18.0",
+    "better-auth": "1.7.4",
+    "drizzle-orm": "0.45.2",
+    "server-only": "0.0.1",
+    "superjson": "2.2.6",
+    "zod": "4.6.5",
+    "@better-auth/expo": "1.7.4"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.13",
+    "@electric-sql/pglite": "0.5.8",
+    "@repo/toolchain": "workspace:*",
+    "@types/node": "26.4.1",
+    "typescript": "7.0.2",
+    "vitest": "5.0.0"
+  }
+}
