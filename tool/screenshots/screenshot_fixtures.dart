@@ -6,13 +6,16 @@ import 'package:hooks_riverpod/misc.dart' show Override;
 import 'package:path/path.dart' as p;
 import 'package:selfbox/core/storage/app_paths.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
+import 'package:selfbox/core/testing/fake_memory_repository.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/domain/repositories/message_repository.dart';
+import 'package:selfbox/features/memory/domain/repositories/memory_repository.dart';
 
 typedef ScreenshotEnv = ({
   AppPaths? paths,
   MessageRepository? messages,
+  MemoryRepository? memory,
   List<Override> overrides,
 });
 
@@ -31,7 +34,7 @@ class ScreenshotFixture {
   setUp;
 
   static ScreenshotEnv _none() =>
-      (paths: null, messages: null, overrides: const []);
+      (paths: null, messages: null, memory: null, overrides: const []);
 }
 
 DateTime _at(int day, int hour, int minute) =>
@@ -59,6 +62,7 @@ ScreenshotEnv _chatWithHistory() {
   );
   return (
     paths: AppPaths(root),
+    memory: null,
     overrides: const <Override>[],
     messages: FakeMessageRepository(
       seed: [
@@ -81,6 +85,35 @@ ScreenshotEnv _chatWithHistory() {
   );
 }
 
+final _memorySeed = FakeMemoryRepository(
+  seed: {
+    'user/profile.md': [
+      '# 个人档案',
+      '',
+      '- 称呼：yda',
+      '- 城市：上海',
+      '- 职业：软件工程师',
+    ].join('\n'),
+    'user/prefer.md': ['# 偏好', '', '- 咖啡：拿铁，少糖', '- 周末：爬山、摄影'].join('\n'),
+    'topic/weekly-report.md': [
+      '# 周报',
+      '',
+      '每周五前提交，抄送团队。',
+      '',
+      '## 进行中',
+      '',
+      '- [x] 回复客户邮件',
+      '- [ ] 季度复盘（下周一前）',
+      '',
+      '> 上次提到希望周报更简短。',
+    ].join('\n'),
+    'topic/hiking.md': ['# 爬山计划', '', '- 候选：天目山、莫干山', '- 关注天气'].join('\n'),
+  },
+);
+
+ScreenshotEnv _memory() =>
+    (paths: null, messages: null, memory: _memorySeed, overrides: const []);
+
 final screenshotFixtures = <ScreenshotFixture>[
   const ScreenshotFixture(name: 'chat_empty', location: '/chat'),
   const ScreenshotFixture(
@@ -89,5 +122,15 @@ final screenshotFixtures = <ScreenshotFixture>[
     env: _chatWithHistory,
   ),
   const ScreenshotFixture(name: 'memory_empty', location: '/memory'),
+  const ScreenshotFixture(
+    name: 'memory_list',
+    location: '/memory',
+    env: _memory,
+  ),
+  const ScreenshotFixture(
+    name: 'memory_file',
+    location: '/memory/file?path=topic%2Fweekly-report.md',
+    env: _memory,
+  ),
   const ScreenshotFixture(name: 'me', location: '/me'),
 ];

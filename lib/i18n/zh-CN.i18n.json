@@ -22,7 +22,11 @@
   },
   "memory": {
     "title": "记忆",
-    "empty": "还没有记忆"
+    "empty": "还没有记忆",
+    "rootFolder": "通用",
+    "deleted": "已删除",
+    "missing": "文件不存在",
+    "more": "更多"
   },
   "me": {
     "title": "我的"

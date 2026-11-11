@@ -19,3 +19,6 @@
 - [2026-11-12] [IO] Windows 上同一文件出现正反斜杠混用两种路径，图片缓存失配 -> `p.join(root, 'media/x')` 保留了正斜杠 -> 相对路径按 `p.posix.split` 拆段后 `p.joinAll` 生成原生分隔符。
 - [2026-11-12] [Test] 截图中 GlassTabBar 标签渲染为方块 -> 无样式文本回退到测试字体 `FlutterTest` -> 截图工具为 `FlutterTest`/`Ahem`/`Roboto` 加载系统 CJK 字体，标签样式从主题显式传入。
 - [2026-11-12] [Shell] Python heredoc 含中文时按 GBK 解码失败，后续 `git commit` 仍执行 -> Windows 控制台编码 + 命令未用 `&&` 串联 -> 多语言脚本写成 UTF-8 文件后 `python -X utf8 file.py`；提交前的步骤一律 `&&` 串联。
+- [2026-11-12] [Stream] `async*` + `await for` 广播流的 watch 在取消订阅时卡死测试 -> 生成器挂在内部 await，cancel 等待其退出 -> 生产代码的 watch 一律用 `StreamController(onListen/onCancel)` 显式管理订阅并串行刷新。
+- [2026-11-12] [Python] 脚本里写 Dart 字符串 `'\n'` 被写成真实换行 -> 多层转义 -> 含 Dart 转义的内容用编辑工具直接写文件，不经脚本拼接。
+- [2026-11-12] [LiquidGlass] `GlassListTile` 标题/分组标题、`GlassListTile.chevron` 不随 Material 主题 -> 组件用默认 Cupertino 文本与图标字体 -> 显式传 `titleStyle`/`subtitleStyle`/header 样式（主题 Token），箭头用 Material 图标。

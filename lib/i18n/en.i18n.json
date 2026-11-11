@@ -22,7 +22,11 @@
   },
   "memory": {
     "title": "Memory",
-    "empty": "No memories yet"
+    "empty": "No memories yet",
+    "rootFolder": "General",
+    "deleted": "Deleted",
+    "missing": "File not found",
+    "more": "More"
   },
   "me": {
     "title": "Me"

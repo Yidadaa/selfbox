@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/chat/presentation/pages/chat_page.dart';
 import '../../features/chat/presentation/pages/image_viewer_page.dart';
+import '../../features/memory/presentation/pages/memory_file_page.dart';
 import '../../features/memory/presentation/pages/memory_page.dart';
 import '../../features/settings/presentation/pages/me_page.dart';
 import 'app_shell.dart';
@@ -18,7 +19,12 @@ final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
       routes: [TypedGoRoute<ChatRoute>(path: '/chat')],
     ),
     TypedStatefulShellBranch<MemoryBranch>(
-      routes: [TypedGoRoute<MemoryRoute>(path: '/memory')],
+      routes: [
+        TypedGoRoute<MemoryRoute>(
+          path: '/memory',
+          routes: [TypedGoRoute<MemoryFileRoute>(path: 'file')],
+        ),
+      ],
     ),
     TypedStatefulShellBranch<MeBranch>(
       routes: [TypedGoRoute<MeRoute>(path: '/me')],
@@ -87,4 +93,16 @@ class ImageViewerRoute extends GoRouteData with $ImageViewerRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       ImageViewerPage(path: path);
+}
+
+/// Stays inside the memory branch so the tab bar remains visible.
+class MemoryFileRoute extends GoRouteData with $MemoryFileRoute {
+  const MemoryFileRoute({required this.path});
+
+  /// Memory path such as `user/profile.md`.
+  final String path;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      MemoryFilePage(path: path);
 }
