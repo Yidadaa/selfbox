@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
-import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_canvas.dart';
@@ -38,9 +37,6 @@ class _WelcomeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = context.t;
-    final glass = context.glass;
-    final textTheme = Theme.of(context).textTheme;
     return GlassContainer.card(
       padding: const EdgeInsets.all(AppSpacing.xl),
       shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.xl),
@@ -52,11 +48,9 @@ class _WelcomeCard extends StatelessWidget {
             height: AppSizes.iconHero,
           ),
           const Gap(AppSpacing.md),
-          Text(t.home.welcome, style: textTheme.titleLarge),
-          const Gap(AppSpacing.xs),
           Text(
-            t.home.subtitle,
-            style: textTheme.bodyMedium?.copyWith(color: glass.foregroundMuted),
+            context.t.home.welcome,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
         ],
       ),

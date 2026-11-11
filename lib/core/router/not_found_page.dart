@@ -51,12 +51,6 @@ class _NotFoundCard extends StatelessWidget {
           ),
           const Gap(AppSpacing.md),
           Text(t.notFound.title, style: textTheme.titleLarge),
-          const Gap(AppSpacing.xs),
-          Text(
-            t.notFound.message,
-            textAlign: TextAlign.center,
-            style: textTheme.bodyMedium?.copyWith(color: glass.foregroundMuted),
-          ),
         ],
       ),
     );

@@ -4,12 +4,10 @@
   },
   "home": {
     "title": "Selfbox",
-    "welcome": "Your private space is ready.",
-    "subtitle": "Built on a unified Liquid Glass design system."
+    "welcome": "Welcome"
   },
   "notFound": {
     "title": "Page not found",
-    "message": "The page you are looking for does not exist or has moved.",
-    "backHome": "Back to home"
+    "backHome": "Home"
   }
 }

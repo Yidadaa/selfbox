@@ -17,7 +17,6 @@ void main() {
         final strings = locale.buildSync();
         expect(find.text(strings.home.title), findsOneWidget);
         expect(find.text(strings.home.welcome), findsOneWidget);
-        expect(find.text(strings.home.subtitle), findsOneWidget);
         expect(find.byType(SvgPicture), findsOneWidget);
         expect(tester.takeException(), isNull);
       });

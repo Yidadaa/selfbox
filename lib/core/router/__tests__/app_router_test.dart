@@ -24,7 +24,6 @@ void main() {
 
       expect(find.byType(NotFoundPage), findsOneWidget);
       expect(find.text(t.notFound.title), findsOneWidget);
-      expect(find.text(t.notFound.message), findsOneWidget);
     });
 
     testWidgets('404 back button meets the touch target and returns home', (
