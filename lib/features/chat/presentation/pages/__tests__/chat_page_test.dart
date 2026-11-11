@@ -61,6 +61,22 @@ void main() {
       );
     });
 
+    testWidgets('marks notes that were sent to the AI', (tester) async {
+      await tester.pumpApp(
+        messages: FakeMessageRepository(
+          seed: [_msg(1, 'plain'), _msg(2, 'asked').copyWith(askedAi: true)],
+        ),
+      );
+      // Filled sparkle = AI question mark (the composer toggle is outlined).
+      expect(
+        find.descendant(
+          of: find.byType(MessageBubble),
+          matching: find.byIcon(Icons.auto_awesome),
+        ),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('groups messages under day pills', (tester) async {
       await tester.pumpApp(
         messages: FakeMessageRepository(

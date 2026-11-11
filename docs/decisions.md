@@ -68,3 +68,9 @@
 - **背景**：需支持 chat completions / responses / messages 三种接口格式，可拉取并逐个配置模型；API Key 属敏感凭据。
 - **决策**：`AiSettings`（服务商、模型能力与预算、当前模型、历史轮数）以 JSON 存于 `config/ai_settings.json`（先写临时文件再 rename 保证原子性）；API Key 仅存系统钥匙串（`SecretStore` → `flutter_secure_storage`），表单从不回显，留空即保留。模型列表经 Retrofit `GET {baseUrl}/models` 拉取（OpenAI 用 Bearer，Anthropic 用 `x-api-key` + `anthropic-version`），合并时保留已有配置，上游消失但已启用的模型不删除。Dio 日志不打印请求头与请求体。表单规则以 luthor Schema 定义于领域层（`AiSettingsSchema`），经 `luthorValidator` 接入 reactive_forms。
 - **影响**：`AiSettingsService`（跨设置仓库与模型目录的编排）是唯一写入口；新增接口格式需同时扩展 `ApiFormat`、鉴权头映射与语言模型工厂。
+
+### [ADR-012] AI 模式 Agent 设计
+
+- **背景**：AI 模式需在全部聊天记录上检索作答、维护文件式记忆；UI 只显示最新工具调用与“正在输入”，最终文本整体渲染。
+- **决策**：`AssistantAgent`（`chat/domain/services`）用 `ai_sdk_dart` `streamText` 多步工具循环（`maxSteps: 16`，总超时 3 分钟）。工具：`search_messages` / `read_messages` / `view_image`（仅视觉模型）/ `memory_list` / `memory_read` / `memory_search` / `memory_create` / `memory_patch`（强制 unified diff）/ `memory_delete`；工具失败以 `{"error"}` 返回给模型自行纠正。历史为最近 `historyTurns+1` 条消息（用户笔记带 `[#id 时间]` 前缀、AI 为 assistant，同角色合并、首条必为 user），按 `maxInputTokens - maxOutputTokens` 粗估裁剪。`view_image` 的图片经 `prepareStep` 在工具结果后注入一条 user 图片消息（工具结果只能携带文本）。流事件仅用于状态：`ToolInputStart` → 工具类别，首个 `TextDelta` → typing；最终取最后一步文本一次性入库为 AI 消息。`AssistantController` 状态机 `idle → working(activity) → idle | failed(failure, question)`，新问题取消旧问题且旧回复不入库。`LanguageModelFactory` 为网络边界（测试用 `ScriptedLanguageModel`）。
+- **影响**：新增工具需同步 `AgentToolKind.ofTool` 与状态文案；widget 测试中 SDK 流需 `tester.runAsync` 交替推进。

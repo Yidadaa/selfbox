@@ -9,8 +9,10 @@ import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/core/testing/fake_memory_repository.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
+import 'package:selfbox/features/chat/domain/models/agent_activity.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/domain/repositories/message_repository.dart';
+import 'package:selfbox/features/chat/presentation/providers/assistant_controller.dart';
 import 'package:selfbox/features/memory/domain/repositories/memory_repository.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/features/settings/domain/repositories/ai_settings_repository.dart';
@@ -29,7 +31,11 @@ class ScreenshotFixture {
     required this.location,
     this.env = _none,
     this.setUp,
+    this.animated = false,
   });
+
+  /// Something animates forever (AI status); pump instead of settling.
+  final bool animated;
 
   final String name;
   final String location;
@@ -49,7 +55,7 @@ class ScreenshotFixture {
 DateTime _at(int day, int hour, int minute) =>
     DateTime(kTestNow.year, kTestNow.month, day, hour, minute);
 
-ScreenshotEnv _chatWithHistory() {
+ScreenshotEnv _chatWithHistory({bool includeReply = true}) {
   final root = Directory.systemTemp.createTempSync('selfbox_shot_');
   final media = Directory(p.join(root.path, 'media'))..createSync();
   File('tool/screenshots/assets/aurora.png')
@@ -82,14 +88,15 @@ ScreenshotEnv _chatWithHistory() {
         m(4, _at(12, 9, 12), '周末想去爬山 🌿，放松一下心情'),
         m(5, _at(12, 9, 24), '', images: ['media/aurora.png']),
         m(6, _at(12, 9, 30), '我这周都记了哪些待办？', askedAi: true),
-        m(
-          7,
-          _at(12, 9, 31),
-          '这周你记下了 **3 件待办**：\n\n'
-          '- 回复客户邮件\n- 明天提交周报\n- 下周一前完成季度复盘\n\n'
-          '周末还计划去爬山，记得看天气。',
-          author: MessageAuthor.ai,
-        ),
+        if (includeReply)
+          m(
+            7,
+            _at(12, 9, 31),
+            '这周你记下了 **3 件待办**：\n\n'
+            '- 回复客户邮件\n- 明天提交周报\n- 下周一前完成季度复盘\n\n'
+            '周末还计划去爬山，记得看天气。',
+            author: MessageAuthor.ai,
+          ),
       ],
     ),
   );
@@ -166,12 +173,36 @@ ScreenshotEnv _settings() => (
   overrides: const [],
 );
 
+class _FixedAssistant extends AssistantController {
+  @override
+  AssistantState build() => const AssistantState.working(
+    AgentActivity.tool(AgentToolKind.searchMessages),
+  );
+}
+
+ScreenshotEnv _chatAsking() {
+  final base = _chatWithHistory(includeReply: false);
+  return (
+    paths: base.paths,
+    messages: base.messages,
+    memory: null,
+    settings: null,
+    overrides: [assistantControllerProvider.overrideWith(_FixedAssistant.new)],
+  );
+}
+
 final screenshotFixtures = <ScreenshotFixture>[
   const ScreenshotFixture(name: 'chat_empty', location: '/chat'),
   const ScreenshotFixture(
     name: 'chat_history',
     location: '/chat',
     env: _chatWithHistory,
+  ),
+  const ScreenshotFixture(
+    name: 'chat_ai_pending',
+    location: '/chat',
+    env: _chatAsking,
+    animated: true,
   ),
   const ScreenshotFixture(name: 'memory_empty', location: '/memory'),
   const ScreenshotFixture(

@@ -12,6 +12,7 @@ String failureMessage(BuildContext context, AppFailure failure) {
     NetworkFailure(statusCode: 401 || 403) => e.auth,
     NetworkFailure() => e.network,
     ValidationFailure(message: AppFailure.missingApiKey) => e.missingKey,
+    ValidationFailure(message: AppFailure.noModel) => e.noModel,
     ValidationFailure() ||
     DatabaseFailure() ||
     PermissionFailure() => e.generic,

@@ -40,6 +40,9 @@ sealed class AppFailure with _$AppFailure {
   /// turns it into "add a key" guidance instead of a generic error.
   static const missingApiKey = 'missing api key';
 
+  /// Validation message when AI mode has no enabled model to use.
+  static const noModel = 'no model configured';
+
   bool get isRetryable => switch (this) {
     NetworkFailure() => true,
     DatabaseFailure() => false,

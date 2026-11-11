@@ -98,7 +98,19 @@
       "network": "连接失败",
       "auth": "请检查 API Key",
       "missingKey": "请先填写 API Key",
-      "generic": "出错了"
+      "generic": "出错了",
+      "noModel": "还没有选择模型"
     }
+  },
+  "assistant": {
+    "thinking": "思考中",
+    "searching": "翻阅聊天记录",
+    "reading": "查看消息",
+    "viewing": "查看图片",
+    "recalling": "回忆中",
+    "remembering": "更新记忆",
+    "typing": "正在输入",
+    "setup": "去设置",
+    "dismiss": "关闭"
   }
 }

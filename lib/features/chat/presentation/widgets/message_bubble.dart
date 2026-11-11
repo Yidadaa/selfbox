@@ -44,7 +44,7 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final maxWidth = MediaQuery.sizeOf(context).width * _maxBubbleWidthFactor;
-    final time = Text(
+    final clock = Text(
       formatClock(
         message.createdAt,
         locale: LocaleSettings.currentLocale.languageTag,
@@ -52,6 +52,22 @@ class MessageBubble extends StatelessWidget {
       style: Theme.of(context).textTheme.labelSmall
           ?.copyWith(color: context.glass.foregroundMuted),
     );
+    // Notes sent in AI mode carry a small mark so questions stand out.
+    final time = message.askedAi
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.auto_awesome,
+                size: AppSpacing.sm,
+                color: context.glass.accent,
+                semanticLabel: context.t.chat.aiMode,
+              ),
+              const Gap(AppSpacing.xxs),
+              clock,
+            ],
+          )
+        : clock;
     final body = ConstrainedBox(
       constraints: BoxConstraints(maxWidth: maxWidth),
       child: Column(

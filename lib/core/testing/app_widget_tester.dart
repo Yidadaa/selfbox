@@ -6,6 +6,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../app.dart';
 import '../../features/chat/data/chat_data_providers.dart';
+import '../../features/chat/domain/repositories/language_model_factory.dart';
 import '../../features/chat/domain/repositories/message_repository.dart';
 import '../../features/memory/data/memory_data_providers.dart';
 import '../../features/memory/domain/repositories/memory_repository.dart';
@@ -19,6 +20,7 @@ import '../time/clock.dart';
 import 'fake_ai_settings.dart';
 import 'fake_memory_repository.dart';
 import 'fake_message_repository.dart';
+import 'scripted_language_model.dart';
 import 'temp_storage.dart';
 
 /// Fixed "now" for every widget test: Thu 12 Nov 2026, 10:00.
@@ -31,6 +33,7 @@ List<Override> testAppOverrides({
   MemoryRepository? memory,
   AiSettingsRepository? settings,
   ModelCatalog? catalog,
+  LanguageModelFactory? models,
   AppPaths? paths,
   DateTime? now,
 }) => [
@@ -44,6 +47,10 @@ List<Override> testAppOverrides({
     settings ?? FakeAiSettingsRepository(),
   ),
   modelCatalogProvider.overrideWithValue(catalog ?? FakeModelCatalog()),
+  // Never reach a real endpoint from a test.
+  languageModelFactoryProvider.overrideWithValue(
+    models ?? FakeLanguageModelFactory(ScriptedLanguageModel(const [])),
+  ),
 ];
 
 /// iPhone 14-class logical viewport used by every widget test.
@@ -69,8 +76,10 @@ extension AppWidgetTester on WidgetTester {
     MemoryRepository? memory,
     AiSettingsRepository? settings,
     ModelCatalog? catalog,
+    LanguageModelFactory? models,
     AppPaths? paths,
     AppLocale locale = AppLocale.en,
+    bool settle = true,
   }) async {
     usePhoneViewport();
     LocaleSettings.setLocaleSync(locale);
@@ -83,6 +92,7 @@ extension AppWidgetTester on WidgetTester {
           memory: memory,
           settings: settings,
           catalog: catalog,
+          models: models,
           paths: paths,
         ),
         ...overrides,
@@ -100,7 +110,8 @@ extension AppWidgetTester on WidgetTester {
         ),
       ),
     );
-    await pumpAndSettle();
+    // Pass settle: false when something animates forever (typing dots).
+    settle ? await pumpAndSettle() : await pump(const Duration(seconds: 1));
     return container;
   }
 

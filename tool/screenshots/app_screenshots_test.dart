@@ -79,10 +79,13 @@ void main() {
           memory: env.memory,
           settings: env.settings,
           overrides: env.overrides,
+          settle: !shot.animated,
         );
         await shot.setUp?.call(tester, container);
         container.read(appRouterProvider).go(shot.location);
-        await tester.pumpAndSettle();
+        shot.animated
+            ? await tester.pump(const Duration(milliseconds: 600))
+            : await tester.pumpAndSettle();
         await expectLater(
           find.byType(MaterialApp),
           matchesGoldenFile('out/${shot.name}.png'),

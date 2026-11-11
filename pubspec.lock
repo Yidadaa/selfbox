@@ -42,7 +42,7 @@ packages:
     source: hosted
     version: "3.1.0"
   ai_sdk_provider:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: ai_sdk_provider
       sha256: "3ac2e56b7a5cef8e36f3830810167036b5956c4c64851e3eedb6704636746f70"

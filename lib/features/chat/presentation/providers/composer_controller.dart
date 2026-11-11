@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fpdart/fpdart.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,6 +9,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/error/app_failure.dart';
 import '../../data/chat_data_providers.dart';
 import '../../domain/models/message.dart';
+import 'assistant_controller.dart';
 
 part '../../../../gen/features/chat/presentation/providers/composer_controller.freezed.dart';
 part '../../../../gen/features/chat/presentation/providers/composer_controller.g.dart';
@@ -34,10 +37,12 @@ abstract class ComposerState with _$ComposerState {
 @Riverpod(keepAlive: true)
 ImagePicker imagePicker(Ref ref) => ImagePicker();
 
-/// Called with every note sent in AI mode. Overridden by the assistant
-/// feature; the default does nothing so the composer has no dependency on it.
+/// Called with every note sent in AI mode; tests override it to observe
+/// hand-offs without running the agent.
 @Riverpod(keepAlive: true)
-void Function(Message) onAskAi(Ref ref) => (_) {};
+void Function(Message) onAskAi(Ref ref) =>
+    (question) =>
+        unawaited(ref.read(assistantControllerProvider.notifier).ask(question));
 
 @Riverpod(keepAlive: true)
 class ComposerController extends _$ComposerController {

@@ -98,7 +98,19 @@
       "network": "Connection failed",
       "auth": "Check the API key",
       "missingKey": "Add an API key first",
-      "generic": "Something went wrong"
+      "generic": "Something went wrong",
+      "noModel": "No model selected"
     }
+  },
+  "assistant": {
+    "thinking": "Thinking",
+    "searching": "Searching notes",
+    "reading": "Reading notes",
+    "viewing": "Looking at image",
+    "recalling": "Recalling",
+    "remembering": "Updating memory",
+    "typing": "Typing",
+    "setup": "Set up",
+    "dismiss": "Dismiss"
   }
 }

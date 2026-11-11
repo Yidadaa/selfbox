@@ -25,3 +25,6 @@
 - [2026-11-12] [JSON] 嵌套 freezed 模型 `toJson` 后 `fromJson` 报 `_X is not a subtype of Map` -> json_serializable 默认不递归序列化 -> `build.yaml` 全局 `explicit_to_json: true`。
 - [2026-11-12] [Forms] `luthor` 与 `reactive_forms` 都导出 `Validator` -> 同名冲突 -> 桥接文件 `import 'package:luthor/luthor.dart' as lu;`，错误 key 用 luthor `IssueCode.name`，UI 统一映射文案。
 - [2026-11-12] [LiquidGlass] `GlassSegmentedControl` / `GlassGroupedSection` 默认文本与 16pt 横向 margin 不随主题 -> 组件内部默认值 -> 显式传 `selectedTextStyle`/`unselectedTextStyle`，分组统一 `margin: AppInsets.section` 与页面边距对齐。
+- [2026-11-12] [Agent] 被新问题取代的旧回合仍把回复写入时间线 -> 入库在“是否仍为当前回合”检查之前 -> 先 `await answer`，校验 run id，再持久化。
+- [2026-11-12] [Test] `flutter_animate` 的 `delay`/`repeat` 在 widget 测试结束后留下 pending Timer -> 动画库内部用 Timer 实现延迟 -> 无限循环动画用 `useAnimationController` + 相位偏移自行驱动。
+- [2026-11-12] [Test] `streamText` 在 widget 测试 fake-async 中永不完成 -> SDK 流水线依赖真实事件循环 -> 循环交替 `tester.runAsync(短延迟)` 与 `pump`，直到结果落库。

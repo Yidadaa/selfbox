@@ -16,9 +16,11 @@ import '../../../../core/widgets/measure_size.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../data/chat_data_providers.dart';
 import '../../domain/models/message.dart';
+import '../providers/assistant_controller.dart';
 import '../providers/chat_feed.dart';
 import '../providers/chat_timeline.dart';
 import '../providers/message_actions.dart';
+import '../widgets/assistant_status_bubble.dart';
 import '../widgets/chat_composer.dart';
 import '../widgets/day_pill.dart';
 import '../widgets/message_bubble.dart';
@@ -115,6 +117,10 @@ class _Timeline extends HookConsumerWidget {
     final media = ref.watch(mediaStoreProvider);
     final requestedFor = useRef(-1);
     final insets = AppPageInsets.of(context);
+    final assistant = ref.watch(assistantControllerProvider);
+    // The reversed list's first slot is the bottom: AI status sits under the
+    // newest message.
+    final lead = assistant is AssistantIdle ? 0 : 1;
 
     bool onScroll(ScrollNotification notification) {
       final nearOldest = notification.metrics.extentAfter < _loadMoreThreshold;
@@ -139,18 +145,20 @@ class _Timeline extends HookConsumerWidget {
           AppSpacing.md,
           bottomPadding,
         ),
-        itemCount: feed.items.length,
-        itemBuilder: (context, index) => switch (feed.items[index]) {
-          TimelineDay(:final day) => DayPill(day: day, now: now),
-          TimelineMessage(:final message) => MessageBubble(
-            key: ValueKey(message.id),
-            message: message,
-            resolveImage: (path) => media.resolve(path).toNullable(),
-            onImageTap: (path) =>
-                ImageViewerRoute(path: path).push<void>(context),
-            onLongPress: () => _showActions(context, ref, message),
-          ),
-        },
+        itemCount: feed.items.length + lead,
+        itemBuilder: (context, index) => index < lead
+            ? AssistantStatusBubble(state: assistant)
+            : switch (feed.items[index - lead]) {
+                TimelineDay(:final day) => DayPill(day: day, now: now),
+                TimelineMessage(:final message) => MessageBubble(
+                  key: ValueKey(message.id),
+                  message: message,
+                  resolveImage: (path) => media.resolve(path).toNullable(),
+                  onImageTap: (path) =>
+                      ImageViewerRoute(path: path).push<void>(context),
+                  onLongPress: () => _showActions(context, ref, message),
+                ),
+              },
       ),
     );
   }
