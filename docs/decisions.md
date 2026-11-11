@@ -1,0 +1,58 @@
+# 架构决策记录 (ADR)
+
+### [ADR-001] Flutter 工具链本地化至 `.tools/`
+
+- **背景**：机器上已有全局 Flutter（`C:\dev\flutter`），版本可能与项目要求漂移；需要可复现、项目私有的工具链。
+- **决策**：Flutter stable（当前 3.47.9 / Dart 3.13.7）解压至 `.tools/flutter`，`.tools/` 加入 `.gitignore`。所有命令通过 `.tools/flutter/bin/flutter` / `dart` 执行，或先 `export PATH="$PWD/.tools/flutter/bin:$PATH"`。
+- **影响**：升级 Flutter = 替换 `.tools/flutter` 目录并更新本 ADR；CI 需按同一版本安装。
+
+### [ADR-002] 所有生成代码收敛至 `lib/gen/`
+
+- **背景**：`*.g.dart` / `*.freezed.dart` 散落在业务目录会污染代码审查与搜索。
+- **决策**：
+  - `build.yaml` 用 `build_extensions` 把 `freezed` 与 `source_gen|combining_builder`（json_serializable、riverpod_generator、retrofit_generator 等）映射到 `lib/gen/{{}}`；`sources` 排除 `lib/**/__tests__/**` 与 `lib/gen/**`。
+  - `flutter_gen` → `lib/gen/assets/`；`objectbox` → `output_dir: gen/database`；`slang` → `lib/gen/i18n/`。
+  - 业务源码的 `part` 用相对路径指向 `lib/gen/...`。
+- **影响**：每次 `build_runner` 后必须确认 `lib/gen/` 之外无生成文件；`lib/gen/` 提交进版本库还是忽略见 ADR-005。
+
+### [ADR-003] 测试与被测代码同级放在 `__tests__/`，`test/all_tests_test.dart` 作为唯一聚合入口
+
+- **背景**：Flutter 工具链默认只扫描 `test/`，而规范要求测试与代码同级。
+- **决策**：测试写在 `lib/**/__tests__/*_test.dart`；聚合入口命名为 **`test/all_tests_test.dart`**（偏离 AGENTS.md 的 `all_tests.dart`：`flutter test` 只收集 `*_test.dart`，否则裸跑 `flutter test` 找不到任何用例）。它以 `import ... as tN;` 引入每个测试文件并在 `main()` 中 `group(path, tN.main)`，末尾自带「注册表 == 磁盘扫描」守卫测试。`tool/gen_all_tests.dart` 扫描目录重写该文件并 `dart format`。`analysis_options.yaml` 关闭 `depend_on_referenced_packages`。共享测试夹具在 `lib/core/testing/app_widget_tester.dart`（390x844 视口、刘海/横条安全区、固定语言、完整 Provider + Glass 作用域）。
+- **影响**：新增测试文件后运行 `dart run tool/gen_all_tests.dart`，遗漏时守卫测试会失败；单个测试可直接 `flutter test lib/.../__tests__/x_test.dart`。`@visibleForTesting` 成员（如 `ProviderContainer.test`）在 `lib/**/__tests__` 中会被 analyzer 报警，改用 `ProviderContainer(...)` + `addTearDown(container.dispose)`。测试代码未被 `main.dart` 引用，会被 tree-shaking 剔除。
+
+### [ADR-004] Pragmatic Feature-First 分层，拒绝透传 UseCase
+
+- **背景**：教条式 Clean Architecture 会产生大量一行透传类。
+- **决策**：Presentation 的 `@riverpod` Controller 直接调用 Domain `Repository` 接口；仅跨多个 Repository 的编排或可复用领域算法才进入 `domain/services/`。仅在架构边界（Repository、平台网关）定义 `abstract interface class`。
+- **影响**：Code review 时拒绝单方法透传类与单实现内部接口。
+
+### [ADR-005] `lib/gen/` 不纳入版本库
+
+- **背景**：生成文件体积大、易产生无意义的合并冲突，且可由工具链完全重建。
+- **决策**：`lib/gen/` 写入 `.gitignore`，例外：`lib/gen/database/objectbox-model.json` 必须提交（ObjectBox 依赖它保持实体/属性 UID 稳定，丢失会导致 schema 迁移错误）。
+- **影响**：clone 后必须先执行 `dart run slang && dart run build_runner build` 才能编译（build_runner 2.16 已移除 `-d`）。
+
+### [ADR-006] Liquid Glass 统一设计 Token
+
+- **背景**：Android 与 iOS 共用一套视觉，禁止 `Platform.isIOS` 分叉；业务组件禁止硬编码间距/圆角/模糊/时长。
+- **决策**：`lib/core/theme/` 定义 `AppSpacing`（4/8/12/16/20/24/32/40/48）、`AppSizes`（48dp 触控热区、AppBar 高度、图标尺寸）、`AppRadius`（含同心圆角 `concentric(outer, padding)`）、`AppMotion`（按压 0.97 / 120ms / easeOutCubic）、`AppGlassTheme`（`ThemeExtension`，承载三层景深的模糊/透明度/描边）。`AppTheme.dark()` / `AppTheme.light()` 挂载全部扩展；全局 `AppScrollBehavior` 统一 `BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics())`；全平台统一 `GlassPageTransitionsBuilder` 转场。页面统一用 `GlassScaffold` + `AppCanvas`（渐变画布），刷新式玻璃控件（`GlassButton`）不得嵌套在玻璃卡片内。
+- **影响**：新增视觉参数一律先加 Token 与对应 `__tests__` 断言，再在组件中引用。
+
+### [ADR-007] ObjectBox 使用 6.0.0-preview.6（精确锁定）
+
+- **背景**：ObjectBox 稳定版 `objectbox_generator` 5.3.2 依赖 `analyzer <11`，而 freezed 4 / json_serializable 6.15 / build_runner 2.16 / riverpod_generator 4 要求 `analyzer ^14`，版本求解无解。
+- **决策**：`objectbox` / `objectbox_flutter_libs` / `objectbox_generator` 精确锁定 `6.0.0-preview.6`（支持 `analyzer <14.5`，因此 analyzer 解析为 14.4.0）。不降级其余代码生成器。
+- **影响**：ObjectBox 6 稳定版发布后立即升级并移除精确锁定；首个 `@Entity` 落地时需验证 preview 的生成产物、`objectbox-model.json` 与 Store 打开流程，并补齐临时目录 Store 测试。
+
+### [ADR-008] 依赖版本受上游约束的已知滞后
+
+- **背景**：要求使用最新版本，但部分包被上游约束卡住。
+- **决策**：接受以下滞后，不引入 `dependency_overrides`：`cached_network_image` 3.4.1（`flutter_smooth_markdown` 要求 `^3`）；`talker_flutter` 5.1.16（`screen_capturer_windows` 要求 `win32 <6`）。其余直接依赖均为当前最新可解析版本。
+- **影响**：上游放开约束后执行 `flutter pub outdated` 复查并升级。
+
+### [ADR-009] i18n 关闭延迟加载 (`slang.yaml: lazy: false`)
+
+- **背景**：slang 默认将非基准语言生成为 deferred library，`LocaleSettings.useDeviceLocaleSync()` / `setLocaleSync()` 对 zh-CN 直接抛 `_DeferredNotLoadedError`，中文设备启动即崩溃。
+- **决策**：`lazy: false`，所有语言随主包加载（文案体积极小）。
+- **影响**：若未来语言包体积显著增大，再改为异步 `useDeviceLocale()` 并在启动流程中 `await`。

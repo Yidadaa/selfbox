@@ -1,0 +1,26 @@
+/// 8pt/4pt spatial grid. Every gap and padding in the app must come from here.
+abstract final class AppSpacing {
+  static const double xxs = 4;
+  static const double xs = 8;
+  static const double sm = 12;
+  static const double md = 16;
+  static const double lg = 20;
+  static const double xl = 24;
+  static const double xxl = 32;
+  static const double xxxl = 40;
+  static const double huge = 48;
+
+  static const List<double> scale = [xxs, xs, sm, md, lg, xl, xxl, xxxl, huge];
+}
+
+/// Component dimensions (not spacing).
+abstract final class AppSizes {
+  /// Minimum physical hit area for anything tappable or draggable.
+  static const double minTouchTarget = 48;
+
+  /// GlassAppBar toolbar height. GlassScaffold extends the body behind its
+  /// bars, so scrollable bodies must inset by safe area + this value.
+  static const double appBarHeight = 44;
+  static const double iconMd = 24;
+  static const double iconHero = 48;
+}

@@ -1,0 +1,79 @@
+name: selfbox
+description: "Selfbox — a private, mobile-first personal space built with Flutter."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.7
+
+dependencies:
+  cached_network_image: ^3.4.1
+  dio: ^5.11.1
+  envied: ^1.3.10
+  flutter:
+    sdk: flutter
+  flutter_animate: ^4.5.2
+  flutter_hooks: ^0.21.4
+  flutter_localizations:
+    sdk: flutter
+  flutter_riverpod: ^3.5.0
+  flutter_smooth_markdown: ^0.10.0
+  flutter_svg: ^2.3.3
+  fpdart: ^1.2.0
+  freezed_annotation: ^3.1.0
+  gap: ^3.1.0
+  go_router: ^18.1.4
+  hooks_riverpod: ^3.5.0
+  infinite_scroll_pagination: ^5.1.1
+  json_annotation: ^4.12.0
+  liquid_glass_widgets: ^1.17.2
+  luthor: ^1.0.0
+  objectbox: 6.0.0-preview.6
+  objectbox_flutter_libs: 6.0.0-preview.6
+  path: ^1.9.1
+  path_provider: ^2.1.6
+  permission_handler: ^13.0.2
+  reactive_forms: ^18.2.2
+  record: ^7.1.2
+  retrofit: ^4.10.0
+  riverpod_annotation: ^4.0.8
+  screen_capturer: ^0.2.3
+  skeletonizer: ^3.0.0
+  slang: ^4.19.2
+  slang_flutter: ^4.19.0
+  talker_dio_logger: ^5.2.0
+  talker_flutter: ^5.1.16
+  talker_riverpod_logger: ^5.2.0
+  web_socket_channel: ^3.0.3
+  window_manager: ^0.6.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.16.2
+  freezed: ^4.0.3
+  json_serializable: ^6.15.2
+  riverpod_generator: ^4.0.10
+  retrofit_generator: ^10.3.3
+  go_router_builder: ^4.5.3
+  luthor_generator: ^1.0.0
+  mocktail: ^1.0.5
+  objectbox_generator: 6.0.0-preview.6
+  flutter_gen_runner: ^5.15.0
+  envied_generator: ^1.3.10
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+
+# Code generation outputs are redirected into lib/gen (ADR-002).
+flutter_gen:
+  output: lib/gen/assets/
+  line_length: 80
+  integrations:
+    flutter_svg: true
+
+objectbox:
+  output_dir: gen/database

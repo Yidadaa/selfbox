@@ -1,0 +1,79 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:hooks_riverpod/misc.dart' show Override;
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+
+import '../../app.dart';
+import '../../gen/i18n/strings.g.dart';
+import '../theme/app_scroll_behavior.dart';
+import '../theme/app_theme.dart';
+
+/// iPhone 14-class logical viewport used by every widget test.
+const kPhoneViewport = Size(390, 844);
+const _devicePixelRatio = 3.0;
+
+extension AppWidgetTester on WidgetTester {
+  /// Fixed phone viewport with a notch and a home indicator, so layout and
+  /// safe-area handling are exercised the same way on every machine.
+  void usePhoneViewport() {
+    view
+      ..devicePixelRatio = _devicePixelRatio
+      ..physicalSize = kPhoneViewport * _devicePixelRatio
+      ..padding = const FakeViewPadding(top: 47 * 3, bottom: 34 * 3)
+      ..viewPadding = const FakeViewPadding(top: 47 * 3, bottom: 34 * 3);
+    addTearDown(view.reset);
+  }
+
+  /// Boots the real app shell (router, theme, i18n, glass scope).
+  Future<ProviderContainer> pumpApp({
+    List<Override> overrides = const [],
+    AppLocale locale = AppLocale.en,
+  }) async {
+    usePhoneViewport();
+    LocaleSettings.setLocaleSync(locale);
+    // ProviderContainer.test is @visibleForTesting, which the analyzer does
+    // not grant to lib/**/__tests__, so dispose explicitly instead.
+    final container = ProviderContainer(overrides: overrides);
+    addTearDown(container.dispose);
+    await pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: TranslationProvider(
+          child: LiquidGlassWidgets.wrap(
+            brightnessResolver: Theme.maybeBrightnessOf,
+            child: const SelfboxApp(),
+          ),
+        ),
+      ),
+    );
+    await pumpAndSettle();
+    return container;
+  }
+
+  /// Renders a single page inside the design system without the router.
+  Future<void> pumpPage(
+    Widget page, {
+    AppLocale locale = AppLocale.en,
+    Brightness brightness = Brightness.dark,
+  }) async {
+    usePhoneViewport();
+    LocaleSettings.setLocaleSync(locale);
+    await pumpWidget(
+      TranslationProvider(
+        child: LiquidGlassWidgets.wrap(
+          brightnessResolver: Theme.maybeBrightnessOf,
+          child: MaterialApp(
+            theme: switch (brightness) {
+              Brightness.dark => AppTheme.dark(),
+              Brightness.light => AppTheme.light(),
+            },
+            scrollBehavior: const AppScrollBehavior(),
+            home: page,
+          ),
+        ),
+      ),
+    );
+    await pumpAndSettle();
+  }
+}

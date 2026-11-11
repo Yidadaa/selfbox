@@ -1,0 +1,27 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import 'core/router/app_router.dart';
+import 'core/theme/app_scroll_behavior.dart';
+import 'core/theme/app_theme.dart';
+import 'gen/i18n/strings.g.dart';
+
+class SelfboxApp extends ConsumerWidget {
+  const SelfboxApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp.router(
+      onGenerateTitle: (context) => context.t.app.name,
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      locale: TranslationProvider.of(context).flutterLocale,
+      supportedLocales: AppLocaleUtils.supportedLocales,
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      scrollBehavior: const AppScrollBehavior(),
+      routerConfig: ref.watch(appRouterProvider),
+    );
+  }
+}

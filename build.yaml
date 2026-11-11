@@ -1,0 +1,20 @@
+targets:
+  $default:
+    sources:
+      include:
+        - lib/**
+        - assets/**
+        - pubspec.yaml
+        - $package$
+      exclude:
+        - lib/**/__tests__/**
+        - lib/gen/**
+    builders:
+      freezed:
+        options:
+          build_extensions:
+            "^lib/{{}}.dart": "lib/gen/{{}}.freezed.dart"
+      source_gen|combining_builder:
+        options:
+          build_extensions:
+            "^lib/{{}}.dart": "lib/gen/{{}}.g.dart"

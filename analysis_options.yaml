@@ -1,0 +1,42 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - lib/gen/**
+    - .tools/**
+    - build/**
+    - android/**
+    - ios/**
+    - windows/**
+    - macos/**
+    - linux/**
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  errors:
+    # freezed + json_serializable put @JsonKey on constructor parameters.
+    invalid_annotation_target: ignore
+
+linter:
+  rules:
+    # Tests live in lib/**/__tests__ and import dev_dependencies (flutter_test, mocktail).
+    depend_on_referenced_packages: false
+    always_declare_return_types: true
+    avoid_dynamic_calls: true
+    avoid_print: true
+    avoid_redundant_argument_values: true
+    avoid_type_to_string: true
+    cancel_subscriptions: true
+    directives_ordering: true
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    prefer_const_literals_to_create_immutables: true
+    prefer_final_fields: true
+    prefer_final_locals: true
+    prefer_single_quotes: true
+    require_trailing_commas: true
+    sort_child_properties_last: true
+    unawaited_futures: true
+    unnecessary_lambdas: true
+    use_super_parameters: true
