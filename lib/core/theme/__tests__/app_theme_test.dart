@@ -72,6 +72,10 @@ void main() {
           }
         });
 
+        test('text on the accent color meets WCAG AA', () {
+          expect(_contrast(glass!.onAccent, glass.accent), greaterThan(4.5));
+        });
+
         test('bubble text meets WCAG AA on both bubble colors', () {
           expect(
             _contrast(glass!.onBubbleMine, glass.bubbleMine),

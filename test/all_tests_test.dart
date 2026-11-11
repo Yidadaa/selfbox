@@ -3,30 +3,85 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:selfbox/core/error/__tests__/app_failure_test.dart' as t0;
-import 'package:selfbox/core/logger/__tests__/talker_provider_test.dart' as t1;
-import 'package:selfbox/core/router/__tests__/app_router_test.dart' as t2;
-import 'package:selfbox/core/theme/__tests__/app_theme_test.dart' as t3;
-import 'package:selfbox/core/widgets/__tests__/app_canvas_test.dart' as t4;
+import 'package:selfbox/core/database/__tests__/app_store_test.dart' as t0;
+import 'package:selfbox/core/error/__tests__/app_failure_test.dart' as t1;
+import 'package:selfbox/core/logger/__tests__/talker_provider_test.dart' as t2;
+import 'package:selfbox/core/router/__tests__/app_router_test.dart' as t3;
+import 'package:selfbox/core/theme/__tests__/app_theme_test.dart' as t4;
+import 'package:selfbox/core/widgets/__tests__/app_canvas_test.dart' as t5;
 import 'package:selfbox/core/widgets/__tests__/app_page_scaffold_test.dart'
-    as t5;
+    as t6;
+import 'package:selfbox/core/widgets/__tests__/pressable_test.dart' as t7;
+import 'package:selfbox/features/chat/data/datasources/__tests__/media_store_test.dart'
+    as t8;
+import 'package:selfbox/features/chat/data/datasources/__tests__/message_entity_test.dart'
+    as t9;
+import 'package:selfbox/features/chat/data/repositories/__tests__/objectbox_message_repository_test.dart'
+    as t10;
+import 'package:selfbox/features/chat/presentation/pages/__tests__/chat_page_test.dart'
+    as t11;
+import 'package:selfbox/features/chat/presentation/providers/__tests__/chat_timeline_test.dart'
+    as t12;
+import 'package:selfbox/features/chat/presentation/providers/__tests__/composer_controller_test.dart'
+    as t13;
+import 'package:selfbox/features/chat/presentation/widgets/__tests__/date_labels_test.dart'
+    as t14;
 
 const _registered = <String>[
+  'lib/core/database/__tests__/app_store_test.dart',
   'lib/core/error/__tests__/app_failure_test.dart',
   'lib/core/logger/__tests__/talker_provider_test.dart',
   'lib/core/router/__tests__/app_router_test.dart',
   'lib/core/theme/__tests__/app_theme_test.dart',
   'lib/core/widgets/__tests__/app_canvas_test.dart',
   'lib/core/widgets/__tests__/app_page_scaffold_test.dart',
+  'lib/core/widgets/__tests__/pressable_test.dart',
+  'lib/features/chat/data/datasources/__tests__/media_store_test.dart',
+  'lib/features/chat/data/datasources/__tests__/message_entity_test.dart',
+  'lib/features/chat/data/repositories/__tests__/objectbox_message_repository_test.dart',
+  'lib/features/chat/presentation/pages/__tests__/chat_page_test.dart',
+  'lib/features/chat/presentation/providers/__tests__/chat_timeline_test.dart',
+  'lib/features/chat/presentation/providers/__tests__/composer_controller_test.dart',
+  'lib/features/chat/presentation/widgets/__tests__/date_labels_test.dart',
 ];
 
 void main() {
-  group('lib/core/error/__tests__/app_failure_test.dart', t0.main);
-  group('lib/core/logger/__tests__/talker_provider_test.dart', t1.main);
-  group('lib/core/router/__tests__/app_router_test.dart', t2.main);
-  group('lib/core/theme/__tests__/app_theme_test.dart', t3.main);
-  group('lib/core/widgets/__tests__/app_canvas_test.dart', t4.main);
-  group('lib/core/widgets/__tests__/app_page_scaffold_test.dart', t5.main);
+  group('lib/core/database/__tests__/app_store_test.dart', t0.main);
+  group('lib/core/error/__tests__/app_failure_test.dart', t1.main);
+  group('lib/core/logger/__tests__/talker_provider_test.dart', t2.main);
+  group('lib/core/router/__tests__/app_router_test.dart', t3.main);
+  group('lib/core/theme/__tests__/app_theme_test.dart', t4.main);
+  group('lib/core/widgets/__tests__/app_canvas_test.dart', t5.main);
+  group('lib/core/widgets/__tests__/app_page_scaffold_test.dart', t6.main);
+  group('lib/core/widgets/__tests__/pressable_test.dart', t7.main);
+  group(
+    'lib/features/chat/data/datasources/__tests__/media_store_test.dart',
+    t8.main,
+  );
+  group(
+    'lib/features/chat/data/datasources/__tests__/message_entity_test.dart',
+    t9.main,
+  );
+  group(
+    'lib/features/chat/data/repositories/__tests__/objectbox_message_repository_test.dart',
+    t10.main,
+  );
+  group(
+    'lib/features/chat/presentation/pages/__tests__/chat_page_test.dart',
+    t11.main,
+  );
+  group(
+    'lib/features/chat/presentation/providers/__tests__/chat_timeline_test.dart',
+    t12.main,
+  );
+  group(
+    'lib/features/chat/presentation/providers/__tests__/composer_controller_test.dart',
+    t13.main,
+  );
+  group(
+    'lib/features/chat/presentation/widgets/__tests__/date_labels_test.dart',
+    t14.main,
+  );
 
   test('registers every lib/**/__tests__/*_test.dart', () {
     final onDisk =

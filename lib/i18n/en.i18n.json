@@ -9,7 +9,16 @@
   },
   "chat": {
     "title": "Selfbox",
-    "empty": "Nothing yet"
+    "empty": "Nothing yet",
+    "inputHint": "New thought?",
+    "aiInputHint": "Ask AI",
+    "send": "Send",
+    "attachImage": "Image",
+    "removeImage": "Remove",
+    "aiMode": "AI mode",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "imageFailed": "Image unavailable"
   },
   "memory": {
     "title": "Memory",
@@ -21,5 +30,12 @@
   "notFound": {
     "title": "Page not found",
     "backHome": "Home"
+  },
+  "common": {
+    "copy": "Copy",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "retry": "Retry",
+    "close": "Close"
   }
 }

@@ -9,7 +9,16 @@
   },
   "chat": {
     "title": "自言自语",
-    "empty": "空空如也"
+    "empty": "空空如也",
+    "inputHint": "今天有什么新想法？",
+    "aiInputHint": "问问 AI",
+    "send": "发送",
+    "attachImage": "图片",
+    "removeImage": "移除",
+    "aiMode": "AI 模式",
+    "today": "今天",
+    "yesterday": "昨天",
+    "imageFailed": "图片不可用"
   },
   "memory": {
     "title": "记忆",
@@ -21,5 +30,12 @@
   "notFound": {
     "title": "页面不存在",
     "backHome": "首页"
+  },
+  "common": {
+    "copy": "复制",
+    "delete": "删除",
+    "cancel": "取消",
+    "retry": "重试",
+    "close": "关闭"
   }
 }

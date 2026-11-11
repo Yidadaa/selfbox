@@ -17,6 +17,7 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     required this.foreground,
     required this.foregroundMuted,
     required this.accent,
+    required this.onAccent,
     required this.bubbleMine,
     required this.onBubbleMine,
     required this.bubbleOther,
@@ -34,6 +35,7 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     foreground: Color(0xFFF5F7FF),
     foregroundMuted: Color(0xB3F5F7FF),
     accent: Color(0xFF7C9CFF),
+    onAccent: Color(0xFF0B0F1A),
     bubbleMine: Color(0xFF2F6B3A),
     onBubbleMine: Color(0xFFF5F7FF),
     bubbleOther: Color(0xFF262A36),
@@ -51,6 +53,7 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     foreground: Color(0xFF0B0F1A),
     foregroundMuted: Color(0xA60B0F1A),
     accent: Color(0xFF3D5AFE),
+    onAccent: Color(0xFFFFFFFF),
     bubbleMine: Color(0xFFA9EC9F),
     onBubbleMine: Color(0xFF0B0F1A),
     bubbleOther: Color(0xFFFFFFFF),
@@ -74,6 +77,7 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
   final Color foreground;
   final Color foregroundMuted;
   final Color accent;
+  final Color onAccent;
 
   /// Notes the user sends to themself (right-aligned).
   final Color bubbleMine;
@@ -95,6 +99,7 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     Color? foreground,
     Color? foregroundMuted,
     Color? accent,
+    Color? onAccent,
     Color? bubbleMine,
     Color? onBubbleMine,
     Color? bubbleOther,
@@ -111,6 +116,7 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
       foreground: foreground ?? this.foreground,
       foregroundMuted: foregroundMuted ?? this.foregroundMuted,
       accent: accent ?? this.accent,
+      onAccent: onAccent ?? this.onAccent,
       bubbleMine: bubbleMine ?? this.bubbleMine,
       onBubbleMine: onBubbleMine ?? this.onBubbleMine,
       bubbleOther: bubbleOther ?? this.bubbleOther,
@@ -137,6 +143,7 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
       foreground: c(foreground, other.foreground),
       foregroundMuted: c(foregroundMuted, other.foregroundMuted),
       accent: c(accent, other.accent),
+      onAccent: c(onAccent, other.onAccent),
       bubbleMine: c(bubbleMine, other.bubbleMine),
       onBubbleMine: c(onBubbleMine, other.onBubbleMine),
       bubbleOther: c(bubbleOther, other.bubbleOther),

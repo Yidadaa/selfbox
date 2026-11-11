@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/chat/presentation/pages/chat_page.dart';
+import '../../features/chat/presentation/pages/image_viewer_page.dart';
 import '../../features/memory/presentation/pages/memory_page.dart';
 import '../../features/settings/presentation/pages/me_page.dart';
 import 'app_shell.dart';
@@ -72,4 +73,18 @@ class MeRoute extends GoRouteData with $MeRoute {
 
   @override
   Widget build(BuildContext context, GoRouterState state) => const MePage();
+}
+
+@TypedGoRoute<ImageViewerRoute>(path: '/image')
+class ImageViewerRoute extends GoRouteData with $ImageViewerRoute {
+  const ImageViewerRoute({required this.path});
+
+  /// Media path relative to the app root, e.g. `media/<uuid>.jpg`.
+  final String path;
+
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      ImageViewerPage(path: path);
 }

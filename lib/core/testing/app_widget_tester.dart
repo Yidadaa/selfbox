@@ -5,9 +5,32 @@ import 'package:hooks_riverpod/misc.dart' show Override;
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../app.dart';
+import '../../features/chat/data/chat_data_providers.dart';
+import '../../features/chat/domain/repositories/message_repository.dart';
 import '../../gen/i18n/strings.g.dart';
+import '../storage/app_paths.dart';
 import '../theme/app_scroll_behavior.dart';
 import '../theme/app_theme.dart';
+import '../time/clock.dart';
+import 'fake_message_repository.dart';
+import 'temp_storage.dart';
+
+/// Fixed "now" for every widget test: Thu 12 Nov 2026, 10:00.
+final kTestNow = DateTime(2026, 11, 12, 10);
+
+/// Storage-backed providers swapped for in-memory fakes. Tests override any
+/// of these by passing their own instance.
+List<Override> testAppOverrides({
+  MessageRepository? messages,
+  AppPaths? paths,
+  DateTime? now,
+}) => [
+  appPathsProvider.overrideWithValue(paths ?? createTempAppPaths()),
+  messageRepositoryProvider.overrideWithValue(
+    messages ?? FakeMessageRepository(),
+  ),
+  clockProvider.overrideWithValue(() => now ?? kTestNow),
+];
 
 /// iPhone 14-class logical viewport used by every widget test.
 const kPhoneViewport = Size(390, 844);
@@ -28,13 +51,20 @@ extension AppWidgetTester on WidgetTester {
   /// Boots the real app shell (router, theme, i18n, glass scope).
   Future<ProviderContainer> pumpApp({
     List<Override> overrides = const [],
+    MessageRepository? messages,
+    AppPaths? paths,
     AppLocale locale = AppLocale.en,
   }) async {
     usePhoneViewport();
     LocaleSettings.setLocaleSync(locale);
     // ProviderContainer.test is @visibleForTesting, which the analyzer does
     // not grant to lib/**/__tests__, so dispose explicitly instead.
-    final container = ProviderContainer(overrides: overrides);
+    final container = ProviderContainer(
+      overrides: [
+        ...testAppOverrides(messages: messages, paths: paths),
+        ...overrides,
+      ],
+    );
     addTearDown(container.dispose);
     await pumpWidget(
       UncontrolledProviderScope(
@@ -52,28 +82,41 @@ extension AppWidgetTester on WidgetTester {
   }
 
   /// Renders a single page inside the design system without the router.
-  Future<void> pumpPage(
+  Future<ProviderContainer> pumpPage(
     Widget page, {
+    List<Override> overrides = const [],
+    MessageRepository? messages,
     AppLocale locale = AppLocale.en,
     Brightness brightness = Brightness.dark,
   }) async {
     usePhoneViewport();
     LocaleSettings.setLocaleSync(locale);
+    final container = ProviderContainer(
+      overrides: [
+        ...testAppOverrides(messages: messages),
+        ...overrides,
+      ],
+    );
+    addTearDown(container.dispose);
     await pumpWidget(
-      TranslationProvider(
-        child: LiquidGlassWidgets.wrap(
-          brightnessResolver: Theme.maybeBrightnessOf,
-          child: MaterialApp(
-            theme: switch (brightness) {
-              Brightness.dark => AppTheme.dark(),
-              Brightness.light => AppTheme.light(),
-            },
-            scrollBehavior: const AppScrollBehavior(),
-            home: page,
+      UncontrolledProviderScope(
+        container: container,
+        child: TranslationProvider(
+          child: LiquidGlassWidgets.wrap(
+            brightnessResolver: Theme.maybeBrightnessOf,
+            child: MaterialApp(
+              theme: switch (brightness) {
+                Brightness.dark => AppTheme.dark(),
+                Brightness.light => AppTheme.light(),
+              },
+              scrollBehavior: const AppScrollBehavior(),
+              home: page,
+            ),
           ),
         ),
       ),
     );
     await pumpAndSettle();
+    return container;
   }
 }

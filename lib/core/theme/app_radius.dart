@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 
 abstract final class AppRadius {
+  /// The tail corner of a chat bubble.
+  static const double xs = 6;
   static const double sm = 12;
   static const double md = 20;
   static const double lg = 28;

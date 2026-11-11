@@ -10,3 +10,12 @@
 - [2026-11-12] [Slang] zh-CN `setLocaleSync` 抛 `_DeferredNotLoadedError` -> slang 默认 deferred 加载非基准语言 -> `slang.yaml` 设 `lazy: false`（ADR-009），每个页面测试必须覆盖全部 `AppLocale.values`。
 - [2026-11-12] [LiquidGlass] 首页卡片被玻璃 AppBar 遮挡 -> `GlassScaffold` 默认 `extendBody`，不给 body 注入 padding -> 可滚动 body 必须自行 inset `MediaQuery.paddingOf(context).top + AppSizes.appBarHeight`，并有测试锁定 `GlassAppBar` 默认高度 == Token。
 - [2026-11-12] [Lint] `toolbarHeight: AppSizes.appBarHeight` 触发 `avoid_redundant_argument_values` -> 值等于包默认值 -> 不传参，改用契约测试锁定默认值与 Token 一致。
+- [2026-11-12] [ObjectBox] 首次生成报 `objectbox-model.json` PathNotFound，建目录后仍失败 -> 生成器不创建 `output_dir`，且 build_runner 缓存了失败结果 -> 首次先 `mkdir -p lib/gen/database` 再 `dart run build_runner clean && dart run build_runner build`。
+- [2026-11-12] [Riverpod+ObjectBox] `@riverpod` 返回 `Store` 时生成失败 -> riverpod_generator 早于 objectbox.g.dart 运行，看不到其 re-export 的类型 -> 类型直接从 `package:objectbox/objectbox.dart` 导入，`objectbox.g.dart` 只 `show openStore`。
+- [2026-11-12] [fpdart] `Order` 同名冲突 -> fpdart 与 ObjectBox 都导出 `Order` -> 数据层 `import 'package:fpdart/fpdart.dart' hide Order;`。
+- [2026-11-12] [LiquidGlass] ActionSheet 动作里 `Navigator.pop` 弹掉了页面路由 -> `showGlassActionSheet` 执行动作后自动关闭 -> 动作回调禁止再 pop。
+- [2026-11-12] [Test] `GlassTabBar` 标签 `find.text` 命中两个 -> 选中/未选中两层各画一次 -> 限定 `descendant(of: GlassTabBar)` 后取 `.first`。
+- [2026-11-12] [Test] 文件图片在 widget 测试/截图中永不加载，`runAsync` 里 precache 死等 -> fake-async 区内启动的 I/O 永不完成 -> 在 `pumpApp` 之前于 `runAsync` 中预热 ImageCache；交互测试改用非图片 finder。
+- [2026-11-12] [IO] Windows 上同一文件出现正反斜杠混用两种路径，图片缓存失配 -> `p.join(root, 'media/x')` 保留了正斜杠 -> 相对路径按 `p.posix.split` 拆段后 `p.joinAll` 生成原生分隔符。
+- [2026-11-12] [Test] 截图中 GlassTabBar 标签渲染为方块 -> 无样式文本回退到测试字体 `FlutterTest` -> 截图工具为 `FlutterTest`/`Ahem`/`Roboto` 加载系统 CJK 字体，标签样式从主题显式传入。
+- [2026-11-12] [Shell] Python heredoc 含中文时按 GBK 解码失败，后续 `git commit` 仍执行 -> Windows 控制台编码 + 命令未用 `&&` 串联 -> 多语言脚本写成 UTF-8 文件后 `python -X utf8 file.py`；提交前的步骤一律 `&&` 串联。

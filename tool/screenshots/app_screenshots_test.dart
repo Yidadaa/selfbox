@@ -4,13 +4,16 @@
 //   ./.tools/flutter/bin/flutter test tool/screenshots --update-goldens
 //
 // The output directory is gitignored.
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/router/app_router.dart';
+import 'package:selfbox/core/storage/app_paths.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
+import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
 import 'screenshot_fixtures.dart';
@@ -41,15 +44,39 @@ Future<void> _loadFonts() async {
   await _loadFont('CupertinoSystemDisplay', ['$winFonts/msyh.ttc']);
 }
 
+Future<void> _warmImages(AppPaths paths) async {
+  if (!paths.media.existsSync()) return;
+  for (final file in paths.media.listSync().whereType<File>()) {
+    final done = Completer<void>();
+    ResizeImage.resizeIfNeeded(kBubbleImageDecodeWidth, null, FileImage(file))
+        .resolve(ImageConfiguration.empty)
+        .addListener(
+          ImageStreamListener(
+            (_, _) => done.isCompleted ? null : done.complete(),
+            onError: (_, _) => done.isCompleted ? null : done.complete(),
+          ),
+        );
+    await done.future;
+  }
+}
+
 void main() {
   setUpAll(_loadFonts);
 
   for (final shot in screenshotFixtures) {
     for (final locale in [AppLocale.zhCn]) {
       testWidgets('screenshot ${shot.name}', (tester) async {
+        final env = shot.env();
+        // File images decode on real I/O, which never completes inside the
+        // fake-async zone; warm the image cache before any widget asks.
+        if (env.paths case final paths?) {
+          await tester.runAsync(() => _warmImages(paths));
+        }
         final container = await tester.pumpApp(
           locale: locale,
-          overrides: shot.overrides(),
+          paths: env.paths,
+          messages: env.messages,
+          overrides: env.overrides,
         );
         await shot.setUp?.call(tester, container);
         container.read(appRouterProvider).go(shot.location);
