@@ -2,9 +2,21 @@
   "app": {
     "name": "Selfbox"
   },
-  "home": {
+  "tabs": {
+    "chat": "Chat",
+    "memory": "Memory",
+    "me": "Me"
+  },
+  "chat": {
     "title": "Selfbox",
-    "welcome": "Welcome"
+    "empty": "Nothing yet"
+  },
+  "memory": {
+    "title": "Memory",
+    "empty": "No memories yet"
+  },
+  "me": {
+    "title": "Me"
   },
   "notFound": {
     "title": "Page not found",

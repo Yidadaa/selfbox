@@ -49,3 +49,12 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# ObjectBox host library for flutter test (tool/fetch_objectbox_native.dart)
+/objectbox.dll
+/libobjectbox.so
+/libobjectbox.dylib
+
+# Design-review screenshots (tool/screenshots)
+/tool/screenshots/out/
+/tool/screenshots/failures/

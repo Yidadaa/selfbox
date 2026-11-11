@@ -2,9 +2,21 @@
   "app": {
     "name": "Selfbox"
   },
-  "home": {
-    "title": "Selfbox",
-    "welcome": "欢迎"
+  "tabs": {
+    "chat": "聊天",
+    "memory": "记忆",
+    "me": "我的"
+  },
+  "chat": {
+    "title": "自言自语",
+    "empty": "空空如也"
+  },
+  "memory": {
+    "title": "记忆",
+    "empty": "还没有记忆"
+  },
+  "me": {
+    "title": "我的"
   },
   "notFound": {
     "title": "页面不存在",

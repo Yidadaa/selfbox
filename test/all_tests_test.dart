@@ -8,7 +8,7 @@ import 'package:selfbox/core/logger/__tests__/talker_provider_test.dart' as t1;
 import 'package:selfbox/core/router/__tests__/app_router_test.dart' as t2;
 import 'package:selfbox/core/theme/__tests__/app_theme_test.dart' as t3;
 import 'package:selfbox/core/widgets/__tests__/app_canvas_test.dart' as t4;
-import 'package:selfbox/features/home/presentation/pages/__tests__/home_page_test.dart'
+import 'package:selfbox/core/widgets/__tests__/app_page_scaffold_test.dart'
     as t5;
 
 const _registered = <String>[
@@ -17,7 +17,7 @@ const _registered = <String>[
   'lib/core/router/__tests__/app_router_test.dart',
   'lib/core/theme/__tests__/app_theme_test.dart',
   'lib/core/widgets/__tests__/app_canvas_test.dart',
-  'lib/features/home/presentation/pages/__tests__/home_page_test.dart',
+  'lib/core/widgets/__tests__/app_page_scaffold_test.dart',
 ];
 
 void main() {
@@ -26,10 +26,7 @@ void main() {
   group('lib/core/router/__tests__/app_router_test.dart', t2.main);
   group('lib/core/theme/__tests__/app_theme_test.dart', t3.main);
   group('lib/core/widgets/__tests__/app_canvas_test.dart', t4.main);
-  group(
-    'lib/features/home/presentation/pages/__tests__/home_page_test.dart',
-    t5.main,
-  );
+  group('lib/core/widgets/__tests__/app_page_scaffold_test.dart', t5.main);
 
   test('registers every lib/**/__tests__/*_test.dart', () {
     final onDisk =

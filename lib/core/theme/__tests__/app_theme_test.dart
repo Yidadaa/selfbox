@@ -72,6 +72,17 @@ void main() {
           }
         });
 
+        test('bubble text meets WCAG AA on both bubble colors', () {
+          expect(
+            _contrast(glass!.onBubbleMine, glass.bubbleMine),
+            greaterThan(4.5),
+          );
+          expect(
+            _contrast(glass.onBubbleOther, glass.bubbleOther),
+            greaterThan(4.5),
+          );
+        });
+
         test('uses one page transition on every platform', () {
           final builders = theme.pageTransitionsTheme.builders;
           expect(builders.keys.toSet(), TargetPlatform.values.toSet());

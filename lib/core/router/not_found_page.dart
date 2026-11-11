@@ -70,7 +70,7 @@ class _BackHomeButton extends StatelessWidget {
       label: context.t.notFound.backHome,
       onTap: () {
         HapticFeedback.lightImpact();
-        const HomeRoute().go(context);
+        const ChatRoute().go(context);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),

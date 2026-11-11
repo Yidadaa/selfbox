@@ -7,6 +7,9 @@ environment:
   sdk: ^3.13.7
 
 dependencies:
+  ai_sdk_anthropic: ^3.1.0
+  ai_sdk_dart: ^3.1.0
+  ai_sdk_openai: ^3.1.0
   cached_network_image: ^3.4.1
   dio: ^5.11.1
   envied: ^1.3.10
@@ -17,6 +20,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_riverpod: ^3.5.0
+  flutter_secure_storage: ^10.3.4
   flutter_smooth_markdown: ^0.10.0
   flutter_svg: ^2.3.3
   fpdart: ^1.2.0
@@ -24,7 +28,9 @@ dependencies:
   gap: ^3.1.0
   go_router: ^18.1.4
   hooks_riverpod: ^3.5.0
+  image_picker: ^1.2.4
   infinite_scroll_pagination: ^5.1.1
+  intl: ^0.20.3
   json_annotation: ^4.12.0
   liquid_glass_widgets: ^1.17.2
   luthor: ^1.0.0
@@ -44,6 +50,7 @@ dependencies:
   talker_dio_logger: ^5.2.0
   talker_flutter: ^5.1.16
   talker_riverpod_logger: ^5.2.0
+  uuid: ^4.6.0
   web_socket_channel: ^3.0.3
   window_manager: ^0.6.0
 

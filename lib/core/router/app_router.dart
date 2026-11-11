@@ -11,7 +11,11 @@ part '../../gen/core/router/app_router.g.dart';
 @Riverpod(keepAlive: true)
 GoRouter appRouter(Ref ref) {
   final router = GoRouter(
+    navigatorKey: rootNavigatorKey,
+    initialLocation: const ChatRoute().location,
     routes: $appRoutes,
+    redirect: (context, state) =>
+        state.uri.path == '/' ? const ChatRoute().location : null,
     observers: [TalkerRouteObserver(ref.watch(talkerProvider))],
     errorBuilder: (context, state) => const NotFoundPage(),
   );

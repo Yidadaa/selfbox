@@ -17,6 +17,10 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     required this.foreground,
     required this.foregroundMuted,
     required this.accent,
+    required this.bubbleMine,
+    required this.onBubbleMine,
+    required this.bubbleOther,
+    required this.onBubbleOther,
   });
 
   static const AppGlassTheme dark = AppGlassTheme(
@@ -30,10 +34,14 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     foreground: Color(0xFFF5F7FF),
     foregroundMuted: Color(0xB3F5F7FF),
     accent: Color(0xFF7C9CFF),
+    bubbleMine: Color(0xFF2F6B3A),
+    onBubbleMine: Color(0xFFF5F7FF),
+    bubbleOther: Color(0xFF262A36),
+    onBubbleOther: Color(0xFFF5F7FF),
   );
 
   static const AppGlassTheme light = AppGlassTheme(
-    canvasGradient: [Color(0xFFEAF0FF), Color(0xFFF6E9FF), Color(0xFFE3F6F5)],
+    canvasGradient: [Color(0xFFD9E6F6), Color(0xFFEEF2F8), Color(0xFFF7EDE4)],
     surfaceTint: Color(0x99FFFFFF),
     surfaceBlur: 16,
     chromeTint: Color(0xB3FFFFFF),
@@ -43,6 +51,10 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     foreground: Color(0xFF0B0F1A),
     foregroundMuted: Color(0xA60B0F1A),
     accent: Color(0xFF3D5AFE),
+    bubbleMine: Color(0xFFA9EC9F),
+    onBubbleMine: Color(0xFF0B0F1A),
+    bubbleOther: Color(0xFFFFFFFF),
+    onBubbleOther: Color(0xFF0B0F1A),
   );
 
   static AppGlassTheme of(Brightness brightness) => switch (brightness) {
@@ -63,6 +75,14 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
   final Color foregroundMuted;
   final Color accent;
 
+  /// Notes the user sends to themself (right-aligned).
+  final Color bubbleMine;
+  final Color onBubbleMine;
+
+  /// AI replies (left-aligned).
+  final Color bubbleOther;
+  final Color onBubbleOther;
+
   @override
   AppGlassTheme copyWith({
     List<Color>? canvasGradient,
@@ -75,6 +95,10 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     Color? foreground,
     Color? foregroundMuted,
     Color? accent,
+    Color? bubbleMine,
+    Color? onBubbleMine,
+    Color? bubbleOther,
+    Color? onBubbleOther,
   }) {
     return AppGlassTheme(
       canvasGradient: canvasGradient ?? this.canvasGradient,
@@ -87,6 +111,10 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
       foreground: foreground ?? this.foreground,
       foregroundMuted: foregroundMuted ?? this.foregroundMuted,
       accent: accent ?? this.accent,
+      bubbleMine: bubbleMine ?? this.bubbleMine,
+      onBubbleMine: onBubbleMine ?? this.onBubbleMine,
+      bubbleOther: bubbleOther ?? this.bubbleOther,
+      onBubbleOther: onBubbleOther ?? this.onBubbleOther,
     );
   }
 
@@ -109,6 +137,10 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
       foreground: c(foreground, other.foreground),
       foregroundMuted: c(foregroundMuted, other.foregroundMuted),
       accent: c(accent, other.accent),
+      bubbleMine: c(bubbleMine, other.bubbleMine),
+      onBubbleMine: c(onBubbleMine, other.onBubbleMine),
+      bubbleOther: c(bubbleOther, other.bubbleOther),
+      onBubbleOther: c(onBubbleOther, other.onBubbleOther),
     );
   }
 }
