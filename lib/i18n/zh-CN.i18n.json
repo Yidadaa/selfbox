@@ -40,6 +40,65 @@
     "delete": "删除",
     "cancel": "取消",
     "retry": "重试",
-    "close": "关闭"
+    "close": "关闭",
+    "save": "保存",
+    "saved": "已保存",
+    "notSet": "未设置",
+    "more": "更多"
+  },
+  "forms": {
+    "required": "必填",
+    "url": "请输入有效地址",
+    "number": "请输入数字",
+    "tooSmall": "数值过小",
+    "tooBig": "数值过大",
+    "tooLong": "内容过长"
+  },
+  "settings": {
+    "aiSection": "AI",
+    "activeModel": "模型",
+    "historyTurns": "历史轮数",
+    "providers": "服务商",
+    "addProvider": "添加服务商",
+    "provider": {
+      "title": "服务商",
+      "newTitle": "新服务商",
+      "name": "名称",
+      "format": "接口格式",
+      "baseUrl": "接口地址",
+      "apiKey": "API Key",
+      "apiKeyKept": "已保存，留空则不修改",
+      "models": "模型",
+      "fetchModels": "拉取模型列表",
+      "fetched": "模型已更新",
+      "noModels": "暂无模型",
+      "delete": "删除服务商"
+    },
+    "format": {
+      "chatCompletions": "Chat",
+      "responses": "Responses",
+      "messages": "Messages"
+    },
+    "model": {
+      "inputTokens": "最大输入 Token",
+      "outputTokens": "最大输出 Token",
+      "images": "支持图片",
+      "reasoning": "支持思考",
+      "effort": "思考等级",
+      "enabled": "启用"
+    },
+    "effort": {
+      "minimal": "极低",
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "xhigh": "极高"
+    },
+    "errors": {
+      "network": "连接失败",
+      "auth": "请检查 API Key",
+      "missingKey": "请先填写 API Key",
+      "generic": "出错了"
+    }
   }
 }

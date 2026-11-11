@@ -22,3 +22,6 @@
 - [2026-11-12] [Stream] `async*` + `await for` 广播流的 watch 在取消订阅时卡死测试 -> 生成器挂在内部 await，cancel 等待其退出 -> 生产代码的 watch 一律用 `StreamController(onListen/onCancel)` 显式管理订阅并串行刷新。
 - [2026-11-12] [Python] 脚本里写 Dart 字符串 `'\n'` 被写成真实换行 -> 多层转义 -> 含 Dart 转义的内容用编辑工具直接写文件，不经脚本拼接。
 - [2026-11-12] [LiquidGlass] `GlassListTile` 标题/分组标题、`GlassListTile.chevron` 不随 Material 主题 -> 组件用默认 Cupertino 文本与图标字体 -> 显式传 `titleStyle`/`subtitleStyle`/header 样式（主题 Token），箭头用 Material 图标。
+- [2026-11-12] [JSON] 嵌套 freezed 模型 `toJson` 后 `fromJson` 报 `_X is not a subtype of Map` -> json_serializable 默认不递归序列化 -> `build.yaml` 全局 `explicit_to_json: true`。
+- [2026-11-12] [Forms] `luthor` 与 `reactive_forms` 都导出 `Validator` -> 同名冲突 -> 桥接文件 `import 'package:luthor/luthor.dart' as lu;`，错误 key 用 luthor `IssueCode.name`，UI 统一映射文案。
+- [2026-11-12] [LiquidGlass] `GlassSegmentedControl` / `GlassGroupedSection` 默认文本与 16pt 横向 margin 不随主题 -> 组件内部默认值 -> 显式传 `selectedTextStyle`/`unselectedTextStyle`，分组统一 `margin: AppInsets.section` 与页面边距对齐。

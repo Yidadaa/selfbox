@@ -85,6 +85,7 @@ class _FolderSection extends ConsumerWidget {
     final locale = LocaleSettings.currentLocale.languageTag;
     final text = Theme.of(context).textTheme;
     return GlassGroupedSection(
+      margin: AppInsets.section,
       // Solid cards: these scroll, and live refraction on every list
       // section would exceed the blur budget.
       surfaceStyle: GlassSurfaceStyle.solid,

@@ -1,3 +1,5 @@
+import 'package:flutter/painting.dart';
+
 /// 8pt/4pt spatial grid. Every gap and padding in the app must come from here.
 abstract final class AppSpacing {
   static const double xxs = 4;
@@ -23,4 +25,10 @@ abstract final class AppSizes {
   static const double appBarHeight = 44;
   static const double iconMd = 24;
   static const double iconHero = 48;
+}
+
+abstract final class AppInsets {
+  /// Grouped sections sit flush with the page padding; only the space
+  /// between consecutive sections is theirs.
+  static const section = EdgeInsets.symmetric(vertical: AppSpacing.xxs);
 }

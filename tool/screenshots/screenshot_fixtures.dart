@@ -6,16 +6,20 @@ import 'package:hooks_riverpod/misc.dart' show Override;
 import 'package:path/path.dart' as p;
 import 'package:selfbox/core/storage/app_paths.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
+import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/core/testing/fake_memory_repository.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/domain/repositories/message_repository.dart';
 import 'package:selfbox/features/memory/domain/repositories/memory_repository.dart';
+import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
+import 'package:selfbox/features/settings/domain/repositories/ai_settings_repository.dart';
 
 typedef ScreenshotEnv = ({
   AppPaths? paths,
   MessageRepository? messages,
   MemoryRepository? memory,
+  AiSettingsRepository? settings,
   List<Override> overrides,
 });
 
@@ -33,8 +37,13 @@ class ScreenshotFixture {
   final Future<void> Function(WidgetTester tester, ProviderContainer container)?
   setUp;
 
-  static ScreenshotEnv _none() =>
-      (paths: null, messages: null, memory: null, overrides: const []);
+  static ScreenshotEnv _none() => (
+    paths: null,
+    messages: null,
+    memory: null,
+    settings: null,
+    overrides: const [],
+  );
 }
 
 DateTime _at(int day, int hour, int minute) =>
@@ -63,6 +72,7 @@ ScreenshotEnv _chatWithHistory() {
   return (
     paths: AppPaths(root),
     memory: null,
+    settings: null,
     overrides: const <Override>[],
     messages: FakeMessageRepository(
       seed: [
@@ -111,8 +121,50 @@ final _memorySeed = FakeMemoryRepository(
   },
 );
 
-ScreenshotEnv _memory() =>
-    (paths: null, messages: null, memory: _memorySeed, overrides: const []);
+ScreenshotEnv _memory() => (
+  paths: null,
+  messages: null,
+  memory: _memorySeed,
+  settings: null,
+  overrides: const [],
+);
+
+ScreenshotEnv _settings() => (
+  paths: null,
+  messages: null,
+  memory: null,
+  settings: FakeAiSettingsRepository(
+    settings: const AiSettings(
+      providers: [
+        ProviderConfig(
+          id: 'p1',
+          name: 'OpenAI',
+          format: ApiFormat.responses,
+          baseUrl: 'https://api.openai.com/v1',
+        ),
+        ProviderConfig(
+          id: 'p2',
+          name: 'Anthropic',
+          format: ApiFormat.messages,
+          baseUrl: 'https://api.anthropic.com/v1',
+        ),
+      ],
+      models: [
+        ModelConfig(providerId: 'p1', modelId: 'gpt-5.5', enabled: true),
+        ModelConfig(providerId: 'p1', modelId: 'gpt-5.5-mini'),
+        ModelConfig(providerId: 'p1', modelId: 'gpt-image-2'),
+        ModelConfig(
+          providerId: 'p2',
+          modelId: 'claude-opus-5-5',
+          enabled: true,
+        ),
+      ],
+      activeModel: ModelRef(providerId: 'p2', modelId: 'claude-opus-5-5'),
+    ),
+    apiKeys: {'p1': 'k', 'p2': 'k'},
+  ),
+  overrides: const [],
+);
 
 final screenshotFixtures = <ScreenshotFixture>[
   const ScreenshotFixture(name: 'chat_empty', location: '/chat'),
@@ -132,5 +184,15 @@ final screenshotFixtures = <ScreenshotFixture>[
     location: '/memory/file?path=topic%2Fweekly-report.md',
     env: _memory,
   ),
-  const ScreenshotFixture(name: 'me', location: '/me'),
+  const ScreenshotFixture(name: 'me', location: '/me', env: _settings),
+  const ScreenshotFixture(
+    name: 'provider',
+    location: '/me/provider?id=p1',
+    env: _settings,
+  ),
+  const ScreenshotFixture(
+    name: 'model',
+    location: '/me/model?provider=p1&model=gpt-5.5',
+    env: _settings,
+  ),
 ];

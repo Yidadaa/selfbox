@@ -18,3 +18,7 @@ targets:
         options:
           build_extensions:
             "^lib/{{}}.dart": "lib/gen/{{}}.g.dart"
+      json_serializable:
+        options:
+          # Nested freezed models must serialize to maps, not objects.
+          explicit_to_json: true

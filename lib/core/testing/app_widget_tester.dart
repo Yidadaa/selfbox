@@ -9,11 +9,14 @@ import '../../features/chat/data/chat_data_providers.dart';
 import '../../features/chat/domain/repositories/message_repository.dart';
 import '../../features/memory/data/memory_data_providers.dart';
 import '../../features/memory/domain/repositories/memory_repository.dart';
+import '../../features/settings/data/settings_data_providers.dart';
+import '../../features/settings/domain/repositories/ai_settings_repository.dart';
 import '../../gen/i18n/strings.g.dart';
 import '../storage/app_paths.dart';
 import '../theme/app_scroll_behavior.dart';
 import '../theme/app_theme.dart';
 import '../time/clock.dart';
+import 'fake_ai_settings.dart';
 import 'fake_memory_repository.dart';
 import 'fake_message_repository.dart';
 import 'temp_storage.dart';
@@ -26,6 +29,8 @@ final kTestNow = DateTime(2026, 11, 12, 10);
 List<Override> testAppOverrides({
   MessageRepository? messages,
   MemoryRepository? memory,
+  AiSettingsRepository? settings,
+  ModelCatalog? catalog,
   AppPaths? paths,
   DateTime? now,
 }) => [
@@ -35,6 +40,10 @@ List<Override> testAppOverrides({
   ),
   clockProvider.overrideWithValue(() => now ?? kTestNow),
   memoryRepositoryProvider.overrideWithValue(memory ?? FakeMemoryRepository()),
+  aiSettingsRepositoryProvider.overrideWithValue(
+    settings ?? FakeAiSettingsRepository(),
+  ),
+  modelCatalogProvider.overrideWithValue(catalog ?? FakeModelCatalog()),
 ];
 
 /// iPhone 14-class logical viewport used by every widget test.
@@ -58,6 +67,8 @@ extension AppWidgetTester on WidgetTester {
     List<Override> overrides = const [],
     MessageRepository? messages,
     MemoryRepository? memory,
+    AiSettingsRepository? settings,
+    ModelCatalog? catalog,
     AppPaths? paths,
     AppLocale locale = AppLocale.en,
   }) async {
@@ -67,7 +78,13 @@ extension AppWidgetTester on WidgetTester {
     // not grant to lib/**/__tests__, so dispose explicitly instead.
     final container = ProviderContainer(
       overrides: [
-        ...testAppOverrides(messages: messages, memory: memory, paths: paths),
+        ...testAppOverrides(
+          messages: messages,
+          memory: memory,
+          settings: settings,
+          catalog: catalog,
+          paths: paths,
+        ),
         ...overrides,
       ],
     );

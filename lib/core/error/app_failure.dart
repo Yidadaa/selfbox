@@ -36,6 +36,10 @@ sealed class AppFailure with _$AppFailure {
         _ => AppFailure.unexpected(error: error, stackTrace: stackTrace),
       };
 
+  /// Validation message for an AI provider without a stored API key; the UI
+  /// turns it into "add a key" guidance instead of a generic error.
+  static const missingApiKey = 'missing api key';
+
   bool get isRetryable => switch (this) {
     NetworkFailure() => true,
     DatabaseFailure() => false,

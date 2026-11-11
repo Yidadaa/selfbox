@@ -77,6 +77,7 @@ void main() {
           paths: env.paths,
           messages: env.messages,
           memory: env.memory,
+          settings: env.settings,
           overrides: env.overrides,
         );
         await shot.setUp?.call(tester, container);

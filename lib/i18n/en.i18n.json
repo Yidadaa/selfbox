@@ -40,6 +40,65 @@
     "delete": "Delete",
     "cancel": "Cancel",
     "retry": "Retry",
-    "close": "Close"
+    "close": "Close",
+    "save": "Save",
+    "saved": "Saved",
+    "notSet": "Not set",
+    "more": "More"
+  },
+  "forms": {
+    "required": "Required",
+    "url": "Enter a valid URL",
+    "number": "Enter a number",
+    "tooSmall": "Too small",
+    "tooBig": "Too large",
+    "tooLong": "Too long"
+  },
+  "settings": {
+    "aiSection": "AI",
+    "activeModel": "Model",
+    "historyTurns": "History turns",
+    "providers": "Providers",
+    "addProvider": "Add provider",
+    "provider": {
+      "title": "Provider",
+      "newTitle": "New provider",
+      "name": "Name",
+      "format": "API format",
+      "baseUrl": "Base URL",
+      "apiKey": "API key",
+      "apiKeyKept": "Saved — leave blank to keep",
+      "models": "Models",
+      "fetchModels": "Fetch models",
+      "fetched": "Models updated",
+      "noModels": "No models yet",
+      "delete": "Delete provider"
+    },
+    "format": {
+      "chatCompletions": "Chat",
+      "responses": "Responses",
+      "messages": "Messages"
+    },
+    "model": {
+      "inputTokens": "Max input tokens",
+      "outputTokens": "Max output tokens",
+      "images": "Images",
+      "reasoning": "Thinking",
+      "effort": "Thinking level",
+      "enabled": "Enabled"
+    },
+    "effort": {
+      "minimal": "Min",
+      "low": "Low",
+      "medium": "Mid",
+      "high": "High",
+      "xhigh": "Max"
+    },
+    "errors": {
+      "network": "Connection failed",
+      "auth": "Check the API key",
+      "missingKey": "Add an API key first",
+      "generic": "Something went wrong"
+    }
   }
 }

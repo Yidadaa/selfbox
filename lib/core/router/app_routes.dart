@@ -6,6 +6,8 @@ import '../../features/chat/presentation/pages/image_viewer_page.dart';
 import '../../features/memory/presentation/pages/memory_file_page.dart';
 import '../../features/memory/presentation/pages/memory_page.dart';
 import '../../features/settings/presentation/pages/me_page.dart';
+import '../../features/settings/presentation/pages/model_page.dart';
+import '../../features/settings/presentation/pages/provider_page.dart';
 import 'app_shell.dart';
 
 part '../../gen/core/router/app_routes.g.dart';
@@ -27,7 +29,15 @@ final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
       ],
     ),
     TypedStatefulShellBranch<MeBranch>(
-      routes: [TypedGoRoute<MeRoute>(path: '/me')],
+      routes: [
+        TypedGoRoute<MeRoute>(
+          path: '/me',
+          routes: [
+            TypedGoRoute<ProviderRoute>(path: 'provider'),
+            TypedGoRoute<ModelRoute>(path: 'model'),
+          ],
+        ),
+      ],
     ),
   ],
 )
@@ -105,4 +115,26 @@ class MemoryFileRoute extends GoRouteData with $MemoryFileRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       MemoryFilePage(path: path);
+}
+
+/// New provider when [id] is null.
+class ProviderRoute extends GoRouteData with $ProviderRoute {
+  const ProviderRoute({this.id});
+
+  final String? id;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      ProviderPage(id: id);
+}
+
+class ModelRoute extends GoRouteData with $ModelRoute {
+  const ModelRoute({required this.provider, required this.model});
+
+  final String provider;
+  final String model;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      ModelPage(providerId: provider, modelId: model);
 }
