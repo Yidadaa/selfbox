@@ -4,6 +4,8 @@ import '../../../../core/error/app_failure.dart';
 import '../models/ai_settings.dart';
 
 abstract interface class AiSettingsRepository {
+  TaskEither<AppFailure, Unit> clearAll();
+
   /// Current settings, re-emitted after every [save].
   Stream<AiSettings> watch();
 

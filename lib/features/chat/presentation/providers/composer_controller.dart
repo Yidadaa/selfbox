@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,13 +26,16 @@ abstract class ComposerState with _$ComposerState {
     /// When on, a sent note is also a question to the assistant.
     @Default(false) bool aiMode,
     @Default(false) bool sending,
+    @Default(false) bool picking,
     @Default(None()) Option<AppFailure> failure,
   }) = _ComposerState;
 
   const ComposerState._();
 
   bool get canSend =>
-      !sending && (text.trim().isNotEmpty || attachments.isNotEmpty);
+      !sending &&
+      !picking &&
+      (text.trim().isNotEmpty || attachments.isNotEmpty);
 }
 
 @Riverpod(keepAlive: true)
@@ -46,6 +50,7 @@ void Function(Message) onAskAi(Ref ref) =>
 
 @Riverpod(keepAlive: true)
 class ComposerController extends _$ComposerController {
+  Future<void>? _pending;
   // Large photos are downscaled on pick: enough for reading on a phone and
   // for vision models, without multi-megabyte originals in every request.
   static const _maxImageSide = 2048.0;
@@ -60,29 +65,56 @@ class ComposerController extends _$ComposerController {
 
   void dismissFailure() => state = state.copyWith(failure: const None());
 
-  Future<void> pickImage() async {
-    final file = await ref
-        .read(imagePickerProvider)
-        .pickImage(
-          source: ImageSource.gallery,
-          maxWidth: _maxImageSide,
-          maxHeight: _maxImageSide,
-          imageQuality: _jpegQuality,
-        );
-    if (file == null) return;
-    final bytes = await file.readAsBytes();
-    final saved = await ref
-        .read(mediaStoreProvider)
-        .saveImage(
-          bytes,
-          extension: p.extension(file.path.isEmpty ? file.name : file.path),
-        )
-        .run();
-    state = saved.match(
-      (failure) => state.copyWith(failure: Some(failure)),
-      (path) => state.copyWith(attachments: [...state.attachments, path]),
+  Future<void> pickImage() {
+    if (state.picking || state.sending) return Future.value();
+    return _pending = _pickImages();
+  }
+
+  Future<void> _pickImages() async {
+    state = state.copyWith(picking: true, failure: const None());
+    final picked = await TaskEither.tryCatch(
+      () => ref
+          .read(imagePickerProvider)
+          .pickMultiImage(
+            maxWidth: _maxImageSide,
+            maxHeight: _maxImageSide,
+            imageQuality: _jpegQuality,
+          ),
+      _pickFailure,
+    ).run();
+    for (final file in picked.getOrElse((_) => [])) {
+      final saved = await TaskEither.tryCatch(file.readAsBytes, _pickFailure)
+          .flatMap(
+            (bytes) => ref
+                .read(mediaStoreProvider)
+                .saveImage(
+                  bytes,
+                  extension: p.extension(
+                    file.path.isEmpty ? file.name : file.path,
+                  ),
+                ),
+          )
+          .run();
+      state = saved.match(
+        (failure) => state.copyWith(failure: Some(failure)),
+        (path) => state.copyWith(attachments: [...state.attachments, path]),
+      );
+    }
+    state = state.copyWith(
+      picking: false,
+      failure: picked.fold(Some.new, (_) => state.failure),
     );
   }
+
+  static AppFailure _pickFailure(Object error, StackTrace _) => switch (error) {
+    PlatformException(code: 'photo_access_denied') =>
+      const AppFailure.permissionDenied(permission: 'photos'),
+    _ => AppFailure.unexpected(error: error),
+  };
+
+  Future<void> finishPending() async => _pending;
+
+  void resetDraft() => state = const ComposerState();
 
   Future<void> removeAttachment(String path) async {
     state = state.copyWith(
@@ -91,7 +123,12 @@ class ComposerController extends _$ComposerController {
     await ref.read(mediaStoreProvider).delete(path).run();
   }
 
-  Future<void> send() async {
+  Future<void> send() {
+    if (!state.canSend) return Future.value();
+    return _pending = _send();
+  }
+
+  Future<void> _send() async {
     if (!state.canSend) return;
     final draft = MessageDraft(
       author: MessageAuthor.me,

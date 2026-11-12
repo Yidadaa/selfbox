@@ -75,6 +75,19 @@ AssistantController _ctrl(_Env env) =>
     env.container.read(assistantControllerProvider.notifier);
 
 void main() {
+  test(
+    'reset cancels and drains all pending replies before returning',
+    () async {
+      final env = _env([
+        [scriptedText('late reply')],
+      ]);
+      final pending = _ctrl(env).ask(_question);
+      await _ctrl(env).cancelAndWait();
+      await pending;
+      expect(env.messages.added, isEmpty);
+      expect(env.states.last, const AssistantState.idle());
+    },
+  );
   group('AssistantController', () {
     test(
       'idle -> working(thinking -> tool -> typing) -> idle, reply stored',

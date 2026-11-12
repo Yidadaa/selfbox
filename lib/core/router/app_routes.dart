@@ -5,9 +5,13 @@ import '../../features/chat/presentation/pages/chat_page.dart';
 import '../../features/chat/presentation/pages/image_viewer_page.dart';
 import '../../features/memory/presentation/pages/memory_file_page.dart';
 import '../../features/memory/presentation/pages/memory_page.dart';
+import '../../features/settings/presentation/pages/about_page.dart';
+import '../../features/settings/presentation/pages/ai_providers_page.dart';
 import '../../features/settings/presentation/pages/me_page.dart';
 import '../../features/settings/presentation/pages/model_page.dart';
+import '../../features/settings/presentation/pages/profile_page.dart';
 import '../../features/settings/presentation/pages/provider_page.dart';
+import '../../features/settings/presentation/pages/storage_page.dart';
 import 'app_shell.dart';
 
 part '../../gen/core/router/app_routes.g.dart';
@@ -33,6 +37,10 @@ final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
         TypedGoRoute<MeRoute>(
           path: '/me',
           routes: [
+            TypedGoRoute<ProfileRoute>(path: 'profile'),
+            TypedGoRoute<StorageRoute>(path: 'storage'),
+            TypedGoRoute<AiProvidersRoute>(path: 'providers'),
+            TypedGoRoute<AboutRoute>(path: 'about'),
             TypedGoRoute<ProviderRoute>(path: 'provider'),
             TypedGoRoute<ModelRoute>(path: 'model'),
           ],
@@ -91,9 +99,41 @@ class MeRoute extends GoRouteData with $MeRoute {
   Widget build(BuildContext context, GoRouterState state) => const MePage();
 }
 
+class ProfileRoute extends GoRouteData with $ProfileRoute {
+  const ProfileRoute();
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const ProfilePage();
+}
+
+class StorageRoute extends GoRouteData with $StorageRoute {
+  const StorageRoute();
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const StoragePage();
+}
+
+class AiProvidersRoute extends GoRouteData with $AiProvidersRoute {
+  const AiProvidersRoute();
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const AiProvidersPage();
+}
+
+class AboutRoute extends GoRouteData with $AboutRoute {
+  const AboutRoute();
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+  @override
+  Widget build(BuildContext context, GoRouterState state) => const AboutPage();
+}
+
 @TypedGoRoute<ImageViewerRoute>(path: '/image')
 class ImageViewerRoute extends GoRouteData with $ImageViewerRoute {
-  const ImageViewerRoute({required this.path});
+  const ImageViewerRoute({required this.path, this.$extra});
+
+  final List<String>? $extra;
 
   /// Media path relative to the app root, e.g. `media/<uuid>.jpg`.
   final String path;
@@ -102,7 +142,7 @@ class ImageViewerRoute extends GoRouteData with $ImageViewerRoute {
 
   @override
   Widget build(BuildContext context, GoRouterState state) =>
-      ImageViewerPage(path: path);
+      ImageViewerPage(path: path, paths: $extra);
 }
 
 /// Stays inside the memory branch so the tab bar remains visible.

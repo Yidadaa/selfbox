@@ -29,7 +29,26 @@
     "more": "More"
   },
   "me": {
-    "title": "Me"
+    "title": "Me",
+    "defaultName": "My space",
+    "editProfile": "Edit profile",
+    "nickname": "Nickname",
+    "changeAvatar": "Change photo",
+    "storage": "Storage",
+    "providers": "AI providers",
+    "about": "About",
+    "clearAll": "Clear all data",
+    "confirmClear": "Delete all data",
+    "clearWarning": "Delete messages, photos, memories, profile, AI settings and API keys? This cannot be undone.",
+    "cleared": "All data cleared",
+    "clearing": "Clearing…",
+    "usedStorage": "Used on this device",
+    "photos": "Photos",
+    "database": "Database",
+    "configuration": "Settings",
+    "databaseNote": "The database keeps a small allocation after clearing.",
+    "version": "Version",
+    "tagline": "A private space for your thoughts."
   },
   "notFound": {
     "title": "Page not found",

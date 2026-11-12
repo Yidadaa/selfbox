@@ -36,8 +36,8 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     foregroundMuted: Color(0xB3F5F7FF),
     accent: Color(0xFF7C9CFF),
     onAccent: Color(0xFF0B0F1A),
-    bubbleMine: Color(0xFF2F6B3A),
-    onBubbleMine: Color(0xFFF5F7FF),
+    bubbleMine: Color(0xFF006FE6),
+    onBubbleMine: Color(0xFFFFFFFF),
     bubbleOther: Color(0xFF262A36),
     onBubbleOther: Color(0xFFF5F7FF),
   );
@@ -54,9 +54,9 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     foregroundMuted: Color(0xA60B0F1A),
     accent: Color(0xFF3D5AFE),
     onAccent: Color(0xFFFFFFFF),
-    bubbleMine: Color(0xFFA9EC9F),
-    onBubbleMine: Color(0xFF0B0F1A),
-    bubbleOther: Color(0xFFFFFFFF),
+    bubbleMine: Color(0xFF006FE6),
+    onBubbleMine: Color(0xFFFFFFFF),
+    bubbleOther: Color(0xFFE5E5EA),
     onBubbleOther: Color(0xFF0B0F1A),
   );
 

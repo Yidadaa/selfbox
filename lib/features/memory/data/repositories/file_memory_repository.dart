@@ -21,6 +21,12 @@ class FileMemoryRepository implements MemoryRepository {
   /// read-patch-write cycle on the same file.
   Future<void> _queue = Future.value();
 
+  @override
+  TaskEither<AppFailure, Unit> clearAll() => _write(() async {
+    if (await root.exists()) await root.delete(recursive: true);
+    return unit;
+  });
+
   static AppFailure _ioFailure(Object error, StackTrace _) => switch (error) {
     final AppFailure failure => failure,
     _ => AppFailure.database(message: error.toString()),

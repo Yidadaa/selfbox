@@ -32,6 +32,17 @@ void main() {
   });
 
   group('FileAiSettingsRepository', () {
+    test(
+      'clear removes settings and orphan credentials and is repeatable',
+      () async {
+        await repo.save(const AiSettings(providers: [_provider])).run();
+        await repo.saveApiKey('orphan', 'secret').run();
+        expect((await repo.clearAll().run()).isRight(), true);
+        expect(secrets.values, isEmpty);
+        expect(_ok(await repo.load().run()), const AiSettings());
+        expect((await repo.clearAll().run()).isRight(), true);
+      },
+    );
     test('loads defaults before anything was saved', () async {
       expect(_ok(await repo.load().run()), const AiSettings());
     });

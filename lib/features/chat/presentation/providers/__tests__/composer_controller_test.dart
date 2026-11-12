@@ -1,4 +1,6 @@
-import 'dart:typed_data';
+import 'dart:async';
+
+import 'package:flutter/services.dart';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
@@ -17,6 +19,18 @@ class _FakePicker extends Fake implements ImagePicker {
   _FakePicker(this.result);
 
   XFile? result;
+
+  @override
+  Future<List<XFile>> pickMultiImage({
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
+    int? limit,
+    bool requestFullMetadata = true,
+  }) async => switch (result) {
+    final file? => [file, file],
+    null => [],
+  };
 
   @override
   Future<XFile?> pickImage({
@@ -58,6 +72,59 @@ ComposerState _state(_Env env) =>
     env.container.read(composerControllerProvider);
 
 void main() {
+  test('picker permission failure becomes state and unlocks input', () async {
+    final container = ProviderContainer(
+      overrides: [
+        ...testAppOverrides(),
+        imagePickerProvider.overrideWithValue(
+          _ControlledPicker(
+            () async => throw PlatformException(code: 'photo_access_denied'),
+          ),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+    await container.read(composerControllerProvider.notifier).pickImage();
+    final state = container.read(composerControllerProvider);
+    expect(state.failure.toNullable(), isA<PermissionFailure>());
+    expect(state.picking, false);
+  });
+  test(
+    'picker excludes concurrent picks/sends and retains successful imports',
+    () async {
+      final selected = Completer<List<XFile>>();
+      var calls = 0;
+      final container = ProviderContainer(
+        overrides: [
+          ...testAppOverrides(),
+          imagePickerProvider.overrideWithValue(
+            _ControlledPicker(() {
+              calls++;
+              return selected.future;
+            }),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      final ctrl = container.read(composerControllerProvider.notifier);
+      ctrl.setText('note');
+      final pending = ctrl.pickImage();
+      await ctrl.pickImage();
+      await ctrl.send();
+      expect(calls, 1);
+      expect(container.read(composerControllerProvider).canSend, false);
+      selected.complete([
+        XFile.fromData(Uint8List.fromList([1]), name: 'a.jpg', path: 'a.jpg'),
+        XFile('nonexistent-image.jpg'),
+        XFile.fromData(Uint8List.fromList([2]), name: 'b.jpg', path: 'b.jpg'),
+      ]);
+      await pending;
+      final state = container.read(composerControllerProvider);
+      expect(state.attachments, hasLength(2));
+      expect(state.failure.isSome(), true);
+      expect(state.canSend, true);
+    },
+  );
   group('ComposerController', () {
     test('starts empty with AI mode off', () {
       final env = _env();
@@ -117,7 +184,7 @@ void main() {
       expect(_state(env).failure, const None());
     });
 
-    test('picking an image saves it and adds an attachment', () async {
+    test('picking multiple images saves every attachment in order', () async {
       final env = _env(
         picked: XFile.fromData(
           Uint8List.fromList([1, 2]),
@@ -127,7 +194,8 @@ void main() {
       );
       await _ctrl(env).pickImage();
 
-      final path = _state(env).attachments.single;
+      expect(_state(env).attachments, hasLength(2));
+      final path = _state(env).attachments.first;
       expect(path, endsWith('.png'));
       final file = env.container.read(mediaStoreProvider).resolve(path);
       expect(file.toNullable()?.readAsBytesSync(), [1, 2]);
@@ -151,7 +219,7 @@ void main() {
       await _ctrl(env).pickImage();
       await _ctrl(env).send();
 
-      expect(env.messages.added.single.images, hasLength(1));
+      expect(env.messages.added.single.images, hasLength(2));
       expect(_state(env).attachments, isEmpty);
     });
 
@@ -164,12 +232,25 @@ void main() {
         ),
       );
       await _ctrl(env).pickImage();
-      final path = _state(env).attachments.single;
+      final path = _state(env).attachments.first;
 
       await _ctrl(env).removeAttachment(path);
-      expect(_state(env).attachments, isEmpty);
+      expect(_state(env).attachments, hasLength(1));
       final file = env.container.read(mediaStoreProvider).resolve(path);
       expect(file.toNullable()?.existsSync(), isFalse);
     });
   });
+}
+
+class _ControlledPicker extends Fake implements ImagePicker {
+  _ControlledPicker(this.pick);
+  final Future<List<XFile>> Function() pick;
+  @override
+  Future<List<XFile>> pickMultiImage({
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
+    int? limit,
+    bool requestFullMetadata = true,
+  }) => pick();
 }

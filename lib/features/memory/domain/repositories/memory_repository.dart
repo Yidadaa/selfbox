@@ -6,6 +6,8 @@ import '../models/memory.dart';
 /// The agent's markdown memory tree. Every write goes through here, so
 /// [watchEntries] stays current without file-system watchers.
 abstract interface class MemoryRepository {
+  TaskEither<AppFailure, Unit> clearAll();
+
   /// All files, sorted by path, re-emitted after every write.
   Stream<List<MemoryEntry>> watchEntries();
 

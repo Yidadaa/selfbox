@@ -19,6 +19,12 @@ class FakeAiSettingsRepository implements AiSettingsRepository {
   final _changes = StreamController<AiSettings>.broadcast();
 
   @override
+  TaskEither<AppFailure, Unit> clearAll() {
+    keys.clear();
+    return save(const AiSettings());
+  }
+
+  @override
   Stream<AiSettings> watch() async* {
     yield current;
     yield* _changes.stream;

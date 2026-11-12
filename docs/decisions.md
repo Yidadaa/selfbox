@@ -104,3 +104,9 @@
 - **背景**：要装到真机长期使用；debug 签名的 APK 日后换正式签名只能卸载重装，会丢失本地笔记与记忆。模板 release manifest 缺少 `INTERNET`；`record` 插件合并进 `RECORD_AUDIO`，v0 并不录音。
 - **决策**：release 用本地私钥签名：keystore 在 `%USERPROFILE%/.selfbox-signing/selfbox-release.jks`，`android/key.properties`（已 gitignore）提供路径与密码；缺少该文件时回退 debug 签名以保证新克隆可构建。主 manifest 声明 `INTERNET`，并以 `tools:node="remove"` 移除 `RECORD_AUDIO`，录音功能落地时再按 Just-in-Time 恢复并更新本 ADR。真机为 arm64，用 `--target-platform android-arm64` 构建（只打 x86_64 时插件仍会塞入不完整的 arm64 目录，arm64 设备启动即崩溃）。
 - **影响**：keystore 与密码丢失后将无法覆盖安装更新——务必备份 `.selfbox-signing/` 与 `android/key.properties`。
+
+### [ADR-018] 消息相册与个人资料 / 数据重置边界
+
+- **背景**：聊天需要 iMessage 蓝色气泡、内置时间与多图堆叠；个人设置增加资料、存储与独立 AI 页面。
+- **决策**：图片消息限制单图 224×180dp，最多绘制 3 张堆叠卡片，保留完整相册并通过 PageView 浏览。发送蓝色使用 #006FE6 保持白字 AA 对比度。个人资料存 ObjectBox 独立 ProfileEntity，头像存 media 相对路径。存储重置由 core 组合边界等待 composer、取消并排空 AI 回合、等待设置写入后，调用跨仓库领域服务清除密钥、配置、消息、记忆、资料和图片。
+- **影响**：不删除正在打开的 ObjectBox 目录，统计明确包含预分配空间；清除失败可重试。子页面使用强类型路由，资料 / 存储 / 关于覆盖底部栏。版本从 package_info_plus 读取安装包元数据。玻璃控制与分组使用 premium（full）管线。

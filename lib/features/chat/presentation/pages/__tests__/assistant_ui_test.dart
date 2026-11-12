@@ -13,7 +13,7 @@ import 'package:selfbox/features/chat/presentation/providers/assistant_controlle
 import 'package:selfbox/features/chat/presentation/widgets/assistant_status_bubble.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
-import 'package:selfbox/features/settings/presentation/pages/me_page.dart';
+import 'package:selfbox/features/settings/presentation/pages/ai_providers_page.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
 final _question = Message(
@@ -76,7 +76,9 @@ void main() {
       expect(find.byType(SmoothMarkdown), findsNothing);
     });
 
-    testWidgets('a missing model offers setup, which opens Me', (tester) async {
+    testWidgets('a missing model offers setup, which opens AI providers', (
+      tester,
+    ) async {
       await _showState(
         tester,
         AssistantState.failed(
@@ -88,7 +90,7 @@ void main() {
       expect(find.text(t.settings.errors.noModel), findsOneWidget);
       await tester.tap(find.text(t.assistant.setup));
       await tester.pumpAndSettle();
-      expect(find.byType(MePage), findsOneWidget);
+      expect(find.byType(AiProvidersPage), findsOneWidget);
     });
 
     testWidgets('network failures offer retry and can be dismissed', (

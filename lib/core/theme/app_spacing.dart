@@ -27,6 +27,8 @@ abstract final class AppSizes {
   static const double iconHero = 48;
   static const double sendIcon = 36;
   static const double attachmentThumbnail = 64;
+  static const double profileAvatar = 80;
+  static const double profileActionWidth = 160;
 }
 
 abstract final class AppInsets {

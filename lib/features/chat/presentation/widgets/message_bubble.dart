@@ -3,27 +3,21 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:gap/gap.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_markdown_theme.dart';
-import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/widgets/pressable.dart';
+import '../../../../core/theme/message_tokens.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/message.dart';
 import 'date_labels.dart';
+import 'message_image_stack.dart';
 
-/// Share of the row width a bubble may take; the rest keeps the timestamp
-/// visible and the alignment readable.
-const _maxBubbleWidthFactor = 0.74;
+export '../../../../core/theme/message_tokens.dart'
+    show kBubbleImageDecodeWidth;
 
-/// Decode near display size: full-resolution photos in a long list are the
-/// fastest way to an out-of-memory kill on mid-range phones.
-const kBubbleImageDecodeWidth = 720;
-
-/// One timeline entry: notes from me on the right, AI replies on the left,
-/// the time sitting beside the bubble as in the reference design.
-class MessageBubble extends StatelessWidget {
+class MessageBubble extends ConsumerWidget {
   const MessageBubble({
     required this.message,
     required this.resolveImage,
@@ -31,157 +25,150 @@ class MessageBubble extends StatelessWidget {
     this.onLongPress,
     super.key,
   });
-
   final Message message;
-
-  /// Maps a stored relative path to a file on disk.
   final File? Function(String relativePath) resolveImage;
   final ValueChanged<String>? onImageTap;
   final VoidCallback? onLongPress;
 
-  bool get _mine => message.author == MessageAuthor.me;
-
   @override
-  Widget build(BuildContext context) {
-    final maxWidth = MediaQuery.sizeOf(context).width * _maxBubbleWidthFactor;
-    final clock = Text(
-      formatClock(
-        message.createdAt,
-        locale: LocaleSettings.currentLocale.languageTag,
-      ),
-      style: Theme.of(context).textTheme.labelSmall
-          ?.copyWith(color: context.glass.foregroundMuted),
-    );
-    // Notes sent in AI mode carry a small mark so questions stand out.
-    final time = message.askedAi
-        ? Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.auto_awesome,
-                size: AppSpacing.sm,
-                color: context.glass.accent,
-                semanticLabel: context.t.chat.aiMode,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mine = message.author == MessageAuthor.me;
+    final glass = context.glass;
+    return Align(
+      alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxs),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth:
+                MediaQuery.sizeOf(context).width * MessageTokens.widthFactor,
+          ),
+          child: GestureDetector(
+            onLongPress: onLongPress,
+            child: ClipPath(
+              clipper: _SpeechClipper(mine),
+              child: ColoredBox(
+                key: const ValueKey('message-surface'),
+                color: mine ? glass.bubbleMine : glass.bubbleOther,
+                child: _BubbleContent(
+                  message: message,
+                  resolveImage: resolveImage,
+                  onImageTap: onImageTap,
+                ),
               ),
-              const Gap(AppSpacing.xxs),
-              clock,
-            ],
-          )
-        : clock;
-    final body = ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: maxWidth),
-      child: Column(
-        crossAxisAlignment: _mine
-            ? CrossAxisAlignment.end
-            : CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (final image in message.images) ...[
-            _BubbleImage(
-              file: resolveImage(image),
-              onTap: onImageTap == null ? null : () => onImageTap?.call(image),
             ),
-            const Gap(AppSpacing.xxs),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BubbleContent extends ConsumerWidget {
+  const _BubbleContent({
+    required this.message,
+    required this.resolveImage,
+    this.onImageTap,
+  });
+  final Message message;
+  final File? Function(String) resolveImage;
+  final ValueChanged<String>? onImageTap;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final glass = context.glass;
+    final foreground = message.author == MessageAuthor.me
+        ? glass.onBubbleMine
+        : glass.onBubbleOther;
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (message.images.isNotEmpty) ...[
+            MessageImageStack(
+              paths: message.images,
+              resolveImage: resolveImage,
+              onTap: () => onImageTap?.call(message.images.first),
+            ),
+            if (message.text.isNotEmpty) const Gap(AppSpacing.xs),
           ],
           if (message.text.isNotEmpty)
-            _BubbleText(message: message, onLongPress: onLongPress),
+            switch (message.author) {
+              MessageAuthor.me => Text(
+                message.text,
+                style: Theme.of(context).textTheme.bodyLarge
+                    ?.copyWith(color: foreground),
+              ),
+              MessageAuthor.ai => SmoothMarkdown(
+                data: message.text,
+                styleSheet: AppMarkdownTheme.of(context, textColor: foreground),
+              ),
+            },
+          const Gap(AppSpacing.xxs),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (message.askedAi) ...[
+                Icon(
+                  Icons.auto_awesome,
+                  size: AppSpacing.sm,
+                  color: foreground,
+                  semanticLabel: context.t.chat.aiMode,
+                ),
+                const Gap(AppSpacing.xxs),
+              ],
+              Text(
+                formatClock(
+                  message.createdAt,
+                  locale: LocaleSettings.currentLocale.languageTag,
+                ),
+                style: Theme.of(context).textTheme.labelSmall
+                    ?.copyWith(color: foreground),
+              ),
+            ],
+          ),
         ],
       ),
     );
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxs),
-      child: Row(
-        mainAxisAlignment: _mine
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: _mine
-            ? [time, const Gap(AppSpacing.xs), body]
-            : [body, const Gap(AppSpacing.xs), time],
-      ),
-    );
   }
 }
 
-class _BubbleText extends StatelessWidget {
-  const _BubbleText({required this.message, this.onLongPress});
-
-  final Message message;
-  final VoidCallback? onLongPress;
-
+/// One continuous outline prevents a seam between the rounded body and tail.
+class _SpeechClipper extends CustomClipper<Path> {
+  const _SpeechClipper(this.mine);
+  final bool mine;
   @override
-  Widget build(BuildContext context) {
-    final glass = context.glass;
-    final mine = message.author == MessageAuthor.me;
-    final background = mine ? glass.bubbleMine : glass.bubbleOther;
-    final foreground = mine ? glass.onBubbleMine : glass.onBubbleOther;
-    // The corner nearest the speaker stays tight, like a speech tail.
-    const round = Radius.circular(AppRadius.md);
-    const tail = Radius.circular(AppRadius.xs);
-
-    return GestureDetector(
-      onLongPress: onLongPress,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.only(
-            topLeft: round,
-            topRight: round,
-            bottomLeft: mine ? round : tail,
-            bottomRight: mine ? tail : round,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
-          ),
-          child: switch (message.author) {
-            MessageAuthor.me => Text(
-              message.text,
-              style: Theme.of(context).textTheme.bodyLarge
-                  ?.copyWith(color: foreground),
-            ),
-            MessageAuthor.ai => SmoothMarkdown(
-              data: message.text,
-              styleSheet: AppMarkdownTheme.of(context, textColor: foreground),
-            ),
-          },
-        ),
-      ),
+  Path getClip(Size size) {
+    final w = size.width;
+    final h = size.height;
+    final r = MessageTokens.radius.clamp(0.0, size.shortestSide / 2);
+    const tail = MessageTokens.tail;
+    final path = Path()
+      ..moveTo(r, 0)
+      ..lineTo(w - r - tail, 0)
+      ..quadraticBezierTo(w - tail, 0, w - tail, r)
+      ..lineTo(w - tail, h - r)
+      ..quadraticBezierTo(w - tail, h - tail, w, h)
+      ..quadraticBezierTo(w - tail, h, w - tail * 2, h - tail)
+      ..quadraticBezierTo(w - r, h, w - r - tail, h)
+      ..lineTo(r, h)
+      ..quadraticBezierTo(0, h, 0, h - r)
+      ..lineTo(0, r)
+      ..quadraticBezierTo(0, 0, r, 0)
+      ..close();
+    if (mine) return path;
+    return path.transform(
+      (Matrix4.identity()
+            ..translateByDouble(w, 0, 0, 1)
+            ..scaleByDouble(-1, 1, 1, 1))
+          .storage,
     );
   }
-}
-
-class _BubbleImage extends StatelessWidget {
-  const _BubbleImage({required this.file, this.onTap});
-
-  final File? file;
-  final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) {
-    final glass = context.glass;
-    final file = this.file;
-    final placeholder = SizedBox.square(
-      dimension: AppSizes.iconHero * 2,
-      child: Icon(Icons.broken_image_outlined, color: glass.foregroundMuted),
-    );
-    return Pressable(
-      onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        child: file == null
-            ? placeholder
-            : Image.file(
-                file,
-                cacheWidth: kBubbleImageDecodeWidth,
-                fit: BoxFit.cover,
-                semanticLabel: context.t.chat.attachImage,
-                errorBuilder: (_, _, _) => placeholder,
-              ),
-      ),
-    );
-  }
+  bool shouldReclip(_SpeechClipper oldClipper) => oldClipper.mine != mine;
 }

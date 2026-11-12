@@ -45,3 +45,8 @@
 - [2026-11-12] [Android] 只按 `android-x64` 构建的 APK 在 arm64 真机必崩 -> 插件自带各 ABI 的 .so，出现不完整的 `arm64-v8a` 目录，系统据此选择 arm64 却找不到 libflutter.so -> 按目标设备 ABI 构建，或不加 `--target-platform` 打全量包。
 - [2026-11-12] [Xiaomi] `adb install` 报 `INSTALL_FAILED_USER_RESTRICTED` -> HyperOS 默认禁止 USB 安装 -> 开发者选项开启「USB 安装」，安装时在手机上点允许。
 - [2026-11-12] [Keyboard] 真机弹出键盘后输入框跳到屏幕顶部 -> 页面 `GlassScaffold` 默认按键盘缩小 body，输入框又手动上移键盘高度，重复计算 -> 自行跟随键盘的页面传 `resizeToAvoidBottomInset: false`，并用 `tester.view.viewInsets` 写测试锁定「输入框底边 = 键盘顶边 - 间距」。
+- [2026-11-12] [Dart] 同级测试混用相对与 package 导入后同名接口不可赋值 -> 两种 URI 创建不同库身份 -> 测试被测模块统一使用 package:selfbox 导入。
+- [2026-11-12] [DartFix] 定向 dart fix 仍将 flutter_test 移至 dependencies:any -> pubspec 自动修复将 lib 内测试视作运行时依赖 -> 检查并恢复 flutter_test 为 sdk dev_dependency，禁止对整个工作区盲目 apply。
+- [2026-11-12] [LiquidGlass] GlassButton.custom 内未设 TextStyle 导致红色测试字形与裁切 -> 未继承 Material 正文主题 -> 显式使用主题字体、48dp 高度和 capsule shape，截图验收。
+- [2026-11-12] [Riverpod] Widget fixture 重复 override 同一 provider 报错 -> 默认替身和 overrides 同时注入 -> 可替换仓库作为 fixture 的显式可选参数传入。
+- [2026-11-12] [WidgetTest] find.byType(Skeletonizer) 找不到骨架 -> 工厂返回私有实现类型 -> 用 widget is Skeletonizer 与 enabled 判定实际行为。

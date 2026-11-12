@@ -26,6 +26,13 @@ class FakeMemoryRepository implements MemoryRepository {
   final _files = <MemoryPath, ({String content, DateTime at})>{};
   final _changes = StreamController<void>.broadcast();
 
+  @override
+  TaskEither<AppFailure, Unit> clearAll() {
+    _files.clear();
+    _changes.add(null);
+    return TaskEither.right(unit);
+  }
+
   String? contentOf(String path) =>
       _files[MemoryPath.parse(path).getOrElse((f) => throw f)]?.content;
 

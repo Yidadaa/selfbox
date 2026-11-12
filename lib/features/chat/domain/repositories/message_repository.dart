@@ -5,6 +5,8 @@ import '../models/message.dart';
 
 /// The chat timeline. Lists are newest-first unless stated otherwise.
 abstract interface class MessageRepository {
+  TaskEither<AppFailure, Unit> clearAll();
+
   /// The newest [limit] messages, re-emitted on every change.
   Stream<List<Message>> watchLatest(int limit);
 

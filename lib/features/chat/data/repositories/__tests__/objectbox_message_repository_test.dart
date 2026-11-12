@@ -28,6 +28,15 @@ List<String> _texts(Either<AppFailure, List<Message>> result) =>
 
 void main() {
   group('ObjectBoxMessageRepository', () {
+    test('clear removes every row and the store remains writable', () async {
+      final repo = await _repo();
+      await _add(repo, 'first');
+      await _add(repo, 'second');
+      expect((await repo.clearAll().run()).isRight(), true);
+      expect(_texts(await repo.latest(20).run()), isEmpty);
+      await _add(repo, 'new');
+      expect(_texts(await repo.latest(20).run()), ['new']);
+    });
     test('add assigns an id and the clock time', () async {
       final repo = await _repo();
       final message = await _add(repo, 'first');

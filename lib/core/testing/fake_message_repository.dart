@@ -25,6 +25,13 @@ class FakeMessageRepository implements MessageRepository {
   /// Every draft passed to [add], in order.
   final added = <MessageDraft>[];
 
+  @override
+  TaskEither<AppFailure, Unit> clearAll() {
+    _rows.clear();
+    _changes.add(null);
+    return TaskEither.right(unit);
+  }
+
   Option<AppFailure> failNextAdd = const None();
 
   List<Message> get _newestFirst =>

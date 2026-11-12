@@ -43,11 +43,11 @@ Finder _field(String label) => find.descendant(
 );
 
 void main() {
-  group('MePage', () {
+  group('AiProvidersPage', () {
     testWidgets('shows not-set model, history turns and an add row', (
       tester,
     ) async {
-      await _open(tester, '/me');
+      await _open(tester, '/me/providers');
 
       expect(find.text(t.settings.activeModel), findsOneWidget);
       expect(find.text(t.common.notSet), findsOneWidget);
@@ -58,7 +58,7 @@ void main() {
     testWidgets('lists providers with enabled-model counts', (tester) async {
       await _open(
         tester,
-        '/me',
+        '/me/providers',
         settings: FakeAiSettingsRepository(
           settings: const AiSettings(
             providers: [_provider],
@@ -75,7 +75,7 @@ void main() {
 
     testWidgets('history turns can be changed from a sheet', (tester) async {
       final settings = FakeAiSettingsRepository();
-      await _open(tester, '/me', settings: settings);
+      await _open(tester, '/me/providers', settings: settings);
 
       await tester.tap(find.text(t.settings.historyTurns));
       await tester.pumpAndSettle();

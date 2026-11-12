@@ -11,12 +11,15 @@ import '../../features/chat/domain/repositories/message_repository.dart';
 import '../../features/memory/data/memory_data_providers.dart';
 import '../../features/memory/domain/repositories/memory_repository.dart';
 import '../../features/settings/data/settings_data_providers.dart';
+import '../../features/settings/domain/repositories/account_repository.dart';
 import '../../features/settings/domain/repositories/ai_settings_repository.dart';
+import '../../features/settings/presentation/providers/account_providers.dart';
 import '../../gen/i18n/strings.g.dart';
 import '../storage/app_paths.dart';
 import '../theme/app_scroll_behavior.dart';
 import '../theme/app_theme.dart';
 import '../time/clock.dart';
+import 'fake_account_repository.dart';
 import 'fake_ai_settings.dart';
 import 'fake_memory_repository.dart';
 import 'fake_message_repository.dart';
@@ -29,6 +32,7 @@ final kTestNow = DateTime(2026, 11, 12, 10);
 /// Storage-backed providers swapped for in-memory fakes. Tests override any
 /// of these by passing their own instance.
 List<Override> testAppOverrides({
+  AccountRepository? account,
   MessageRepository? messages,
   MemoryRepository? memory,
   AiSettingsRepository? settings,
@@ -37,6 +41,10 @@ List<Override> testAppOverrides({
   AppPaths? paths,
   DateTime? now,
 }) => [
+  accountRepositoryProvider.overrideWithValue(
+    account ?? FakeAccountRepository(),
+  ),
+  appVersionProvider.overrideWith((ref) async => '0.1.0 (1)'),
   appPathsProvider.overrideWithValue(paths ?? createTempAppPaths()),
   messageRepositoryProvider.overrideWithValue(
     messages ?? FakeMessageRepository(),
@@ -71,6 +79,7 @@ extension AppWidgetTester on WidgetTester {
 
   /// Boots the real app shell (router, theme, i18n, glass scope).
   Future<ProviderContainer> pumpApp({
+    AccountRepository? account,
     List<Override> overrides = const [],
     MessageRepository? messages,
     MemoryRepository? memory,
@@ -88,6 +97,7 @@ extension AppWidgetTester on WidgetTester {
     final container = ProviderContainer(
       overrides: [
         ...testAppOverrides(
+          account: account,
           messages: messages,
           memory: memory,
           settings: settings,

@@ -9,6 +9,7 @@ part '../../gen/core/storage/secret_store.g.dart';
 /// Credentials (API keys) kept out of the plain settings file, in the
 /// platform keychain / keystore.
 abstract interface class SecretStore {
+  TaskEither<AppFailure, Unit> clearAll();
   TaskEither<AppFailure, Option<String>> read(String key);
 
   TaskEither<AppFailure, Unit> write(String key, String value);
@@ -20,6 +21,12 @@ class KeychainSecretStore implements SecretStore {
   const KeychainSecretStore([this._storage = const FlutterSecureStorage()]);
 
   final FlutterSecureStorage _storage;
+
+  @override
+  TaskEither<AppFailure, Unit> clearAll() => TaskEither.tryCatch(() async {
+    await _storage.deleteAll();
+    return unit;
+  }, _failure);
 
   static AppFailure _failure(Object error, StackTrace _) =>
       AppFailure.unexpected(error: error);
@@ -49,6 +56,12 @@ class KeychainSecretStore implements SecretStore {
 /// In-memory store for tests.
 class MemorySecretStore implements SecretStore {
   final values = <String, String>{};
+
+  @override
+  TaskEither<AppFailure, Unit> clearAll() {
+    values.clear();
+    return TaskEither.right(unit);
+  }
 
   @override
   TaskEither<AppFailure, Option<String>> read(String key) =>

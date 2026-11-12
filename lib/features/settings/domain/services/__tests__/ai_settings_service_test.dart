@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:selfbox/core/error/app_failure.dart';
@@ -27,6 +29,21 @@ void main() {
   });
 
   group('AiSettingsService', () {
+    test('reset barrier waits for a pending catalog merge', () async {
+      repo.current = const AiSettings(providers: [_provider]);
+      repo.keys['p1'] = 'key';
+      final slow = _SlowCatalog();
+      final tracked = AiSettingsService(repo, slow);
+      final refresh = tracked.refreshModels('p1').run();
+      var drained = false;
+      final barrier = tracked.finishPending().then((_) => drained = true);
+      await Future<void>.delayed(Duration.zero);
+      expect(drained, false);
+      slow.resultIds.complete(['model-a']);
+      expect((await refresh).isRight(), true);
+      await barrier;
+      expect(repo.current.models.single.modelId, 'model-a');
+    });
     test('saveProvider stores the config and the trimmed key', () async {
       _ok(await service.saveProvider(_provider, apiKey: ' sk ').run());
 
@@ -109,4 +126,13 @@ void main() {
       expect(repo.current.historyTurns, 7);
     });
   });
+}
+
+class _SlowCatalog extends FakeModelCatalog {
+  final resultIds = Completer<List<String>>();
+  @override
+  TaskEither<AppFailure, List<String>> fetch(
+    ProviderConfig provider,
+    String apiKey,
+  ) => TaskEither(() async => Right(await resultIds.future));
 }

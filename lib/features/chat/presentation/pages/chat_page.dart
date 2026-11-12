@@ -157,8 +157,10 @@ class _Timeline extends HookConsumerWidget {
                   key: ValueKey(message.id),
                   message: message,
                   resolveImage: (path) => media.resolve(path).toNullable(),
-                  onImageTap: (path) =>
-                      ImageViewerRoute(path: path).push<void>(context),
+                  onImageTap: (path) => ImageViewerRoute(
+                    path: path,
+                    $extra: message.images,
+                  ).push<void>(context),
                   onLongPress: () => _showActions(context, ref, message),
                 ),
               },

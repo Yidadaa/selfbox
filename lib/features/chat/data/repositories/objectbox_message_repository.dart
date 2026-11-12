@@ -14,6 +14,12 @@ class ObjectBoxMessageRepository implements MessageRepository {
   final Box<MessageEntity> _box;
   final DateTime Function() _clock;
 
+  @override
+  TaskEither<AppFailure, Unit> clearAll() => _run(() async {
+    await _box.removeAllAsync();
+    return unit;
+  });
+
   static AppFailure _dbFailure(Object error, StackTrace _) => switch (error) {
     final AppFailure failure => failure,
     _ => AppFailure.database(message: error.toString()),

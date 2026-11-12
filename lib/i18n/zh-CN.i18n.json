@@ -29,7 +29,26 @@
     "more": "更多"
   },
   "me": {
-    "title": "我的"
+    "title": "我的",
+    "defaultName": "我的空间",
+    "editProfile": "编辑资料",
+    "nickname": "昵称",
+    "changeAvatar": "更换头像",
+    "storage": "存储空间",
+    "providers": "AI 服务商",
+    "about": "关于此应用",
+    "clearAll": "清除所有数据",
+    "confirmClear": "确认清除",
+    "clearWarning": "将删除消息、图片、记忆、个人资料、AI 配置及 API 密钥，此操作无法撤销。",
+    "cleared": "所有数据已清除",
+    "clearing": "正在清除…",
+    "usedStorage": "本机已用空间",
+    "photos": "图片",
+    "database": "数据库",
+    "configuration": "设置",
+    "databaseNote": "清除后数据库仍会保留少量预分配空间。",
+    "version": "版本",
+    "tagline": "留给自己的思考空间。"
   },
   "notFound": {
     "title": "页面不存在",

@@ -20,6 +20,17 @@ class FileAiSettingsRepository implements AiSettingsRepository {
   final SecretStore _secrets;
   final _saved = StreamController<AiSettings>.broadcast();
 
+  @override
+  TaskEither<AppFailure, Unit> clearAll() => _secrets.clearAll().flatMap(
+    (_) => TaskEither.tryCatch(() async {
+      if (await _file.parent.exists()) {
+        await _file.parent.delete(recursive: true);
+      }
+      _saved.add(const AiSettings());
+      return unit;
+    }, _failure),
+  );
+
   static String _keyFor(String providerId) => 'provider_api_key.$providerId';
 
   static AppFailure _failure(Object error, StackTrace _) => switch (error) {

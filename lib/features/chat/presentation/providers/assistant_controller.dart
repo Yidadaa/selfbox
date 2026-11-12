@@ -45,6 +45,14 @@ AssistantAgent assistantAgent(Ref ref) => AssistantAgent(
 class AssistantController extends _$AssistantController {
   CancellationToken? _cancel;
   var _run = 0;
+  final _pending = <Future<void>>{};
+
+  Future<void> cancelAndWait() async {
+    ++_run;
+    _cancel?.cancel();
+    await Future.wait(_pending.toList());
+    state = const AssistantState.idle();
+  }
 
   @override
   AssistantState build() {
@@ -52,7 +60,13 @@ class AssistantController extends _$AssistantController {
     return const AssistantState.idle();
   }
 
-  Future<void> ask(Message question) async {
+  Future<void> ask(Message question) {
+    final task = _ask(question);
+    _pending.add(task);
+    return task.whenComplete(() => _pending.remove(task));
+  }
+
+  Future<void> _ask(Message question) async {
     _cancel?.cancel();
     final token = _cancel = CancellationToken();
     final run = ++_run;

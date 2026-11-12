@@ -223,7 +223,7 @@ class _FailureRow extends ConsumerWidget {
           onTap: needsSetup
               ? () {
                   controller.dismiss();
-                  const MeRoute().go(context);
+                  const AiProvidersRoute().go(context);
                 }
               : controller.retry,
           haptic: HapticKind.light,

@@ -87,7 +87,12 @@ ScreenshotEnv _chatWithHistory({bool includeReply = true}) {
         m(2, _at(12, 8, 32), '记得回复客户邮件 ✉️'),
         m(3, _at(12, 8, 52), '明天要提交周报'),
         m(4, _at(12, 9, 12), '周末想去爬山 🌿，放松一下心情'),
-        m(5, _at(12, 9, 24), '', images: ['media/aurora.png']),
+        m(
+          5,
+          _at(12, 9, 24),
+          '',
+          images: ['media/aurora.png', 'media/aurora.png', 'media/aurora.png'],
+        ),
         m(6, _at(12, 9, 30), '我这周都记了哪些待办？', askedAi: true),
         if (includeReply)
           m(
@@ -237,6 +242,14 @@ final screenshotFixtures = <ScreenshotFixture>[
     env: _memory,
   ),
   const ScreenshotFixture(name: 'me', location: '/me', env: _settings),
+  const ScreenshotFixture(name: 'profile', location: '/me/profile'),
+  const ScreenshotFixture(name: 'storage', location: '/me/storage'),
+  const ScreenshotFixture(name: 'about', location: '/me/about'),
+  const ScreenshotFixture(
+    name: 'providers',
+    location: '/me/providers',
+    env: _settings,
+  ),
   const ScreenshotFixture(
     name: 'provider',
     location: '/me/provider?id=p1',

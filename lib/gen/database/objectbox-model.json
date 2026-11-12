@@ -43,9 +43,33 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "2:8258008151641627220",
+      "lastPropertyId": "3:3415804352196608880",
+      "name": "ProfileEntity",
+      "properties": [
+        {
+          "id": "1:3241605032920071342",
+          "name": "id",
+          "type": 6,
+          "flags": 129
+        },
+        {
+          "id": "2:4131885800994010042",
+          "name": "nickname",
+          "type": 9
+        },
+        {
+          "id": "3:3415804352196608880",
+          "name": "avatar",
+          "type": 9
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "1:1006836322260103196",
+  "lastEntityId": "2:8258008151641627220",
   "lastIndexId": "1:7158263029268785783",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",

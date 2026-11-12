@@ -19,6 +19,16 @@ FileMemoryRepository _repo() =>
 
 void main() {
   group('FileMemoryRepository', () {
+    test('clear waits for queued writes and removes unsupported files too', () async {
+      final repo = _repo();
+      final pending = repo.create(_path('user/profile.md'), 'old').run();
+      await pending;
+      await File(p.join(repo.root.path, 'unsupported.txt')).writeAsString('x');
+      expect((await repo.clearAll().run()).isRight(), true);
+      expect(await repo.root.exists(), false);
+      expect(_ok(await repo.list().run()), isEmpty);
+      expect((await repo.clearAll().run()).isRight(), true);
+    });
     test('lists nothing before the memory folder exists', () async {
       expect(_ok(await _repo().list().run()), isEmpty);
     });
