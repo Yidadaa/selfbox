@@ -235,7 +235,7 @@ test/
    - 表单与底部输入栏必须监听 `MediaQuery.viewInsetsOf(context).bottom`（注意使用 `viewInsetsOf` 而非整个 `MediaQuery.of`，避免无关重建），配合平滑动画随软键盘丝滑顶起，点击空白区域自动收起键盘（`FocusScope.of(context).unfocus()`）。
 4. **杜绝布局抖动与加载割裂（Zero Layout Shift）**：
    - 异步加载态严禁使用孤立的转圈动画导致加载完成后页面剧烈跳动。必须使用 `Skeletonizer` 包裹与真实数据态 **1:1 等高同构** 的占位玻璃卡片。
-   - 空状态（Empty State）与错误状态（Error State）必须设计为具备插画/图标、清晰原因说明与一键重试玻璃按钮的优雅卡片，严禁只显示一行纯文本。
+   - 空状态（Empty State）统一在内容区域居中显示一行小字号、弱化色的纯文本；禁止使用 Liquid Glass 卡片、方块、插画或图标。错误状态（Error State）也使用简短纯文本说明，必要时可在文本下方单独提供重试按钮，不得将说明放入玻璃卡片。
 5. **Markdown 与流式富文本 Liquid Glass 融合规范 (`flutter_smooth_markdown`)**：
    - **统一视觉主题映射**：在 `lib/core/theme/` 中基于当前 Liquid Glass 明暗模式统一构建 `MarkdownStyleSheet`、`MermaidStyle` 与 `MarkdownEditorThemeData`（通过 `ThemeData.extensions` 全局挂载）。代码块、引用块、表格与 AI 思考块（`ThinkingPlugin` / `ArtifactPlugin` / `ToolCallPlugin`）必须采用半透明毛玻璃容器与同心圆角（Concentric Corners）设计。
    - **流式渲染与移动端手势适配**：AI 流式响应或增量文本展示必须使用 `StreamMarkdown` 避免高频全量重解析卡顿；开启 `selectable: true` 时配合 `SmoothSelectionController` 提供移动端原生级段落/全文丝滑选中菜单，点击链接（`onTapLink`）或图片（`onTapImage`）统一接入应用内路由或玻璃模态预览器（严禁直接裸调 `print`）。

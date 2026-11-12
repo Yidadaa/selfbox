@@ -10,6 +10,7 @@ import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
+import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/core/widgets/empty_state.dart';
 import 'package:selfbox/core/widgets/pressable.dart';
@@ -260,6 +261,14 @@ void main() {
       );
       await tester.tap(find.bySemanticsLabel(t.chat.searchMessages));
       await tester.pumpAndSettle();
+      expect(find.text('Search your thoughts'), findsOneWidget);
+      expect(
+        find.ancestor(
+          of: find.text('Search your thoughts'),
+          matching: find.byType(GlassContainer),
+        ),
+        findsNothing,
+      );
 
       await tester.enterText(
         find.byKey(const ValueKey('message-search-input')),
@@ -275,6 +284,29 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.text(t.chat.noSearchResults), findsOneWidget);
+      expect(
+        find.ancestor(
+          of: find.text(t.chat.noSearchResults),
+          matching: find.byType(GlassContainer),
+        ),
+        findsNothing,
+      );
+    });
+
+    testWidgets('search has the requested Chinese empty-state copy', (
+      tester,
+    ) async {
+      await tester.pumpApp(locale: AppLocale.zhCn);
+      await tester.tap(find.bySemanticsLabel(t.chat.searchMessages));
+      await tester.pumpAndSettle();
+      expect(find.text('搜索你的碎碎念'), findsOneWidget);
+
+      await tester.enterText(
+        find.byKey(const ValueKey('message-search-input')),
+        '没有的内容',
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('没有搜索到消息'), findsOneWidget);
     });
 
     testWidgets('message search failures offer a retry action', (tester) async {
@@ -622,6 +654,22 @@ void main() {
       await tester.tap(find.byType(GlassIconButton));
       await tester.pumpAndSettle();
       expect(find.byType(ImageViewerPage), findsNothing);
+    });
+
+    testWidgets('unavailable image uses readable text on the dark viewer', (
+      tester,
+    ) async {
+      final container = await tester.pumpApp();
+      container.read(appRouterProvider).go('/image?path=outside.jpg');
+      await tester.pumpAndSettle();
+
+      final label = find.text(t.chat.imageFailed);
+      expect(label, findsOneWidget);
+      expect(
+        tester.widget<Text>(label).style?.color,
+        AppGlassTheme.dark.foregroundMuted,
+      );
+      expect(find.byIcon(Icons.broken_image_outlined), findsNothing);
     });
   });
 }

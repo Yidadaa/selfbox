@@ -21,7 +21,8 @@
     "openSettings": "Settings",
     "searchMessages": "Search messages",
     "searchHint": "Search your notes",
-    "noSearchResults": "No matching messages",
+    "searchPrompt": "Search your thoughts",
+    "noSearchResults": "No messages found",
     "today": "Today",
     "yesterday": "Yesterday",
     "imageFailed": "Image unavailable"

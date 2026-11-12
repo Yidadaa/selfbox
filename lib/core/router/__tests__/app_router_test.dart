@@ -145,29 +145,36 @@ void main() {
       );
     });
 
-    testWidgets('chat timeline keeps its bottom inset on the first return frame', (
-      tester,
-    ) async {
-      await tester.pumpApp();
-      final timeline = find.descendant(
-        of: find.byType(ChatPage),
-        matching: find.byType(ListView),
-      );
-      double bottomPadding() =>
-          (tester.widget<ListView>(timeline).padding! as EdgeInsets).bottom;
-      final original = bottomPadding();
-      final originalBubble = tester.getRect(find.byType(MessageBubble).first);
+    testWidgets(
+      'chat timeline keeps its bottom inset on the first return frame',
+      (tester) async {
+        await tester.pumpApp();
+        final timeline = find.descendant(
+          of: find.byType(ChatPage),
+          matching: find.byType(ListView),
+        );
+        double bottomPadding() =>
+            (tester.widget<ListView>(timeline).padding! as EdgeInsets).bottom;
+        final original = bottomPadding();
+        final originalBubble = tester.getRect(find.byType(MessageBubble).first);
 
-      await tester.tap(_tab(t.tabs.memory));
-      await tester.pumpAndSettle();
-      await tester.tap(_tab(t.tabs.chat));
-      await tester.pump();
-      expect(bottomPadding(), original);
-      expect(tester.getRect(find.byType(MessageBubble).first), originalBubble);
-      await tester.pumpAndSettle();
-      expect(bottomPadding(), original);
-      expect(tester.getRect(find.byType(MessageBubble).first), originalBubble);
-    });
+        await tester.tap(_tab(t.tabs.memory));
+        await tester.pumpAndSettle();
+        await tester.tap(_tab(t.tabs.chat));
+        await tester.pump();
+        expect(bottomPadding(), original);
+        expect(
+          tester.getRect(find.byType(MessageBubble).first),
+          originalBubble,
+        );
+        await tester.pumpAndSettle();
+        expect(bottomPadding(), original);
+        expect(
+          tester.getRect(find.byType(MessageBubble).first),
+          originalBubble,
+        );
+      },
+    );
 
     testWidgets('chat timeline follows a growing composer', (tester) async {
       await tester.pumpApp();
@@ -197,6 +204,14 @@ void main() {
 
       expect(find.byType(NotFoundPage), findsOneWidget);
       expect(find.text(t.notFound.title), findsOneWidget);
+      expect(find.byIcon(Icons.explore_off_rounded), findsNothing);
+      expect(
+        find.ancestor(
+          of: find.text(t.notFound.title),
+          matching: find.byType(GlassContainer),
+        ),
+        findsNothing,
+      );
     });
 
     testWidgets('404 back button meets the touch target and returns to chat', (

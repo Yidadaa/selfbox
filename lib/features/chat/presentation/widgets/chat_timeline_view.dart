@@ -59,7 +59,6 @@ class ChatTimelineView extends HookConsumerWidget {
       AsyncError() => _ChatPlaceholder(
         bottomPadding: bottomPadding,
         child: EmptyState(
-          icon: Icons.error_outline_rounded,
           label: context.t.common.loadFailed,
           action: GlassButton.custom(
             onTap: () => ref.invalidate(chatMessagesProvider),

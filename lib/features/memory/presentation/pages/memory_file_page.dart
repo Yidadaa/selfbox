@@ -62,10 +62,8 @@ class MemoryFilePage extends ConsumerWidget {
         AsyncData(value: Some(:final value)) => _MarkdownBody(
           content: value.content,
         ),
-        AsyncData(value: None()) || AsyncError() => EmptyState(
-          icon: Icons.find_in_page_outlined,
-          label: t.memory.missing,
-        ),
+        AsyncData(value: None()) ||
+        AsyncError() => EmptyState(label: t.memory.missing),
         AsyncLoading() => const Skeletonizer(
           child: _MarkdownBody(content: '# Placeholder\n\nLoading content…'),
         ),

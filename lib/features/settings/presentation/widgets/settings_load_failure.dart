@@ -9,7 +9,6 @@ class SettingsLoadFailure extends StatelessWidget {
   final VoidCallback onRetry;
   @override
   Widget build(BuildContext context) => EmptyState(
-    icon: Icons.error_outline_rounded,
     label: context.t.settings.errors.generic,
     action: PrimaryButton(label: context.t.common.retry, onTap: onRetry),
   );

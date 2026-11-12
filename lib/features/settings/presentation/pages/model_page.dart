@@ -49,10 +49,7 @@ class ModelPage extends ConsumerWidget {
       _ => AppPageScaffold(
         title: modelId,
         leading: const _Back(),
-        body: EmptyState(
-          icon: Icons.memory_rounded,
-          label: context.t.settings.errors.generic,
-        ),
+        body: EmptyState(label: context.t.settings.errors.generic),
       ),
     };
   }

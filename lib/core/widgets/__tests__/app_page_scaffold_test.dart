@@ -32,34 +32,38 @@ void main() {
   }
 
   group('EmptyState', () {
-    testWidgets('shows the icon and label inside a glass card', (tester) async {
-      await tester.pumpPage(
-        const EmptyState(icon: Icons.inbox_outlined, label: 'Empty'),
-      );
+    testWidgets('shows centered small text without a card or icon', (
+      tester,
+    ) async {
+      await tester.pumpPage(const EmptyState(label: 'Empty'));
 
-      expect(find.byIcon(Icons.inbox_outlined), findsOneWidget);
+      final label = find.text('Empty');
+      expect(tester.getCenter(label).dx, closeTo(kPhoneViewport.width / 2, 1));
+      expect(tester.getCenter(label).dy, closeTo(kPhoneViewport.height / 2, 1));
+      expect(find.byType(Icon), findsNothing);
       expect(
-        find.ancestor(
-          of: find.text('Empty'),
-          matching: find.byType(GlassContainer),
-        ),
-        findsOneWidget,
+        find.ancestor(of: label, matching: find.byType(GlassContainer)),
+        findsNothing,
+      );
+      expect(
+        tester.widget<Text>(label).style?.fontSize,
+        Theme.of(tester.element(label)).textTheme.bodySmall?.fontSize,
       );
     });
 
-    testWidgets('places the action outside the glass card', (tester) async {
+    testWidgets('keeps an error action below the plain label', (tester) async {
       await tester.pumpPage(
-        const EmptyState(
-          icon: Icons.inbox_outlined,
-          label: 'Empty',
-          action: Text('Retry'),
-        ),
+        const EmptyState(label: 'Empty', action: Text('Retry')),
       );
 
       expect(find.text('Retry'), findsOneWidget);
       expect(
+        tester.getTopLeft(find.text('Retry')).dy,
+        greaterThan(tester.getBottomLeft(find.text('Empty')).dy),
+      );
+      expect(
         find.ancestor(
-          of: find.text('Retry'),
+          of: find.text('Empty'),
           matching: find.byType(GlassContainer),
         ),
         findsNothing,

@@ -44,10 +44,7 @@ class ProviderPage extends ConsumerWidget {
             ? AppPageScaffold(
                 title: t.settings.provider.title,
                 leading: const _BackButton(),
-                body: EmptyState(
-                  icon: Icons.dns_outlined,
-                  label: t.settings.errors.generic,
-                ),
+                body: EmptyState(label: t.settings.errors.generic),
               )
             : _ProviderForm(
                 existing: id == null ? null : s.providerOf(id),
@@ -56,10 +53,7 @@ class ProviderPage extends ConsumerWidget {
       (AsyncError(), _) || (_, AsyncError()) => AppPageScaffold(
         title: t.settings.provider.title,
         leading: const _BackButton(),
-        body: EmptyState(
-          icon: Icons.error_outline_rounded,
-          label: t.settings.errors.generic,
-        ),
+        body: EmptyState(label: t.settings.errors.generic),
       ),
       _ => AppPageScaffold(
         title: t.settings.provider.title,
@@ -349,34 +343,35 @@ class _ModelsSection extends HookConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        GlassGroupedSection(
-          margin: AppInsets.section,
-          quality: GlassQuality.standard,
-          shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
-          header: SectionHeader(t.settings.provider.models),
-          children: [
-            if (models.isEmpty)
-              AppListTile(
-                icon: Icons.inventory_2_outlined,
-                title: t.settings.provider.noModels,
-              ),
-            for (final model in models)
-              AppListTile(
-                title: model.modelId,
-                trailing: GlassSwitch(
-                  value: model.enabled,
-                  onChanged: (enabled) => ref
-                      .read(aiSettingsServiceProvider)
-                      .saveModel(model.copyWith(enabled: enabled))
-                      .run(),
+        if (models.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
+            child: EmptyState(label: t.settings.provider.noModels),
+          )
+        else
+          GlassGroupedSection(
+            margin: AppInsets.section,
+            quality: GlassQuality.standard,
+            shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
+            header: SectionHeader(t.settings.provider.models),
+            children: [
+              for (final model in models)
+                AppListTile(
+                  title: model.modelId,
+                  trailing: GlassSwitch(
+                    value: model.enabled,
+                    onChanged: (enabled) => ref
+                        .read(aiSettingsServiceProvider)
+                        .saveModel(model.copyWith(enabled: enabled))
+                        .run(),
+                  ),
+                  onTap: () => ModelRoute(
+                    provider: providerId,
+                    model: model.modelId,
+                  ).push<void>(context),
                 ),
-                onTap: () => ModelRoute(
-                  provider: providerId,
-                  model: model.modelId,
-                ).push<void>(context),
-              ),
-          ],
-        ),
+            ],
+          ),
         const Gap(AppSpacing.md),
         PrimaryButton(
           label: t.settings.provider.fetchModels,

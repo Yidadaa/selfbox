@@ -30,7 +30,6 @@ class MemoryPage extends ConsumerWidget {
           switch (folders) {
             AsyncData(:final value) => _FolderList(folders: value),
             AsyncError() => EmptyState(
-              icon: Icons.error_outline_rounded,
               label: context.t.common.loadFailed,
               action: GlassButton.custom(
                 height: AppSizes.minTouchTarget,
@@ -159,9 +158,8 @@ class _FolderSection extends ConsumerWidget {
               Icons.chevron_right_rounded,
               color: glass.foregroundMuted,
             ),
-            onTap:
-                () =>
-                    MemoryFileRoute(path: entry.path.value).push<void>(context),
+            onTap: () =>
+                MemoryFileRoute(path: entry.path.value).push<void>(context),
           ),
       ],
     );

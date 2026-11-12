@@ -142,7 +142,10 @@ void main() {
       tester,
       '/me/provider?id=p1',
       settings: FakeAiSettingsRepository(
-        settings: const AiSettings(providers: [_provider]),
+        settings: const AiSettings(
+          providers: [_provider],
+          models: [ModelConfig(providerId: 'p1', modelId: 'gpt-x')],
+        ),
       ),
     );
 
@@ -353,6 +356,24 @@ void main() {
   });
 
   group('ProviderPage', () {
+    testWidgets('no models shows only unframed small text', (tester) async {
+      await _open(
+        tester,
+        '/me/provider?id=p1',
+        settings: FakeAiSettingsRepository(
+          settings: const AiSettings(providers: [_provider]),
+        ),
+      );
+
+      final empty = find.text(t.settings.provider.noModels);
+      expect(empty, findsOneWidget);
+      expect(
+        find.ancestor(of: empty, matching: find.byType(GlassGroupedSection)),
+        findsNothing,
+      );
+      expect(find.byIcon(Icons.inventory_2_outlined), findsNothing);
+    });
+
     testWidgets('a new provider needs a name and an API key', (tester) async {
       final settings = FakeAiSettingsRepository();
       await _open(tester, '/me/provider', settings: settings);
@@ -569,7 +590,13 @@ void main() {
 
     testWidgets('an unknown model shows the error state', (tester) async {
       await _open(tester, '/me/model?provider=p1&model=nope');
-      expect(find.byIcon(Icons.memory_rounded), findsOneWidget);
+      final label = find.text(t.settings.errors.generic);
+      expect(label, findsOneWidget);
+      expect(find.byIcon(Icons.memory_rounded), findsNothing);
+      expect(
+        find.ancestor(of: label, matching: find.byType(GlassContainer)),
+        findsNothing,
+      );
     });
   });
 }

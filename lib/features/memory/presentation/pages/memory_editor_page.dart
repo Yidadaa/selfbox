@@ -16,6 +16,7 @@ import '../../../../core/forms/luthor_validator.dart';
 import '../../../../core/theme/app_markdown_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
+import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../../settings/presentation/widgets/primary_button.dart';
 import '../../../settings/presentation/widgets/settings_back_button.dart';
@@ -39,7 +40,7 @@ class MemoryEditorPage extends ConsumerWidget {
         null => const _MemoryEditor(),
         AsyncData(value: Some(:final value)) => _MemoryEditor(file: value),
         AsyncData(value: None()) ||
-        AsyncError() => Center(child: Text(context.t.memory.missing)),
+        AsyncError() => EmptyState(label: context.t.memory.missing),
         AsyncLoading() => const SizedBox.expand(),
       },
     );

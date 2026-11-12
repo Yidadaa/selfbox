@@ -51,7 +51,6 @@ class MessageSearchPage extends HookConsumerWidget {
             child: switch (result) {
               AsyncData(:final value) => value.match(
                 (failure) => EmptyState(
-                  icon: Icons.error_outline_rounded,
                   label: failureMessage(context, failure),
                   action: GlassButton.custom(
                     onTap: () => ref.invalidate(
@@ -76,7 +75,6 @@ class MessageSearchPage extends HookConsumerWidget {
                 child: Skeletonizer(child: _SearchResultSkeleton()),
               ),
               AsyncError() => EmptyState(
-                icon: Icons.error_outline_rounded,
                 label: context.t.settings.errors.generic,
                 action: GlassButton.custom(
                   onTap: () =>
@@ -110,16 +108,10 @@ class _SearchResults extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (query.trim().isEmpty) {
-      return EmptyState(
-        icon: Icons.search_rounded,
-        label: context.t.chat.searchHint,
-      );
+      return EmptyState(label: context.t.chat.searchPrompt);
     }
     if (messages.isEmpty) {
-      return EmptyState(
-        icon: Icons.search_off_rounded,
-        label: context.t.chat.noSearchResults,
-      );
+      return EmptyState(label: context.t.chat.noSearchResults);
     }
     return ListView.separated(
       padding: EdgeInsets.fromLTRB(

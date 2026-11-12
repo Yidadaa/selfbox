@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -82,8 +83,8 @@ class _ViewerImage extends ConsumerWidget {
     final file = ref.watch(mediaStoreProvider).resolve(path).toNullable();
     return file == null
         ? EmptyState(
-            icon: Icons.broken_image_outlined,
             label: context.t.chat.imageFailed,
+            color: AppGlassTheme.dark.foregroundMuted,
           )
         : InteractiveViewer(
             maxScale: ImageViewerPage._maxZoom,
@@ -91,8 +92,8 @@ class _ViewerImage extends ConsumerWidget {
               child: Image.file(
                 file,
                 errorBuilder: (_, _, _) => EmptyState(
-                  icon: Icons.broken_image_outlined,
                   label: context.t.chat.imageFailed,
+                  color: AppGlassTheme.dark.foregroundMuted,
                 ),
               ),
             ),
