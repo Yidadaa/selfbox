@@ -38,7 +38,12 @@ class MessageImageStack extends ConsumerWidget {
                 right: AppSpacing.xxs + index * MessageTokens.stackInset,
                 height: MessageTokens.imageHeight,
                 child: Transform.rotate(
-                  angle: index.isEven ? 0 : MessageTokens.stackAngle,
+                  angle:
+                      index == 0
+                          ? 0
+                          : index == 1
+                          ? -MessageTokens.stackAngle
+                          : MessageTokens.stackAngle,
                   child: DecoratedBox(
                     decoration: ShapeDecoration(
                       color: context.glass.bubbleOther,
@@ -89,8 +94,9 @@ class _PhotoCount extends StatelessWidget {
       ),
       child: Text(
         '$count',
-        style: Theme.of(context).textTheme.labelMedium
-            ?.copyWith(color: context.glass.onBubbleOther),
+        style: Theme.of(
+          context,
+        ).textTheme.labelMedium?.copyWith(color: context.glass.onBubbleOther),
       ),
     ),
   );

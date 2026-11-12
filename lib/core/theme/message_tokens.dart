@@ -8,8 +8,8 @@ abstract final class MessageTokens {
   static const imageWidth = 224.0;
   static const imageHeight = 180.0;
   static const stackInset = 8.0;
-  static const stackAngle = 0.035;
-  static const imageFramePadding = AppSpacing.xxs;
+  static const stackAngle = 0.1;
+  static const imageFramePadding = AppSpacing.xxs / 2;
   static const imageFrameRadius = AppRadius.sm + imageFramePadding;
 }
 
