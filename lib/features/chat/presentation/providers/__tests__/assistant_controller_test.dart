@@ -115,10 +115,8 @@ void main() {
           const AssistantState.working(
             AgentActivity.tool(AgentToolKind.searchMessages),
           ),
-          const AssistantState.working(AgentActivity.thinking()),
-          const AssistantState.working(
-            AgentActivity.typing(line: '**要点**：三件事。'),
-          ),
+          const AssistantState.working(AgentActivity.thinking(segment: 1)),
+          const AssistantState.working(AgentActivity.typing()),
           const AssistantState.idle(),
         ]);
         final reply = env.messages.added.last;
@@ -168,7 +166,7 @@ void main() {
         env.states,
         contains(
           const AssistantState.working(
-            AgentActivity.thinking(line: privatePreview),
+            AgentActivity.thinking(text: privatePreview),
           ),
         ),
       );

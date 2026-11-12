@@ -28,11 +28,13 @@ enum AgentToolKind {
 /// What the assistant is doing right now. Only the latest activity is shown.
 @freezed
 sealed class AgentActivity with _$AgentActivity {
-  const factory AgentActivity.thinking({@Default('') String line}) =
-      AgentThinking;
+  const factory AgentActivity.thinking({
+    @Default('') String text,
+    @Default(0) int segment,
+  }) = AgentThinking;
 
   const factory AgentActivity.tool(AgentToolKind kind) = AgentUsingTool;
 
-  /// A bounded preview is shown while the full answer is still being written.
-  const factory AgentActivity.typing({@Default('') String line}) = AgentTyping;
+  /// The answer itself is only revealed after the full turn succeeds.
+  const factory AgentActivity.typing() = AgentTyping;
 }

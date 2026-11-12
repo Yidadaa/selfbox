@@ -161,37 +161,44 @@ class AssistantAgent {
       );
 
       Object? streamError;
-      var reasoningLine = '';
-      var answerLine = '';
+      var reasoningText = '';
+      var segment = 0;
+      var typingStarted = false;
       var startedStep = false;
       await for (final event in result.stream) {
         switch (event) {
           case StreamTextStartStepEvent():
-            reasoningLine = '';
-            answerLine = '';
-            if (startedStep) onActivity(const AgentActivity.thinking());
+            reasoningText = '';
+            typingStarted = false;
+            if (startedStep) {
+              segment++;
+              onActivity(AgentActivity.thinking(segment: segment));
+            }
             startedStep = true;
           case StreamTextToolInputStartEvent(:final toolName):
-            reasoningLine = '';
-            answerLine = '';
+            reasoningText = '';
+            typingStarted = false;
             onToolEvent?.call(toolName, AgentToolPhase.started);
             final kind = AgentToolKind.ofTool(toolName);
             if (kind != null) onActivity(AgentActivity.tool(kind));
           case StreamTextToolErrorEvent(:final toolName):
             onToolEvent?.call(toolName, AgentToolPhase.failed);
           case StreamTextReasoningDeltaEvent(:final delta):
-            final previous = reasoningLine.trim();
-            reasoningLine = _latestLine(reasoningLine, delta);
-            final preview = reasoningLine.trim();
-            if (preview.isNotEmpty && preview != previous) {
-              onActivity(AgentActivity.thinking(line: preview));
+            final previous = reasoningText;
+            reasoningText += delta;
+            if (reasoningText.length > _maxReasoningCodeUnits) {
+              reasoningText = _reasoningTail(reasoningText);
+              segment++;
+            }
+            if (reasoningText.trim().isNotEmpty && reasoningText != previous) {
+              onActivity(
+                AgentActivity.thinking(text: reasoningText, segment: segment),
+              );
             }
           case StreamTextTextDeltaEvent(:final delta):
-            final previous = answerLine.trim();
-            answerLine = _latestLine(answerLine, delta);
-            final preview = answerLine.trim();
-            if (preview.isNotEmpty && preview != previous) {
-              onActivity(AgentActivity.typing(line: preview));
+            if (!typingStarted && delta.trim().isNotEmpty) {
+              typingStarted = true;
+              onActivity(const AgentActivity.typing());
             }
           case StreamTextErrorEvent(:final error):
             streamError = error;
@@ -210,20 +217,16 @@ class AssistantAgent {
     }
   }, _toFailure);
 
-  static const _maxPreviewCodeUnits = 240;
+  static const _maxReasoningCodeUnits = 8192;
+  static const _retainedReasoningCodeUnits = 4096;
 
-  static String _latestLine(String current, String delta) {
-    final newline = delta.lastIndexOf('\n');
-    final returnMark = delta.lastIndexOf('\r');
-    final breakAt = newline > returnMark ? newline : returnMark;
-    final line = breakAt < 0 ? current + delta : delta.substring(breakAt + 1);
-    if (line.length <= _maxPreviewCodeUnits) return line;
-    var start = line.length - _maxPreviewCodeUnits;
-    // Do not cut between a UTF-16 surrogate pair at the rolling boundary.
-    if (line.codeUnitAt(start) >= 0xDC00 && line.codeUnitAt(start) <= 0xDFFF) {
+  static String _reasoningTail(String text) {
+    var start = text.length - _retainedReasoningCodeUnits;
+    // A trim must not leave a broken UTF-16 surrogate at the stream boundary.
+    if (text.codeUnitAt(start) >= 0xDC00 && text.codeUnitAt(start) <= 0xDFFF) {
       start++;
     }
-    return line.substring(start);
+    return text.substring(start);
   }
 
   /// Tool results carry text only, so images fetched by `view_image` are

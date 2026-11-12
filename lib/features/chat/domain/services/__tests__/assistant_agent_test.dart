@@ -104,27 +104,29 @@ Future<Either<AppFailure, String>> _ask(_Env env) =>
 
 void main() {
   group('AssistantAgent', () {
-    test('streams only the current reasoning and answer line', () async {
-      final env = _env([
-        [
-          scriptedReasoning('先检查记录\n正在整'),
-          scriptedReasoning('理'),
-          scriptedText('第一段\n最终答'),
-          scriptedText('案'),
-        ],
-      ]);
+    test(
+      'streams cumulative reasoning Markdown but no answer preview',
+      () async {
+        final env = _env([
+          [
+            scriptedReasoning('先检查记录\n正在整'),
+            scriptedReasoning('理'),
+            scriptedText('第一段\n最终答'),
+            scriptedText('案'),
+          ],
+        ]);
 
-      expect((await _ask(env)).toNullable(), '第一段\n最终答案');
-      expect(env.activity, [
-        const AgentActivity.thinking(),
-        const AgentActivity.thinking(line: '正在整'),
-        const AgentActivity.thinking(line: '正在整理'),
-        const AgentActivity.typing(line: '最终答'),
-        const AgentActivity.typing(line: '最终答案'),
-      ]);
-    });
+        expect((await _ask(env)).toNullable(), '第一段\n最终答案');
+        expect(env.activity, [
+          const AgentActivity.thinking(),
+          const AgentActivity.thinking(text: '先检查记录\n正在整'),
+          const AgentActivity.thinking(text: '先检查记录\n正在整理'),
+          const AgentActivity.typing(),
+        ]);
+      },
+    );
 
-    test('a tool resets the old reasoning line before the next step', () async {
+    test('a tool resets reasoning before the next step', () async {
       final env = _env([
         [
           scriptedReasoning('旧思考'),
@@ -136,47 +138,52 @@ void main() {
       expect((await _ask(env)).toNullable(), '好');
       expect(env.activity, [
         const AgentActivity.thinking(),
-        const AgentActivity.thinking(line: '旧思考'),
+        const AgentActivity.thinking(text: '旧思考'),
         const AgentActivity.tool(AgentToolKind.searchMessages),
-        const AgentActivity.thinking(),
-        const AgentActivity.thinking(line: '新思考'),
-        const AgentActivity.typing(line: '好'),
-      ]);
-    });
-
-    test('blank deltas do not replace a visible line', () async {
-      final env = _env([
-        [
-          scriptedReasoning('进度'),
-          scriptedReasoning(' '),
-          scriptedReasoning('\n'),
-          scriptedReasoning('新'),
-          scriptedText('完成'),
-        ],
-      ]);
-
-      await _ask(env);
-      expect(env.activity, [
-        const AgentActivity.thinking(),
-        const AgentActivity.thinking(line: '进度'),
-        const AgentActivity.thinking(line: '新'),
-        const AgentActivity.typing(line: '完成'),
+        const AgentActivity.thinking(segment: 1),
+        const AgentActivity.thinking(text: '新思考', segment: 1),
+        const AgentActivity.typing(),
       ]);
     });
 
     test(
-      'long lines keep their newest text without splitting an emoji',
+      'whitespace-only opening deltas do not replace the fallback',
       () async {
-        final longLine = '${List.filled(239, 'a').join()}😀结尾';
+        final env = _env([
+          [
+            scriptedReasoning(' '),
+            scriptedReasoning('\n'),
+            scriptedReasoning('# 进度\n**新**'),
+            scriptedText('完成'),
+          ],
+        ]);
+
+        await _ask(env);
+        expect(env.activity, [
+          const AgentActivity.thinking(),
+          const AgentActivity.thinking(text: ' \n# 进度\n**新**'),
+          const AgentActivity.typing(),
+        ]);
+      },
+    );
+
+    test(
+      'long reasoning keeps a bounded tail without splitting an emoji',
+      () async {
+        final longLine =
+            '${List.filled(4096, 'a').join()}😀'
+            '${List.filled(4091, 'b').join()}😀结尾';
         final env = _env([
           [scriptedReasoning(longLine), scriptedText('好')],
         ]);
 
         await _ask(env);
-        final preview = (env.activity[1] as AgentThinking).line;
-        expect(preview.length, lessThanOrEqualTo(240));
+        final preview = (env.activity[1] as AgentThinking).text;
+        expect(preview.length, lessThanOrEqualTo(8192));
         expect(preview, endsWith('😀结尾'));
         expect(preview.runes.first, isNot(0xFFFD));
+        expect(preview.runes.first, 'b'.runes.single);
+        expect((env.activity[1] as AgentThinking).segment, 1);
       },
     );
 
@@ -188,7 +195,7 @@ void main() {
       expect((await _ask(env)).toNullable(), '你说过要买牛奶和面包。');
       expect(env.activity, [
         const AgentActivity.thinking(),
-        const AgentActivity.typing(line: '你说过要买牛奶和面包。'),
+        const AgentActivity.typing(),
       ]);
       expect(env.factory.created.single.apiKey, 'sk');
       expect(env.factory.created.single.modelId, 'm1');
@@ -239,10 +246,10 @@ void main() {
         expect(env.activity, [
           const AgentActivity.thinking(),
           const AgentActivity.tool(AgentToolKind.searchMessages),
-          const AgentActivity.thinking(),
+          const AgentActivity.thinking(segment: 1),
           const AgentActivity.tool(AgentToolKind.writeMemory),
-          const AgentActivity.thinking(),
-          const AgentActivity.typing(line: '上周你记了：买牛奶和面包。'),
+          const AgentActivity.thinking(segment: 2),
+          const AgentActivity.typing(),
         ]);
         expect(env.memory.contentOf('topic/shopping.md'), contains('牛奶'));
 

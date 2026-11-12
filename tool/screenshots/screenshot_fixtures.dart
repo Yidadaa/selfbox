@@ -194,21 +194,33 @@ ScreenshotEnv _settings() => (
 );
 
 class _FixedAssistant extends AssistantController {
+  _FixedAssistant(this.activity);
+
+  final AgentActivity activity;
+
   @override
-  AssistantState build() => const AssistantState.working(
-    AgentActivity.tool(AgentToolKind.searchMessages),
-  );
+  AssistantState build() => AssistantState.working(activity);
 }
 
-ScreenshotEnv _chatAsking() {
+ScreenshotEnv _chatPending(AgentActivity activity) {
   final base = _chatWithHistory(includeReply: false);
   return (
     paths: base.paths,
     messages: base.messages,
     memory: null,
     settings: null,
-    overrides: [assistantControllerProvider.overrideWith(_FixedAssistant.new)],
+    overrides: [
+      assistantControllerProvider.overrideWith(() => _FixedAssistant(activity)),
+    ],
   );
+}
+
+ScreenshotEnv _chatAsking() =>
+    _chatPending(const AgentActivity.tool(AgentToolKind.searchMessages));
+
+Future<void> _finishReasoningScroll(WidgetTester tester) async {
+  await tester.pump(const Duration(milliseconds: 200));
+  await tester.pump(const Duration(milliseconds: 200));
 }
 
 final screenshotFixtures = <ScreenshotFixture>[
@@ -315,6 +327,45 @@ final screenshotFixtures = <ScreenshotFixture>[
     name: 'chat_ai_pending',
     location: '/chat',
     env: _chatAsking,
+    animated: true,
+  ),
+  ScreenshotFixture(
+    name: 'chat_ai_thinking',
+    location: '/chat',
+    env: () => _chatPending(
+      const AgentActivity.thinking(
+        text:
+            '# 我先想想\n\n你这周提到了 **三件待办**。\n\n'
+            '我会按时间整理，再确认哪些已经完成。\n\n'
+            '还有周末爬山的计划，也一起放进来。',
+      ),
+    ),
+    animated: true,
+    afterOpen: _finishReasoningScroll,
+  ),
+  ScreenshotFixture(
+    name: 'chat_ai_thinking_dark',
+    location: '/chat',
+    env: () => _chatPending(
+      const AgentActivity.thinking(
+        text:
+            '# 我先想想\n\n你这周提到了 **三件待办**。\n\n'
+            '我会按时间整理，再确认哪些已经完成。\n\n'
+            '还有周末爬山的计划，也一起放进来。',
+      ),
+    ),
+    setUp: (tester, _) async {
+      tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+      addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+      await tester.pump();
+    },
+    animated: true,
+    afterOpen: _finishReasoningScroll,
+  ),
+  ScreenshotFixture(
+    name: 'chat_ai_typing',
+    location: '/chat',
+    env: () => _chatPending(const AgentActivity.typing()),
     animated: true,
   ),
   const ScreenshotFixture(

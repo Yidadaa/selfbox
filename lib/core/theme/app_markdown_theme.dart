@@ -8,11 +8,23 @@ import 'app_spacing.dart';
 /// Markdown styling derived from the glass tokens, so AI replies and memory
 /// files read as part of the same surface instead of a pasted document.
 abstract final class AppMarkdownTheme {
-  static MarkdownStyleSheet of(BuildContext context, {Color? textColor}) {
+  static const double _headingSizeIncrement = 1;
+  static const int thinkingVisibleLines = 3;
+
+  static MarkdownStyleSheet of(
+    BuildContext context, {
+    Color? textColor,
+    bool thinking = false,
+  }) {
     final theme = Theme.of(context);
     final glass = context.glass;
     final color = textColor ?? glass.foreground;
-    final base = theme.textTheme.bodyLarge?.copyWith(color: color, height: 1.5);
+    final base = (theme.textTheme.bodyLarge ?? const TextStyle(fontSize: 16))
+        .copyWith(color: color, height: 1.5);
+    final heading = base.copyWith(
+      fontSize: (base.fontSize ?? 16) + (thinking ? 0 : _headingSizeIncrement),
+      fontWeight: FontWeight.w600,
+    );
     final inset = BoxDecoration(
       color: glass.foreground.withValues(alpha: 0.06),
       borderRadius: BorderRadius.circular(
@@ -23,12 +35,19 @@ abstract final class AppMarkdownTheme {
       theme.brightness,
       baseStyle: base,
     ).copyWith(
+      h1Style: heading,
+      h2Style: heading,
+      h3Style: heading,
+      h4Style: heading,
+      h5Style: heading,
+      h6Style: heading,
+      paragraphStyle: base,
       codeBlockDecoration: inset,
       blockquoteDecoration: inset.copyWith(
         border: Border(left: BorderSide(color: glass.accent, width: 3)),
       ),
-      linkStyle: base?.copyWith(color: glass.accent),
-      blockSpacing: AppSpacing.sm,
+      linkStyle: base.copyWith(color: glass.accent),
+      blockSpacing: thinking ? AppSpacing.xxs : AppSpacing.sm,
     );
   }
 }

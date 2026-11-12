@@ -8,15 +8,14 @@ import '../../../../core/error/failure_message.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_motion.dart';
-import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/message_tokens.dart';
 import '../../../../core/widgets/pressable.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/agent_activity.dart';
 import '../providers/assistant_controller.dart';
+import 'assistant_live_bubbles.dart';
 
-/// The current reasoning or answer line, latest tool, or a recoverable error.
+/// The current reasoning, latest tool, or a recoverable error.
 class AssistantStatusBubble extends ConsumerWidget {
   const AssistantStatusBubble({required this.state, super.key});
 
@@ -27,17 +26,15 @@ class AssistantStatusBubble extends ConsumerWidget {
     final labels = context.t.assistant;
     final child = switch (state) {
       AssistantIdle() => const SizedBox.shrink(),
-      AssistantWorking(activity: AgentThinking(:final line)) => _LiveLine(
-        key: const ValueKey('thinking'),
-        icon: Icons.auto_awesome_rounded,
-        fallback: labels.thinking,
-        line: line,
-      ),
-      AssistantWorking(activity: AgentTyping(:final line)) => _LiveLine(
+      AssistantWorking(activity: AgentThinking(:final text, :final segment)) =>
+        AssistantThinkingBubble(
+          key: ValueKey('thinking-$segment'),
+          fallback: labels.thinking,
+          text: text,
+        ),
+      AssistantWorking(activity: AgentTyping()) => AssistantTypingBubble(
         key: const ValueKey('typing'),
-        icon: Icons.edit_rounded,
-        fallback: labels.typing,
-        line: line,
+        label: labels.typing,
       ),
       AssistantWorking(activity: final AgentUsingTool activity) =>
         _ActivityLabel(key: ValueKey(activity.kind), activity: activity),
@@ -61,35 +58,6 @@ class AssistantStatusBubble extends ConsumerWidget {
   }
 }
 
-class _Bubble extends StatelessWidget {
-  const _Bubble({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    const round = Radius.circular(AppRadius.md);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.glass.bubbleOther,
-        borderRadius: const BorderRadius.only(
-          topLeft: round,
-          topRight: round,
-          bottomRight: round,
-          bottomLeft: Radius.circular(AppRadius.xs),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm,
-        ),
-        child: child,
-      ),
-    );
-  }
-}
-
 class _ActivityLabel extends StatelessWidget {
   const _ActivityLabel({required this.activity, super.key});
 
@@ -106,7 +74,7 @@ class _ActivityLabel extends StatelessWidget {
       AgentToolKind.readMemory => (Icons.auto_awesome_outlined, a.recalling),
       AgentToolKind.writeMemory => (Icons.edit_note_rounded, a.remembering),
     };
-    return _Bubble(
+    return AssistantStatusSurface(
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -120,86 +88,6 @@ class _ActivityLabel extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _LiveLine extends HookWidget {
-  const _LiveLine({
-    required this.icon,
-    required this.fallback,
-    required this.line,
-    super.key,
-  });
-
-  final IconData icon;
-  final String fallback;
-  final String line;
-
-  @override
-  Widget build(BuildContext context) {
-    final glass = context.glass;
-    final preview = line.isEmpty ? fallback : line;
-    final controller = useAnimationController(duration: AppMotion.slow * 2);
-    useEffect(() {
-      controller.repeat(reverse: true);
-      return null;
-    }, [controller]);
-    final opacity = Tween<double>(begin: 0.45, end: 1).animate(controller);
-    return Semantics(
-      label: line.isEmpty ? fallback : '$fallback $line',
-      child: ExcludeSemantics(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth:
-                MediaQuery.sizeOf(context).width * MessageTokens.widthFactor,
-          ),
-          child: _Bubble(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FadeTransition(
-                  opacity: opacity,
-                  child: Icon(icon, size: AppSpacing.md, color: glass.accent),
-                ),
-                const Gap(AppSpacing.xs),
-                Flexible(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    reverse: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    child: Text(
-                      preview,
-                      maxLines: 1,
-                      softWrap: false,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: line.isEmpty
-                            ? glass.foregroundMuted
-                            : glass.onBubbleOther,
-                      ),
-                    ),
-                  ),
-                ),
-                const Gap(AppSpacing.xs),
-                FadeTransition(
-                  key: const ValueKey('live-progress'),
-                  opacity: opacity,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: glass.accent,
-                      borderRadius: BorderRadius.circular(AppRadius.xs),
-                    ),
-                    child: const SizedBox(
-                      width: AppSpacing.xxs,
-                      height: AppSpacing.md,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -226,7 +114,7 @@ class _FailureRow extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Flexible(
-          child: _Bubble(
+          child: AssistantStatusSurface(
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
