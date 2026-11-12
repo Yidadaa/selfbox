@@ -98,12 +98,12 @@ class ChatSendButton extends ConsumerWidget {
         height: _diameter,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: enabled ? glass.accent : glass.shadowBorder,
+          color: enabled ? glass.bubbleMine : glass.shadowBorder,
         ),
         child: Icon(
           Icons.arrow_upward_rounded,
           size: AppSizes.iconMd,
-          color: enabled ? glass.onAccent : glass.foregroundMuted,
+          color: enabled ? glass.onBubbleMine : glass.foregroundMuted,
         ),
       ),
     );

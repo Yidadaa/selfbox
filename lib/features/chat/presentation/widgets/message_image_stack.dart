@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_radius.dart';
@@ -40,14 +39,23 @@ class MessageImageStack extends ConsumerWidget {
                 height: MessageTokens.imageHeight,
                 child: Transform.rotate(
                   angle: index.isEven ? 0 : MessageTokens.stackAngle,
-                  child: GlassContainer(
-                    quality: GlassQuality.standard,
-                    padding: const EdgeInsets.all(
-                      MessageTokens.imageFramePadding,
+                  child: DecoratedBox(
+                    decoration: ShapeDecoration(
+                      color: context.glass.bubbleOther,
+                      shape: RoundedSuperellipseBorder(
+                        borderRadius: BorderRadius.circular(
+                          MessageTokens.imageFrameRadius,
+                        ),
+                      ),
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                      child: _Photo(file: resolveImage(paths[index])),
+                    child: Padding(
+                      padding: const EdgeInsets.all(
+                        MessageTokens.imageFramePadding,
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                        child: _Photo(file: resolveImage(paths[index])),
+                      ),
                     ),
                   ),
                 ),

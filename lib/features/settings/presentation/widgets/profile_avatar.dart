@@ -9,8 +9,13 @@ import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 
 class ProfileAvatar extends ConsumerWidget {
-  const ProfileAvatar({this.path, super.key});
+  const ProfileAvatar({
+    this.path,
+    this.dimension = AppSizes.profileAvatar,
+    super.key,
+  });
   final String? path;
+  final double dimension;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -20,7 +25,7 @@ class ProfileAvatar extends ConsumerWidget {
       child: ColoredBox(
         color: context.glass.surfaceTint,
         child: SizedBox.square(
-          dimension: AppSizes.profileAvatar,
+          dimension: dimension,
           child: valid
               ? Image.file(
                   File(
@@ -31,9 +36,10 @@ class ProfileAvatar extends ConsumerWidget {
                   ),
                   fit: BoxFit.cover,
                   cacheWidth: 256,
-                  errorBuilder: (_, error, stack) => const _Placeholder(),
+                  errorBuilder: (_, error, stack) =>
+                      _Placeholder(dimension: dimension),
                 )
-              : const _Placeholder(),
+              : _Placeholder(dimension: dimension),
         ),
       ),
     );
@@ -41,11 +47,14 @@ class ProfileAvatar extends ConsumerWidget {
 }
 
 class _Placeholder extends StatelessWidget {
-  const _Placeholder();
+  const _Placeholder({required this.dimension});
+
+  final double dimension;
+
   @override
   Widget build(BuildContext context) => Icon(
     Icons.person_outline_rounded,
-    size: AppSizes.iconHero,
+    size: dimension * 0.6,
     color: context.glass.foregroundMuted,
   );
 }

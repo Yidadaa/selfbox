@@ -16,6 +16,10 @@
     "attachImage": "图片",
     "removeImage": "移除",
     "aiMode": "AI 模式",
+    "openSettings": "设置",
+    "searchMessages": "搜索消息",
+    "searchHint": "搜索消息记录",
+    "noSearchResults": "没有匹配的消息",
     "today": "今天",
     "yesterday": "昨天",
     "imageFailed": "图片不可用"

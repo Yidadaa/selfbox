@@ -8,6 +8,7 @@ import '../../../../core/error/failure_message.dart';
 import '../../../../core/storage/data_reset_controller.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -63,29 +64,26 @@ class StoragePage extends ConsumerWidget {
   }
 
   Future<void> _confirm(BuildContext context, WidgetRef ref) =>
-      showGlassActionSheet<void>(
+      showDialog<void>(
         context: context,
-        title: context.t.me.clearWarning,
-        cancelLabel: context.t.common.cancel,
-        actions: [
-          GlassActionSheetAction(
-            label: context.t.me.confirmClear,
-            style: GlassActionSheetStyle.destructive,
-
-            onPressed: () async {
-              final result = await ref
-                  .read(dataResetControllerProvider.notifier)
-                  .clear();
-              if (context.mounted) {
-                showOutcome(
-                  context,
-                  failure: result.getLeft().toNullable(),
-                  success: context.t.me.cleared,
-                );
-              }
-            },
-          ),
-        ],
+        builder: (_) => AppConfirmDialog(
+          title: context.t.me.clearWarning,
+          secondaryLabel: context.t.common.cancel,
+          primaryLabel: context.t.me.confirmClear,
+          destructive: true,
+          onPrimary: () async {
+            final result = await ref
+                .read(dataResetControllerProvider.notifier)
+                .clear();
+            if (context.mounted) {
+              showOutcome(
+                context,
+                failure: result.getLeft().toNullable(),
+                success: context.t.me.cleared,
+              );
+            }
+          },
+        ),
       );
 }
 

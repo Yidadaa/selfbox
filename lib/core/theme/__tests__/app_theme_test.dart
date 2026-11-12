@@ -87,6 +87,18 @@ void main() {
           );
         });
 
+        test('AI surface follows brightness and keeps readable text', () {
+          expect(
+            glass!.bubbleOther.computeLuminance(),
+            brightness == Brightness.dark ? lessThan(0.15) : greaterThan(0.9),
+          );
+          expect(
+            _contrast(glass.onBubbleOther, glass.bubbleOther),
+            greaterThan(4.5),
+          );
+          expect(glass.messageMetadata.a, lessThan(glass.foregroundMuted.a));
+        });
+
         test('uses one page transition on every platform', () {
           final builders = theme.pageTransitionsTheme.builders;
           expect(builders.keys.toSet(), TargetPlatform.values.toSet());

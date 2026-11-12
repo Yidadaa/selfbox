@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/chat/presentation/pages/chat_page.dart';
 import '../../features/chat/presentation/pages/image_viewer_page.dart';
+import '../../features/chat/presentation/pages/message_search_page.dart';
 import '../../features/memory/presentation/pages/memory_file_page.dart';
 import '../../features/memory/presentation/pages/memory_page.dart';
 import '../../features/settings/presentation/pages/about_page.dart';
@@ -146,6 +147,16 @@ class ImageViewerRoute extends GoRouteData with $ImageViewerRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       ImageViewerPage(path: path, paths: $extra);
+}
+
+@TypedGoRoute<MessageSearchRoute>(path: '/chat/search')
+class MessageSearchRoute extends GoRouteData with $MessageSearchRoute {
+  const MessageSearchRoute();
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const MessageSearchPage();
 }
 
 /// Opens over the shell so the tab bar is hidden while reading a file.

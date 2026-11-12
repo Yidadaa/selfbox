@@ -23,6 +23,9 @@ void main() {
         expect(gradient.colors, AppGlassTheme.of(brightness).canvasGradient);
         expect(gradient.begin, Alignment.topLeft);
         expect(tester.getSize(find.byType(AppCanvas)), kPhoneViewport);
+        if (brightness == Brightness.light) {
+          expect(gradient.colors.last, const Color(0xFFF7EDE4));
+        }
       });
     }
   });

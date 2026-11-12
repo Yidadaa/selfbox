@@ -2,6 +2,11 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-12] [FlutterSDK] 首次测试调用系统 Flutter 导致 SDK 约束解析失败 -> 未优先使用仓库 SDK -> Flutter/Dart 命令统一从 `.tools/flutter/bin/` 执行。
+- [2026-11-12] [ChatHeader] 资料入口把头像和昵称横向排列且分离 -> 实现时未按 ref-chat 逐项核对构图 -> 头像必须在昵称胶囊上方并与胶囊重叠，测试锁定纵向位置与中心线。
+
+- [2026-11-12] [HeaderTest] `Pressable` 的父级语义标签 finder 未匹配 -> 子 Text 语义参与节点合并 -> widget 导航测试用稳定 key 锁定点击目标，语义测试单独断言对外标签。
+
 - [2026-11-12] [MessageGlass] AI 消息仍呈实色卡片 -> AI 与用户文字共用 ColoredBox 背景 -> AI 表面独立使用 standard GlassContainer，不在玻璃下保留不透明衬底；明暗主题同时锁定材质、外置 footer 与长按契约。
 
 - [2026-11-12] [Composer] 发送圆形右留白 14dp、上下 6dp -> 修正输入高度时仅去掉垂直 padding，遗留右侧 8dp -> 键盘态同时去掉右 padding，保留 48dp 热区；空 / 可发送态均测实际圆形三侧留白。
@@ -72,3 +77,6 @@
 - [2026-11-12] [Composer] 自定义输入行后键盘态附件按钮低 8dp、消息点击不收键盘 -> 外层 Row 按底边对齐且原生文本框未显式处理 outside tap -> 输入与附件按中心线排布，onTapOutside 主动取消焦点。
 - [2026-11-12] [AgentLog] SDK 的 ToolResult 流事件把工具 Map 结果序列化为文本，业务错误被误记为成功 -> 在 AgentTools 执行包装处检查结构化结果的 error 键，仅把状态写入 Talker。
 - [2026-11-12] [Layout] 输入区单行截图出现六行高空白 -> CupertinoTextField 设置 maxLines:6 但省略 minLines 时按六行占位，外层 Flexible 又放大空白 -> 明确 minLines:1、只约束编辑文本高度，并测单行输入面高度。
+- [2026-11-12] [Chat] 顶栏下方出现生硬的消息滚动边界 -> 把顶部避让加在列表外层，裁掉了玻璃按钮背后的滚动内容 -> 滚动视口保持全屏，仅给内容设置顶部内边距。
+- [2026-11-12] [DialogTest] 窄屏大字测试找不到清除入口且背景页溢出 -> 整页缩放混淆了弹层与页面的布局错误 -> Dialog 单独渲染测试，内部可滚动；集成测试保留正常字号。
+- [2026-11-13] [DarkMode] AI/图片卡片、Dialog 与 Picker Sheet 深色模式仍为白色 -> 业务组件固定浅色值，顶部过渡还回退到 Cupertino 背景色 -> 非玻璃表面统一从明暗主题取色，GlassScaffold 显式接收画布过渡色。

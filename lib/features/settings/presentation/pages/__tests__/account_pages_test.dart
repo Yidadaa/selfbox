@@ -91,12 +91,60 @@ void main() {
     tester,
   ) async {
     final account = FakeAccountRepository();
-    final container = await tester.pumpApp(account: account);
+    final container = await tester.pumpApp(
+      account: account,
+      locale: AppLocale.zhCn,
+    );
     container.read(appRouterProvider).go('/me/storage');
     await tester.pumpAndSettle();
     await tester.tap(find.text(t.me.clearAll));
     await tester.pumpAndSettle();
     expect(find.text(t.me.clearWarning), findsOneWidget);
+    final dialog = tester.widget<Dialog>(find.byType(Dialog));
+    expect(dialog.backgroundColor, Colors.white);
+    expect(
+      dialog.shape,
+      const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(34)),
+      ),
+    );
+    final dialogBounds = tester.getRect(
+      find
+          .ancestor(
+            of: find.text(t.me.clearWarning),
+            matching: find.byType(Material),
+          )
+          .first,
+    );
+    final cancel = tester.getRect(
+      find.ancestor(
+        of: find.text(t.common.cancel),
+        matching: find.byType(TextButton),
+      ),
+    );
+    final confirm = tester.getRect(
+      find.ancestor(
+        of: find.text(t.me.confirmClear),
+        matching: find.byType(TextButton),
+      ),
+    );
+    expect(dialogBounds.width, 320);
+    final titleBounds = tester.getRect(find.text(t.me.clearWarning));
+    expect(titleBounds.left - dialogBounds.left, 32);
+    expect(titleBounds.top - dialogBounds.top, 24);
+    expect(cancel.height, 48);
+    expect(confirm.height, 48);
+    expect(cancel.width, confirm.width);
+    expect(confirm.left - cancel.right, 8);
+    expect(cancel.left - dialogBounds.left, 16);
+    expect(dialogBounds.right - confirm.right, 16);
+    expect(dialogBounds.bottom - confirm.bottom, 16);
+    for (final button in tester.widgetList<TextButton>(
+      find.byType(TextButton),
+    )) {
+      expect(button.style?.shape?.resolve({}), const StadiumBorder());
+      expect(button.style?.backgroundColor?.resolve({}), isNotNull);
+    }
     await tester.tap(find.text(t.common.cancel));
     await tester.pumpAndSettle();
     expect(account.clears, 0);
@@ -107,6 +155,37 @@ void main() {
     expect(account.clears, 1);
     await tester.pump(const Duration(seconds: 4));
     await tester.pumpAndSettle();
+  });
+
+  testWidgets('storage dialog stacks actions when labels need more width', (
+    tester,
+  ) async {
+    final container = await tester.pumpApp();
+    container.read(appRouterProvider).go('/me/storage');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(t.me.clearAll));
+    tester.view.physicalSize = const Size(280 * 3, 844 * 3);
+    await tester.pumpAndSettle();
+
+    final cancel = tester.getRect(
+      find.ancestor(
+        of: find.text(t.common.cancel),
+        matching: find.byType(TextButton),
+      ),
+    );
+    final confirm = tester.getRect(
+      find.ancestor(
+        of: find.text(t.me.confirmClear),
+        matching: find.byType(TextButton),
+      ),
+    );
+    expect(confirm.top - cancel.bottom, 8);
+    expect(confirm.width, cancel.width);
+    final confirmLabel = tester.getRect(find.text(t.me.confirmClear));
+    expect(confirmLabel.left, greaterThanOrEqualTo(confirm.left));
+    expect(confirmLabel.right, lessThanOrEqualTo(confirm.right));
+    expect(confirmLabel.bottom, lessThanOrEqualTo(confirm.bottom));
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('about shows installed version', (tester) async {

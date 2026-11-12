@@ -63,8 +63,8 @@ class AppShell extends HookConsumerWidget {
           AnimatedPositioned(
             duration: AppMotion.fast,
             curve: AppMotion.emphasized,
-            left: AppSpacing.md,
-            right: AppSpacing.md,
+            left: AppInsets.pageHorizontal,
+            right: AppInsets.pageHorizontal,
             bottom: bottom,
             child: MeasureSize(
               onChange: (size) => dockHeight.value = size.height,

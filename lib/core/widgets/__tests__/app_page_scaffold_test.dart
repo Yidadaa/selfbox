@@ -3,11 +3,34 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/router/shell_scope.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
+import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/core/widgets/app_page_scaffold.dart';
 import 'package:selfbox/core/widgets/empty_state.dart';
 
 void main() {
+  for (final brightness in Brightness.values) {
+    testWidgets('$brightness uses the canvas top color for the edge fade', (
+      tester,
+    ) async {
+      await tester.pumpPage(
+        const AppPageScaffold(title: 'Page', body: SizedBox.shrink()),
+        brightness: brightness,
+      );
+
+      final scaffold = tester.widget<GlassScaffold>(
+        find.descendant(
+          of: find.byType(AppPageScaffold),
+          matching: find.byType(GlassScaffold),
+        ),
+      );
+      expect(
+        scaffold.backgroundColor,
+        AppGlassTheme.of(brightness).canvasGradient.first,
+      );
+    });
+  }
+
   group('EmptyState', () {
     testWidgets('shows the icon and label inside a glass card', (tester) async {
       await tester.pumpPage(
@@ -45,6 +68,21 @@ void main() {
   });
 
   group('AppPageInsets', () {
+    testWidgets('aligns app bar and page content with the chat dock', (
+      tester,
+    ) async {
+      await tester.pumpPage(
+        const AppPageScaffold(title: 'Page', body: SizedBox.shrink()),
+      );
+
+      final appBar = tester.widget<GlassAppBar>(find.byType(GlassAppBar));
+      final insets = AppPageInsets.of(tester.element(find.byType(GlassAppBar)));
+
+      expect(appBar.padding.horizontal, AppInsets.pageHorizontal * 2);
+      expect(insets.left, AppInsets.pageHorizontal);
+      expect(insets.right, AppInsets.pageHorizontal);
+    });
+
     testWidgets('clears the safe area, app bar and shell tab bar', (
       tester,
     ) async {

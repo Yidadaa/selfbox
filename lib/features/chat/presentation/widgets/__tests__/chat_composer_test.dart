@@ -7,6 +7,7 @@ import 'package:selfbox/core/router/app_dock_tabs.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
+import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
@@ -190,6 +191,16 @@ void main() {
     final send = tester.getRect(find.byType(ChatSendButton));
     expect(attach.center.dy, closeTo(input.center.dy, 1));
     expect(send.center.dy, closeTo(input.center.dy, 1));
+    final sendCircle = tester.widget<AnimatedContainer>(
+      find.descendant(
+        of: find.byType(ChatSendButton),
+        matching: find.byType(AnimatedContainer),
+      ),
+    );
+    expect(
+      (sendCircle.decoration! as BoxDecoration).color,
+      AppGlassTheme.of(Brightness.dark).bubbleMine,
+    );
     expect(attach.left, AppSpacing.md);
     expect(send.right, kPhoneViewport.width - AppSpacing.md);
   });

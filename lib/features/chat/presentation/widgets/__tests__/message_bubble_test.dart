@@ -86,32 +86,26 @@ void main() {
               case MessageAuthor.ai:
                 expect(
                   material,
-                  isA<GlassContainer>()
-                      .having(
-                        (glass) => glass.quality,
-                        'quality',
-                        GlassQuality.standard,
-                      )
-                      .having((glass) => glass.color, 'opaque override', isNull)
-                      .having(
-                        (glass) => glass.shape,
-                        'shape',
-                        isA<LiquidRoundedSuperellipse>().having(
-                          (shape) => shape.borderRadius,
-                          'radius',
-                          MessageTokens.radius,
+                  isA<DecoratedBox>().having(
+                    (box) => box.decoration,
+                    'theme card without shadow',
+                    isA<ShapeDecoration>()
+                        .having(
+                          (decoration) => decoration.color,
+                          'color',
+                          AppGlassTheme.of(brightness).bubbleOther,
+                        )
+                        .having(
+                          (decoration) => decoration.shadows,
+                          'shadows',
+                          isNull,
                         ),
-                      ),
+                  ),
                 );
                 expect(
                   find.descendant(
                     of: contentFinder,
-                    matching: find.byWidgetPredicate(
-                      (widget) =>
-                          widget is ColoredBox &&
-                          widget.color ==
-                              AppGlassTheme.of(brightness).bubbleOther,
-                    ),
+                    matching: find.byType(GlassContainer),
                   ),
                   findsNothing,
                 );
@@ -122,7 +116,7 @@ void main() {
           expect(status.center.dy, closeTo(time.center.dy, 0.01));
           expect(
             tester.widget<Text>(find.text('09:30')).style?.color,
-            AppGlassTheme.of(brightness).foregroundMuted,
+            AppGlassTheme.of(brightness).messageMetadata,
           );
           switch (author) {
             case MessageAuthor.me:
@@ -141,9 +135,21 @@ void main() {
               ),
               findsNothing,
             );
+            final frames = find.descendant(
+              of: image,
+              matching: find.byType(DecoratedBox),
+            );
+            expect(frames, findsOneWidget);
+            final frame = tester.widget<DecoratedBox>(frames.first);
             expect(
-              find.descendant(of: image, matching: find.byType(GlassContainer)),
-              findsOneWidget,
+              frame.decoration,
+              isA<ShapeDecoration>()
+                  .having(
+                    (shape) => shape.color,
+                    'theme surface',
+                    AppGlassTheme.of(brightness).bubbleOther,
+                  )
+                  .having((shape) => shape.shadows, 'shadows', isNull),
             );
             if (content == 'photo') {
               expect(
@@ -167,49 +173,58 @@ void main() {
       expect(glass.onBubbleMine, Colors.white);
     }
   });
-  for (final count in [1, 2, 6]) {
-    testWidgets('$count images occupy one bounded stack', (tester) async {
-      String? opened;
-      final images = List.generate(count, (i) => 'media/$i.png');
-      await tester.pumpPage(
-        Center(
-          child: MessageBubble(
-            message: Message(
-              id: 1,
-              createdAt: kTestNow,
-              author: MessageAuthor.me,
-              text: '',
-              images: images,
+  for (final brightness in Brightness.values) {
+    for (final count in [1, 2, 6]) {
+      testWidgets('$brightness $count images occupy one bounded stack', (
+        tester,
+      ) async {
+        String? opened;
+        final images = List.generate(count, (i) => 'media/$i.png');
+        await tester.pumpPage(
+          Center(
+            child: MessageBubble(
+              message: Message(
+                id: 1,
+                createdAt: kTestNow,
+                author: MessageAuthor.me,
+                text: '',
+                images: images,
+              ),
+              resolveImage: (_) => null,
+              onImageTap: (path) => opened = path,
             ),
-            resolveImage: (_) => null,
-            onImageTap: (path) => opened = path,
           ),
-        ),
-      );
-      final stack = find.byType(MessageImageStack);
-      final frames = find.descendant(
-        of: stack,
-        matching: find.byType(GlassContainer),
-      );
-      expect(frames, findsNWidgets(count.clamp(1, 3)));
-      for (final frame in tester.widgetList<GlassContainer>(frames)) {
-        expect(frame.quality, GlassQuality.standard);
-        expect(frame.padding, const EdgeInsets.all(AppSpacing.xxs));
-        expect(
-          frame.shape,
-          isA<LiquidRoundedSuperellipse>().having(
-            (shape) => shape.borderRadius,
-            'concentric radius',
-            MessageTokens.imageFrameRadius,
+          brightness: brightness,
+        );
+        final stack = find.byType(MessageImageStack);
+        final frames = find.descendant(
+          of: stack,
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is DecoratedBox && widget.decoration is ShapeDecoration,
           ),
         );
-      }
-      expect(tester.getSize(stack).width, lessThanOrEqualTo(240));
-      expect(tester.getSize(stack).height, lessThanOrEqualTo(220));
-      await tester.tap(stack);
-      expect(opened, images.first);
-      expect(tester.takeException(), isNull);
-    });
+        expect(frames, findsNWidgets(count.clamp(1, 3)));
+        for (final frame in tester.widgetList<DecoratedBox>(frames)) {
+          final decoration = frame.decoration as ShapeDecoration;
+          expect(decoration.color, AppGlassTheme.of(brightness).bubbleOther);
+          expect(decoration.shadows, isNull);
+          expect(
+            decoration.shape,
+            isA<RoundedSuperellipseBorder>().having(
+              (shape) => shape.borderRadius,
+              'radius',
+              BorderRadius.circular(MessageTokens.imageFrameRadius),
+            ),
+          );
+        }
+        expect(tester.getSize(stack).width, lessThanOrEqualTo(240));
+        expect(tester.getSize(stack).height, lessThanOrEqualTo(220));
+        await tester.tap(stack);
+        expect(opened, images.first);
+        expect(tester.takeException(), isNull);
+      });
+    }
   }
   test('photo frame and image corners are concentric', () {
     expect(

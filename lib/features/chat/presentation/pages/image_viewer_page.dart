@@ -43,7 +43,7 @@ class ImageViewerPage extends HookConsumerWidget {
           ),
           Positioned(
             top: insets.top + AppSpacing.xs,
-            left: AppSpacing.md,
+            left: AppInsets.pageHorizontal,
             child: GlassIconButton(
               quality: GlassQuality.premium,
               icon: const Icon(Icons.close_rounded),
@@ -55,8 +55,8 @@ class ImageViewerPage extends HookConsumerWidget {
           if (images.length > 1)
             Positioned(
               bottom: insets.bottom + AppSpacing.md,
-              left: AppSpacing.md,
-              right: AppSpacing.md,
+              left: AppInsets.pageHorizontal,
+              right: AppInsets.pageHorizontal,
               child: Center(
                 child: GlassContainer(
                   quality: GlassQuality.standard,

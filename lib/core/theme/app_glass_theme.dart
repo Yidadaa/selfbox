@@ -16,12 +16,15 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     required this.shadowBorder,
     required this.foreground,
     required this.foregroundMuted,
+    required this.messageMetadata,
     required this.accent,
     required this.onAccent,
     required this.bubbleMine,
     required this.onBubbleMine,
     required this.bubbleOther,
     required this.onBubbleOther,
+    required this.dialogActionFill,
+    required this.dialogDestructive,
   });
 
   static const AppGlassTheme dark = AppGlassTheme(
@@ -34,12 +37,15 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     shadowBorder: Color(0x14FFFFFF),
     foreground: Color(0xFFF5F7FF),
     foregroundMuted: Color(0xB3F5F7FF),
+    messageMetadata: Color(0x66F5F7FF),
     accent: Color(0xFF7C9CFF),
     onAccent: Color(0xFF0B0F1A),
     bubbleMine: Color(0xFF006FE6),
     onBubbleMine: Color(0xFFFFFFFF),
-    bubbleOther: Color(0xFF262A36),
+    bubbleOther: Color(0xFF252B3C),
     onBubbleOther: Color(0xFFF5F7FF),
+    dialogActionFill: Color(0x33FFFFFF),
+    dialogDestructive: Color(0xFFFF8A80),
   );
 
   static const AppGlassTheme light = AppGlassTheme(
@@ -52,12 +58,15 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     shadowBorder: Color(0x1A0B0F1A),
     foreground: Color(0xFF0B0F1A),
     foregroundMuted: Color(0xA60B0F1A),
+    messageMetadata: Color(0x660B0F1A),
     accent: Color(0xFF3D5AFE),
     onAccent: Color(0xFFFFFFFF),
     bubbleMine: Color(0xFF006FE6),
     onBubbleMine: Color(0xFFFFFFFF),
-    bubbleOther: Color(0xFFE5E5EA),
+    bubbleOther: Colors.white,
     onBubbleOther: Color(0xFF0B0F1A),
+    dialogActionFill: Color(0x260B0F1A),
+    dialogDestructive: Color(0xFFB42318),
   );
 
   static AppGlassTheme of(Brightness brightness) => switch (brightness) {
@@ -76,6 +85,7 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
   final Color shadowBorder;
   final Color foreground;
   final Color foregroundMuted;
+  final Color messageMetadata;
   final Color accent;
   final Color onAccent;
 
@@ -86,6 +96,8 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
   /// AI replies (left-aligned).
   final Color bubbleOther;
   final Color onBubbleOther;
+  final Color dialogActionFill;
+  final Color dialogDestructive;
 
   @override
   AppGlassTheme copyWith({
@@ -98,12 +110,15 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     Color? shadowBorder,
     Color? foreground,
     Color? foregroundMuted,
+    Color? messageMetadata,
     Color? accent,
     Color? onAccent,
     Color? bubbleMine,
     Color? onBubbleMine,
     Color? bubbleOther,
     Color? onBubbleOther,
+    Color? dialogActionFill,
+    Color? dialogDestructive,
   }) {
     return AppGlassTheme(
       canvasGradient: canvasGradient ?? this.canvasGradient,
@@ -115,12 +130,15 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
       shadowBorder: shadowBorder ?? this.shadowBorder,
       foreground: foreground ?? this.foreground,
       foregroundMuted: foregroundMuted ?? this.foregroundMuted,
+      messageMetadata: messageMetadata ?? this.messageMetadata,
       accent: accent ?? this.accent,
       onAccent: onAccent ?? this.onAccent,
       bubbleMine: bubbleMine ?? this.bubbleMine,
       onBubbleMine: onBubbleMine ?? this.onBubbleMine,
       bubbleOther: bubbleOther ?? this.bubbleOther,
       onBubbleOther: onBubbleOther ?? this.onBubbleOther,
+      dialogActionFill: dialogActionFill ?? this.dialogActionFill,
+      dialogDestructive: dialogDestructive ?? this.dialogDestructive,
     );
   }
 
@@ -142,12 +160,15 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
       shadowBorder: c(shadowBorder, other.shadowBorder),
       foreground: c(foreground, other.foreground),
       foregroundMuted: c(foregroundMuted, other.foregroundMuted),
+      messageMetadata: c(messageMetadata, other.messageMetadata),
       accent: c(accent, other.accent),
       onAccent: c(onAccent, other.onAccent),
       bubbleMine: c(bubbleMine, other.bubbleMine),
       onBubbleMine: c(onBubbleMine, other.onBubbleMine),
       bubbleOther: c(bubbleOther, other.bubbleOther),
       onBubbleOther: c(onBubbleOther, other.onBubbleOther),
+      dialogActionFill: c(dialogActionFill, other.dialogActionFill),
+      dialogDestructive: c(dialogDestructive, other.dialogDestructive),
     );
   }
 }

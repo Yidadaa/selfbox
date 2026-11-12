@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/core/widgets/pressable.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
+import 'package:selfbox/features/chat/presentation/pages/chat_page.dart';
 import 'package:selfbox/features/chat/presentation/pages/image_viewer_page.dart';
+import 'package:selfbox/features/chat/presentation/pages/message_search_page.dart';
 import 'package:selfbox/features/chat/presentation/providers/chat_feed.dart';
+import 'package:selfbox/features/chat/presentation/providers/message_search.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer.dart';
 import 'package:selfbox/features/chat/presentation/widgets/day_pill.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
+import 'package:selfbox/features/settings/presentation/pages/me_page.dart';
+import 'package:selfbox/features/settings/presentation/pages/profile_page.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -54,6 +61,17 @@ void main() {
       );
       expect(find.byType(ChatComposer), findsOneWidget);
       expect(find.text(t.tabs.memory), findsOneWidget);
+      expect(
+        tester
+            .getRect(
+              find.descendant(
+                of: find.byType(ChatPage),
+                matching: find.byType(ListView),
+              ),
+            )
+            .top,
+        0,
+      );
     });
 
     testWidgets('timeline retry recovers without clearing the draft', (
@@ -86,6 +104,157 @@ void main() {
 
       expect(find.text(t.chat.empty), findsOneWidget);
       expect(find.byType(ChatComposer), findsOneWidget);
+      expect(
+        tester
+            .getRect(
+              find.descendant(
+                of: find.byType(ChatPage),
+                matching: find.byType(CustomScrollView),
+              ),
+            )
+            .top,
+        0,
+      );
+    });
+
+    testWidgets('header opens settings, profile, and message search', (
+      tester,
+    ) async {
+      final container = await tester.pumpApp();
+      tester.view.physicalSize = const Size(320 * 3, 844 * 3);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(
+        tester.widget<GlassAppBar>(find.byType(GlassAppBar)).toolbarHeight,
+        AppSizes.chatHeaderHeight,
+      );
+      expect(
+        tester
+            .widgetList<GlassIconButton>(find.byType(GlassIconButton))
+            .every((button) => button.quality == GlassQuality.premium),
+        isTrue,
+      );
+      expect(
+        tester
+            .widget<GlassContainer>(
+              find.byKey(const ValueKey('chat-header-profile-surface')),
+            )
+            .quality,
+        GlassQuality.premium,
+      );
+      final avatar = tester.getRect(
+        find.byKey(const ValueKey('chat-header-avatar')),
+      );
+      final name = tester.getRect(
+        find.byKey(const ValueKey('chat-header-profile-surface')),
+      );
+      expect(avatar.width, greaterThan(44));
+      expect(avatar.center.dx, closeTo(name.center.dx, 0.01));
+      expect(name.top, lessThan(avatar.bottom));
+      expect(name.center.dy, greaterThan(avatar.center.dy));
+      expect(
+        tester.widget<Text>(find.text(t.me.defaultName)).style?.fontSize,
+        lessThan(18),
+      );
+      final profileStack = tester.widget<Stack>(
+        find
+            .ancestor(
+              of: find.byKey(const ValueKey('chat-header-avatar')),
+              matching: find.byType(Stack),
+            )
+            .first,
+      );
+      expect(
+        (profileStack.children.last as Positioned).child.key,
+        const ValueKey('chat-header-avatar'),
+      );
+
+      await tester.tap(find.bySemanticsLabel(t.chat.openSettings));
+      await tester.pumpAndSettle();
+      expect(find.byType(MePage), findsOneWidget);
+      container.read(appRouterProvider).go('/chat');
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const ValueKey('chat-header-profile')));
+      await tester.pumpAndSettle();
+      expect(find.byType(ProfilePage), findsOneWidget);
+      container.read(appRouterProvider).go('/chat');
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.bySemanticsLabel(t.chat.searchMessages));
+      await tester.pumpAndSettle();
+      expect(find.byType(MessageSearchPage), findsOneWidget);
+    });
+
+    testWidgets('the timeline scrolls behind the profile header', (
+      tester,
+    ) async {
+      await tester.pumpApp(
+        messages: FakeMessageRepository(
+          seed: [for (var id = 1; id <= 12; id++) _msg(id, 'Note $id')],
+        ),
+      );
+
+      final timeline = find.descendant(
+        of: find.byType(ChatPage),
+        matching: find.byType(ListView),
+      );
+      expect(timeline, findsOneWidget);
+      expect(tester.getRect(timeline).top, 0);
+      final list = tester.widget<ListView>(timeline);
+      final safeTop = MediaQuery.paddingOf(tester.element(timeline)).top;
+      expect(
+        (list.padding! as EdgeInsets).top,
+        safeTop + AppSizes.chatHeaderHeight + AppSpacing.md,
+      );
+    });
+
+    testWidgets('message search filters notes and shows an empty result', (
+      tester,
+    ) async {
+      await tester.pumpApp(
+        messages: FakeMessageRepository(
+          seed: [_msg(1, 'weekly report'), _msg(2, 'weekend hike')],
+        ),
+      );
+      await tester.tap(find.bySemanticsLabel(t.chat.searchMessages));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.byKey(const ValueKey('message-search-input')),
+        'report',
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('weekly report'), findsOneWidget);
+      expect(find.text('weekend hike'), findsNothing);
+
+      await tester.enterText(
+        find.byKey(const ValueKey('message-search-input')),
+        'missing phrase',
+      );
+      await tester.pumpAndSettle();
+      expect(find.text(t.chat.noSearchResults), findsOneWidget);
+    });
+
+    testWidgets('message search failures offer a retry action', (tester) async {
+      await tester.pumpApp(
+        overrides: [
+          messageSearchProvider('broken').overrideWith(
+            (ref) async =>
+                const Left(AppFailure.database(message: 'unavailable')),
+          ),
+        ],
+      );
+      await tester.tap(find.bySemanticsLabel(t.chat.searchMessages));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const ValueKey('message-search-input')),
+        'broken',
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text(t.settings.errors.generic), findsOneWidget);
+      expect(find.text(t.common.retry), findsOneWidget);
     });
 
     testWidgets('puts my notes on the right and AI replies on the left', (

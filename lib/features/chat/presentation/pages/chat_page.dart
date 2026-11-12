@@ -7,11 +7,15 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/router/shell_scope.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/time/clock.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
+import '../../../../core/widgets/pressable.dart';
 import '../../../../gen/i18n/strings.g.dart';
+import '../../../settings/presentation/providers/account_providers.dart';
+import '../../../settings/presentation/widgets/profile_avatar.dart';
 import '../../data/chat_data_providers.dart';
 import '../../domain/models/message.dart';
 import '../providers/assistant_controller.dart';
@@ -31,6 +35,10 @@ class ChatPage extends ConsumerWidget {
 
     return AppPageScaffold(
       title: context.t.chat.title,
+      titleContent: const _ChatHeaderProfile(),
+      leading: const _ChatHeaderButton(),
+      actions: const [_ChatSearchButton()],
+      appBarHeight: AppSizes.chatHeaderHeight,
       // The shell already accounts for the keyboard in bottomInset.
       resizeToAvoidBottomInset: false,
       body: GestureDetector(
@@ -40,6 +48,96 @@ class ChatPage extends ConsumerWidget {
       ),
     );
   }
+}
+
+class _ChatHeaderProfile extends ConsumerWidget {
+  const _ChatHeaderProfile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profile = switch (ref.watch(userProfileProvider)) {
+      AsyncData(:final value) => value,
+      AsyncLoading() || AsyncError() => null,
+    };
+    final name = profile?.nickname.trim();
+    return Pressable(
+      key: const ValueKey('chat-header-profile'),
+      semanticLabel: context.t.me.editProfile,
+      onTap: () => const ProfileRoute().push<void>(context),
+      child: SizedBox(
+        key: const ValueKey('chat-header-profile-layout'),
+        width: 128,
+        height: AppSizes.chatHeaderHeight,
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.topCenter,
+          children: [
+            Positioned(
+              top: 44,
+              left: AppSpacing.xs,
+              right: AppSpacing.xs,
+              child: GlassContainer(
+                key: const ValueKey('chat-header-profile-surface'),
+                quality: GlassQuality.premium,
+                shape: const LiquidRoundedSuperellipse(
+                  borderRadius: AppRadius.pill,
+                ),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.sm,
+                  AppSpacing.md,
+                  AppSpacing.xxs,
+                ),
+                child: Center(
+                  child: Text(
+                    name == null || name.isEmpty
+                        ? context.t.me.defaultName
+                        : name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 0,
+              child: ProfileAvatar(
+                key: const ValueKey('chat-header-avatar'),
+                path: profile?.avatar,
+                dimension: 56,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ChatHeaderButton extends StatelessWidget {
+  const _ChatHeaderButton();
+
+  @override
+  Widget build(BuildContext context) => GlassIconButton(
+    quality: GlassQuality.premium,
+    icon: const Icon(Icons.settings_outlined),
+    semanticLabel: context.t.chat.openSettings,
+    onPressed: () => const MeRoute().go(context),
+  );
+}
+
+class _ChatSearchButton extends StatelessWidget {
+  const _ChatSearchButton();
+
+  @override
+  Widget build(BuildContext context) => GlassIconButton(
+    quality: GlassQuality.premium,
+    icon: const Icon(Icons.search_rounded),
+    semanticLabel: context.t.chat.searchMessages,
+    onPressed: () => const MessageSearchRoute().push<void>(context),
+  );
 }
 
 class _ChatBody extends ConsumerWidget {
@@ -96,7 +194,10 @@ class _ChatPlaceholder extends ConsumerWidget {
     slivers: [
       SliverPadding(
         padding: EdgeInsets.only(
-          top: AppPageInsets.of(context).top,
+          top: AppPageInsets.of(
+            context,
+            appBarHeight: AppSizes.chatHeaderHeight,
+          ).top,
           bottom: bottomPadding,
         ),
         sliver: SliverFillRemaining(hasScrollBody: false, child: child),
@@ -119,7 +220,6 @@ class _Timeline extends HookConsumerWidget {
     final now = ref.watch(clockProvider)();
     final media = ref.watch(mediaStoreProvider);
     final requestedFor = useRef(-1);
-    final insets = AppPageInsets.of(context);
     final assistant = ref.watch(assistantControllerProvider);
     // The reversed list's first slot is the bottom: AI status sits under the
     // newest message.
@@ -144,7 +244,10 @@ class _Timeline extends HookConsumerWidget {
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         padding: EdgeInsets.fromLTRB(
           AppSpacing.md,
-          insets.top,
+          AppPageInsets.of(
+            context,
+            appBarHeight: AppSizes.chatHeaderHeight,
+          ).top,
           AppSpacing.md,
           bottomPadding,
         ),
@@ -230,7 +333,10 @@ class _TimelineSkeleton extends StatelessWidget {
         physics: const NeverScrollableScrollPhysics(),
         padding: EdgeInsets.fromLTRB(
           AppSpacing.md,
-          0,
+          AppPageInsets.of(
+            context,
+            appBarHeight: AppSizes.chatHeaderHeight,
+          ).top,
           AppSpacing.md,
           bottomPadding,
         ),

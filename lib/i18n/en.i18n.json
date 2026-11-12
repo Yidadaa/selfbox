@@ -16,6 +16,10 @@
     "attachImage": "Image",
     "removeImage": "Remove",
     "aiMode": "AI mode",
+    "openSettings": "Settings",
+    "searchMessages": "Search messages",
+    "searchHint": "Search your notes",
+    "noSearchResults": "No matching messages",
     "today": "Today",
     "yesterday": "Yesterday",
     "imageFailed": "Image unavailable"

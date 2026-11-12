@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../router/shell_scope.dart';
+import '../theme/app_glass_theme.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
 import 'app_canvas.dart';
@@ -14,6 +15,8 @@ class AppPageScaffold extends StatelessWidget {
     required this.body,
     this.leading,
     this.actions,
+    this.titleContent,
+    this.appBarHeight = AppSizes.appBarHeight,
     this.resizeToAvoidBottomInset = true,
     super.key,
   });
@@ -22,6 +25,8 @@ class AppPageScaffold extends StatelessWidget {
   final Widget body;
   final Widget? leading;
   final List<Widget>? actions;
+  final Widget? titleContent;
+  final double appBarHeight;
 
   /// Turn off when the page positions content against the keyboard itself;
   /// otherwise the body shrinks *and* the content lifts, counting it twice.
@@ -31,11 +36,16 @@ class AppPageScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassScaffold(
       background: const AppCanvas(),
+      backgroundColor: context.glass.canvasGradient.first,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       appBar: GlassAppBar(
-        title: _TitleCapsule(title: title),
+        title: titleContent ?? _TitleCapsule(title: title),
         leading: leading,
         actions: actions,
+        toolbarHeight: appBarHeight,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppInsets.pageHorizontal,
+        ),
       ),
       body: body,
     );
@@ -47,12 +57,13 @@ class AppPageScaffold extends StatelessWidget {
 abstract final class AppPageInsets {
   static EdgeInsets of(
     BuildContext context, {
-    double horizontal = AppSpacing.md,
+    double horizontal = AppInsets.pageHorizontal,
+    double appBarHeight = AppSizes.appBarHeight,
   }) {
     final top = MediaQuery.paddingOf(context).top;
     return EdgeInsets.fromLTRB(
       horizontal,
-      top + AppSizes.appBarHeight + AppSpacing.md,
+      top + appBarHeight + AppSpacing.md,
       horizontal,
       ShellScope.bottomInsetOf(context) + AppSpacing.md,
     );

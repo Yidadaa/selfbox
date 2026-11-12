@@ -1,5 +1,17 @@
 # 架构决策记录 (ADR)
 
+### [ADR-022] 设置确认使用原生白色弹层
+
+- **背景**：清除数据确认的全屏 glass action sheet 使用自有渲染层，弹出时有明显卡顿及文字装饰异常；历史轮次更适合连续数值选择。
+- **决策**：清除确认使用白色 `AppConfirmDialog`，保持 34dp 圆角和确认/取消语义。布局沿用 Liquid Dialog 的 320dp 宽度、左对齐标题、16dp 操作区边距及两个等宽 48dp 胶囊按钮；文案放不下时纵向排列，内容过高时可滚动。历史轮次使用白色 `ModalBottomSheet` 与 `CupertinoPicker`，可选 0–100 并仅在保存时写入。
+- **影响**：这两个设置流程不依赖 Liquid Glass shader；清除确认显式关闭文字装饰，选择器支持保存与取消。
+
+### [ADR-021] 聊天顶部资料入口与消息搜索
+
+- **背景**：聊天顶部需要呈现个人资料身份，并提供设置和消息历史的快捷入口。
+- **决策**：聊天页顶部使用左右 premium 玻璃图标按钮及中心纵向头像 / 昵称控件；56dp 圆头像绘制在较小字号的昵称玻璃胶囊前方，两者重叠且整体居中可点击。聊天滚动视口从屏幕顶部开始，初始内容用顶部内边距避让头像栏，滚动时可透过玻璃按钮。资料进入根 Navigator 的资料编辑页，设置切换到 Me 分支，搜索进入根 Navigator 的独立页面并调用既有 `MessageRepository.find`。
+- **影响**：消息搜索沿用 `MessageQuery` 的分词匹配并限制最多 100 条；空查询不读取全量历史。顶部视觉仍由共享 `AppPageScaffold` 承载，通过可选 `titleContent` 定制中心区域。
+
 ### [ADR-016] 首页输入与导航共用完整 Liquid 表面
 
 - **背景**：首页原有输入框与 Tab 是两条独立悬浮栏；参考 ref-chat / ref-input 要求收起时合并、键盘打开时拆分。
@@ -119,6 +131,7 @@
 - **输入基线补充**：聊天正文与 placeholder 从同一 bodyLarge 派生并显式统一 alphabetic，避免中文主题 ideographic 与 RenderParagraph 基线实现差异导致提示下移；不改变全局中文排版。
 - **键盘态尺寸补充**：分离的附件圆钮与单行输入面统一 48dp；输入面移除上、下、右额外 padding，保留左侧文字内边距、发送热区与多行自然增长，并按实际 padding 计算编辑高度预算。发送圆形 36dp 位于 48dp 热区中央，单行时上、下、右可见留白均为 6dp；测试测量实际圆形边缘，不能只比较热区或中心线。
 - **收键盘时机补充**：ChatComposer 通过 useListenable 响应 FocusNode；仅在键盘存在且输入持有焦点时使用编辑布局，失焦立即启动导航展开。高度预算与 Shell 底部定位仍消费实际 inset，避免收起期间提前忽略键盘；键盘归零不再二次展开导航，重新聚焦可直接恢复编辑布局。
+- **表面与底部画布更新**：AI 消息与图片框使用无阴影的纯白 RoundedSuperellipse 卡片，不执行 Liquid Glass shader；我方消息保留蓝色气泡，发送按钮沿用同一 bubbleMine token。footer 使用单独更低不透明度 token。浅色全局画布渐变保持底部暖白色终点。
 
 ### [ADR-020] 消息元信息外置与图片轻玻璃框
 
@@ -126,3 +139,9 @@
 - **决策**：MessageBubble 按消息方向排列独立图片堆叠、可选文字气泡和单一 footer；元信息统一使用 foregroundMuted。图片每层采用 standard GlassContainer、4dp 内边距与 16dp 外圆角 / 12dp 内圆角，通过测试锁定默认圆角契约；堆叠区域使用 RepaintBoundary。
 - **影响**：图文消息的文字单独显示为气泡，footer 位于整条消息内容底部；纯图片无实色气泡。保留最多 3 层堆叠、完整张数、预览与长按。本决策替代 ADR-018 的气泡内时间布局。
 - **AI 表面补充**：AI 文字 / 图片说明使用 GlassContainer、GlassQuality.standard 与 MessageTokens.radius 圆角，无旧 bubbleOther 实色衬底；外层 RepaintBoundary 隔离滚动重绘。玻璃材质继承主题，正文沿用主题前景色，footer 在容器外。用户发送气泡仍采用蓝色连续尾部轮廓。
+
+### [ADR-021] 非玻璃表面跟随系统明暗模式
+
+- **背景**：消息卡片与弹层为性能改用不透明表面后，固定白色在深色模式下刺眼；GlassScaffold 的顶部滚动过渡未收到画布颜色，回退色可能与背景不符。
+- **决策**：AppGlassTheme 定义 AI/图片实色表面及对比文字、Dialog 操作填充色和危险操作色，按亮度切换。AppPageScaffold 将画布首色传给 GlassScaffold 作为顶部过渡目标。确认 Dialog 与模型/历史轮次 Picker Sheet 保持原布局与圆角，但底色、文字和选中背景取主题 Token；两类 Picker 共用布局。
+- **影响**：浅色模式 AI/图片卡片仍为纯白，深色模式使用不透明深灰蓝；弹层不启用实时模糊。新增非玻璃表面必须从主题取颜色并覆盖双模式测试。

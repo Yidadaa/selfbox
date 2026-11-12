@@ -199,6 +199,43 @@ ScreenshotEnv _chatAsking() {
 
 final screenshotFixtures = <ScreenshotFixture>[
   ScreenshotFixture(
+    name: 'chat_review',
+    location: '/chat',
+    env: () {
+      final base = _chatWithHistory();
+      return (
+        paths: base.paths,
+        messages: FakeMessageRepository(
+          seed: [
+            Message(
+              id: 1,
+              createdAt: _at(12, 9, 24),
+              author: MessageAuthor.me,
+              text: '周末想去这里走走',
+              images: const ['media/aurora.png'],
+            ),
+            Message(
+              id: 2,
+              createdAt: _at(12, 9, 30),
+              author: MessageAuthor.me,
+              text: '我这周记了哪些待办？',
+              askedAi: true,
+            ),
+            Message(
+              id: 3,
+              createdAt: _at(12, 9, 31),
+              author: MessageAuthor.ai,
+              text: '这周有三件待办：回复客户邮件、提交周报、完成季度复盘。',
+            ),
+          ],
+        ),
+        memory: null,
+        settings: null,
+        overrides: const [],
+      );
+    },
+  ),
+  ScreenshotFixture(
     name: 'chat_photo_caption',
     location: '/chat',
     env: () {

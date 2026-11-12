@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_markdown_theme.dart';
@@ -106,11 +105,13 @@ class _TextBubble extends ConsumerWidget {
         ),
       ),
       MessageAuthor.ai => RepaintBoundary(
-        child: GlassContainer(
+        child: DecoratedBox(
           key: const ValueKey('message-surface'),
-          quality: GlassQuality.standard,
-          shape: const LiquidRoundedSuperellipse(
-            borderRadius: MessageTokens.radius,
+          decoration: ShapeDecoration(
+            color: glass.bubbleOther,
+            shape: RoundedSuperellipseBorder(
+              borderRadius: BorderRadius.circular(MessageTokens.radius),
+            ),
           ),
           child: content,
         ),
@@ -125,7 +126,7 @@ class _MessageFooter extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final foreground = context.glass.foregroundMuted;
+    final foreground = context.glass.messageMetadata;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
       child: Row(

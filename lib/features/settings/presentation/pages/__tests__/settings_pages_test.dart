@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
@@ -7,6 +8,7 @@ import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
+import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/features/settings/presentation/pages/model_page.dart';
 import 'package:selfbox/features/settings/presentation/pages/provider_page.dart';
@@ -17,6 +19,13 @@ const _provider = ProviderConfig(
   name: 'My Gateway',
   format: ApiFormat.chatCompletions,
   baseUrl: 'https://gw.example.com/v1',
+);
+
+const _otherProvider = ProviderConfig(
+  id: 'p2',
+  name: 'Other Gateway',
+  format: ApiFormat.responses,
+  baseUrl: 'https://other.example.com/v1',
 );
 
 Future<ProviderContainer> _open(
@@ -73,17 +82,175 @@ void main() {
       expect(find.text('m'), findsOneWidget);
     });
 
+    testWidgets('model picker starts on the current model and saves a change', (
+      tester,
+    ) async {
+      final settings = FakeAiSettingsRepository(
+        settings: const AiSettings(
+          providers: [_provider, _otherProvider],
+          models: [
+            ModelConfig(providerId: 'p1', modelId: 'model-a', enabled: true),
+            ModelConfig(providerId: 'p1', modelId: 'model-b', enabled: true),
+            ModelConfig(providerId: 'p2', modelId: 'model-a', enabled: true),
+          ],
+          activeModel: ModelRef(providerId: 'p1', modelId: 'model-b'),
+        ),
+      );
+      await _open(tester, '/me/providers', settings: settings);
+
+      await tester.tap(find.text(t.settings.activeModel));
+      await tester.pumpAndSettle();
+
+      final sheet = tester.widget<BottomSheet>(find.byType(BottomSheet));
+      expect(sheet.backgroundColor, Colors.white);
+      expect(
+        sheet.shape,
+        const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(34)),
+        ),
+      );
+      final picker = tester.widget<CupertinoPicker>(
+        find.byKey(const ValueKey('model-picker')),
+      );
+      expect(picker.scrollController!.selectedItem, 1);
+      expect(find.text('Other Gateway · model-a'), findsOneWidget);
+
+      picker.scrollController!.jumpToItem(2);
+      await tester.pumpAndSettle();
+      expect(
+        settings.current.activeModel,
+        const ModelRef(providerId: 'p1', modelId: 'model-b'),
+      );
+      await tester.tap(find.text(t.common.save));
+      await tester.pumpAndSettle();
+
+      expect(
+        settings.current.activeModel,
+        const ModelRef(providerId: 'p2', modelId: 'model-a'),
+      );
+      expect(find.byType(BottomSheet), findsNothing);
+    });
+
+    testWidgets('cancelling model picker preserves the current model', (
+      tester,
+    ) async {
+      final settings = FakeAiSettingsRepository(
+        settings: const AiSettings(
+          providers: [_provider],
+          models: [
+            ModelConfig(providerId: 'p1', modelId: 'model-a', enabled: true),
+            ModelConfig(providerId: 'p1', modelId: 'model-b', enabled: true),
+          ],
+          activeModel: ModelRef(providerId: 'p1', modelId: 'model-a'),
+        ),
+      );
+      await _open(tester, '/me/providers', settings: settings);
+
+      await tester.tap(find.text(t.settings.activeModel));
+      await tester.pumpAndSettle();
+      tester
+          .widget<CupertinoPicker>(find.byKey(const ValueKey('model-picker')))
+          .scrollController!
+          .jumpToItem(1);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(t.common.cancel));
+      await tester.pumpAndSettle();
+
+      expect(
+        settings.current.activeModel,
+        const ModelRef(providerId: 'p1', modelId: 'model-a'),
+      );
+    });
+
+    testWidgets('model picker stays unavailable without enabled models', (
+      tester,
+    ) async {
+      await _open(tester, '/me/providers');
+
+      await tester.tap(find.text(t.settings.activeModel));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BottomSheet), findsNothing);
+    });
+
+    testWidgets('model and history pickers use dark opaque surfaces', (
+      tester,
+    ) async {
+      tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+      addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+      await _open(
+        tester,
+        '/me/providers',
+        settings: FakeAiSettingsRepository(
+          settings: const AiSettings(
+            providers: [_provider],
+            models: [
+              ModelConfig(providerId: 'p1', modelId: 'model-a', enabled: true),
+            ],
+          ),
+        ),
+      );
+
+      for (final (label, key) in [
+        (t.settings.activeModel, const ValueKey('model-picker')),
+        (t.settings.historyTurns, const ValueKey('history-turns-picker')),
+      ]) {
+        await tester.tap(find.text(label));
+        await tester.pumpAndSettle();
+        final sheet = tester.widget<BottomSheet>(find.byType(BottomSheet));
+        expect(sheet.backgroundColor, AppGlassTheme.dark.bubbleOther);
+        expect(sheet.backgroundColor!.computeLuminance(), lessThan(0.15));
+        expect(find.byKey(key), findsOneWidget);
+        final title = tester.widget<Text>(
+          find.descendant(
+            of: find.byType(BottomSheet),
+            matching: find.text(label),
+          ),
+        );
+        expect(title.style?.color, AppGlassTheme.dark.onBubbleOther);
+        await tester.tap(find.text(t.common.cancel));
+        await tester.pumpAndSettle();
+      }
+    });
+
     testWidgets('history turns can be changed from a sheet', (tester) async {
       final settings = FakeAiSettingsRepository();
       await _open(tester, '/me/providers', settings: settings);
 
       await tester.tap(find.text(t.settings.historyTurns));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('40'));
+      expect(find.byType(CupertinoPicker), findsOneWidget);
+      expect(find.byType(BottomSheet), findsOneWidget);
+      final sheet = tester.widget<BottomSheet>(find.byType(BottomSheet));
+      expect(sheet.backgroundColor, Colors.white);
+      expect(
+        sheet.shape,
+        const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(34)),
+        ),
+      );
+      await tester.drag(find.byType(CupertinoPicker), const Offset(0, -800));
+      await tester.pumpAndSettle();
+      expect(find.text('38'), findsOneWidget);
+      await tester.tap(find.text(t.common.save));
       await tester.pumpAndSettle();
 
-      expect(settings.current.historyTurns, 40);
-      expect(find.text('40'), findsOneWidget);
+      expect(settings.current.historyTurns, 38);
+      expect(find.text('38'), findsOneWidget);
+    });
+
+    testWidgets('cancelling history picker preserves the current value', (
+      tester,
+    ) async {
+      final settings = FakeAiSettingsRepository();
+      await _open(tester, '/me/providers', settings: settings);
+
+      await tester.tap(find.text(t.settings.historyTurns));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(t.common.cancel));
+      await tester.pumpAndSettle();
+
+      expect(settings.current.historyTurns, AiSettings.defaultHistoryTurns);
     });
   });
 
