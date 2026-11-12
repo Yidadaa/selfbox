@@ -168,6 +168,37 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  for (final draft in ['', 'A draft worth keeping']) {
+    testWidgets('AI toggle keeps the keyboard for draft "$draft"', (
+      tester,
+    ) async {
+      final container = await tester.pumpApp();
+      final editable = find.byType(EditableText);
+      await tester.enterText(editable, draft);
+      final selection = draft.isEmpty ? 0 : 7;
+      tester.widget<EditableText>(editable).controller.selection =
+          TextSelection.collapsed(offset: selection);
+      tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+      await tester.pumpAndSettle();
+
+      for (final enabled in [true, false]) {
+        await tester.tap(find.bySemanticsLabel(t.chat.aiMode));
+        await tester.pumpAndSettle();
+        expect(container.read(composerControllerProvider).aiMode, enabled);
+        final field = tester.widget<EditableText>(editable);
+        expect(field.focusNode.hasFocus, isTrue);
+        expect(field.controller.text, draft);
+        expect(field.controller.selection.baseOffset, selection);
+        expect(find.text(t.tabs.memory), findsNothing);
+        expect(
+          tester.getBottomLeft(find.byType(ChatComposer)).dy,
+          closeTo(kPhoneViewport.height - 300 - AppSpacing.xs, 1),
+        );
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   for (final locale in AppLocale.values) {
     testWidgets('narrow viewport and multiline draft work in ${locale.name}', (
       tester,

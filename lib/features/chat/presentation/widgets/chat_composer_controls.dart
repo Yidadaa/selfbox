@@ -20,40 +20,42 @@ class ChatAiToggle extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final glass = context.glass;
-    return Semantics(
-      toggled: active,
-      child: GlassContainer(
-        quality: GlassQuality.premium,
-        useOwnLayer: true,
-        shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.pill),
-        child: Pressable(
-          onTap: onTap,
-          semanticLabel: context.t.chat.aiMode,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AnimatedSwitcher(
-                  duration: AppMotion.fast,
-                  transitionBuilder: (child, animation) =>
-                      ScaleTransition(scale: animation, child: child),
-                  child: Icon(
-                    active ? Icons.auto_awesome : Icons.auto_awesome_outlined,
-                    key: ValueKey(active),
-                    color: active ? glass.accent : glass.foregroundMuted,
-                  ),
-                ),
-                const Gap(AppSpacing.xs),
-                ExcludeSemantics(
-                  child: Text(
-                    context.t.chat.aiMode,
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: active ? glass.accent : glass.foreground,
+    return TextFieldTapRegion(
+      child: Semantics(
+        toggled: active,
+        child: GlassContainer(
+          quality: GlassQuality.premium,
+          useOwnLayer: true,
+          shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.pill),
+          child: Pressable(
+            onTap: onTap,
+            semanticLabel: context.t.chat.aiMode,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedSwitcher(
+                    duration: AppMotion.fast,
+                    transitionBuilder: (child, animation) =>
+                        ScaleTransition(scale: animation, child: child),
+                    child: Icon(
+                      active ? Icons.auto_awesome : Icons.auto_awesome_outlined,
+                      key: ValueKey(active),
+                      color: active ? glass.accent : glass.foregroundMuted,
                     ),
                   ),
-                ),
-              ],
+                  const Gap(AppSpacing.xs),
+                  ExcludeSemantics(
+                    child: Text(
+                      context.t.chat.aiMode,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: active ? glass.accent : glass.foreground,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

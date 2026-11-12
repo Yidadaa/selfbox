@@ -50,3 +50,4 @@
 - [2026-11-12] [LiquidGlass] GlassButton.custom 内未设 TextStyle 导致红色测试字形与裁切 -> 未继承 Material 正文主题 -> 显式使用主题字体、48dp 高度和 capsule shape，截图验收。
 - [2026-11-12] [Riverpod] Widget fixture 重复 override 同一 provider 报错 -> 默认替身和 overrides 同时注入 -> 可替换仓库作为 fixture 的显式可选参数传入。
 - [2026-11-12] [WidgetTest] find.byType(Skeletonizer) 找不到骨架 -> 工厂返回私有实现类型 -> 用 widget is Skeletonizer 与 enabled 判定实际行为。
+- [2026-11-12] [Focus] 点击输入框旁的 AI 按钮使键盘收起 -> CupertinoTextField 默认将按钮判为 outside tap 并 unfocus -> 用 TextFieldTapRegion 将相邻输入控制纳入同一点击组，保留页面空白处收键盘手势。
