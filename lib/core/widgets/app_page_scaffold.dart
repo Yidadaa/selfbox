@@ -37,6 +37,7 @@ class AppPageScaffold extends StatelessWidget {
     return GlassScaffold(
       background: const AppCanvas(),
       backgroundColor: context.glass.canvasGradient.first,
+      topEdgeFade: false,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       appBar: GlassAppBar(
         title: titleContent ?? _TitleCapsule(title: title),
@@ -47,7 +48,36 @@ class AppPageScaffold extends StatelessWidget {
           horizontal: AppInsets.pageHorizontal,
         ),
       ),
-      body: body,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          body,
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height:
+                MediaQuery.paddingOf(context).top +
+                appBarHeight +
+                AppSpacing.lg,
+            child: IgnorePointer(
+              key: const ValueKey('app-top-fade'),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      context.glass.canvasGradient.first,
+                      context.glass.canvasGradient.first.withValues(alpha: 0),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

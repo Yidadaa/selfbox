@@ -6,6 +6,12 @@
 - **决策**：确认操作统一使用 `AppConfirmDialog`，多操作菜单使用 `AppActionDialog`，两者共用不透明主题表面、34dp 圆角和 48dp 胶囊按钮。移除业务代码中的 GlassActionSheet；选择器继续使用 Bottom Sheet + Picker。弹窗文案在打开前读取，避免页面卸载后 builder 再访问旧 context。
 - **影响**：业务页面不得调用 Liquid Dialog / GlassActionSheet 或直接构造其他 Dialog。新增模态操作样式先扩展项目自有组件并测试明暗模式、取消与确认行为；保留现有 Bottom Sheet 选择器。
 
+### [ADR-030] 顶部渐隐由共享页面组件绘制
+
+- **背景**：`GlassScaffold` 的顶部渐隐优先使用异步捕获的背景纹理，主题色参数只用于回退；运行中切换明暗主题时可能短暂显示旧浅色纹理。
+- **决策**：`AppPageScaffold` 关闭依赖库的顶部边缘效果，并在全屏滚动内容上方、玻璃标题栏下方绘制取自当前 `AppGlassTheme.canvasGradient.first` 的渐隐；高度沿用安全区、标题栏和 20dp 延伸，且不拦截触控。
+- **影响**：主题切换直接触发渐隐重绘，不依赖纹理捕获时机；页面内容继续在标题栏下滚动，玻璃背景采样和其他控件保持原有路径。
+
 ### [ADR-022] 设置确认使用原生白色弹层
 
 - **背景**：清除数据确认的全屏 glass action sheet 使用自有渲染层，弹出时有明显卡顿及文字装饰异常；历史轮次更适合连续数值选择。
@@ -149,7 +155,7 @@
 ### [ADR-021] 非玻璃表面跟随系统明暗模式
 
 - **背景**：消息卡片与弹层为性能改用不透明表面后，固定白色在深色模式下刺眼；GlassScaffold 的顶部滚动过渡未收到画布颜色，回退色可能与背景不符。
-- **决策**：AppGlassTheme 定义 AI/图片实色表面及对比文字、Dialog 操作填充色和危险操作色，按亮度切换。AppPageScaffold 将画布首色传给 GlassScaffold 作为顶部过渡目标。确认 Dialog 与模型/历史轮次 Picker Sheet 保持原布局与圆角，但底色、文字和选中背景取主题 Token；两类 Picker 共用布局。
+- **决策**：AppGlassTheme 定义 AI/图片实色表面及对比文字、Dialog 操作填充色和危险操作色，按亮度切换。AppPageScaffold 的顶部过渡最终由 ADR-030 接管。确认 Dialog 与模型/历史轮次 Picker Sheet 保持原布局与圆角，但底色、文字和选中背景取主题 Token；两类 Picker 共用布局。
 - **影响**：浅色模式 AI/图片卡片仍为纯白，深色模式使用不透明深灰蓝；弹层不启用实时模糊。新增非玻璃表面必须从主题取颜色并覆盖双模式测试。
 
 ### [ADR-022] 设置流程的统一 Liquid Surface

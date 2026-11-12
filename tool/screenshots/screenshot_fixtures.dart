@@ -16,7 +16,9 @@ import 'package:selfbox/features/chat/domain/repositories/message_repository.dar
 import 'package:selfbox/features/chat/presentation/providers/assistant_controller.dart';
 import 'package:selfbox/features/memory/domain/repositories/memory_repository.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
+import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 import 'package:selfbox/features/settings/domain/repositories/ai_settings_repository.dart';
+import 'package:selfbox/features/settings/presentation/providers/app_preferences_controller.dart';
 
 typedef ScreenshotEnv = ({
   AppPaths? paths,
@@ -287,6 +289,17 @@ final screenshotFixtures = <ScreenshotFixture>[
     setUp: (tester, _) async {
       tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
       addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+      await tester.pumpAndSettle();
+    },
+  ),
+  ScreenshotFixture(
+    name: 'chat_dark_toggled',
+    location: '/chat',
+    env: _chatWithHistory,
+    setUp: (tester, container) async {
+      await container
+          .read(appPreferencesControllerProvider.notifier)
+          .setTheme(AppThemeChoice.dark);
       await tester.pumpAndSettle();
     },
   ),
