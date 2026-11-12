@@ -2,8 +2,6 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
-- [2026-11-12] [Android] 打包测试机 APK 误包含不完整 ABI 库 -> 插件合并不同 ABI 原生库而 Flutter 目标平台不同 -> 真机 APK 显式指定 `--target-platform android-arm64`，并检查包内 `arm64-v8a/libflutter.so`。
-
 - [2026-11-12] [MessageGlass] AI 消息仍呈实色卡片 -> AI 与用户文字共用 ColoredBox 背景 -> AI 表面独立使用 standard GlassContainer，不在玻璃下保留不透明衬底；明暗主题同时锁定材质、外置 footer 与长按契约。
 
 - [2026-11-12] [Composer] 发送圆形右留白 14dp、上下 6dp -> 修正输入高度时仅去掉垂直 padding，遗留右侧 8dp -> 键盘态同时去掉右 padding，保留 48dp 热区；空 / 可发送态均测实际圆形三侧留白。

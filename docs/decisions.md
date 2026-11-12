@@ -104,7 +104,6 @@
 - **背景**：要装到真机长期使用；debug 签名的 APK 日后换正式签名只能卸载重装，会丢失本地笔记与记忆。模板 release manifest 缺少 `INTERNET`；`record` 插件合并进 `RECORD_AUDIO`，v0 并不录音。
 - **决策**：release 用本地私钥签名：keystore 在 `%USERPROFILE%/.selfbox-signing/selfbox-release.jks`，`android/key.properties`（已 gitignore）提供路径与密码；缺少该文件时回退 debug 签名以保证新克隆可构建。主 manifest 声明 `INTERNET`，并以 `tools:node="remove"` 移除 `RECORD_AUDIO`，录音功能落地时再按 Just-in-Time 恢复并更新本 ADR。真机为 arm64，用 `--target-platform android-arm64` 构建（只打 x86_64 时插件仍会塞入不完整的 arm64 目录，arm64 设备启动即崩溃）。
 - **影响**：keystore 与密码丢失后将无法覆盖安装更新——务必备份 `.selfbox-signing/` 与 `android/key.properties`。
-- **2026-11-12 真机包**：按 `flutter build apk --release --target-platform android-arm64` 打包；该产物使用上述正式签名，可覆盖安装同签名的已有版本。
 
 ### [ADR-018] 消息相册与个人资料 / 数据重置边界
 
