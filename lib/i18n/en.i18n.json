@@ -126,7 +126,11 @@
       "reasoning": "Thinking",
       "effort": "Thinking level",
       "enabled": "Enabled",
-      "delete": "Delete model"
+      "delete": "Delete model",
+      "testModel": "Test model",
+      "testing": "Testing model...",
+      "available": "Model available",
+      "testFailed": "Test failed"
     },
     "effort": {
       "minimal": "Min",

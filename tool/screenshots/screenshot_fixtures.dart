@@ -404,6 +404,20 @@ final screenshotFixtures = <ScreenshotFixture>[
       await tester.pumpAndSettle();
     },
   ),
+  ScreenshotFixture(
+    name: 'provider_model_settings_dark',
+    location: '/me/provider?id=p1',
+    env: _settings,
+    setUp: (tester, _) async {
+      tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+      addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+      await tester.pumpAndSettle();
+    },
+    afterOpen: (tester) async {
+      await tester.tap(find.byKey(const ValueKey('model-open-gpt-5.5')));
+      await tester.pumpAndSettle();
+    },
+  ),
   const ScreenshotFixture(
     name: 'model',
     location: '/me/model?provider=p1&model=gpt-5.5',

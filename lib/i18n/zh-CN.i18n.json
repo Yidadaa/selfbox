@@ -126,7 +126,11 @@
       "reasoning": "支持思考",
       "effort": "思考等级",
       "enabled": "启用",
-      "delete": "删除模型"
+      "delete": "删除模型",
+      "testModel": "测试模型",
+      "testing": "正在测试模型...",
+      "available": "模型可用",
+      "testFailed": "测试失败"
     },
     "effort": {
       "minimal": "极低",

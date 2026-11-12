@@ -17,6 +17,7 @@ import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/ai_settings.dart';
 import '../providers/settings_providers.dart';
+import 'model_test_control.dart';
 import 'primary_button.dart';
 
 Future<void> showModelSettingsSheet({
@@ -178,6 +179,8 @@ class ModelSettingsSheet extends HookConsumerWidget {
                       AppSpacing.md,
                     ),
                     children: [
+                      ModelTestControl(model: model),
+                      const Gap(AppSpacing.md),
                       GlassReactiveTextField<int>(
                         key: const ValueKey('model-input-tokens'),
                         formControlName: _input,
