@@ -79,7 +79,8 @@ class _InputSurface extends StatelessWidget {
     final navigationHeight = keyboardOpen
         ? 0.0
         : AppSizes.minTouchTarget + AppSpacing.sm;
-    final editorMaxHeight = (maxHeight - navigationHeight - AppSpacing.md)
+    final verticalPadding = keyboardOpen ? 0.0 : AppSpacing.md;
+    final editorMaxHeight = (maxHeight - navigationHeight - verticalPadding)
         .clamp(AppSizes.iconMd, double.infinity);
     return GlassContainer(
       quality: GlassQuality.standard,
@@ -135,9 +136,9 @@ class _InputRow extends ConsumerWidget {
     return Padding(
       padding: EdgeInsets.fromLTRB(
         keyboardOpen ? AppSpacing.md : AppSpacing.xs,
+        keyboardOpen ? 0.0 : AppSpacing.xs,
         AppSpacing.xs,
-        AppSpacing.xs,
-        AppSpacing.xs,
+        keyboardOpen ? 0.0 : AppSpacing.xs,
       ),
       child: Row(
         children: [
