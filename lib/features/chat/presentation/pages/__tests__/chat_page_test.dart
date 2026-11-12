@@ -4,6 +4,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
+import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/core/widgets/pressable.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/pages/image_viewer_page.dart';
@@ -59,6 +60,20 @@ void main() {
         tester.getCenter(find.text('from ai', findRichText: true)).dx,
         lessThan(width / 2),
       );
+    });
+
+    testWidgets('with the keyboard open the composer sits right above it', (
+      tester,
+    ) async {
+      await tester.pumpApp();
+      const keyboard = 300.0;
+      tester.view.viewInsets = const FakeViewPadding(bottom: keyboard * 3);
+      await tester.pumpAndSettle();
+
+      final composerBottom = tester.getBottomLeft(find.byType(ChatComposer)).dy;
+      final keyboardTop = kPhoneViewport.height - keyboard;
+      expect(composerBottom, lessThanOrEqualTo(keyboardTop));
+      expect(composerBottom, greaterThan(keyboardTop - AppSpacing.md));
     });
 
     testWidgets('marks notes that were sent to the AI', (tester) async {

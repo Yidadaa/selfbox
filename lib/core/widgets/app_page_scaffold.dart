@@ -14,6 +14,7 @@ class AppPageScaffold extends StatelessWidget {
     required this.body,
     this.leading,
     this.actions,
+    this.resizeToAvoidBottomInset = true,
     super.key,
   });
 
@@ -22,10 +23,15 @@ class AppPageScaffold extends StatelessWidget {
   final Widget? leading;
   final List<Widget>? actions;
 
+  /// Turn off when the page positions content against the keyboard itself;
+  /// otherwise the body shrinks *and* the content lifts, counting it twice.
+  final bool resizeToAvoidBottomInset;
+
   @override
   Widget build(BuildContext context) {
     return GlassScaffold(
       background: const AppCanvas(),
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       appBar: GlassAppBar(
         title: _TitleCapsule(title: title),
         leading: leading,

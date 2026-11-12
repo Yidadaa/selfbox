@@ -41,6 +41,8 @@ class ChatPage extends HookConsumerWidget {
 
     return AppPageScaffold(
       title: context.t.chat.title,
+      // The composer follows the keyboard explicitly below.
+      resizeToAvoidBottomInset: false,
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () => FocusScope.of(context).unfocus(),

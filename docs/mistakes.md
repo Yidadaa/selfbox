@@ -34,3 +34,4 @@
 - [2026-11-12] [Android] release 包 AI 请求全部失败 -> Flutter 模板只在 debug/profile manifest 声明 `INTERNET` -> 主 manifest 必须显式声明 `INTERNET`。
 - [2026-11-12] [Android] 只按 `android-x64` 构建的 APK 在 arm64 真机必崩 -> 插件自带各 ABI 的 .so，出现不完整的 `arm64-v8a` 目录，系统据此选择 arm64 却找不到 libflutter.so -> 按目标设备 ABI 构建，或不加 `--target-platform` 打全量包。
 - [2026-11-12] [Xiaomi] `adb install` 报 `INSTALL_FAILED_USER_RESTRICTED` -> HyperOS 默认禁止 USB 安装 -> 开发者选项开启「USB 安装」，安装时在手机上点允许。
+- [2026-11-12] [Keyboard] 真机弹出键盘后输入框跳到屏幕顶部 -> 页面 `GlassScaffold` 默认按键盘缩小 body，输入框又手动上移键盘高度，重复计算 -> 自行跟随键盘的页面传 `resizeToAvoidBottomInset: false`，并用 `tester.view.viewInsets` 写测试锁定「输入框底边 = 键盘顶边 - 间距」。
