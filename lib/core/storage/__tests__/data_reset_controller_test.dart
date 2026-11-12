@@ -7,6 +7,7 @@ import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/storage/data_reset_controller.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_account_repository.dart';
+import 'package:selfbox/core/testing/fake_memory_repository.dart';
 import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
 
 void main() {
@@ -50,6 +51,22 @@ void main() {
     account.failure = null;
     expect((await reset.clear()).isRight(), true);
     expect(account.clears, 2);
+  });
+
+  test('reset returns memory to the new-user starter file', () async {
+    final memory = FakeMemoryRepository(seed: {'topic/old.md': 'Old note\n'});
+    final container = ProviderContainer(
+      overrides: testAppOverrides(memory: memory),
+    );
+    addTearDown(container.dispose);
+
+    final result = await container
+        .read(dataResetControllerProvider.notifier)
+        .clear();
+
+    expect(result.isRight(), isTrue);
+    expect(memory.contentOf('topic/old.md'), isNull);
+    expect(memory.contentOf('user.md'), '用户尚未设置名字，可以引导用户点击头像设置名字和头像。\n');
   });
 }
 

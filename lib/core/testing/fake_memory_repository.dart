@@ -100,6 +100,24 @@ class FakeMemoryRepository implements MemoryRepository {
   }
 
   @override
+  TaskEither<AppFailure, MemoryFile> replace(
+    MemoryPath path,
+    String content, {
+    required String expectedContent,
+  }) {
+    final current = _files[path];
+    if (current == null || current.content != expectedContent) {
+      return TaskEither.left(
+        const AppFailure.validation(message: 'memory changed while editing'),
+      );
+    }
+    return _put(
+      path,
+      content.isEmpty || content.endsWith('\n') ? content : '$content\n',
+    );
+  }
+
+  @override
   TaskEither<AppFailure, Unit> delete(MemoryPath path) {
     if (_files.remove(path) == null) {
       return TaskEither.left(

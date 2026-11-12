@@ -5,14 +5,16 @@ import 'package:image_picker/image_picker.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_account_repository.dart';
+import 'package:selfbox/core/testing/fake_memory_repository.dart';
 import 'package:selfbox/features/settings/domain/models/user_profile.dart';
 import 'package:selfbox/features/settings/presentation/providers/account_providers.dart';
 
 void main() {
   test('profile save refreshes public profile state', () async {
     final account = FakeAccountRepository();
+    final memory = FakeMemoryRepository();
     final container = ProviderContainer(
-      overrides: testAppOverrides(account: account),
+      overrides: testAppOverrides(account: account, memory: memory),
     );
     addTearDown(container.dispose);
     final sub = container.listen(profileControllerProvider, (_, next) {});
@@ -30,6 +32,7 @@ void main() {
       'Flynn',
     );
     expect(container.read(profileControllerProvider), false);
+    expect(memory.contentOf('user.md'), contains('用户已经设置了名字'));
   });
 
   for (final denied in [false, true]) {

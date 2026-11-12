@@ -8,6 +8,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/database/app_store.dart';
 import '../../../../core/error/app_failure.dart';
 import '../../../../core/storage/app_paths.dart';
+import '../../../../core/storage/user_memory_provider.dart';
 import '../../data/repositories/local_account_repository.dart';
 import '../../domain/models/user_profile.dart';
 import '../../domain/repositories/account_repository.dart';
@@ -52,6 +53,9 @@ class ProfileController extends _$ProfileController {
     final result = await ref
         .read(accountRepositoryProvider)
         .save(profile)
+        .flatMap(
+          (_) => ref.read(userMemoryServiceProvider).ensure(profile.nickname),
+        )
         .run();
     if (ref.mounted) {
       state = false;

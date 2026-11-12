@@ -87,11 +87,17 @@ void main() {
         now: DateTime(2026, 11, 12, 10, 5),
         memory: [entry],
         canViewImages: true,
+        userName: 'Flynn',
+        languageTag: 'zh-CN',
       );
       expect(text, contains('2026-11-12 10:05'));
       expect(text, contains('- user/profile.md — Profile'));
       expect(text, contains('memory_patch'));
       expect(text, contains('view_image'));
+      expect(text, contains('Flynn'));
+      expect(text, contains('zh-CN'));
+      expect(text, contains('time zone'));
+      expect(text, contains('short, natural chat messages'));
     });
 
     test('says when memory is empty and hides vision without support', () {
@@ -99,6 +105,8 @@ void main() {
         now: DateTime(2026),
         memory: const [],
         canViewImages: false,
+        userName: '',
+        languageTag: 'en',
       );
       expect(text, contains('nothing remembered yet'));
       expect(text, isNot(contains('view_image')));

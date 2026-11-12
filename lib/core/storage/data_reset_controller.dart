@@ -11,6 +11,7 @@ import '../../features/settings/domain/services/clear_app_data.dart';
 import '../../features/settings/presentation/providers/account_providers.dart';
 import '../../features/settings/presentation/providers/settings_providers.dart';
 import '../error/app_failure.dart';
+import 'user_memory_provider.dart';
 
 part '../../gen/core/storage/data_reset_controller.g.dart';
 
@@ -28,12 +29,16 @@ class DataResetController extends _$DataResetController {
     await ref.read(assistantControllerProvider.notifier).cancelAndWait();
     await ref.read(aiSettingsServiceProvider).finishPending();
     composer.resetDraft();
-    final result = await ClearAppData(
-      ref.read(aiSettingsRepositoryProvider),
-      ref.read(messageRepositoryProvider),
-      ref.read(memoryRepositoryProvider),
-      ref.read(accountRepositoryProvider),
-    ).run().run();
+    final result =
+        await ClearAppData(
+              ref.read(aiSettingsRepositoryProvider),
+              ref.read(messageRepositoryProvider),
+              ref.read(memoryRepositoryProvider),
+              ref.read(accountRepositoryProvider),
+            )
+            .run()
+            .flatMap((_) => ref.read(userMemoryServiceProvider).ensure(''))
+            .run();
     PaintingBinding.instance.imageCache.clear();
     PaintingBinding.instance.imageCache.clearLiveImages();
     ref.invalidate(userProfileProvider);

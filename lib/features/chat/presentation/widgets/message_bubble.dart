@@ -23,12 +23,14 @@ class MessageBubble extends ConsumerWidget {
     required this.resolveImage,
     this.onImageTap,
     this.onLongPress,
+    this.showFooter = true,
     super.key,
   });
   final Message message;
   final File? Function(String relativePath) resolveImage;
   final ValueChanged<String>? onImageTap;
   final VoidCallback? onLongPress;
+  final bool showFooter;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -59,8 +61,10 @@ class MessageBubble extends ConsumerWidget {
                 if (message.images.isNotEmpty && message.text.isNotEmpty)
                   const Gap(AppSpacing.xs),
                 if (message.text.isNotEmpty) _TextBubble(message: message),
-                const Gap(AppSpacing.xxs),
-                _MessageFooter(message: message),
+                if (showFooter) ...[
+                  const Gap(AppSpacing.xxs),
+                  _MessageFooter(message: message),
+                ],
               ],
             ),
           ),

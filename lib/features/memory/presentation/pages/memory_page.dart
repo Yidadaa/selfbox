@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+import 'package:selfbox/core/theme/app_radius.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/router/shell_scope.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/time/clock.dart';
@@ -23,20 +25,60 @@ class MemoryPage extends ConsumerWidget {
     final folders = ref.watch(memoryFoldersProvider);
     return AppPageScaffold(
       title: context.t.memory.title,
-      body: switch (folders) {
-        AsyncData(:final value) when value.isEmpty => EmptyState(
-          icon: Icons.auto_awesome_outlined,
-          label: context.t.memory.empty,
-        ),
-        AsyncData(:final value) => _FolderList(folders: value),
-        AsyncError() => EmptyState(
-          icon: Icons.error_outline_rounded,
-          label: context.t.memory.empty,
-        ),
-        AsyncLoading() => Skeletonizer(
-          child: _FolderList(folders: _placeholderFolders()),
-        ),
-      },
+      body: Stack(
+        children: [
+          switch (folders) {
+            AsyncData(:final value) => _FolderList(folders: value),
+            AsyncError() => EmptyState(
+              icon: Icons.error_outline_rounded,
+              label: context.t.common.loadFailed,
+              action: GlassButton.custom(
+                height: AppSizes.minTouchTarget,
+                onTap: () => ref.invalidate(memoryFoldersProvider),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xl,
+                  ),
+                  child: Text(
+                    context.t.common.retry,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                ),
+              ),
+            ),
+            AsyncLoading() => Skeletonizer(
+              child: _FolderList(folders: _placeholderFolders()),
+            ),
+          },
+          Positioned(
+            right: AppInsets.pageHorizontal,
+            bottom: ShellScope.bottomInsetOf(context) + AppSpacing.md,
+            child: GlassButton.custom(
+              key: const ValueKey('add-memory'),
+              shape: const LiquidRoundedSuperellipse(
+                borderRadius: AppRadius.pill,
+              ),
+              quality: GlassQuality.premium,
+              height: AppSizes.minTouchTarget,
+              onTap: () => const MemoryEditorRoute().push<void>(context),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.add_rounded, color: context.glass.foreground),
+                    const Gap(AppSpacing.xs),
+                    Text(
+                      context.t.memory.add,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -64,7 +106,12 @@ class _FolderList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: AppPageInsets.of(context),
+      padding: AppPageInsets.of(context).copyWith(
+        bottom:
+            ShellScope.bottomInsetOf(context) +
+            AppSizes.minTouchTarget +
+            AppSpacing.xxl,
+      ),
       itemCount: folders.length,
       separatorBuilder: (_, _) => const Gap(AppSpacing.lg),
       itemBuilder: (context, index) => _FolderSection(folder: folders[index]),
@@ -112,8 +159,9 @@ class _FolderSection extends ConsumerWidget {
               Icons.chevron_right_rounded,
               color: glass.foregroundMuted,
             ),
-            onTap: () =>
-                MemoryFileRoute(path: entry.path.value).push<void>(context),
+            onTap:
+                () =>
+                    MemoryFileRoute(path: entry.path.value).push<void>(context),
           ),
       ],
     );

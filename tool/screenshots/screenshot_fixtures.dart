@@ -142,6 +142,16 @@ ScreenshotEnv _memory() => (
   overrides: const [],
 );
 
+ScreenshotEnv _newUserMemory() => (
+  paths: null,
+  messages: null,
+  memory: FakeMemoryRepository(
+    seed: {'user.md': '用户尚未设置名字，可以引导用户点击头像设置名字和头像。\n'},
+  ),
+  settings: null,
+  overrides: const [],
+);
+
 ScreenshotEnv _settings() => (
   paths: null,
   messages: null,
@@ -292,7 +302,36 @@ final screenshotFixtures = <ScreenshotFixture>[
     env: _chatAsking,
     animated: true,
   ),
-  const ScreenshotFixture(name: 'memory_empty', location: '/memory'),
+  const ScreenshotFixture(
+    name: 'memory_new_user',
+    location: '/memory',
+    env: _newUserMemory,
+  ),
+  const ScreenshotFixture(
+    name: 'memory_editor',
+    location: '/memory/edit?path=user.md',
+    env: _newUserMemory,
+  ),
+  ScreenshotFixture(
+    name: 'memory_editor_dark',
+    location: '/memory/edit?path=user.md',
+    env: _newUserMemory,
+    setUp: (tester, _) async {
+      tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+      addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+      await tester.pumpAndSettle();
+    },
+  ),
+  ScreenshotFixture(
+    name: 'memory_new_user_dark',
+    location: '/memory',
+    env: _newUserMemory,
+    setUp: (tester, _) async {
+      tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+      addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+      await tester.pumpAndSettle();
+    },
+  ),
   const ScreenshotFixture(
     name: 'memory_list',
     location: '/memory',

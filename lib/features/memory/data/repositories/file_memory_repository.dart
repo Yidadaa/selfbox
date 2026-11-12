@@ -155,6 +155,25 @@ class FileMemoryRepository implements MemoryRepository {
       });
 
   @override
+  TaskEither<AppFailure, MemoryFile> replace(
+    MemoryPath path,
+    String content, {
+    required String expectedContent,
+  }) => _write(() async {
+    final file = _file(path);
+    if (!await file.exists()) {
+      throw AppFailure.validation(message: '${path.value} does not exist');
+    }
+    if (await file.readAsString() != expectedContent) {
+      throw const AppFailure.validation(
+        message: 'memory changed while editing',
+      );
+    }
+    await file.writeAsString(_withTrailingNewline(content), flush: true);
+    return _load(path, file);
+  });
+
+  @override
   TaskEither<AppFailure, Unit> delete(MemoryPath path) => _write(() async {
     final file = _file(path);
     if (!await file.exists()) {

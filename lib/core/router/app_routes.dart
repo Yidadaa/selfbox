@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/chat/presentation/pages/chat_page.dart';
 import '../../features/chat/presentation/pages/image_viewer_page.dart';
 import '../../features/chat/presentation/pages/message_search_page.dart';
+import '../../features/memory/presentation/pages/memory_editor_page.dart';
 import '../../features/memory/presentation/pages/memory_file_page.dart';
 import '../../features/memory/presentation/pages/memory_page.dart';
 import '../../features/settings/presentation/pages/about_page.dart';
@@ -30,7 +31,10 @@ final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
       routes: [
         TypedGoRoute<MemoryRoute>(
           path: '/memory',
-          routes: [TypedGoRoute<MemoryFileRoute>(path: 'file')],
+          routes: [
+            TypedGoRoute<MemoryFileRoute>(path: 'file'),
+            TypedGoRoute<MemoryEditorRoute>(path: 'edit'),
+          ],
         ),
       ],
     ),
@@ -170,6 +174,17 @@ class MemoryFileRoute extends GoRouteData with $MemoryFileRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       MemoryFilePage(path: path);
+}
+
+class MemoryEditorRoute extends GoRouteData with $MemoryEditorRoute {
+  const MemoryEditorRoute({this.path});
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  final String? path;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      MemoryEditorPage(path: path);
 }
 
 /// New provider when [id] is null.

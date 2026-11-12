@@ -4,6 +4,7 @@ import 'package:ai_sdk_provider/ai_sdk_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:selfbox/core/error/app_failure.dart';
+import 'package:selfbox/core/testing/fake_account_repository.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/core/testing/fake_memory_repository.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
@@ -64,6 +65,7 @@ _Env _env(
       settings: settings ?? _settings(),
       apiKeys: keys,
     ),
+    account: FakeAccountRepository(),
     messages: FakeMessageRepository(
       seed: [
         Message(
@@ -86,6 +88,7 @@ _Env _env(
     readImage: (_) => TaskEither.right(Uint8List.fromList([1, 2, 3])),
     models: factory,
     clock: () => DateTime(2026, 11, 12, 9, 1),
+    languageTag: () => 'zh-CN',
   );
   return (
     agent: agent,

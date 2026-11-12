@@ -8,6 +8,7 @@ import '../../../../core/error/app_failure.dart';
 import '../../../memory/domain/models/memory.dart';
 import '../../../memory/domain/repositories/memory_repository.dart';
 import '../../../settings/domain/models/ai_settings.dart';
+import '../../../settings/domain/repositories/account_repository.dart';
 import '../../../settings/domain/repositories/ai_settings_repository.dart';
 import '../models/agent_activity.dart';
 import '../models/message.dart';
@@ -25,19 +26,23 @@ typedef AgentToolTrace = void Function(String toolName, AgentToolPhase phase);
 class AssistantAgent {
   const AssistantAgent({
     required this.settings,
+    required this.account,
     required this.messages,
     required this.memory,
     required this.readImage,
     required this.models,
     required this.clock,
+    required this.languageTag,
   });
 
   final AiSettingsRepository settings;
+  final AccountRepository account;
   final MessageRepository messages;
   final MemoryRepository memory;
   final ImageReader readImage;
   final LanguageModelFactory models;
   final DateTime Function() clock;
+  final String Function() languageTag;
 
   /// Upper bound on model round-trips per question.
   static const maxSteps = 16;
@@ -50,26 +55,29 @@ class AssistantAgent {
     required void Function(AgentActivity) onActivity,
     AgentToolTrace? onToolEvent,
     CancellationToken? cancel,
-  }) => settings
-      .load()
-      .flatMap(_resolveModel)
-      .flatMap(
-        (setup) => messages
-            .latest(setup.settings.historyTurns + 1)
-            .flatMap(
-              (recent) => memory.list().flatMap(
-                (index) => _run(
-                  setup: setup,
-                  question: question,
-                  recent: recent,
-                  index: index,
-                  onActivity: onActivity,
-                  onToolEvent: onToolEvent,
-                  cancel: cancel,
+  }) => account.load().flatMap(
+    (profile) => settings
+        .load()
+        .flatMap(_resolveModel)
+        .flatMap(
+          (setup) => messages
+              .latest(setup.settings.historyTurns + 1)
+              .flatMap(
+                (recent) => memory.list().flatMap(
+                  (index) => _run(
+                    setup: setup,
+                    question: question,
+                    recent: recent,
+                    index: index,
+                    userName: profile.nickname.trim(),
+                    onActivity: onActivity,
+                    onToolEvent: onToolEvent,
+                    cancel: cancel,
+                  ),
                 ),
               ),
-            ),
-      );
+        ),
+  );
 
   TaskEither<AppFailure, _Setup> _resolveModel(AiSettings s) {
     final model = s.resolvedModel;
@@ -101,6 +109,7 @@ class AssistantAgent {
     required Message question,
     required List<Message> recent,
     required List<MemoryEntry> index,
+    required String userName,
     required void Function(AgentActivity) onActivity,
     required AgentToolTrace? onToolEvent,
     required CancellationToken? cancel,
@@ -120,6 +129,8 @@ class AssistantAgent {
       now: clock(),
       memory: index,
       canViewImages: model.supportsImages,
+      userName: userName,
+      languageTag: languageTag(),
     );
     // The question is normally the newest note; keep it even if it is not.
     final notes = recent.any((m) => m.id == question.id)

@@ -8,6 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_markdown_theme.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -43,6 +44,13 @@ class MemoryFilePage extends ConsumerWidget {
         onPressed: () => Navigator.of(context).maybePop(),
       ),
       actions: [
+        if (file case AsyncData(value: Some(:final value)))
+          GlassIconButton(
+            icon: const Icon(Icons.edit_rounded),
+            semanticLabel: t.memory.edit,
+            onPressed: () =>
+                MemoryEditorRoute(path: value.path.value).push<void>(context),
+          ),
         if (file case AsyncData(value: Some(:final value)))
           GlassIconButton(
             icon: const Icon(Icons.more_horiz_rounded),

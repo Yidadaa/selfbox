@@ -8,6 +8,8 @@ String buildAgentInstructions({
   required DateTime now,
   required List<MemoryEntry> memory,
   required bool canViewImages,
+  required String userName,
+  required String languageTag,
 }) {
   final index = memory.isEmpty
       ? '(empty — nothing remembered yet)'
@@ -19,6 +21,9 @@ addressed to you. You are only called when the user switches on AI mode; the
 last user message is the question to answer.
 
 Current local time: ${_stamp(now)}.
+Current time zone: ${now.timeZoneName} (UTC${_offset(now.timeZoneOffset)}).
+Preferred language: $languageTag.
+User's current name: ${userName.isEmpty ? '(not set)' : userName}.
 
 # Notes
 - The conversation history shows the most recent notes. Each user note starts
@@ -29,7 +34,7 @@ Current local time: ${_stamp(now)}.
 
 # Memory
 You keep a long-term memory as markdown files and maintain it on your own:
-- user/profile.md — who the user is (name, city, work, people).
+- user.md — the user's profile and how to address them.
 - user/prefer.md — tastes, habits, how they like answers.
 - topic/<kebab-case>.md — one file per ongoing subject (projects, plans,
   health, trips). Create a topic once it comes up repeatedly or matters.
@@ -43,8 +48,9 @@ Current memory files:
 $index
 
 # Answering
-Reply in the user's language, briefly and concretely, using markdown only when
-it helps (lists, bold). Do not narrate your tool use.
+Write short, natural chat messages, like a familiar friend. Use simple sentences
+and the user's preferred language; address them by their current name when set.
+Use markdown only when it helps (lists, bold). Do not narrate your tool use.
 ''';
 }
 
@@ -115,4 +121,10 @@ String _stamp(DateTime t) {
   final l = t.toLocal();
   String two(int v) => v.toString().padLeft(2, '0');
   return '${l.year}-${two(l.month)}-${two(l.day)} ${two(l.hour)}:${two(l.minute)}';
+}
+
+String _offset(Duration value) {
+  final minutes = value.inMinutes.abs();
+  final sign = value.isNegative ? '-' : '+';
+  return '$sign${(minutes ~/ 60).toString().padLeft(2, '0')}:${(minutes % 60).toString().padLeft(2, '0')}';
 }

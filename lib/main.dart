@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:path_provider/path_provider.dart';
@@ -12,6 +13,11 @@ import 'app.dart';
 import 'core/database/app_store.dart';
 import 'core/logger/talker_provider.dart';
 import 'core/storage/app_paths.dart';
+import 'features/memory/data/memory_data_providers.dart';
+import 'features/memory/data/repositories/file_memory_repository.dart';
+import 'features/memory/domain/services/user_memory_service.dart';
+import 'features/settings/data/repositories/local_account_repository.dart';
+import 'features/settings/presentation/providers/account_providers.dart';
 import 'gen/i18n/strings.g.dart';
 
 Future<void> main() async {
@@ -34,6 +40,15 @@ Future<void> main() async {
     Directory('${(await getApplicationSupportDirectory()).path}/selfbox'),
   );
   final store = await openAppStore(paths);
+  final account = LocalAccountRepository(store, paths);
+  final memory = FileMemoryRepository(paths.memory);
+  final profile = await account.load().run();
+  final initialized = await TaskEither.fromEither(profile)
+      .flatMap((value) => UserMemoryService(memory).ensure(value.nickname))
+      .run();
+  if (initialized.getLeft().toNullable() case final failure?) {
+    talker.error('User memory initialization failed', failure);
+  }
   await LiquidGlassWidgets.initialize();
 
   runApp(
@@ -42,6 +57,8 @@ Future<void> main() async {
         talkerProvider.overrideWithValue(talker),
         appPathsProvider.overrideWithValue(paths),
         appStoreProvider.overrideWithValue(store),
+        accountRepositoryProvider.overrideWithValue(account),
+        memoryRepositoryProvider.overrideWithValue(memory),
       ],
       observers: [TalkerRiverpodObserver(talker: talker)],
       child: TranslationProvider(

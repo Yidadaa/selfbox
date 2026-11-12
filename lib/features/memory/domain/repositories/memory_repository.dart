@@ -21,6 +21,13 @@ abstract interface class MemoryRepository {
   /// Applies a unified diff to the current content.
   TaskEither<AppFailure, MemoryFile> patch(MemoryPath path, String diff);
 
+  /// Replaces a file only if it still matches the content opened by the editor.
+  TaskEither<AppFailure, MemoryFile> replace(
+    MemoryPath path,
+    String content, {
+    required String expectedContent,
+  });
+
   /// Removes the file and any folders left empty.
   TaskEither<AppFailure, Unit> delete(MemoryPath path);
 

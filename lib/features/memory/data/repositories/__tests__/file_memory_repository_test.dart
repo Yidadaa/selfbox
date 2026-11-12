@@ -19,16 +19,20 @@ FileMemoryRepository _repo() =>
 
 void main() {
   group('FileMemoryRepository', () {
-    test('clear waits for queued writes and removes unsupported files too', () async {
-      final repo = _repo();
-      final pending = repo.create(_path('user/profile.md'), 'old').run();
-      await pending;
-      await File(p.join(repo.root.path, 'unsupported.txt')).writeAsString('x');
-      expect((await repo.clearAll().run()).isRight(), true);
-      expect(await repo.root.exists(), false);
-      expect(_ok(await repo.list().run()), isEmpty);
-      expect((await repo.clearAll().run()).isRight(), true);
-    });
+    test(
+      'clear waits for queued writes and removes unsupported files too',
+      () async {
+        final repo = _repo();
+        final pending = repo.create(_path('user/profile.md'), 'old').run();
+        await pending;
+        await File(p.join(repo.root.path, 'unsupported.txt'))
+            .writeAsString('x');
+        expect((await repo.clearAll().run()).isRight(), true);
+        expect(await repo.root.exists(), false);
+        expect(_ok(await repo.list().run()), isEmpty);
+        expect((await repo.clearAll().run()).isRight(), true);
+      },
+    );
     test('lists nothing before the memory folder exists', () async {
       expect(_ok(await _repo().list().run()), isEmpty);
     });
@@ -92,6 +96,27 @@ void main() {
       final result = await _repo().patch(_path('a.md'), '@@ @@\n+x\n').run();
       expect(result.getLeft().toNullable(), isA<ValidationFailure>());
     });
+
+    test(
+      'replace checks the original content and preserves concurrent edits',
+      () async {
+        final repo = _repo();
+        final path = _path('user.md');
+        await repo.create(path, 'before').run();
+        final first = await repo
+            .replace(path, 'after', expectedContent: 'before\n')
+            .run();
+        expect(first.isRight(), isTrue);
+        final stale = await repo
+            .replace(path, 'lost', expectedContent: 'before\n')
+            .run();
+        expect(stale.getLeft().toNullable(), isA<ValidationFailure>());
+        expect(
+          _ok(await repo.read(path).run()).toNullable()?.content,
+          'after\n',
+        );
+      },
+    );
 
     test('list is sorted by path and titled from headings', () async {
       final repo = _repo();

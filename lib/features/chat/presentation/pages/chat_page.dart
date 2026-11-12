@@ -25,6 +25,7 @@ import '../providers/message_actions.dart';
 import '../widgets/assistant_status_bubble.dart';
 import '../widgets/day_pill.dart';
 import '../widgets/message_bubble.dart';
+import '../widgets/welcome_timeline.dart';
 
 class ChatPage extends ConsumerWidget {
   const ChatPage({super.key});
@@ -148,12 +149,8 @@ class _ChatBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final feed = ref.watch(chatFeedProvider);
     return switch (feed) {
-      AsyncData(:final value) when value.items.isEmpty => _ChatPlaceholder(
+      AsyncData(:final value) when value.items.isEmpty => WelcomeTimeline(
         bottomPadding: bottomPadding,
-        child: EmptyState(
-          icon: Icons.chat_bubble_outline_rounded,
-          label: context.t.chat.empty,
-        ),
       ),
       AsyncData(:final value) => _Timeline(
         feed: value,
@@ -163,7 +160,7 @@ class _ChatBody extends ConsumerWidget {
         bottomPadding: bottomPadding,
         child: EmptyState(
           icon: Icons.error_outline_rounded,
-          label: context.t.chat.empty,
+          label: context.t.common.loadFailed,
           action: GlassButton.custom(
             onTap: () => ref.invalidate(chatMessagesProvider),
             height: AppSizes.minTouchTarget,
@@ -171,7 +168,10 @@ class _ChatBody extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
               child: Center(
                 widthFactor: 1,
-                child: Text(context.t.common.retry),
+                child: Text(
+                  context.t.common.retry,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
               ),
             ),
           ),

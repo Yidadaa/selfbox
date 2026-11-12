@@ -8,8 +8,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/error/app_failure.dart';
 import '../../../../core/logger/talker_provider.dart';
 import '../../../../core/time/clock.dart';
+import '../../../../gen/i18n/strings.g.dart';
 import '../../../memory/data/memory_data_providers.dart';
 import '../../../settings/data/settings_data_providers.dart';
+import '../../../settings/presentation/providers/account_providers.dart';
 import '../../data/chat_data_providers.dart';
 import '../../domain/models/agent_activity.dart';
 import '../../domain/models/message.dart';
@@ -32,11 +34,13 @@ sealed class AssistantState with _$AssistantState {
 @Riverpod(keepAlive: true)
 AssistantAgent assistantAgent(Ref ref) => AssistantAgent(
   settings: ref.watch(aiSettingsRepositoryProvider),
+  account: ref.watch(accountRepositoryProvider),
   messages: ref.watch(messageRepositoryProvider),
   memory: ref.watch(memoryRepositoryProvider),
   readImage: ref.watch(mediaStoreProvider).read,
   models: ref.watch(languageModelFactoryProvider),
   clock: ref.watch(clockProvider),
+  languageTag: () => LocaleSettings.currentLocale.languageTag,
 );
 
 /// AI mode: one question at a time. A newer question cancels the running

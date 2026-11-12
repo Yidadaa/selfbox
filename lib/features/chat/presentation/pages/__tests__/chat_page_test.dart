@@ -7,6 +7,7 @@ import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
+import 'package:selfbox/core/widgets/empty_state.dart';
 import 'package:selfbox/core/widgets/pressable.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/pages/chat_page.dart';
@@ -99,17 +100,32 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('shows the empty state with the composer', (tester) async {
-      await tester.pumpApp();
+    testWidgets('shows three ephemeral AI greetings with the composer', (
+      tester,
+    ) async {
+      final messages = FakeMessageRepository();
+      await tester.pumpApp(messages: messages);
 
-      expect(find.text(t.chat.empty), findsOneWidget);
+      expect(find.byType(EmptyState), findsNothing);
+      expect(find.byType(MessageBubble), findsNWidgets(3));
+      for (final greeting in [
+        t.chat.welcomeFirst,
+        t.chat.welcomeSecond,
+        t.chat.welcomeThird,
+      ]) {
+        expect(
+          find.textContaining(greeting, findRichText: true),
+          findsOneWidget,
+        );
+      }
+      expect(messages.added, isEmpty);
       expect(find.byType(ChatComposer), findsOneWidget);
       expect(
         tester
             .getRect(
               find.descendant(
                 of: find.byType(ChatPage),
-                matching: find.byType(CustomScrollView),
+                matching: find.byType(ListView),
               ),
             )
             .top,
@@ -378,7 +394,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('remove me'), findsNothing);
-      expect(find.text(t.chat.empty), findsOneWidget);
+      expect(find.byType(MessageBubble), findsNWidgets(3));
     });
 
     testWidgets('tapping an image opens the full-screen viewer', (

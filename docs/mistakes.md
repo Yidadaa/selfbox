@@ -82,3 +82,9 @@
 - [2026-11-13] [DarkMode] AI/图片卡片、Dialog 与 Picker Sheet 深色模式仍为白色 -> 业务组件固定浅色值，顶部过渡还回退到 Cupertino 背景色 -> 非玻璃表面统一从明暗主题取色，GlassScaffold 显式接收画布过渡色。
 - [2026-11-13] [SettingsSurface] 服务商卡片浅色模式变纯白且设置列表圆角不统一 -> solid 表面默认不透明，glass 分组默认仅 12dp 圆角 -> 设置流程使用默认 glass、standard 与统一圆角 Token。
 - [2026-11-13] [Lint] 显式写 `GlassSurfaceStyle.glass` 触发冗余参数告警 -> 该值是卡片默认材质 -> 省略参数，并用 Widget 测试锁定 glass 渲染路径。
+- [2026-11-13] [AgentPrompt] 新增用户上下文后编译找不到命名参数 -> 把姓名与语言误传给 `AgentTools` -> 用户上下文只传给 `buildAgentInstructions`，先运行局部分析再测 UI。
+- [2026-11-13] [MarkdownEditor] 编辑页在 GlassScaffold 内崩溃找不到 Material -> `SmoothMarkdownEditor` 的源码输入框内部使用 Material TextField -> 用透明 Material 提供组件上下文。
+- [2026-11-13] [ChatTest] 欢迎页改用反向 ListView 后旧测试仍查找 CustomScrollView -> 测试需跟随实际滚动结构并断言视口仍从顶部开始。
+- [2026-11-13] [MemoryEditor] 中文源码显示方块 -> Markdown 编辑器默认 monospace 缺少中文字形 -> 源码模式显式传入主题正文字体，并用截图检查中英文。
+- [2026-11-13] [MemoryButton] 自定义玻璃按钮中文显示方块 -> 子 Text 未设置主题样式 -> `GlassButton.custom` 的文本须显式取主题 TextStyle。
+- [2026-11-13] [MemoryConflict] AI 更新记忆后旧草稿覆盖新内容 -> 编辑页重建时以最新文件原文校验旧草稿 -> 保存校验必须固定为打开编辑页时的原文。
