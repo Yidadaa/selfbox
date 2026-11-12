@@ -129,6 +129,9 @@ class _InputRow extends ConsumerWidget {
     final notifier = ref.read(composerControllerProvider.notifier);
     final glass = context.glass;
     final t = context.t;
+    // Cupertino overlays must use the alphabetic baseline reported by Text.
+    final textStyle = Theme.of(context).textTheme.bodyLarge
+        ?.copyWith(textBaseline: TextBaseline.alphabetic);
     return Padding(
       padding: EdgeInsets.fromLTRB(
         keyboardOpen ? AppSpacing.md : AppSpacing.xs,
@@ -156,10 +159,10 @@ class _InputRow extends ConsumerWidget {
                 keyboardType: TextInputType.multiline,
                 textAlignVertical: TextAlignVertical.center,
                 placeholder: aiMode ? t.chat.aiInputHint : t.chat.inputHint,
-                style: Theme.of(context).textTheme.bodyLarge
-                    ?.copyWith(color: glass.foreground),
-                placeholderStyle: Theme.of(context).textTheme.bodyLarge
-                    ?.copyWith(color: glass.foregroundMuted),
+                style: textStyle?.copyWith(color: glass.foreground),
+                placeholderStyle: textStyle?.copyWith(
+                  color: glass.foregroundMuted,
+                ),
                 padding: EdgeInsets.zero,
                 decoration: null,
               ),

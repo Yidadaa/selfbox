@@ -2,6 +2,10 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-12] [Placeholder] 中文输入提示低于正文约 5.6dp -> Material dense 字体使用 ideographic，Cupertino 基线叠层对齐时 RenderParagraph 固定返回 alphabetic，RenderEditable 返回所请求基线 -> 输入正文与提示统一 alphabetic；测试必须检查提示实际位置，不能只检查编辑框中心。
+- [2026-11-12] [RenderTest] 直接转换 EditableText.renderObject 或在布局外调用 getDistanceToBaseline 报错 -> 外层渲染对象不是 RenderEditable，基线访问受布局阶段断言约束 -> 通过 EditableTextState.renderEditable 取编辑渲染器；诊断基线使用渲染器实际计算方法。
+- [2026-11-12] [PlaceholderTest] 输入提示原文后 find.text 仍命中两个控件 -> Cupertino 用 Visibility 保留提示布局，finder 也匹配 EditableText 正文 -> 输入态断言 controller 内容与几何，清空态断言提示实际位置。
+
 - [2026-11-12] [RoutingTest] 二级页改为根 Navigator 后全量测试仍断言文件详情显示 Tab -> 旧契约未同步更新 -> 路由行为调整时同步检查跨 Feature 页面测试。
 
 - [2026-11-12] [Test] `byType(Skeletonizer)` 找不到骨架组件 -> 工厂构造返回内部子类，byType 精确匹配运行时类型 -> 用 `byWidgetPredicate((widget) => widget is Skeletonizer)` 验证公开契约。
