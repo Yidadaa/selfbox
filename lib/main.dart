@@ -13,6 +13,7 @@ import 'app.dart';
 import 'core/database/app_store.dart';
 import 'core/logger/talker_provider.dart';
 import 'core/storage/app_paths.dart';
+import 'features/chat/presentation/providers/assistant_controller.dart';
 import 'features/memory/data/memory_data_providers.dart';
 import 'features/memory/data/repositories/file_memory_repository.dart';
 import 'features/memory/domain/services/user_memory_service.dart';
@@ -60,7 +61,7 @@ Future<void> main() async {
         accountRepositoryProvider.overrideWithValue(account),
         memoryRepositoryProvider.overrideWithValue(memory),
       ],
-      observers: [TalkerRiverpodObserver(talker: talker)],
+      observers: [appRiverpodObserver(talker)],
       child: TranslationProvider(
         child: LiquidGlassWidgets.wrap(
           brightnessResolver: Theme.maybeBrightnessOf,
@@ -70,3 +71,11 @@ Future<void> main() async {
     ),
   );
 }
+
+TalkerRiverpodObserver appRiverpodObserver(Talker talker) =>
+    TalkerRiverpodObserver(
+      talker: talker,
+      settings: TalkerRiverpodLoggerSettings(
+        providerFilter: (provider) => provider != assistantControllerProvider,
+      ),
+    );

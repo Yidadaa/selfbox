@@ -161,19 +161,38 @@ class AssistantAgent {
       );
 
       Object? streamError;
-      var typing = false;
+      var reasoningLine = '';
+      var answerLine = '';
+      var startedStep = false;
       await for (final event in result.stream) {
         switch (event) {
+          case StreamTextStartStepEvent():
+            reasoningLine = '';
+            answerLine = '';
+            if (startedStep) onActivity(const AgentActivity.thinking());
+            startedStep = true;
           case StreamTextToolInputStartEvent(:final toolName):
-            typing = false;
+            reasoningLine = '';
+            answerLine = '';
             onToolEvent?.call(toolName, AgentToolPhase.started);
             final kind = AgentToolKind.ofTool(toolName);
             if (kind != null) onActivity(AgentActivity.tool(kind));
           case StreamTextToolErrorEvent(:final toolName):
             onToolEvent?.call(toolName, AgentToolPhase.failed);
-          case StreamTextTextDeltaEvent() when !typing:
-            typing = true;
-            onActivity(const AgentActivity.typing());
+          case StreamTextReasoningDeltaEvent(:final delta):
+            final previous = reasoningLine.trim();
+            reasoningLine = _latestLine(reasoningLine, delta);
+            final preview = reasoningLine.trim();
+            if (preview.isNotEmpty && preview != previous) {
+              onActivity(AgentActivity.thinking(line: preview));
+            }
+          case StreamTextTextDeltaEvent(:final delta):
+            final previous = answerLine.trim();
+            answerLine = _latestLine(answerLine, delta);
+            final preview = answerLine.trim();
+            if (preview.isNotEmpty && preview != previous) {
+              onActivity(AgentActivity.typing(line: preview));
+            }
           case StreamTextErrorEvent(:final error):
             streamError = error;
           default:
@@ -190,6 +209,22 @@ class AssistantAgent {
       handle.dispose();
     }
   }, _toFailure);
+
+  static const _maxPreviewCodeUnits = 240;
+
+  static String _latestLine(String current, String delta) {
+    final newline = delta.lastIndexOf('\n');
+    final returnMark = delta.lastIndexOf('\r');
+    final breakAt = newline > returnMark ? newline : returnMark;
+    final line = breakAt < 0 ? current + delta : delta.substring(breakAt + 1);
+    if (line.length <= _maxPreviewCodeUnits) return line;
+    var start = line.length - _maxPreviewCodeUnits;
+    // Do not cut between a UTF-16 surrogate pair at the rolling boundary.
+    if (line.codeUnitAt(start) >= 0xDC00 && line.codeUnitAt(start) <= 0xDFFF) {
+      start++;
+    }
+    return line.substring(start);
+  }
 
   /// Tool results carry text only, so images fetched by `view_image` are
   /// attached as a user turn right after the matching result. Re-derived on

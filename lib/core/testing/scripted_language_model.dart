@@ -66,6 +66,9 @@ LanguageModelV4ToolCallPart scriptedToolCall(
 LanguageModelV4TextPart scriptedText(String text) =>
     LanguageModelV4TextPart(text: text);
 
+LanguageModelV4ReasoningPart scriptedReasoning(String text) =>
+    LanguageModelV4ReasoningPart(text: text);
+
 /// Hands out [model] and records what it was asked to build.
 class FakeLanguageModelFactory implements LanguageModelFactory {
   FakeLanguageModelFactory(this.model);

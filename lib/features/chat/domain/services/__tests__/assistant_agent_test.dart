@@ -104,6 +104,82 @@ Future<Either<AppFailure, String>> _ask(_Env env) =>
 
 void main() {
   group('AssistantAgent', () {
+    test('streams only the current reasoning and answer line', () async {
+      final env = _env([
+        [
+          scriptedReasoning('先检查记录\n正在整'),
+          scriptedReasoning('理'),
+          scriptedText('第一段\n最终答'),
+          scriptedText('案'),
+        ],
+      ]);
+
+      expect((await _ask(env)).toNullable(), '第一段\n最终答案');
+      expect(env.activity, [
+        const AgentActivity.thinking(),
+        const AgentActivity.thinking(line: '正在整'),
+        const AgentActivity.thinking(line: '正在整理'),
+        const AgentActivity.typing(line: '最终答'),
+        const AgentActivity.typing(line: '最终答案'),
+      ]);
+    });
+
+    test('a tool resets the old reasoning line before the next step', () async {
+      final env = _env([
+        [
+          scriptedReasoning('旧思考'),
+          scriptedToolCall('search_messages', {'keywords': '买'}, id: 's1'),
+        ],
+        [scriptedReasoning('新思考'), scriptedText('好')],
+      ]);
+
+      expect((await _ask(env)).toNullable(), '好');
+      expect(env.activity, [
+        const AgentActivity.thinking(),
+        const AgentActivity.thinking(line: '旧思考'),
+        const AgentActivity.tool(AgentToolKind.searchMessages),
+        const AgentActivity.thinking(),
+        const AgentActivity.thinking(line: '新思考'),
+        const AgentActivity.typing(line: '好'),
+      ]);
+    });
+
+    test('blank deltas do not replace a visible line', () async {
+      final env = _env([
+        [
+          scriptedReasoning('进度'),
+          scriptedReasoning(' '),
+          scriptedReasoning('\n'),
+          scriptedReasoning('新'),
+          scriptedText('完成'),
+        ],
+      ]);
+
+      await _ask(env);
+      expect(env.activity, [
+        const AgentActivity.thinking(),
+        const AgentActivity.thinking(line: '进度'),
+        const AgentActivity.thinking(line: '新'),
+        const AgentActivity.typing(line: '完成'),
+      ]);
+    });
+
+    test(
+      'long lines keep their newest text without splitting an emoji',
+      () async {
+        final longLine = '${List.filled(239, 'a').join()}😀结尾';
+        final env = _env([
+          [scriptedReasoning(longLine), scriptedText('好')],
+        ]);
+
+        await _ask(env);
+        final preview = (env.activity[1] as AgentThinking).line;
+        expect(preview.length, lessThanOrEqualTo(240));
+        expect(preview, endsWith('😀结尾'));
+        expect(preview.runes.first, isNot(0xFFFD));
+      },
+    );
+
     test('answers directly when no tools are needed', () async {
       final env = _env([
         [scriptedText('你说过要买牛奶和面包。')],
@@ -112,7 +188,7 @@ void main() {
       expect((await _ask(env)).toNullable(), '你说过要买牛奶和面包。');
       expect(env.activity, [
         const AgentActivity.thinking(),
-        const AgentActivity.typing(),
+        const AgentActivity.typing(line: '你说过要买牛奶和面包。'),
       ]);
       expect(env.factory.created.single.apiKey, 'sk');
       expect(env.factory.created.single.modelId, 'm1');
@@ -163,8 +239,10 @@ void main() {
         expect(env.activity, [
           const AgentActivity.thinking(),
           const AgentActivity.tool(AgentToolKind.searchMessages),
+          const AgentActivity.thinking(),
           const AgentActivity.tool(AgentToolKind.writeMemory),
-          const AgentActivity.typing(),
+          const AgentActivity.thinking(),
+          const AgentActivity.typing(line: '上周你记了：买牛奶和面包。'),
         ]);
         expect(env.memory.contentOf('topic/shopping.md'), contains('牛奶'));
 

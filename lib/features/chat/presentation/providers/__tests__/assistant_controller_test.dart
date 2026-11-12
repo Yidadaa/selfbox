@@ -10,7 +10,9 @@ import 'package:selfbox/features/chat/domain/models/agent_activity.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/providers/assistant_controller.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
+import 'package:selfbox/main.dart';
 import 'package:talker_flutter/talker_flutter.dart';
+import 'package:talker_riverpod_logger/talker_riverpod_logger.dart';
 
 const _ready = AiSettings(
   providers: [
@@ -51,6 +53,7 @@ _Env _env(
   final messages = FakeMessageRepository(seed: [_question]);
   final talker = Talker(settings: TalkerSettings(useConsoleLogs: false));
   final container = ProviderContainer(
+    observers: [appRiverpodObserver(talker)],
     overrides: testAppOverrides(
       messages: messages,
       settings: FakeAiSettingsRepository(
@@ -112,7 +115,10 @@ void main() {
           const AssistantState.working(
             AgentActivity.tool(AgentToolKind.searchMessages),
           ),
-          const AssistantState.working(AgentActivity.typing()),
+          const AssistantState.working(AgentActivity.thinking()),
+          const AssistantState.working(
+            AgentActivity.typing(line: '**要点**：三件事。'),
+          ),
           const AssistantState.idle(),
         ]);
         final reply = env.messages.added.last;
@@ -148,6 +154,29 @@ void main() {
         env.talker.history.whereType<TalkerLog>().last.message,
         'Agent #1 failed',
       );
+    });
+
+    test('stream previews never enter Riverpod logs', () async {
+      const privatePreview = 'private preview text';
+      final env = _env([
+        [scriptedReasoning(privatePreview), scriptedText('done')],
+      ]);
+
+      await _ctrl(env).ask(_question);
+
+      expect(
+        env.states,
+        contains(
+          const AssistantState.working(
+            AgentActivity.thinking(line: privatePreview),
+          ),
+        ),
+      );
+      final logText = env.talker.history
+          .map((entry) => entry.message.toString())
+          .join(' ');
+      expect(env.talker.history.whereType<RiverpodAddLog>(), isNotEmpty);
+      expect(logText, isNot(contains(privatePreview)));
     });
 
     test(

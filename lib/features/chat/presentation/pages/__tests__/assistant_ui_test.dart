@@ -31,6 +31,8 @@ class _Fixed extends AssistantController {
 
   @override
   AssistantState build() => initial;
+
+  void show(AssistantState next) => state = next;
 }
 
 Future<void> _showState(WidgetTester tester, AssistantState state) =>
@@ -64,7 +66,7 @@ void main() {
       );
     });
 
-    testWidgets('shows typing dots, not streamed text, while answering', (
+    testWidgets('shows a plain single-line fallback while awaiting text', (
       tester,
     ) async {
       await _showState(
@@ -73,8 +75,71 @@ void main() {
       );
 
       expect(find.bySemanticsLabel(t.assistant.typing), findsOneWidget);
+      expect(find.text(t.assistant.typing), findsOneWidget);
       expect(find.byType(SmoothMarkdown), findsNothing);
     });
+
+    for (final brightness in Brightness.values) {
+      testWidgets('live lines stay bounded and animate in $brightness', (
+        tester,
+      ) async {
+        tester.platformDispatcher.platformBrightnessTestValue = brightness;
+        addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+        final container = await tester.pumpApp(
+          messages: FakeMessageRepository(seed: [_question]),
+          overrides: [
+            assistantControllerProvider.overrideWith(
+              () => _Fixed(
+                const AssistantState.working(AgentActivity.thinking()),
+              ),
+            ),
+          ],
+          settle: false,
+        );
+        tester.view.physicalSize = const Size(280 * 3, 640 * 3);
+        await tester.pump();
+
+        final controller =
+            container.read(assistantControllerProvider.notifier) as _Fixed;
+        controller.show(
+          const AssistantState.working(
+            AgentActivity.thinking(line: '最新的一行思考内容会非常非常长'),
+          ),
+        );
+        await tester.pump();
+        final preview = find.text('最新的一行思考内容会非常非常长');
+        expect(preview, findsOneWidget);
+        expect(tester.widget<Text>(preview).maxLines, 1);
+        expect(find.byType(SmoothMarkdown), findsNothing);
+        expect(tester.takeException(), isNull);
+
+        final cursor = find.byKey(const ValueKey('live-progress'));
+        final firstOpacity = tester
+            .widget<FadeTransition>(cursor)
+            .opacity
+            .value;
+        await tester.pump(const Duration(milliseconds: 140));
+        expect(
+          tester.widget<FadeTransition>(cursor).opacity.value,
+          isNot(firstOpacity),
+        );
+
+        controller.show(
+          const AssistantState.working(AgentActivity.thinking(line: '继续思考')),
+        );
+        await tester.pump(const Duration(milliseconds: 20));
+        expect(preview, findsNothing);
+        expect(find.text('继续思考'), findsOneWidget);
+
+        controller.show(
+          const AssistantState.working(AgentActivity.typing(line: '最新的回复内容')),
+        );
+        await tester.pump(const Duration(milliseconds: 20));
+        expect(find.text('最新的回复内容'), findsOneWidget);
+        expect(find.byType(SmoothMarkdown), findsNothing);
+        expect(tester.takeException(), isNull);
+      });
+    }
 
     testWidgets('a missing model offers setup, which opens AI providers', (
       tester,
