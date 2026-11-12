@@ -137,7 +137,7 @@ class _InputRow extends ConsumerWidget {
       padding: EdgeInsets.fromLTRB(
         keyboardOpen ? AppSpacing.md : AppSpacing.xs,
         keyboardOpen ? 0.0 : AppSpacing.xs,
-        AppSpacing.xs,
+        keyboardOpen ? 0.0 : AppSpacing.xs,
         keyboardOpen ? 0.0 : AppSpacing.xs,
       ),
       child: Row(

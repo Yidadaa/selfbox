@@ -191,7 +191,7 @@ void main() {
     expect(attach.center.dy, closeTo(input.center.dy, 1));
     expect(send.center.dy, closeTo(input.center.dy, 1));
     expect(attach.left, AppSpacing.md);
-    expect(send.right, kPhoneViewport.width - AppSpacing.md - AppSpacing.xs);
+    expect(send.right, kPhoneViewport.width - AppSpacing.md);
   });
 
   testWidgets('keyboard hides tabs and preserves focus, selection and draft', (
