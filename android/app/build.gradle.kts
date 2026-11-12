@@ -6,7 +6,8 @@ plugins {
 
 android {
     namespace = "com.yidadaa.selfbox"
-    compileSdk = flutter.compileSdkVersion
+    // permission_handler_android requires compiling against API 37 (ADR-014).
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

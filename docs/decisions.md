@@ -80,3 +80,9 @@
 - **背景**：笔记可附图片（`image_picker`，仅从相册选择）。
 - **决策**：iOS `Info.plist` 声明 `NSPhotoLibraryUsageDescription`（未声明会在首次选图时崩溃）。Android 使用系统 Photo Picker，无需运行时权限与 Manifest 声明，双端行为对等：均为用户点击图片按钮时才弹出系统选择器（Just-in-Time）。macOS 选图走系统打开面板，沙盒 entitlements 待桌面端需要时补充。
 - **影响**：新增相机拍照时需同时补 `NSCameraUsageDescription` 与 Android `CAMERA` 权限并更新本 ADR。
+
+### [ADR-014] Android 构建：compileSdk 37 / AGP 9.5.1 / Gradle 9.6.0
+
+- **背景**：`permission_handler_android` 14.x 要求以 API 37 编译；SDK 仅提供 `platforms;android-37.0`，模板自带 AGP 9.1.0 无法解析 `compileSdk = 37`，且 app 端还需 compileSdk ≥ 37。
+- **决策**：AGP 升至 9.5.1（随之 Gradle wrapper 升至 9.6.0），`android/app/build.gradle.kts` 固定 `compileSdk = 37`（targetSdk 仍跟随 Flutter 默认）。新增 `cupertino_icons`：liquid_glass_widgets 内部引用 Cupertino 图标字体，缺失会显示方块。
+- **影响**：Flutter 默认 compileSdk 升到 ≥37 后可改回 `flutter.compileSdkVersion`。Release 包暂用 debug 签名，发布前需配置正式签名。

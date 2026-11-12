@@ -28,3 +28,6 @@
 - [2026-11-12] [Agent] 被新问题取代的旧回合仍把回复写入时间线 -> 入库在“是否仍为当前回合”检查之前 -> 先 `await answer`，校验 run id，再持久化。
 - [2026-11-12] [Test] `flutter_animate` 的 `delay`/`repeat` 在 widget 测试结束后留下 pending Timer -> 动画库内部用 Timer 实现延迟 -> 无限循环动画用 `useAnimationController` + 相位偏移自行驱动。
 - [2026-11-12] [Test] `streamText` 在 widget 测试 fake-async 中永不完成 -> SDK 流水线依赖真实事件循环 -> 循环交替 `tester.runAsync(短延迟)` 与 `pump`，直到结果落库。
+- [2026-11-12] [Android] `Failed to find target with hash string 'android-37'` -> 插件要求 compileSdk 37，旧 AGP 不识别 `android-37.0` 包 -> 升级 AGP（9.5.1）并同步 Gradle 版本，app 的 compileSdk 设为不低于插件要求。
+- [2026-11-12] [Android] release 构建提示缺少 `CupertinoIcons` 字体 -> 依赖库用了 Cupertino 图标但项目未引入 -> 添加 `cupertino_icons` 依赖，否则图标为方块。
+- [2026-11-12] [MuMu] `adb connect 127.0.0.1:16384/7555` 被拒 -> Hyper-V 模式下 adb 监听在模拟器自身 IP -> 用 `MuMuManager.exe info -v all` 查 `adb_host_ip:adb_port` 再连接。
