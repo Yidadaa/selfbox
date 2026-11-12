@@ -9,6 +9,7 @@ import '../../features/memory/presentation/pages/memory_file_page.dart';
 import '../../features/memory/presentation/pages/memory_page.dart';
 import '../../features/settings/presentation/pages/about_page.dart';
 import '../../features/settings/presentation/pages/ai_providers_page.dart';
+import '../../features/settings/presentation/pages/general_page.dart';
 import '../../features/settings/presentation/pages/me_page.dart';
 import '../../features/settings/presentation/pages/model_page.dart';
 import '../../features/settings/presentation/pages/profile_page.dart';
@@ -44,6 +45,7 @@ final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
           path: '/me',
           routes: [
             TypedGoRoute<ProfileRoute>(path: 'profile'),
+            TypedGoRoute<GeneralRoute>(path: 'general'),
             TypedGoRoute<StorageRoute>(path: 'storage'),
             TypedGoRoute<AiProvidersRoute>(path: 'providers'),
             TypedGoRoute<AboutRoute>(path: 'about'),
@@ -112,6 +114,15 @@ class ProfileRoute extends GoRouteData with $ProfileRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       const ProfilePage();
+}
+
+class GeneralRoute extends GoRouteData with $GeneralRoute {
+  const GeneralRoute();
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const GeneralPage();
 }
 
 class StorageRoute extends GoRouteData with $StorageRoute {

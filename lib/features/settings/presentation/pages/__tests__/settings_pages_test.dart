@@ -101,6 +101,7 @@ void main() {
     _expectLiquidSections(tester, 1);
 
     for (final (location, count) in [
+      ('/me/general', 1),
       ('/me/providers', 2),
       ('/me/storage', 1),
       ('/me/provider?id=p1', 1),

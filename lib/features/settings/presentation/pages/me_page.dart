@@ -28,6 +28,11 @@ class MePage extends ConsumerWidget {
           margin: AppInsets.section,
           children: [
             AppListTile(
+              icon: Icons.tune_rounded,
+              title: context.t.me.general,
+              onTap: () => const GeneralRoute().push<void>(context),
+            ),
+            AppListTile(
               icon: Icons.storage_rounded,
               title: context.t.me.storage,
               onTap: () => const StorageRoute().push<void>(context),

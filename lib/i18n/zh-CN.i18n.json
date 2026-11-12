@@ -46,13 +46,14 @@
     "editProfile": "编辑资料",
     "nickname": "昵称",
     "changeAvatar": "更换头像",
+    "general": "通用",
     "storage": "存储空间",
     "providers": "AI 服务商",
     "about": "关于此应用",
     "logs": "Talker 日志",
     "clearAll": "清除所有数据",
     "confirmClear": "确认清除",
-    "clearWarning": "将删除消息、图片、记忆、个人资料、AI 配置及 API 密钥，此操作无法撤销。",
+    "clearWarning": "将删除消息、图片、记忆、个人资料、通用设置、AI 配置及 API 密钥，此操作无法撤销。",
     "cleared": "所有数据已清除",
     "clearing": "正在清除…",
     "usedStorage": "本机已用空间",
@@ -134,6 +135,15 @@
       "generic": "出错了",
       "noModel": "还没有选择模型"
     }
+  },
+  "general": {
+    "theme": "主题",
+    "language": "语言",
+    "system": "自动",
+    "light": "亮色",
+    "dark": "暗色",
+    "chinese": "中文",
+    "english": "英文"
   },
   "assistant": {
     "thinking": "思考中",

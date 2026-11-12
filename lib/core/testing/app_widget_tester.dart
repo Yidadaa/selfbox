@@ -11,9 +11,12 @@ import '../../features/chat/domain/repositories/message_repository.dart';
 import '../../features/memory/data/memory_data_providers.dart';
 import '../../features/memory/domain/repositories/memory_repository.dart';
 import '../../features/settings/data/settings_data_providers.dart';
+import '../../features/settings/domain/models/app_preferences.dart';
 import '../../features/settings/domain/repositories/account_repository.dart';
 import '../../features/settings/domain/repositories/ai_settings_repository.dart';
+import '../../features/settings/domain/repositories/app_preferences_repository.dart';
 import '../../features/settings/presentation/providers/account_providers.dart';
+import '../../features/settings/presentation/providers/app_preferences_controller.dart';
 import '../../gen/i18n/strings.g.dart';
 import '../storage/app_paths.dart';
 import '../theme/app_scroll_behavior.dart';
@@ -21,6 +24,7 @@ import '../theme/app_theme.dart';
 import '../time/clock.dart';
 import 'fake_account_repository.dart';
 import 'fake_ai_settings.dart';
+import 'fake_app_preferences_repository.dart';
 import 'fake_memory_repository.dart';
 import 'fake_message_repository.dart';
 import 'scripted_language_model.dart';
@@ -36,6 +40,8 @@ List<Override> testAppOverrides({
   MessageRepository? messages,
   MemoryRepository? memory,
   AiSettingsRepository? settings,
+  AppPreferencesRepository? preferences,
+  AppPreferences initialPreferences = const AppPreferences(),
   ModelCatalog? catalog,
   LanguageModelFactory? models,
   AppPaths? paths,
@@ -54,6 +60,10 @@ List<Override> testAppOverrides({
   aiSettingsRepositoryProvider.overrideWithValue(
     settings ?? FakeAiSettingsRepository(),
   ),
+  appPreferencesRepositoryProvider.overrideWithValue(
+    preferences ?? FakeAppPreferencesRepository(),
+  ),
+  initialAppPreferencesProvider.overrideWithValue(initialPreferences),
   modelCatalogProvider.overrideWithValue(catalog ?? FakeModelCatalog()),
   // Never reach a real endpoint from a test.
   languageModelFactoryProvider.overrideWithValue(
@@ -84,6 +94,8 @@ extension AppWidgetTester on WidgetTester {
     MessageRepository? messages,
     MemoryRepository? memory,
     AiSettingsRepository? settings,
+    AppPreferencesRepository? preferences,
+    AppPreferences initialPreferences = const AppPreferences(),
     ModelCatalog? catalog,
     LanguageModelFactory? models,
     AppPaths? paths,
@@ -101,6 +113,8 @@ extension AppWidgetTester on WidgetTester {
           messages: messages,
           memory: memory,
           settings: settings,
+          preferences: preferences,
+          initialPreferences: initialPreferences,
           catalog: catalog,
           models: models,
           paths: paths,

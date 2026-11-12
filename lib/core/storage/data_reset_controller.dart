@@ -9,6 +9,7 @@ import '../../features/memory/data/memory_data_providers.dart';
 import '../../features/settings/data/settings_data_providers.dart';
 import '../../features/settings/domain/services/clear_app_data.dart';
 import '../../features/settings/presentation/providers/account_providers.dart';
+import '../../features/settings/presentation/providers/app_preferences_controller.dart';
 import '../../features/settings/presentation/providers/settings_providers.dart';
 import '../error/app_failure.dart';
 import 'user_memory_provider.dart';
@@ -37,6 +38,12 @@ class DataResetController extends _$DataResetController {
               ref.read(accountRepositoryProvider),
             )
             .run()
+            .flatMap(
+              (_) => TaskEither(
+                () =>
+                    ref.read(appPreferencesControllerProvider.notifier).clear(),
+              ),
+            )
             .flatMap((_) => ref.read(userMemoryServiceProvider).ensure(''))
             .run();
     PaintingBinding.instance.imageCache.clear();

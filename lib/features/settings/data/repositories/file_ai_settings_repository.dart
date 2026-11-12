@@ -23,9 +23,9 @@ class FileAiSettingsRepository implements AiSettingsRepository {
   @override
   TaskEither<AppFailure, Unit> clearAll() => _secrets.clearAll().flatMap(
     (_) => TaskEither.tryCatch(() async {
-      if (await _file.parent.exists()) {
-        await _file.parent.delete(recursive: true);
-      }
+      if (await _file.exists()) await _file.delete();
+      final temp = File('${_file.path}.tmp');
+      if (await temp.exists()) await temp.delete();
       _saved.add(const AiSettings());
       return unit;
     }, _failure),

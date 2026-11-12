@@ -17,8 +17,12 @@ import 'features/chat/presentation/providers/assistant_controller.dart';
 import 'features/memory/data/memory_data_providers.dart';
 import 'features/memory/data/repositories/file_memory_repository.dart';
 import 'features/memory/domain/services/user_memory_service.dart';
+import 'features/settings/data/repositories/file_app_preferences_repository.dart';
 import 'features/settings/data/repositories/local_account_repository.dart';
+import 'features/settings/data/settings_data_providers.dart';
+import 'features/settings/domain/models/app_preferences.dart';
 import 'features/settings/presentation/providers/account_providers.dart';
+import 'features/settings/presentation/providers/app_preferences_controller.dart';
 import 'gen/i18n/strings.g.dart';
 
 Future<void> main() async {
@@ -34,12 +38,19 @@ Future<void> main() async {
     return true;
   };
 
-  LocaleSettings.useDeviceLocaleSync();
   // Application support (not documents) keeps app data out of the user's
   // visible files on desktop and in the backed-up sandbox on mobile.
   final paths = AppPaths(
     Directory('${(await getApplicationSupportDirectory()).path}/selfbox'),
   );
+  final preferencesRepository = FileAppPreferencesRepository(paths);
+  final preferences = (await preferencesRepository.load().run()).getOrElse((
+    failure,
+  ) {
+    talker.error('App preferences load failed', failure);
+    return const AppPreferences();
+  });
+  applyPreferredLanguage(preferences.language);
   final store = await openAppStore(paths);
   final account = LocalAccountRepository(store, paths);
   final memory = FileMemoryRepository(paths.memory);
@@ -59,6 +70,10 @@ Future<void> main() async {
         appPathsProvider.overrideWithValue(paths),
         appStoreProvider.overrideWithValue(store),
         accountRepositoryProvider.overrideWithValue(account),
+        appPreferencesRepositoryProvider.overrideWithValue(
+          preferencesRepository,
+        ),
+        initialAppPreferencesProvider.overrideWithValue(preferences),
         memoryRepositoryProvider.overrideWithValue(memory),
       ],
       observers: [appRiverpodObserver(talker)],

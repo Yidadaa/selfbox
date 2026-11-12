@@ -46,13 +46,14 @@
     "editProfile": "Edit profile",
     "nickname": "Nickname",
     "changeAvatar": "Change photo",
+    "general": "General",
     "storage": "Storage",
     "providers": "AI providers",
     "about": "About",
     "logs": "Talker logs",
     "clearAll": "Clear all data",
     "confirmClear": "Delete all data",
-    "clearWarning": "Delete messages, photos, memories, profile, AI settings and API keys? This cannot be undone.",
+    "clearWarning": "Delete messages, photos, memories, profile, general settings, AI settings and API keys? This cannot be undone.",
     "cleared": "All data cleared",
     "clearing": "Clearing…",
     "usedStorage": "Used on this device",
@@ -134,6 +135,15 @@
       "generic": "Something went wrong",
       "noModel": "No model selected"
     }
+  },
+  "general": {
+    "theme": "Theme",
+    "language": "Language",
+    "system": "Automatic",
+    "light": "Light",
+    "dark": "Dark",
+    "chinese": "Chinese",
+    "english": "English"
   },
   "assistant": {
     "thinking": "Thinking",

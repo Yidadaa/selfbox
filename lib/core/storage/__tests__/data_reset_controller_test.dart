@@ -7,8 +7,11 @@ import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/storage/data_reset_controller.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_account_repository.dart';
+import 'package:selfbox/core/testing/fake_app_preferences_repository.dart';
 import 'package:selfbox/core/testing/fake_memory_repository.dart';
 import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
+import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
+import 'package:selfbox/features/settings/presentation/providers/app_preferences_controller.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -67,6 +70,33 @@ void main() {
     expect(result.isRight(), isTrue);
     expect(memory.contentOf('topic/old.md'), isNull);
     expect(memory.contentOf('user.md'), '用户尚未设置名字，可以引导用户点击头像设置名字和头像。\n');
+  });
+
+  test('reset clears theme and language preferences', () async {
+    final preferences = FakeAppPreferencesRepository(
+      current: const AppPreferences(
+        theme: AppThemeChoice.dark,
+        language: AppLanguageChoice.zhCn,
+      ),
+    );
+    final container = ProviderContainer(
+      overrides: testAppOverrides(
+        preferences: preferences,
+        initialPreferences: preferences.current,
+      ),
+    );
+    addTearDown(container.dispose);
+
+    expect(
+      (await container.read(dataResetControllerProvider.notifier).clear())
+          .isRight(),
+      isTrue,
+    );
+    expect(preferences.current, const AppPreferences());
+    expect(
+      container.read(appPreferencesControllerProvider),
+      const AppPreferences(),
+    );
   });
 }
 

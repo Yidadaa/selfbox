@@ -8,7 +8,9 @@ import 'package:selfbox/core/storage/app_paths.dart';
 import 'package:selfbox/core/storage/secret_store.dart';
 import 'package:selfbox/core/testing/temp_storage.dart';
 import 'package:selfbox/features/settings/data/repositories/file_ai_settings_repository.dart';
+import 'package:selfbox/features/settings/data/repositories/file_app_preferences_repository.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
+import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 
 const _provider = ProviderConfig(
   id: 'p1',
@@ -32,6 +34,20 @@ void main() {
   });
 
   group('FileAiSettingsRepository', () {
+    test('clearing AI settings leaves general preferences intact', () async {
+      final preferences = FileAppPreferencesRepository(paths);
+      const selected = AppPreferences(theme: AppThemeChoice.dark);
+      expect((await preferences.save(selected).run()).isRight(), isTrue);
+      final pending = File(
+        p.join(paths.root.path, 'config', 'ai_settings.json.tmp'),
+      )..writeAsStringSync('interrupted');
+      expect((await repo.clearAll().run()).isRight(), isTrue);
+      expect(pending.existsSync(), isFalse);
+      expect(
+        (await preferences.load().run()).getOrElse((failure) => throw failure),
+        selected,
+      );
+    });
     test(
       'clear removes settings and orphan credentials and is repeatable',
       () async {

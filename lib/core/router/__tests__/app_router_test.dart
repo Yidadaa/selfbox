@@ -54,6 +54,7 @@ void main() {
     for (final location in [
       const MemoryFileRoute(path: 'missing.md').location,
       const ProfileRoute().location,
+      const GeneralRoute().location,
       const StorageRoute().location,
       const AiProvidersRoute().location,
       const AboutRoute().location,

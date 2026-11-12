@@ -94,3 +94,7 @@
 - [2026-11-13] [WidgetTest] 首条发送后立即查找气泡失败 -> 消息流在零时长 pump 后才交付下一帧 -> 推进一帧再断言入场组件。
 - [2026-11-13] [WidgetTest] 图片发送测试挂起 -> 选图流程写真实文件，fake-async 不推进 I/O -> 用 `tester.runAsync` 执行选图。
 - [2026-11-13] [Flutter] `SizeTransition.axisAlignment` 静态分析报警 -> SDK 已弃用该参数 -> 用 `alignment: Alignment.bottomCenter` 保留底部锚点。
+- [2026-11-13] [fpdart] 测试替身的 `TaskEither.fromEither(switch)` 推断出 `dynamic` 失败类型 -> 分支泛型未被上下文锁定 -> 直接返回明确的 `TaskEither<AppFailure, Unit>`。
+- [2026-11-13] [SlangTest] 清除语言偏好的单测报 WidgetsBinding 未初始化 -> 恢复设备语言会读取平台 locale -> 独立 Provider 测试先初始化 `TestWidgetsFlutterBinding`。
+- [2026-11-13] [SettingsReset] 清除 AI 配置误删通用偏好 -> 旧实现递归删除整个 `config` 目录 -> 仓库只删除自己拥有的配置文件，并由总重置流程清除通用偏好。
+- [2026-11-13] [SettingsReset] 缩小配置删除范围后 `.tmp` 仍残留 -> 原子写入的临时文件也属于同一仓库 -> `clearAll` 同时删除正式文件和对应 `.tmp`。
