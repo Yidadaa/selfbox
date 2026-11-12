@@ -86,3 +86,9 @@
 - **背景**：`permission_handler_android` 14.x 要求以 API 37 编译；SDK 仅提供 `platforms;android-37.0`，模板自带 AGP 9.1.0 无法解析 `compileSdk = 37`，且 app 端还需 compileSdk ≥ 37。
 - **决策**：AGP 升至 9.5.1（随之 Gradle wrapper 升至 9.6.0），`android/app/build.gradle.kts` 固定 `compileSdk = 37`（targetSdk 仍跟随 Flutter 默认）。新增 `cupertino_icons`：liquid_glass_widgets 内部引用 Cupertino 图标字体，缺失会显示方块。
 - **影响**：Flutter 默认 compileSdk 升到 ≥37 后可改回 `flutter.compileSdkVersion`。Release 包暂用 debug 签名，发布前需配置正式签名。
+
+### [ADR-015] Android release：正式签名、网络权限、仅声明用到的权限
+
+- **背景**：要装到真机长期使用；debug 签名的 APK 日后换正式签名只能卸载重装，会丢失本地笔记与记忆。模板 release manifest 缺少 `INTERNET`；`record` 插件合并进 `RECORD_AUDIO`，v0 并不录音。
+- **决策**：release 用本地私钥签名：keystore 在 `%USERPROFILE%/.selfbox-signing/selfbox-release.jks`，`android/key.properties`（已 gitignore）提供路径与密码；缺少该文件时回退 debug 签名以保证新克隆可构建。主 manifest 声明 `INTERNET`，并以 `tools:node="remove"` 移除 `RECORD_AUDIO`，录音功能落地时再按 Just-in-Time 恢复并更新本 ADR。真机为 arm64，用 `--target-platform android-arm64` 构建（只打 x86_64 时插件仍会塞入不完整的 arm64 目录，arm64 设备启动即崩溃）。
+- **影响**：keystore 与密码丢失后将无法覆盖安装更新——务必备份 `.selfbox-signing/` 与 `android/key.properties`。

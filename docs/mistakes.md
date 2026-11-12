@@ -31,3 +31,6 @@
 - [2026-11-12] [Android] `Failed to find target with hash string 'android-37'` -> 插件要求 compileSdk 37，旧 AGP 不识别 `android-37.0` 包 -> 升级 AGP（9.5.1）并同步 Gradle 版本，app 的 compileSdk 设为不低于插件要求。
 - [2026-11-12] [Android] release 构建提示缺少 `CupertinoIcons` 字体 -> 依赖库用了 Cupertino 图标但项目未引入 -> 添加 `cupertino_icons` 依赖，否则图标为方块。
 - [2026-11-12] [MuMu] `adb connect 127.0.0.1:16384/7555` 被拒 -> Hyper-V 模式下 adb 监听在模拟器自身 IP -> 用 `MuMuManager.exe info -v all` 查 `adb_host_ip:adb_port` 再连接。
+- [2026-11-12] [Android] release 包 AI 请求全部失败 -> Flutter 模板只在 debug/profile manifest 声明 `INTERNET` -> 主 manifest 必须显式声明 `INTERNET`。
+- [2026-11-12] [Android] 只按 `android-x64` 构建的 APK 在 arm64 真机必崩 -> 插件自带各 ABI 的 .so，出现不完整的 `arm64-v8a` 目录，系统据此选择 arm64 却找不到 libflutter.so -> 按目标设备 ABI 构建，或不加 `--target-platform` 打全量包。
+- [2026-11-12] [Xiaomi] `adb install` 报 `INSTALL_FAILED_USER_RESTRICTED` -> HyperOS 默认禁止 USB 安装 -> 开发者选项开启「USB 安装」，安装时在手机上点允许。

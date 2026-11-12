@@ -1,6 +1,11 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- AI mode and model listing call provider APIs over HTTPS. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Merged in by the `record` plugin; v0 never records, so do not ask (ADR-015). -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove"/>
     <application
-        android:label="selfbox"
+        android:label="Selfbox"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
