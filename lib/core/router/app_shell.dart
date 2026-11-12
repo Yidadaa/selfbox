@@ -39,11 +39,9 @@ class AppShell extends HookConsumerWidget {
     final dockHeight = useState(AppSizes.minTouchTarget);
     final keyboard = MediaQuery.viewInsetsOf(context).bottom;
     final onChat = navigationShell.currentIndex == 0;
-    final bottom =
-        (onChat && keyboard > 0
-            ? keyboard
-            : MediaQuery.paddingOf(context).bottom) +
-        AppSpacing.xs;
+    final bottom = onChat && keyboard > 0
+        ? keyboard + AppSpacing.xs
+        : MediaQuery.paddingOf(context).bottom + AppSpacing.md;
     final navigation = AppDockTabs(
       selectedIndex: navigationShell.currentIndex,
       onSelected: _onTabSelected,
@@ -65,8 +63,8 @@ class AppShell extends HookConsumerWidget {
           AnimatedPositioned(
             duration: AppMotion.fast,
             curve: AppMotion.emphasized,
-            left: AppSpacing.sm,
-            right: AppSpacing.sm,
+            left: AppSpacing.md,
+            right: AppSpacing.md,
             bottom: bottom,
             child: MeasureSize(
               onChange: (size) => dockHeight.value = size.height,
@@ -76,8 +74,7 @@ class AppShell extends HookConsumerWidget {
                       navigation: navigation,
                     )
                   : GlassContainer(
-                      quality: GlassQuality.premium,
-                      useOwnLayer: true,
+                      quality: GlassQuality.standard,
                       padding: const EdgeInsets.only(top: AppSpacing.xs),
                       shape: const LiquidRoundedSuperellipse(
                         borderRadius: AppRadius.xl,

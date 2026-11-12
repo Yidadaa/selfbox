@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/error/app_failure.dart';
+import 'package:selfbox/core/router/app_dock_tabs.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
@@ -10,6 +11,7 @@ import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer.dart';
+import 'package:selfbox/features/chat/presentation/widgets/chat_composer_controls.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
@@ -124,19 +126,72 @@ void main() {
     });
   }
 
-  testWidgets('navigation shares the input glass surface in full quality', (
+  testWidgets(
+    'input controls share a center line and tabs use the dock edges',
+    (tester) async {
+      await tester.pumpApp();
+      final field = tester.widget<GlassContainer>(
+        find.descendant(
+          of: find.byKey(const ValueKey('chat-input')),
+          matching: find.byType(GlassContainer),
+        ),
+      );
+      expect(field.quality, GlassQuality.standard);
+      final input = tester.getRect(find.byType(EditableText));
+      final attach = tester.getRect(find.byType(ChatAttachButton));
+      final send = tester.getRect(find.byType(ChatSendButton));
+      expect(attach.center.dy, closeTo(input.center.dy, 1));
+      expect(send.center.dy, closeTo(input.center.dy, 1));
+      final dock = tester.getRect(find.byType(ChatComposer));
+      expect(
+        tester.getSize(find.byKey(const ValueKey('chat-input'))).height,
+        lessThan(140),
+      );
+      final tabs = tester.getRect(find.byType(AppDockTabs));
+      expect(dock.left, AppSpacing.md);
+      expect(dock.right, kPhoneViewport.width - AppSpacing.md);
+      expect(dock.bottom, kPhoneViewport.height - 34 - AppSpacing.md);
+      expect(tabs.left, dock.left);
+      expect(tabs.right, dock.right);
+      expect(
+        tester
+            .widget<GlassContainer>(
+              find.descendant(
+                of: find.byType(ChatAiToggle),
+                matching: find.byType(GlassContainer),
+              ),
+            )
+            .quality,
+        GlassQuality.premium,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('chat-input')),
+          matching: find.text(t.tabs.memory),
+        ),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets('keyboard input controls stay centered and aligned to edges', (
     tester,
   ) async {
     await tester.pumpApp();
-    final field = tester.widget<GlassTextField>(find.byType(GlassTextField));
-    expect(field.quality, GlassQuality.premium);
+    await tester.enterText(find.byType(EditableText), 'Hello');
+    tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+    await tester.pumpAndSettle();
+    final input = tester.getRect(find.byType(EditableText));
     expect(
-      find.descendant(
-        of: find.byType(GlassTextField),
-        matching: find.text(t.tabs.memory),
-      ),
-      findsOneWidget,
+      tester.getSize(find.byKey(const ValueKey('chat-input'))).height,
+      lessThan(80),
     );
+    final attach = tester.getRect(find.byType(ChatAttachButton));
+    final send = tester.getRect(find.byType(ChatSendButton));
+    expect(attach.center.dy, closeTo(input.center.dy, 1));
+    expect(send.center.dy, closeTo(input.center.dy, 1));
+    expect(attach.left, AppSpacing.md);
+    expect(send.right, kPhoneViewport.width - AppSpacing.md - AppSpacing.xs);
   });
 
   testWidgets('keyboard hides tabs and preserves focus, selection and draft', (

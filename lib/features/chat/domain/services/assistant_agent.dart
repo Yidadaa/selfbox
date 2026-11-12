@@ -16,6 +16,10 @@ import '../repositories/message_repository.dart';
 import 'agent_prompt.dart';
 import 'agent_tools.dart';
 
+enum AgentToolPhase { started, succeeded, failed }
+
+typedef AgentToolTrace = void Function(String toolName, AgentToolPhase phase);
+
 /// Runs one AI-mode turn: gathers history and memory, lets the model call
 /// tools for several steps, and returns the final answer text.
 class AssistantAgent {
@@ -44,6 +48,7 @@ class AssistantAgent {
   TaskEither<AppFailure, String> answer(
     Message question, {
     required void Function(AgentActivity) onActivity,
+    AgentToolTrace? onToolEvent,
     CancellationToken? cancel,
   }) => settings
       .load()
@@ -59,6 +64,7 @@ class AssistantAgent {
                   recent: recent,
                   index: index,
                   onActivity: onActivity,
+                  onToolEvent: onToolEvent,
                   cancel: cancel,
                 ),
               ),
@@ -96,6 +102,7 @@ class AssistantAgent {
     required List<Message> recent,
     required List<MemoryEntry> index,
     required void Function(AgentActivity) onActivity,
+    required AgentToolTrace? onToolEvent,
     required CancellationToken? cancel,
   }) => TaskEither.tryCatch(() async {
     final model = setup.model;
@@ -104,6 +111,10 @@ class AssistantAgent {
       memory: memory,
       readImage: readImage,
       canViewImages: model.supportsImages,
+      onResult: (name, succeeded) => onToolEvent?.call(
+        name,
+        succeeded ? AgentToolPhase.succeeded : AgentToolPhase.failed,
+      ),
     );
     final instructions = buildAgentInstructions(
       now: clock(),
@@ -144,8 +155,11 @@ class AssistantAgent {
         switch (event) {
           case StreamTextToolInputStartEvent(:final toolName):
             typing = false;
+            onToolEvent?.call(toolName, AgentToolPhase.started);
             final kind = AgentToolKind.ofTool(toolName);
             if (kind != null) onActivity(AgentActivity.tool(kind));
+          case StreamTextToolErrorEvent(:final toolName):
+            onToolEvent?.call(toolName, AgentToolPhase.failed);
           case StreamTextTextDeltaEvent() when !typing:
             typing = true;
             onActivity(const AgentActivity.typing());

@@ -245,6 +245,7 @@ final screenshotFixtures = <ScreenshotFixture>[
   const ScreenshotFixture(name: 'profile', location: '/me/profile'),
   const ScreenshotFixture(name: 'storage', location: '/me/storage'),
   const ScreenshotFixture(name: 'about', location: '/me/about'),
+  const ScreenshotFixture(name: 'logs', location: '/me/logs'),
   const ScreenshotFixture(
     name: 'providers',
     location: '/me/providers',

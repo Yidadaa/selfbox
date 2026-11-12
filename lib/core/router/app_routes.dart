@@ -12,6 +12,7 @@ import '../../features/settings/presentation/pages/model_page.dart';
 import '../../features/settings/presentation/pages/profile_page.dart';
 import '../../features/settings/presentation/pages/provider_page.dart';
 import '../../features/settings/presentation/pages/storage_page.dart';
+import '../../features/settings/presentation/pages/talker_page.dart';
 import 'app_shell.dart';
 
 part '../../gen/core/router/app_routes.g.dart';
@@ -41,6 +42,7 @@ final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
             TypedGoRoute<StorageRoute>(path: 'storage'),
             TypedGoRoute<AiProvidersRoute>(path: 'providers'),
             TypedGoRoute<AboutRoute>(path: 'about'),
+            TypedGoRoute<TalkerRoute>(path: 'logs'),
             TypedGoRoute<ProviderRoute>(path: 'provider'),
             TypedGoRoute<ModelRoute>(path: 'model'),
           ],
@@ -117,6 +119,7 @@ class StorageRoute extends GoRouteData with $StorageRoute {
 
 class AiProvidersRoute extends GoRouteData with $AiProvidersRoute {
   const AiProvidersRoute();
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       const AiProvidersPage();
@@ -145,9 +148,10 @@ class ImageViewerRoute extends GoRouteData with $ImageViewerRoute {
       ImageViewerPage(path: path, paths: $extra);
 }
 
-/// Stays inside the memory branch so the tab bar remains visible.
+/// Opens over the shell so the tab bar is hidden while reading a file.
 class MemoryFileRoute extends GoRouteData with $MemoryFileRoute {
   const MemoryFileRoute({required this.path});
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
 
   /// Memory path such as `user/profile.md`.
   final String path;
@@ -160,6 +164,7 @@ class MemoryFileRoute extends GoRouteData with $MemoryFileRoute {
 /// New provider when [id] is null.
 class ProviderRoute extends GoRouteData with $ProviderRoute {
   const ProviderRoute({this.id});
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
 
   final String? id;
 
@@ -170,6 +175,7 @@ class ProviderRoute extends GoRouteData with $ProviderRoute {
 
 class ModelRoute extends GoRouteData with $ModelRoute {
   const ModelRoute({required this.provider, required this.model});
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
 
   final String provider;
   final String model;
@@ -177,4 +183,12 @@ class ModelRoute extends GoRouteData with $ModelRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       ModelPage(providerId: provider, modelId: model);
+}
+
+class TalkerRoute extends GoRouteData with $TalkerRoute {
+  const TalkerRoute();
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) => const TalkerPage();
 }

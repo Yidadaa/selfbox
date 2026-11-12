@@ -32,7 +32,7 @@ class ChatComposer extends HookConsumerWidget {
         AppSizes.appBarHeight +
         AppSpacing.md +
         (keyboardOpen ? keyboard : safeArea.bottom) +
-        AppSpacing.xs +
+        (keyboardOpen ? AppSpacing.xs : AppSpacing.md) +
         AppSizes.minTouchTarget +
         AppSpacing.sm +
         (attachments.isEmpty

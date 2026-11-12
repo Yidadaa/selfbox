@@ -24,7 +24,7 @@ class PrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final icon = this.icon;
     return GlassButton.custom(
-      quality: GlassQuality.premium,
+      quality: GlassQuality.standard,
       height: AppSizes.minTouchTarget,
       width: double.infinity,
       label: label,

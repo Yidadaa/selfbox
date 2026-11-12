@@ -112,7 +112,7 @@ class _UsageCard extends StatelessWidget {
       ),
       const Gap(AppSpacing.xl),
       GlassGroupedSection(
-        quality: GlassQuality.premium,
+        quality: GlassQuality.standard,
         margin: AppInsets.section,
         children: [
           AppListTile(

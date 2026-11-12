@@ -22,7 +22,7 @@ class MePage extends ConsumerWidget {
         const ProfileHeader(),
         const Gap(AppSpacing.xxl),
         GlassGroupedSection(
-          quality: GlassQuality.premium,
+          quality: GlassQuality.standard,
           margin: AppInsets.section,
           children: [
             AppListTile(
@@ -39,6 +39,11 @@ class MePage extends ConsumerWidget {
               icon: Icons.info_outline_rounded,
               title: context.t.me.about,
               onTap: () => const AboutRoute().push<void>(context),
+            ),
+            AppListTile(
+              icon: Icons.receipt_long_outlined,
+              title: context.t.me.logs,
+              onTap: () => const TalkerRoute().push<void>(context),
             ),
           ],
         ),

@@ -2,6 +2,8 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-12] [RoutingTest] 二级页改为根 Navigator 后全量测试仍断言文件详情显示 Tab -> 旧契约未同步更新 -> 路由行为调整时同步检查跨 Feature 页面测试。
+
 - [2026-11-12] [Test] `byType(Skeletonizer)` 找不到骨架组件 -> 工厂构造返回内部子类，byType 精确匹配运行时类型 -> 用 `byWidgetPredicate((widget) => widget is Skeletonizer)` 验证公开契约。
 - [2026-11-12] [PowerShell] 文本替换写入字面量 `\n` 导致 Dart 解析失败 -> PowerShell 单引号不展开换行 -> 多行源码使用 apply_patch 编辑。
 
@@ -51,3 +53,6 @@
 - [2026-11-12] [Riverpod] Widget fixture 重复 override 同一 provider 报错 -> 默认替身和 overrides 同时注入 -> 可替换仓库作为 fixture 的显式可选参数传入。
 - [2026-11-12] [WidgetTest] find.byType(Skeletonizer) 找不到骨架 -> 工厂返回私有实现类型 -> 用 widget is Skeletonizer 与 enabled 判定实际行为。
 - [2026-11-12] [Focus] 点击输入框旁的 AI 按钮使键盘收起 -> CupertinoTextField 默认将按钮判为 outside tap 并 unfocus -> 用 TextFieldTapRegion 将相邻输入控制纳入同一点击组，保留页面空白处收键盘手势。
+- [2026-11-12] [Composer] 自定义输入行后键盘态附件按钮低 8dp、消息点击不收键盘 -> 外层 Row 按底边对齐且原生文本框未显式处理 outside tap -> 输入与附件按中心线排布，onTapOutside 主动取消焦点。
+- [2026-11-12] [AgentLog] SDK 的 ToolResult 流事件把工具 Map 结果序列化为文本，业务错误被误记为成功 -> 在 AgentTools 执行包装处检查结构化结果的 error 键，仅把状态写入 Talker。
+- [2026-11-12] [Layout] 输入区单行截图出现六行高空白 -> CupertinoTextField 设置 maxLines:6 但省略 minLines 时按六行占位，外层 Flexible 又放大空白 -> 明确 minLines:1、只约束编辑文本高度，并测单行输入面高度。

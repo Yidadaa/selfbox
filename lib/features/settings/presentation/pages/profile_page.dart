@@ -73,7 +73,7 @@ class _ProfileForm extends HookConsumerWidget {
               const Gap(AppSpacing.md),
               Center(
                 child: GlassButton.custom(
-                  quality: GlassQuality.premium,
+                  quality: GlassQuality.standard,
                   height: AppSizes.minTouchTarget,
                   width: AppSizes.profileActionWidth,
                   shape: const LiquidRoundedSuperellipse(

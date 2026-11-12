@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:selfbox/core/error/app_failure.dart';
+import 'package:selfbox/core/logger/talker_provider.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
@@ -9,6 +10,7 @@ import 'package:selfbox/features/chat/domain/models/agent_activity.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/providers/assistant_controller.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
+import 'package:talker_flutter/talker_flutter.dart';
 
 const _ready = AiSettings(
   providers: [
@@ -35,6 +37,7 @@ typedef _Env = ({
   FakeMessageRepository messages,
   ScriptedLanguageModel model,
   List<AssistantState> states,
+  Talker talker,
 });
 
 _Env _env(
@@ -46,6 +49,7 @@ _Env _env(
     for (final step in steps) step.cast(),
   ], error: error);
   final messages = FakeMessageRepository(seed: [_question]);
+  final talker = Talker(settings: TalkerSettings(useConsoleLogs: false));
   final container = ProviderContainer(
     overrides: testAppOverrides(
       messages: messages,
@@ -54,7 +58,7 @@ _Env _env(
         apiKeys: const {'p1': 'sk'},
       ),
       models: FakeLanguageModelFactory(model),
-    ),
+    )..add(talkerProvider.overrideWithValue(talker)),
   );
   addTearDown(container.dispose);
   final states = <AssistantState>[];
@@ -68,6 +72,7 @@ _Env _env(
     messages: messages,
     model: model,
     states: states,
+    talker: talker,
   );
 }
 
@@ -113,6 +118,16 @@ void main() {
         final reply = env.messages.added.last;
         expect(reply.author, MessageAuthor.ai);
         expect(reply.text, '**要点**：三件事。');
+        final logs = env.talker.history
+            .whereType<TalkerLog>()
+            .map((entry) => entry.message.toString())
+            .toList();
+        expect(logs, contains('Agent #1 started message=1'));
+        expect(logs, contains('Agent #1 tool search_messages started'));
+        expect(logs, contains('Agent #1 tool search_messages succeeded'));
+        expect(logs, contains('Agent #1 completed'));
+        expect(logs.join(' '), isNot(contains(_question.text)));
+        expect(logs.join(' '), isNot(contains('sk')));
       },
     );
 
@@ -129,7 +144,31 @@ void main() {
         ),
       );
       expect(env.messages.added, isEmpty);
+      expect(
+        env.talker.history.whereType<TalkerLog>().last.message,
+        'Agent #1 failed',
+      );
     });
+
+    test(
+      'a tool-level failure is recorded without leaking its payload',
+      () async {
+        final env = _env([
+          [
+            scriptedToolCall('read_messages', {'id': 999}),
+          ],
+          [scriptedText('No matching note.')],
+        ]);
+        await _ctrl(env).ask(_question);
+        final logs = env.talker.history
+            .whereType<TalkerLog>()
+            .map((entry) => entry.message.toString())
+            .toList();
+        expect(logs, contains('Agent #1 tool read_messages started'));
+        expect(logs, contains('Agent #1 tool read_messages failed'));
+        expect(logs.join(' '), isNot(contains('999')));
+      },
+    );
 
     test('retry re-asks the failed question', () async {
       final env = _env([

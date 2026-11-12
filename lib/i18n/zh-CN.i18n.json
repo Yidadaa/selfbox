@@ -37,6 +37,7 @@
     "storage": "存储空间",
     "providers": "AI 服务商",
     "about": "关于此应用",
+    "logs": "Talker 日志",
     "clearAll": "清除所有数据",
     "confirmClear": "确认清除",
     "clearWarning": "将删除消息、图片、记忆、个人资料、AI 配置及 API 密钥，此操作无法撤销。",

@@ -10,6 +10,8 @@ import '../../../memory/domain/repositories/memory_repository.dart';
 import '../models/message.dart';
 import '../repositories/message_repository.dart';
 
+part 'agent_tool_support.dart';
+
 typedef ToolInput = Map<String, Object?>;
 
 /// An image the agent asked to see; attached to the conversation right after
@@ -31,12 +33,14 @@ class AgentTools {
     required this.memory,
     required this.readImage,
     required this.canViewImages,
+    this.onResult,
   });
 
   final MessageRepository messages;
   final MemoryRepository memory;
   final ImageReader readImage;
   final bool canViewImages;
+  final void Function(String toolName, bool succeeded)? onResult;
 
   /// Filled by `view_image`, keyed by tool call id.
   final viewedImages = <String, ViewedImage>{};
@@ -49,9 +53,10 @@ class AgentTools {
 
   ToolSet build() => {
     'search_messages': _tool(
+      'search_messages',
       'Search the user\'s chat notes, newest first. All keywords must match '
-      '(case-insensitive substring). Omit keywords to list by time range. '
-      'Use read_messages to see full text and surrounding context.',
+          '(case-insensitive substring). Omit keywords to list by time range. '
+          'Use read_messages to see full text and surrounding context.',
       {
         'keywords': _string('Space-separated words; all must appear.'),
         'from': _string('Inclusive start, ISO 8601 date or date-time.'),
@@ -66,6 +71,7 @@ class AgentTools {
       _searchMessages,
     ),
     'read_messages': _tool(
+      'read_messages',
       'Read a message in full with the messages around it, oldest first.',
       {
         'id': _int('Message id from search results or history.'),
@@ -79,8 +85,9 @@ class AgentTools {
     ),
     if (canViewImages)
       'view_image': _tool(
+        'view_image',
         'Look at an image attached to a message. The image is shown to you '
-        'right after this call.',
+            'right after this call.',
         {
           'message_id': _int('Id of the message holding the image.'),
           'index': _int('Which image of that message, 0-based (default 0).'),
@@ -89,25 +96,29 @@ class AgentTools {
         required: ['message_id'],
       ),
     'memory_list': _tool(
+      'memory_list',
       'List all memory files with their titles.',
       const {},
       (_, _) => _listMemory(),
     ),
     'memory_read': _tool(
+      'memory_read',
       'Read one memory file. Always read a file before patching it.',
       {'path': _string('e.g. "user/profile.md".')},
       _readMemory,
       required: ['path'],
     ),
     'memory_search': _tool(
+      'memory_search',
       'Find lines in memory files containing all keywords.',
       {'keywords': _string('Space-separated words; all must appear.')},
       _searchMemory,
       required: ['keywords'],
     ),
     'memory_create': _tool(
+      'memory_create',
       'Create a NEW memory file. Fails if it exists; use memory_patch to '
-      'change existing files.',
+          'change existing files.',
       {
         'path': _string('Lowercase, "/"-separated, ending in .md.'),
         'content': _string('Full markdown content, starting with a # title.'),
@@ -116,11 +127,12 @@ class AgentTools {
       required: ['path', 'content'],
     ),
     'memory_patch': _tool(
+      'memory_patch',
       'Edit an existing memory file with a unified diff (like `diff -u`). '
-      'Hunks start with "@@ ... @@"; context lines start with a space, '
-      'removed lines with "-", added lines with "+". Context and removed '
-      'lines must match the current file exactly. Never rewrite a whole '
-      'file to change part of it.',
+          'Hunks start with "@@ ... @@"; context lines start with a space, '
+          'removed lines with "-", added lines with "+". Context and removed '
+          'lines must match the current file exactly. Never rewrite a whole '
+          'file to change part of it.',
       {
         'path': _string('Existing memory file path.'),
         'diff': _string('Unified diff against the current content.'),
@@ -129,6 +141,7 @@ class AgentTools {
       required: ['path', 'diff'],
     ),
     'memory_delete': _tool(
+      'memory_delete',
       'Delete a memory file that is obsolete or merged elsewhere.',
       {'path': _string('Existing memory file path.')},
       _deleteMemory,
@@ -281,96 +294,4 @@ class AgentTools {
 
   Future<Object?> _deleteMemory(ToolInput input, String _) =>
       _withPath(input, (path) => memory.delete(path).map((_) => {'ok': true}));
-
-  // ── Helpers ─────────────────────────────────────────────────────────────
-
-  Future<Object?> _withPath(
-    ToolInput input,
-    TaskEither<AppFailure, Map<String, Object?>> Function(MemoryPath) run,
-  ) => MemoryPath.parse(_str(input['path']) ?? '')
-      .match((f) async => _error(_describe(f)), (path) => _answer(run(path)));
-
-  static Future<Object?> _answer(
-    TaskEither<AppFailure, Map<String, Object?>> task,
-  ) async => (await task.run()).match((f) => _error(_describe(f)), (ok) => ok);
-
-  static Map<String, Object?> _error(String message) => {'error': message};
-
-  static String _describe(AppFailure failure) => switch (failure) {
-    ValidationFailure(:final message) ||
-    DatabaseFailure(:final message) ||
-    NetworkFailure(:final message) => message,
-    PermissionFailure(:final permission) => 'permission denied: $permission',
-    UnexpectedFailure(:final error) => error.toString(),
-  };
-
-  static Map<String, Object?> _messageJson(Message m, {required int maxText}) =>
-      {
-        'id': m.id,
-        'time': _iso(m.createdAt),
-        'author': m.author.name,
-        'text': _truncate(m.text, maxText),
-        if (m.images.isNotEmpty) 'images': m.images.length,
-      };
-
-  static String _iso(DateTime t) =>
-      t.toLocal().toIso8601String().substring(0, 16).replaceFirst('T', ' ');
-
-  static String _truncate(String text, int max) =>
-      text.length <= max ? text : '${text.substring(0, max)}…';
-
-  static String? _str(Object? value) => value is String ? value : null;
-
-  static int? _intOf(Object? value) => switch (value) {
-    final int v => v,
-    final double v when v == v.roundToDouble() => v.toInt(),
-    final String v => int.tryParse(v),
-    _ => null,
-  };
-
-  static DateTime? _date(Object? value, {bool endOfDay = false}) {
-    final parsed = DateTime.tryParse(_str(value) ?? '');
-    if (parsed == null) return null;
-    final dateOnly = (_str(value) ?? '').length <= 10;
-    return endOfDay && dateOnly
-        ? parsed.add(const Duration(days: 1, microseconds: -1))
-        : parsed;
-  }
-
-  static String _mediaType(String path) => switch (p.extension(path)) {
-    '.png' => 'image/png',
-    '.gif' => 'image/gif',
-    '.webp' => 'image/webp',
-    '.heic' => 'image/heic',
-    _ => 'image/jpeg',
-  };
-
-  static Map<String, Object?> _string(String description) => {
-    'type': 'string',
-    'description': description,
-  };
-
-  static Map<String, Object?> _int(String description) => {
-    'type': 'integer',
-    'description': description,
-  };
-
-  static Tool<ToolInput, Object?> _tool(
-    String description,
-    Map<String, Object?> properties,
-    Future<Object?> Function(ToolInput input, String toolCallId) run, {
-    List<String> required = const [],
-  }) => tool<ToolInput, Object?>(
-    description: description,
-    inputSchema: Schema<ToolInput>(
-      jsonSchema: {
-        'type': 'object',
-        'properties': properties,
-        'required': required,
-        'additionalProperties': false,
-      },
-      fromJson: Map<String, Object?>.of,
-    ),
-    execute: (input, options) => run(input, options.toolCallId ?? ''),
-  );
 }

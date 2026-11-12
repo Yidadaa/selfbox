@@ -59,7 +59,7 @@ void main() {
       expect(find.text('Fresh topic'), findsOneWidget);
     });
 
-    testWidgets('opens a file as rendered markdown and keeps the tab bar', (
+    testWidgets('opens a file as rendered markdown without the tab bar', (
       tester,
     ) async {
       await _openMemoryTab(
@@ -74,7 +74,7 @@ void main() {
 
       expect(find.byType(MemoryFilePage), findsOneWidget);
       expect(find.byType(SmoothMarkdown), findsOneWidget);
-      expect(find.byType(AppDockTabs), findsOneWidget);
+      expect(find.byType(AppDockTabs), findsNothing);
     });
 
     testWidgets('deleting from the file page removes it and goes back', (

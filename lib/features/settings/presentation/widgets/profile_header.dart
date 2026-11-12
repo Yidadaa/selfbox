@@ -36,7 +36,7 @@ class ProfileHeader extends ConsumerWidget {
             shape: const LiquidRoundedSuperellipse(
               borderRadius: AppRadius.pill,
             ),
-            quality: GlassQuality.premium,
+            quality: GlassQuality.standard,
             onTap: profile.hasError
                 ? () => ref.invalidate(userProfileProvider)
                 : () => const ProfileRoute().push<void>(context),

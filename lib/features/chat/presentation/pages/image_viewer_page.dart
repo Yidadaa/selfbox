@@ -45,6 +45,7 @@ class ImageViewerPage extends HookConsumerWidget {
             top: insets.top + AppSpacing.xs,
             left: AppSpacing.md,
             child: GlassIconButton(
+              quality: GlassQuality.premium,
               icon: const Icon(Icons.close_rounded),
               semanticLabel: context.t.common.close,
               size: AppSizes.minTouchTarget,
@@ -58,7 +59,7 @@ class ImageViewerPage extends HookConsumerWidget {
               right: AppSpacing.md,
               child: Center(
                 child: GlassContainer(
-                  quality: GlassQuality.premium,
+                  quality: GlassQuality.standard,
                   padding: const EdgeInsets.all(AppSpacing.sm),
                   child: Text(
                     '${page.value + 1} / ${images.length}',

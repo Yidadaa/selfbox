@@ -75,8 +75,10 @@ import 'package:selfbox/features/settings/presentation/pages/__tests__/account_p
     as t38;
 import 'package:selfbox/features/settings/presentation/pages/__tests__/settings_pages_test.dart'
     as t39;
-import 'package:selfbox/features/settings/presentation/providers/__tests__/account_providers_test.dart'
+import 'package:selfbox/features/settings/presentation/pages/__tests__/talker_page_test.dart'
     as t40;
+import 'package:selfbox/features/settings/presentation/providers/__tests__/account_providers_test.dart'
+    as t41;
 
 const _registered = <String>[
   'lib/core/database/__tests__/app_store_test.dart',
@@ -119,6 +121,7 @@ const _registered = <String>[
   'lib/features/settings/domain/services/__tests__/clear_app_data_test.dart',
   'lib/features/settings/presentation/pages/__tests__/account_pages_test.dart',
   'lib/features/settings/presentation/pages/__tests__/settings_pages_test.dart',
+  'lib/features/settings/presentation/pages/__tests__/talker_page_test.dart',
   'lib/features/settings/presentation/providers/__tests__/account_providers_test.dart',
 ];
 
@@ -254,8 +257,12 @@ void main() {
     t39.main,
   );
   group(
-    'lib/features/settings/presentation/providers/__tests__/account_providers_test.dart',
+    'lib/features/settings/presentation/pages/__tests__/talker_page_test.dart',
     t40.main,
+  );
+  group(
+    'lib/features/settings/presentation/providers/__tests__/account_providers_test.dart',
+    t41.main,
   );
 
   test('registers every lib/**/__tests__/*_test.dart', () {

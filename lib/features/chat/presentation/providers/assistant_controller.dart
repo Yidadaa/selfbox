@@ -71,7 +71,9 @@ class AssistantController extends _$AssistantController {
     final token = _cancel = CancellationToken();
     final run = ++_run;
     bool current() => run == _run;
+    final talker = ref.read(talkerProvider);
 
+    talker.info('Agent #$run started message=${question.id}');
     state = const AssistantState.working(AgentActivity.thinking());
     final answer = await ref
         .read(assistantAgentProvider)
@@ -81,10 +83,15 @@ class AssistantController extends _$AssistantController {
           onActivity: (activity) {
             if (current()) state = AssistantState.working(activity);
           },
+          onToolEvent: (name, phase) =>
+              talker.info('Agent #$run tool $name ${phase.name}'),
         )
         .run();
     // A superseded run must not post its (now stale) reply.
-    if (!current()) return;
+    if (!current()) {
+      talker.info('Agent #$run cancelled');
+      return;
+    }
     final result = await TaskEither.fromEither(answer)
         .flatMap(
           (text) => ref
@@ -94,10 +101,16 @@ class AssistantController extends _$AssistantController {
         )
         .run();
     if (!current()) return;
-    state = result.match((failure) {
-      ref.read(talkerProvider).error('Assistant failed', failure);
-      return AssistantState.failed(failure, question);
-    }, (_) => const AssistantState.idle());
+    state = result.match(
+      (failure) {
+        talker.error('Agent #$run failed', failure);
+        return AssistantState.failed(failure, question);
+      },
+      (_) {
+        talker.info('Agent #$run completed');
+        return const AssistantState.idle();
+      },
+    );
   }
 
   Future<void> retry() => switch (state) {

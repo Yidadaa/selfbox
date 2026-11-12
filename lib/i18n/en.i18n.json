@@ -37,6 +37,7 @@
     "storage": "Storage",
     "providers": "AI providers",
     "about": "About",
+    "logs": "Talker logs",
     "clearAll": "Clear all data",
     "confirmClear": "Delete all data",
     "clearWarning": "Delete messages, photos, memories, profile, AI settings and API keys? This cannot be undone.",

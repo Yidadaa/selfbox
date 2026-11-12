@@ -54,7 +54,7 @@ class _SettingsList extends ConsumerWidget {
       children: [
         GlassGroupedSection(
           margin: AppInsets.section,
-          quality: GlassQuality.premium,
+          quality: GlassQuality.standard,
           header: SectionHeader(t.settings.aiSection),
           children: [
             AppListTile(
@@ -76,7 +76,7 @@ class _SettingsList extends ConsumerWidget {
         const Gap(AppSpacing.xl),
         GlassGroupedSection(
           margin: AppInsets.section,
-          quality: GlassQuality.premium,
+          quality: GlassQuality.standard,
           header: SectionHeader(t.settings.providers),
           children: [
             for (final provider in settings.providers)
