@@ -6,6 +6,7 @@ import 'package:selfbox/core/router/app_dock_tabs.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_memory_repository.dart';
+import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
 import 'package:selfbox/core/widgets/empty_state.dart';
 import 'package:selfbox/features/memory/domain/models/memory.dart';
 import 'package:selfbox/features/memory/presentation/pages/memory_editor_page.dart';
@@ -222,6 +223,13 @@ void main() {
       await _openMemoryTab(tester, memory);
       await tester.tap(find.text('Profile'));
       await tester.pumpAndSettle();
+
+      await tester.tap(find.bySemanticsLabel(t.memory.more));
+      await tester.pumpAndSettle();
+      expect(find.byType(AppConfirmDialog), findsOneWidget);
+      await tester.tap(find.text(t.common.cancel));
+      await tester.pumpAndSettle();
+      expect(memory.contentOf('user/profile.md'), isNotNull);
 
       await tester.tap(find.bySemanticsLabel(t.memory.more));
       await tester.pumpAndSettle();

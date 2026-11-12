@@ -12,6 +12,7 @@ import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
+import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
 import 'package:selfbox/core/widgets/empty_state.dart';
 import 'package:selfbox/core/widgets/pressable.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
@@ -617,7 +618,15 @@ void main() {
 
       await tester.longPress(find.text('remove me'));
       await tester.pumpAndSettle();
+      expect(find.byType(AppActionDialog), findsOneWidget);
       expect(find.text(t.common.copy), findsOneWidget);
+
+      await tester.tap(find.text(t.common.cancel));
+      await tester.pumpAndSettle();
+      expect(find.text('remove me'), findsOneWidget);
+
+      await tester.longPress(find.text('remove me'));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text(t.common.delete));
       await tester.pumpAndSettle();

@@ -5,7 +5,7 @@ import '../theme/app_dialog_tokens.dart';
 import '../theme/app_glass_theme.dart';
 import '../theme/app_spacing.dart';
 
-/// An opaque confirmation dialog with the Liquid alert's proportions.
+/// An opaque confirmation dialog using the app's own layout.
 class AppConfirmDialog extends StatelessWidget {
   const AppConfirmDialog({
     required this.title,
@@ -21,6 +21,79 @@ class AppConfirmDialog extends StatelessWidget {
   final String primaryLabel;
   final VoidCallback onPrimary;
   final bool destructive;
+
+  @override
+  Widget build(BuildContext context) => _AppDialogSurface(
+    title: title,
+    actions: _DialogActions(
+      secondaryLabel: secondaryLabel,
+      primaryLabel: primaryLabel,
+      destructive: destructive,
+      onSecondary: () => Navigator.of(context).pop(),
+      onPrimary: () {
+        Navigator.of(context).pop();
+        onPrimary();
+      },
+    ),
+  );
+}
+
+@immutable
+class AppDialogAction {
+  const AppDialogAction({
+    required this.label,
+    required this.onPressed,
+    this.destructive = false,
+  });
+
+  final String label;
+  final VoidCallback onPressed;
+  final bool destructive;
+}
+
+class AppActionDialog extends StatelessWidget {
+  const AppActionDialog({
+    required this.actions,
+    required this.cancelLabel,
+    this.title,
+    super.key,
+  });
+
+  final String? title;
+  final List<AppDialogAction> actions;
+  final String cancelLabel;
+
+  @override
+  Widget build(BuildContext context) => _AppDialogSurface(
+    title: title,
+    actions: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final action in actions) ...[
+          _DialogActionButton(
+            label: action.label,
+            destructive: action.destructive,
+            onTap: () {
+              Navigator.of(context).pop();
+              action.onPressed();
+            },
+          ),
+          const Gap(AppSpacing.xs),
+        ],
+        _DialogActionButton(
+          label: cancelLabel,
+          onTap: () => Navigator.of(context).pop(),
+        ),
+      ],
+    ),
+  );
+}
+
+class _AppDialogSurface extends StatelessWidget {
+  const _AppDialogSurface({required this.actions, this.title});
+
+  final String? title;
+  final Widget actions;
 
   @override
   Widget build(BuildContext context) => Dialog(
@@ -41,31 +114,20 @@ class AppConfirmDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: AppDialogTokens.headerInsets,
-              child: Text(
-                title,
-                style: TextStyle(
-                  color: context.glass.onBubbleOther,
-                  fontSize: AppDialogTokens.labelSize,
-                  fontWeight: FontWeight.w600,
-                  decoration: TextDecoration.none,
+            if (title case final title?)
+              Padding(
+                padding: AppDialogTokens.headerInsets,
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: context.glass.onBubbleOther,
+                    fontSize: AppDialogTokens.labelSize,
+                    fontWeight: FontWeight.w600,
+                    decoration: TextDecoration.none,
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: AppDialogTokens.actionInsets,
-              child: _DialogActions(
-                secondaryLabel: secondaryLabel,
-                primaryLabel: primaryLabel,
-                destructive: destructive,
-                onSecondary: () => Navigator.of(context).pop(),
-                onPrimary: () {
-                  Navigator.of(context).pop();
-                  onPrimary();
-                },
-              ),
-            ),
+            Padding(padding: AppDialogTokens.actionInsets, child: actions),
           ],
         ),
       ),

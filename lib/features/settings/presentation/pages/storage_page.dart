@@ -64,28 +64,30 @@ class StoragePage extends ConsumerWidget {
     );
   }
 
-  Future<void> _confirm(BuildContext context, WidgetRef ref) =>
-      showDialog<void>(
-        context: context,
-        builder: (_) => AppConfirmDialog(
-          title: context.t.me.clearWarning,
-          secondaryLabel: context.t.common.cancel,
-          primaryLabel: context.t.me.confirmClear,
-          destructive: true,
-          onPrimary: () async {
-            final result = await ref
-                .read(dataResetControllerProvider.notifier)
-                .clear();
-            if (context.mounted) {
-              showOutcome(
-                context,
-                failure: result.getLeft().toNullable(),
-                success: context.t.me.cleared,
-              );
-            }
-          },
-        ),
-      );
+  Future<void> _confirm(BuildContext context, WidgetRef ref) {
+    final t = context.t;
+    return showDialog<void>(
+      context: context,
+      builder: (_) => AppConfirmDialog(
+        title: t.me.clearWarning,
+        secondaryLabel: t.common.cancel,
+        primaryLabel: t.me.confirmClear,
+        destructive: true,
+        onPrimary: () async {
+          final result = await ref
+              .read(dataResetControllerProvider.notifier)
+              .clear();
+          if (context.mounted) {
+            showOutcome(
+              context,
+              failure: result.getLeft().toNullable(),
+              success: context.t.me.cleared,
+            );
+          }
+        },
+      ),
+    );
+  }
 }
 
 class _UsageCard extends StatelessWidget {

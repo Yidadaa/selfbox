@@ -1,5 +1,11 @@
 # 架构决策记录 (ADR)
 
+### [ADR-029] 项目自有 Dialog 作为唯一模态操作表面
+
+- **背景**：消息、记忆和服务商操作仍通过 GlassActionSheet 呈现，而清除数据已使用不透明自有 Dialog；不同弹层的渲染成本与布局不一致。
+- **决策**：确认操作统一使用 `AppConfirmDialog`，多操作菜单使用 `AppActionDialog`，两者共用不透明主题表面、34dp 圆角和 48dp 胶囊按钮。移除业务代码中的 GlassActionSheet；选择器继续使用 Bottom Sheet + Picker。弹窗文案在打开前读取，避免页面卸载后 builder 再访问旧 context。
+- **影响**：业务页面不得调用 Liquid Dialog / GlassActionSheet 或直接构造其他 Dialog。新增模态操作样式先扩展项目自有组件并测试明暗模式、取消与确认行为；保留现有 Bottom Sheet 选择器。
+
 ### [ADR-022] 设置确认使用原生白色弹层
 
 - **背景**：清除数据确认的全屏 glass action sheet 使用自有渲染层，弹出时有明显卡顿及文字装饰异常；历史轮次更适合连续数值选择。

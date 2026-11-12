@@ -10,6 +10,7 @@ import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_radius.dart';
+import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/features/settings/presentation/pages/model_page.dart';
 import 'package:selfbox/features/settings/presentation/pages/provider_page.dart';
@@ -511,6 +512,13 @@ void main() {
         apiKeys: {'p1': 'k'},
       );
       await _open(tester, '/me/provider?id=p1', settings: settings);
+
+      await tester.tap(find.bySemanticsLabel(t.common.more));
+      await tester.pumpAndSettle();
+      expect(find.byType(AppConfirmDialog), findsOneWidget);
+      await tester.tap(find.text(t.common.cancel));
+      await tester.pumpAndSettle();
+      expect(settings.current.providers, hasLength(1));
 
       await tester.tap(find.bySemanticsLabel(t.common.more));
       await tester.pumpAndSettle();

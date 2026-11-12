@@ -10,6 +10,7 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/time/clock.dart';
+import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -266,28 +267,28 @@ class _TimelineMessageRow extends ConsumerWidget {
 
   Future<void> _showActions(BuildContext context, WidgetRef ref) {
     final t = context.t;
-    return showGlassActionSheet<void>(
+    return showDialog<void>(
       context: context,
-      cancelLabel: t.common.cancel,
-      actions: [
-        if (message.text.isNotEmpty)
-          GlassActionSheetAction(
-            label: t.common.copy,
-            icon: const Icon(Icons.copy_rounded),
+      builder: (_) => AppActionDialog(
+        cancelLabel: t.common.cancel,
+        actions: [
+          if (message.text.isNotEmpty)
+            AppDialogAction(
+              label: t.common.copy,
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: message.text));
+              },
+            ),
+          AppDialogAction(
+            label: t.common.delete,
+            destructive: true,
             onPressed: () {
-              Clipboard.setData(ClipboardData(text: message.text));
+              HapticFeedback.heavyImpact();
+              ref.read(messageActionsProvider.notifier).delete(message);
             },
           ),
-        GlassActionSheetAction(
-          label: t.common.delete,
-          icon: const Icon(Icons.delete_outline_rounded),
-          style: GlassActionSheetStyle.destructive,
-          onPressed: () {
-            HapticFeedback.heavyImpact();
-            ref.read(messageActionsProvider.notifier).delete(message);
-          },
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

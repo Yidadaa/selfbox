@@ -6,7 +6,7 @@ import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
 
 void main() {
   for (final brightness in Brightness.values) {
-    testWidgets('$brightness opaque dialog follows the Liquid alert layout', (
+    testWidgets('$brightness opaque dialog follows the app layout', (
       tester,
     ) async {
       await tester.pumpPage(
@@ -112,4 +112,92 @@ void main() {
     expect(label.bottom, lessThanOrEqualTo(primary.bottom));
     expect(tester.takeException(), isNull);
   });
+
+  for (final brightness in Brightness.values) {
+    testWidgets('$brightness action dialog uses the owned opaque surface', (
+      tester,
+    ) async {
+      var copied = false;
+      var deleted = false;
+      await tester.pumpPage(
+        Builder(
+          builder: (context) => TextButton(
+            onPressed: () => showDialog<void>(
+              context: context,
+              builder: (_) => AppActionDialog(
+                title: 'Message actions',
+                cancelLabel: 'Cancel',
+                actions: [
+                  AppDialogAction(
+                    label: 'Copy',
+                    onPressed: () => copied = true,
+                  ),
+                  AppDialogAction(
+                    label: 'Delete',
+                    destructive: true,
+                    onPressed: () => deleted = true,
+                  ),
+                ],
+              ),
+            ),
+            child: const Text('Open'),
+          ),
+        ),
+        brightness: brightness,
+      );
+
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      final dialog = tester.widget<Dialog>(find.byType(Dialog));
+      expect(dialog.backgroundColor, AppGlassTheme.of(brightness).bubbleOther);
+      expect(
+        dialog.shape,
+        const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(34)),
+        ),
+      );
+      expect(find.text('Message actions'), findsOneWidget);
+      expect(find.byType(TextButton), findsNWidgets(4));
+      final copy = tester.getRect(
+        find.ancestor(of: find.text('Copy'), matching: find.byType(TextButton)),
+      );
+      final delete = tester.getRect(
+        find.ancestor(
+          of: find.text('Delete'),
+          matching: find.byType(TextButton),
+        ),
+      );
+      final cancel = tester.getRect(
+        find.ancestor(
+          of: find.text('Cancel'),
+          matching: find.byType(TextButton),
+        ),
+      );
+      expect(copy.height, 48);
+      expect(delete.height, 48);
+      expect(cancel.height, 48);
+      expect(delete.top - copy.bottom, 8);
+      expect(cancel.top - delete.bottom, 8);
+      expect(copy.width, delete.width);
+      expect(delete.width, cancel.width);
+      expect(
+        tester.widget<Text>(find.text('Delete')).style?.color,
+        AppGlassTheme.of(brightness).dialogDestructive,
+      );
+
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(find.byType(Dialog), findsNothing);
+      expect(copied, isFalse);
+      expect(deleted, isFalse);
+
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Copy'));
+      await tester.pumpAndSettle();
+      expect(find.byType(Dialog), findsNothing);
+      expect(copied, isTrue);
+      expect(deleted, isFalse);
+    });
+  }
 }

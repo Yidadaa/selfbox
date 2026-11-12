@@ -81,7 +81,7 @@
 | **数据模型与不可变性**  | `freezed` + `json_serializable`                                         | 所有 Domain 模型、状态类（State）、故障类（`AppFailure`）、第三方 JSON DTO 必须使用 `@freezed`，生成产物统一输出到 `lib/gen/`。                                                                                                                                                                                                                                                                                                                                                                 |
 | **网络与外部通信**      | `dio` + `retrofit` + `web_socket_channel` (或 `dart:io` WebSocket)      | HTTP/REST 接口使用 `dio` + `retrofit`；实时双向通信使用 WebSocket 封装并统一接入 `talker` 日志，必须具备断线指数退避重连与心跳保活机制。                                                                                                                                                                                                                                                                                                                                                        |
 | **路由管理**            | `go_router`                                                             | 使用强类型路由或集中式路由表，支持嵌套路由与 `ShellRoute` 底部悬浮玻璃导航栏布局，统一处理权限守卫（Redirect）与 Deep Link。                                                                                                                                                                                                                                                                                                                                                                    |
-| **UI 与设计系统**       | `liquid_glass_widgets` + `gap`                                          | 遵循 **Liquid Glass 移动端统一设计规范（Android & iOS 共用一套高质感视觉与交互）**。UI 组件统一使用 `liquid_glass_widgets`。**严禁使用 `SizedBox(height/width: x)` 做间距，强制使用 `Gap(x)`**。                                                                                                                                                                                                                                                                                                |
+| **UI 与设计系统**       | `liquid_glass_widgets` + `gap`                                          | 遵循 **Liquid Glass 移动端统一设计规范（Android & iOS 共用一套高质感视觉与交互）**。常规 UI 组件使用 `liquid_glass_widgets`；**Dialog 是明确例外，统一使用 `lib/core/widgets/` 中的项目自有不透明 Dialog，禁止 Liquid Dialog / GlassActionSheet**。**严禁使用 `SizedBox(height/width: x)` 做间距，强制使用 `Gap(x)`**。 |
 | **Markdown 渲染与编辑** | `flutter_smooth_markdown` (`JackCaow/flutter-smooth-markdown`)          | **全局唯一 Markdown 渲染与富文本编辑引擎**。静态内容用 `SmoothMarkdown`，AI/实时流式输出用 `StreamMarkdown`，编辑场景用 `SmoothMarkdownEditor` + `MarkdownEditorController`。内置支持 LaTeX、Mermaid、表格、AI 聊天块（`<thinking>`/`<artifact>`/`<tool_use>`）与跨块丝滑文本选择（`SmoothSelectionController`）。样式与编辑器主题（`MarkdownStyleSheet` / `MarkdownEditorThemeData`）必须统一从 `lib/core/theme/` 的 Liquid Glass Token 派生，严禁混用 `flutter_markdown` 等其他 Markdown 库。 |
 | **动效与加载体验**      | `flutter_animate` + `skeletonizer`                                      | 列表/卡片异步加载状态统一使用 `Skeletonizer` 包裹真实布局（禁止到处写简陋的 `CircularProgressIndicator`）；微交互与转场统一使用 `flutter_animate` 声明式链式调用。                                                                                                                                                                                                                                                                                                                              |
 | **表单与校验**          | `reactive_forms` + `luthor`                                             | 所有表单必须使用 `reactive_forms` 管理状态，配合 `luthor` 定义强校验 Schema。禁止手写一堆 `TextEditingController` + `if/else` 校验。                                                                                                                                                                                                                                                                                                                                                            |
@@ -224,7 +224,7 @@ test/
 
 1. **单手拇指热区优先（Thumb-Zone Ergonomics）**：
    - 高频核心操作全部下沉至屏幕下半部（底部悬浮玻璃栏、底部操作条、下拉手势）。
-   - 破坏性操作或低频设置收纳进带毛玻璃背景的模态底部抽屉（Glass Modal Bottom Sheet），优先使用支持拖拽关闭的底部面板替代生硬的居中弹窗（AlertDialog）。
+   - 破坏性操作使用项目自有确认 Dialog；连续选值的低频设置使用 Bottom Sheet + Picker。两类弹层均须保持明暗主题、圆角和操作热区一致。
 2. **物理触感与微交互（Tactile Physics & Haptics）**：
    - **触控热区铁律**：任何可点击/可拖拽的移动端交互元素，其最小物理响应区域必须 **$\ge 48 \times 48\text{ dp}$**。图标本身较小时，必须通过透明 Padding 扩充点击热区。
    - **按压弹性反馈**：所有可点击玻璃卡片与按钮必须具备按压微缩放（如 `scale: 0.97`，持续 `120ms`，缓动曲线 `Curves.easeOutCubic`）与光泽高亮反馈。
@@ -241,6 +241,12 @@ test/
    - **流式渲染与移动端手势适配**：AI 流式响应或增量文本展示必须使用 `StreamMarkdown` 避免高频全量重解析卡顿；开启 `selectable: true` 时配合 `SmoothSelectionController` 提供移动端原生级段落/全文丝滑选中菜单，点击链接（`onTapLink`）或图片（`onTapImage`）统一接入应用内路由或玻璃模态预览器（严禁直接裸调 `print`）。
    - **安全边界**：默认保持 `MarkdownConfig(enableHtml: false)`；仅在明确受信任的内容源下按需开启白名单 HTML，杜绝 XSS 或非法 Scheme 注入。
 6. 禁止使用大段的描述性文本去描述某个功能块，仅允许使用简短的 UI 文本或者 icon 去指示功能。
+
+### 4.3 Dialog 专用规范
+
+- 所有确认弹窗使用 `AppConfirmDialog`，消息等多操作弹窗使用 `AppActionDialog`；业务页面只负责调用 `showDialog` 和传入已确定的文案、回调。Dialog 自身使用不透明主题表面和项目 Token，不启用 Liquid Glass shader 或实时模糊。
+- **禁止使用 `liquid_glass_widgets` 的 Liquid Dialog、`showGlassActionSheet`、`GlassActionSheet`，也禁止业务页面直接构造 `AlertDialog` / `CupertinoAlertDialog` / 裸 `Dialog`。**新增 Dialog 样式先扩展 `lib/core/widgets/` 的自有组件并覆盖明暗主题与交互测试。
+- Bottom Sheet + Picker 是选择器，不属于 Dialog；保留其独立交互。弹窗 builder 不得在页面可能卸载后通过外层页面 `BuildContext` 读取主题或翻译，打开弹窗前先取得所需值。
 
 ---
 
@@ -302,7 +308,7 @@ TaskEither<AppFailure, Unit> syncSnapshot() {
 1. **禁止在 `lib/gen/` 以外生成任何代码**：每次执行 `dart run build_runner build -d` 后检查工作区，若 `lib/gen/` 之外出现 `.g.dart` 或 `.freezed.dart`，立即修复 `build.yaml` 并记录到 `docs/mistakes.md`。
 2. **禁止在被测目录同级 `__tests__` 以外编写模块测试**：新增任何模型、数据源、Repository、Provider 或 UI 组件，必须同步在其同级 `__tests__/` 下创建对应的 `*_test.dart`，并注册至 `test/all_tests.dart`。
 3. **禁止过度设计（No Speculative Abstraction）**：禁止单行透传 `UseCase`、禁止只有一个实现类的内部 `Interface`、禁止用不到的泛型参数。
-4. **禁止平台分裂 UI**：禁止混用原生 Material / Cupertino 弹窗或导航栏破坏 Liquid Glass 视觉统一性；禁止使用 `SizedBox` 充当间距（强制用 `Gap`）。
+4. **禁止平台分裂 UI**：禁止业务页面使用 Liquid Dialog / GlassActionSheet 或直接构造 Material / Cupertino 弹窗；仅 `lib/core/widgets/` 的自有 Dialog 可以封装 Flutter `Dialog` 基础组件。禁止使用 `SizedBox` 充当间距（强制用 `Gap`）。
 5. **禁止忽略 Linter 警告与类型逃逸**：代码必须通过 `flutter analyze` 且 **0 issues**；严禁使用 `dynamic`、严禁无理由使用 `!`（非空断言操作符，必须通过模式匹配或 `Option` 安全解包）。
 6. **禁止魔法数字与硬编码文本/资源**：间距、圆角、模糊度、动画时长全部走 `lib/core/theme/` 设计 Token；所有文案走 `slang` (`t.xxx`)；所有图标/图片走 `Assets.xxx`。
 7. **禁止阻塞移动端 UI 线程**：JSON 大载荷解析、加密哈希、音频/图像二进制处理、大批量数据库写入必须放入 `Isolate.run` 或 ObjectBox 异步事务中执行，确保 UI 帧耗时稳定低于 `8ms`（120Hz 标准）。

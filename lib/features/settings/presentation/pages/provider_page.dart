@@ -14,6 +14,7 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
@@ -229,26 +230,23 @@ class _ProviderForm extends HookConsumerWidget {
     WidgetRef ref,
     ProviderConfig provider,
   ) {
+    final t = context.t;
     final navigator = Navigator.of(context);
-    // The sheet dismisses itself after any action; handlers must not pop it.
-    return showGlassActionSheet<void>(
+    return showDialog<void>(
       context: context,
-      title: provider.name,
-      cancelLabel: context.t.common.cancel,
-      actions: [
-        GlassActionSheetAction(
-          label: context.t.settings.provider.delete,
-          icon: const Icon(Icons.delete_outline_rounded),
-          style: GlassActionSheetStyle.destructive,
-          onPressed: () async {
-            await ref
-                .read(aiSettingsServiceProvider)
-                .deleteProvider(provider.id)
-                .run();
-            await navigator.maybePop();
-          },
-        ),
-      ],
+      builder: (_) => AppConfirmDialog(
+        title: provider.name,
+        secondaryLabel: t.common.cancel,
+        primaryLabel: t.settings.provider.delete,
+        destructive: true,
+        onPrimary: () async {
+          await ref
+              .read(aiSettingsServiceProvider)
+              .deleteProvider(provider.id)
+              .run();
+          await navigator.maybePop();
+        },
+      ),
     );
   }
 }

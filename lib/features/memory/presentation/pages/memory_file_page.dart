@@ -12,6 +12,7 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_markdown_theme.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -78,23 +79,19 @@ class MemoryFilePage extends ConsumerWidget {
   ) {
     final t = context.t;
     final navigator = Navigator.of(context);
-    // The sheet dismisses itself after any action; handlers must not pop it.
-    return showGlassActionSheet<void>(
+    return showDialog<void>(
       context: context,
-      title: memoryPath.value,
-      cancelLabel: t.common.cancel,
-      actions: [
-        GlassActionSheetAction(
-          label: t.common.delete,
-          icon: const Icon(Icons.delete_outline_rounded),
-          style: GlassActionSheetStyle.destructive,
-          onPressed: () async {
-            unawaited(HapticFeedback.heavyImpact());
-            await ref.read(memoryRepositoryProvider).delete(memoryPath).run();
-            await navigator.maybePop();
-          },
-        ),
-      ],
+      builder: (_) => AppConfirmDialog(
+        title: memoryPath.value,
+        secondaryLabel: t.common.cancel,
+        primaryLabel: t.common.delete,
+        destructive: true,
+        onPrimary: () async {
+          unawaited(HapticFeedback.heavyImpact());
+          await ref.read(memoryRepositoryProvider).delete(memoryPath).run();
+          await navigator.maybePop();
+        },
+      ),
     );
   }
 }
