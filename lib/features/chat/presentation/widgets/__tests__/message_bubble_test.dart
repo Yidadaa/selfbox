@@ -71,6 +71,52 @@ void main() {
               ? find.byType(MessageImageStack)
               : find.byKey(const ValueKey('message-surface'));
           final surface = tester.getRect(contentFinder);
+          if (content != 'photo') {
+            final material = tester.widget(contentFinder);
+            switch (author) {
+              case MessageAuthor.me:
+                expect(
+                  material,
+                  isA<ColoredBox>().having(
+                    (box) => box.color,
+                    'outgoing color',
+                    AppGlassTheme.of(brightness).bubbleMine,
+                  ),
+                );
+              case MessageAuthor.ai:
+                expect(
+                  material,
+                  isA<GlassContainer>()
+                      .having(
+                        (glass) => glass.quality,
+                        'quality',
+                        GlassQuality.standard,
+                      )
+                      .having((glass) => glass.color, 'opaque override', isNull)
+                      .having(
+                        (glass) => glass.shape,
+                        'shape',
+                        isA<LiquidRoundedSuperellipse>().having(
+                          (shape) => shape.borderRadius,
+                          'radius',
+                          MessageTokens.radius,
+                        ),
+                      ),
+                );
+                expect(
+                  find.descendant(
+                    of: contentFinder,
+                    matching: find.byWidgetPredicate(
+                      (widget) =>
+                          widget is ColoredBox &&
+                          widget.color ==
+                              AppGlassTheme.of(brightness).bubbleOther,
+                    ),
+                  ),
+                  findsNothing,
+                );
+            }
+          }
           expect(time.top, greaterThan(surface.bottom));
           expect(status.top, greaterThan(surface.bottom));
           expect(status.center.dy, closeTo(time.center.dy, 0.01));

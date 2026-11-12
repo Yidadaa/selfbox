@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_markdown_theme.dart';
@@ -78,30 +79,43 @@ class _TextBubble extends ConsumerWidget {
     final glass = context.glass;
     final mine = message.author == MessageAuthor.me;
     final foreground = mine ? glass.onBubbleMine : glass.onBubbleOther;
-    return ClipPath(
-      clipper: _SpeechClipper(mine),
-      child: ColoredBox(
-        key: const ValueKey('message-surface'),
-        color: mine ? glass.bubbleMine : glass.bubbleOther,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.xs,
-          ),
-          child: switch (message.author) {
-            MessageAuthor.me => Text(
-              message.text,
-              style: Theme.of(context).textTheme.bodyLarge
-                  ?.copyWith(color: foreground),
-            ),
-            MessageAuthor.ai => SmoothMarkdown(
-              data: message.text,
-              styleSheet: AppMarkdownTheme.of(context, textColor: foreground),
-            ),
-          },
+    final content = Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
+      child: switch (message.author) {
+        MessageAuthor.me => Text(
+          message.text,
+          style: Theme.of(context).textTheme.bodyLarge
+              ?.copyWith(color: foreground),
+        ),
+        MessageAuthor.ai => SmoothMarkdown(
+          data: message.text,
+          styleSheet: AppMarkdownTheme.of(context, textColor: foreground),
+        ),
+      },
+    );
+    return switch (message.author) {
+      MessageAuthor.me => ClipPath(
+        clipper: const _SpeechClipper(),
+        child: ColoredBox(
+          key: const ValueKey('message-surface'),
+          color: glass.bubbleMine,
+          child: content,
         ),
       ),
-    );
+      MessageAuthor.ai => RepaintBoundary(
+        child: GlassContainer(
+          key: const ValueKey('message-surface'),
+          quality: GlassQuality.standard,
+          shape: const LiquidRoundedSuperellipse(
+            borderRadius: MessageTokens.radius,
+          ),
+          child: content,
+        ),
+      ),
+    };
   }
 }
 
@@ -142,8 +156,7 @@ class _MessageFooter extends ConsumerWidget {
 
 /// One continuous outline prevents a seam between the rounded body and tail.
 class _SpeechClipper extends CustomClipper<Path> {
-  const _SpeechClipper(this.mine);
-  final bool mine;
+  const _SpeechClipper();
   @override
   Path getClip(Size size) {
     final w = size.width;
@@ -163,15 +176,9 @@ class _SpeechClipper extends CustomClipper<Path> {
       ..lineTo(0, r)
       ..quadraticBezierTo(0, 0, r, 0)
       ..close();
-    if (mine) return path;
-    return path.transform(
-      (Matrix4.identity()
-            ..translateByDouble(w, 0, 0, 1)
-            ..scaleByDouble(-1, 1, 1, 1))
-          .storage,
-    );
+    return path;
   }
 
   @override
-  bool shouldReclip(_SpeechClipper oldClipper) => oldClipper.mine != mine;
+  bool shouldReclip(_SpeechClipper oldClipper) => false;
 }

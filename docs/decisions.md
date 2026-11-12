@@ -125,3 +125,4 @@
 - **背景**：时间 / AI 标记需要显示在气泡外底部；图片不再被发送方实色消息背景包裹。
 - **决策**：MessageBubble 按消息方向排列独立图片堆叠、可选文字气泡和单一 footer；元信息统一使用 foregroundMuted。图片每层采用 standard GlassContainer、4dp 内边距与 16dp 外圆角 / 12dp 内圆角，通过测试锁定默认圆角契约；堆叠区域使用 RepaintBoundary。
 - **影响**：图文消息的文字单独显示为气泡，footer 位于整条消息内容底部；纯图片无实色气泡。保留最多 3 层堆叠、完整张数、预览与长按。本决策替代 ADR-018 的气泡内时间布局。
+- **AI 表面补充**：AI 文字 / 图片说明使用 GlassContainer、GlassQuality.standard 与 MessageTokens.radius 圆角，无旧 bubbleOther 实色衬底；外层 RepaintBoundary 隔离滚动重绘。玻璃材质继承主题，正文沿用主题前景色，footer 在容器外。用户发送气泡仍采用蓝色连续尾部轮廓。
