@@ -86,6 +86,7 @@ void main() {
         shot.animated
             ? await tester.pump(const Duration(milliseconds: 600))
             : await tester.pumpAndSettle();
+        await shot.afterOpen?.call(tester);
         await expectLater(
           find.byType(MaterialApp),
           matchesGoldenFile('out/${shot.name}.png'),

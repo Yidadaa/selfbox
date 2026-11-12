@@ -104,6 +104,11 @@
       "apiKey": "API key",
       "apiKeyKept": "Saved — leave blank to keep",
       "models": "Models",
+      "addModel": "Add model",
+      "searchModels": "Search models",
+      "noAddedModels": "No models added",
+      "noAvailableModels": "No models available to add",
+      "noSearchResults": "No matching models",
       "fetchModels": "Fetch models",
       "fetched": "Models updated",
       "noModels": "No models yet",
@@ -120,7 +125,8 @@
       "images": "Images",
       "reasoning": "Thinking",
       "effort": "Thinking level",
-      "enabled": "Enabled"
+      "enabled": "Enabled",
+      "delete": "Delete model"
     },
     "effort": {
       "minimal": "Min",

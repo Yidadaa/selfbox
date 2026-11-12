@@ -94,7 +94,9 @@ void main() {
       settings: FakeAiSettingsRepository(
         settings: const AiSettings(
           providers: [_provider],
-          models: [ModelConfig(providerId: 'p1', modelId: 'gpt-x')],
+          models: [
+            ModelConfig(providerId: 'p1', modelId: 'gpt-x', enabled: true),
+          ],
         ),
       ),
     );
@@ -123,7 +125,9 @@ void main() {
       settings: FakeAiSettingsRepository(
         settings: const AiSettings(
           providers: [_provider],
-          models: [ModelConfig(providerId: 'p1', modelId: 'gpt-x')],
+          models: [
+            ModelConfig(providerId: 'p1', modelId: 'gpt-x', enabled: true),
+          ],
         ),
       ),
     );
@@ -145,7 +149,9 @@ void main() {
       settings: FakeAiSettingsRepository(
         settings: const AiSettings(
           providers: [_provider],
-          models: [ModelConfig(providerId: 'p1', modelId: 'gpt-x')],
+          models: [
+            ModelConfig(providerId: 'p1', modelId: 'gpt-x', enabled: true),
+          ],
         ),
       ),
     );
@@ -366,7 +372,7 @@ void main() {
         ),
       );
 
-      final empty = find.text(t.settings.provider.noModels);
+      final empty = find.text(t.settings.provider.noAddedModels);
       expect(empty, findsOneWidget);
       expect(
         find.ancestor(of: empty, matching: find.byType(GlassGroupedSection)),
@@ -442,7 +448,8 @@ void main() {
         expect(saved.format, ApiFormat.chatCompletions);
         expect(settings.keys[saved.id], 'sk-test');
         expect(catalog.calls.single.apiKey, 'sk-test');
-        expect(find.text('model-a'), findsOneWidget);
+        expect(settings.current.models, hasLength(2));
+        expect(find.text('model-a'), findsNothing);
         expect(find.byType(ProviderPage), findsOneWidget);
         await _settleToasts(tester);
       },
@@ -486,24 +493,6 @@ void main() {
 
       expect(find.text(t.settings.errors.auth), findsOneWidget);
       await _settleToasts(tester);
-    });
-
-    testWidgets('a model switch enables it and makes it active', (
-      tester,
-    ) async {
-      final settings = FakeAiSettingsRepository(
-        settings: const AiSettings(
-          providers: [_provider],
-          models: [ModelConfig(providerId: 'p1', modelId: 'gpt-x')],
-        ),
-      );
-      await _open(tester, '/me/provider?id=p1', settings: settings);
-
-      await tester.tap(find.byType(GlassSwitch));
-      await tester.pumpAndSettle();
-
-      expect(settings.current.models.single.enabled, isTrue);
-      expect(settings.current.resolvedModel?.modelId, 'gpt-x');
     });
 
     testWidgets('delete removes the provider and goes back', (tester) async {

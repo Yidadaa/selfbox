@@ -11,18 +11,17 @@ import '../../../../core/error/failure_message.dart';
 import '../../../../core/forms/glass_reactive_text_field.dart';
 import '../../../../core/forms/luthor_validator.dart';
 import '../../../../core/router/app_routes.dart';
-import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
-import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/ai_settings.dart';
 import '../providers/settings_providers.dart';
 import '../widgets/primary_button.dart';
-import '../widgets/settings_labels.dart';
+import '../widgets/provider_format_picker.dart';
+import '../widgets/provider_models_section.dart';
 
 /// Create (no [id]) or edit a provider, and manage its models.
 class ProviderPage extends ConsumerWidget {
@@ -135,8 +134,7 @@ class _ProviderForm extends HookConsumerWidget {
             apiKey: form.control(_apiKey).value as String? ?? '',
           )
           .run();
-      // New providers fetch their model list right away; that is the next
-      // thing anyone does after adding one.
+      // The key must be persisted before the catalog request can use it.
       final fetched = existing == null && saved.isRight()
           ? await service.refreshModels(id).run()
           : null;
@@ -186,7 +184,7 @@ class _ProviderForm extends HookConsumerWidget {
                     label: t.settings.provider.name,
                   ),
                   const Gap(AppSpacing.md),
-                  _FormatPicker(
+                  ProviderFormatPicker(
                     form: form,
                     formatControl: _format,
                     baseUrlControl: _baseUrl,
@@ -217,7 +215,7 @@ class _ProviderForm extends HookConsumerWidget {
             ),
             if (existing != null) ...[
               const Gap(AppSpacing.xl),
-              _ModelsSection(providerId: existing.id),
+              ProviderModelsSection(providerId: existing.id),
             ],
           ],
         ),
@@ -247,137 +245,6 @@ class _ProviderForm extends HookConsumerWidget {
           await navigator.maybePop();
         },
       ),
-    );
-  }
-}
-
-class _FormatPicker extends StatelessWidget {
-  const _FormatPicker({
-    required this.form,
-    required this.formatControl,
-    required this.baseUrlControl,
-  });
-
-  final FormGroup form;
-  final String formatControl;
-  final String baseUrlControl;
-
-  @override
-  Widget build(BuildContext context) {
-    final glass = context.glass;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: AppSpacing.xxs),
-          child: Text(
-            context.t.settings.provider.format,
-            style: Theme.of(context).textTheme.labelLarge
-                ?.copyWith(color: glass.foregroundMuted),
-          ),
-        ),
-        const Gap(AppSpacing.xs),
-        ReactiveValueListenableBuilder<ApiFormat>(
-          formControlName: formatControl,
-          builder: (context, control, _) => GlassSegmentedControl(
-            selectedTextStyle: Theme.of(context).textTheme.labelLarge
-                ?.copyWith(fontWeight: FontWeight.w600),
-            unselectedTextStyle: Theme.of(context).textTheme.labelLarge
-                ?.copyWith(color: context.glass.foregroundMuted),
-            selectedIndex: ApiFormat.values.indexOf(
-              control.value ?? ApiFormat.chatCompletions,
-            ),
-            segments: [
-              for (final format in ApiFormat.values)
-                GlassSegment(label: format.label(context)),
-            ],
-            onSegmentSelected: (index) {
-              final previous = control.value;
-              final next = ApiFormat.values[index];
-              control.value = next;
-              // Swap the URL only while it is still the previous default.
-              final url = form.control(baseUrlControl);
-              if (url.value == previous?.defaultBaseUrl) {
-                url.value = next.defaultBaseUrl;
-              }
-            },
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ModelsSection extends HookConsumerWidget {
-  const _ModelsSection({required this.providerId});
-
-  final String providerId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final t = context.t;
-    final fetching = useState(false);
-    final models = ref.watch(
-      aiSettingsProvider.select(
-        (s) => s.whenData((v) => v.modelsOf(providerId)).value ?? const [],
-      ),
-    );
-
-    Future<void> fetch() async {
-      fetching.value = true;
-      final result = await ref
-          .read(aiSettingsServiceProvider)
-          .refreshModels(providerId)
-          .run();
-      if (!context.mounted) return;
-      fetching.value = false;
-      showOutcome(
-        context,
-        failure: result.getLeft().toNullable(),
-        success: t.settings.provider.fetched,
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (models.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
-            child: EmptyState(label: t.settings.provider.noModels),
-          )
-        else
-          GlassGroupedSection(
-            margin: AppInsets.section,
-            quality: GlassQuality.standard,
-            shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
-            header: SectionHeader(t.settings.provider.models),
-            children: [
-              for (final model in models)
-                AppListTile(
-                  title: model.modelId,
-                  trailing: GlassSwitch(
-                    value: model.enabled,
-                    onChanged: (enabled) => ref
-                        .read(aiSettingsServiceProvider)
-                        .saveModel(model.copyWith(enabled: enabled))
-                        .run(),
-                  ),
-                  onTap: () => ModelRoute(
-                    provider: providerId,
-                    model: model.modelId,
-                  ).push<void>(context),
-                ),
-            ],
-          ),
-        const Gap(AppSpacing.md),
-        PrimaryButton(
-          label: t.settings.provider.fetchModels,
-          icon: Icons.sync_rounded,
-          busy: fetching.value,
-          onTap: fetch,
-        ),
-      ],
     );
   }
 }

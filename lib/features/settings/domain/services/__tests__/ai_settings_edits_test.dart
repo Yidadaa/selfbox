@@ -77,6 +77,43 @@ void main() {
       expect(next.activeModel, const ModelRef(providerId: 'p1', modelId: 'b'));
     });
 
+    test(
+      'batch add enables only fetched matches and keeps an active model',
+      () {
+        final settings = AiSettings(
+          models: [_m('p1', 'a'), _m('p1', 'b'), _m('p2', 'b', enabled: true)],
+          activeModel: const ModelRef(providerId: 'p2', modelId: 'b'),
+        );
+
+        final next = settings.addModels('p1', {'b', 'missing'});
+        expect(
+          next.modelsOf('p1').where((m) => m.enabled).map((m) => m.modelId),
+          ['b'],
+        );
+        expect(next.modelsOf('p2').single.enabled, isTrue);
+        expect(next.activeModel, settings.activeModel);
+        expect(next.addModels('p1', {'b'}), next);
+      },
+    );
+
+    test('removing a model hides it but keeps its fetched configuration', () {
+      final configured = _m(
+        'p1',
+        'a',
+        enabled: true,
+      ).copyWith(maxInputTokens: 64000);
+      final settings = AiSettings(
+        models: [configured, _m('p1', 'b', enabled: true)],
+        activeModel: configured.ref,
+      );
+
+      final next = settings.removeModel(configured.ref);
+      expect(next.modelsOf('p1').first.enabled, isFalse);
+      expect(next.modelsOf('p1').first.maxInputTokens, 64000);
+      expect(next.activeModel?.modelId, 'b');
+      expect(next.addModels('p1', {'a'}).modelsOf('p1').first.enabled, isTrue);
+    });
+
     test('disabling the active model falls back to another enabled one', () {
       final settings = AiSettings(
         models: [_m('p1', 'a', enabled: true), _m('p1', 'b', enabled: true)],

@@ -34,6 +34,7 @@ class ScreenshotFixture {
     required this.location,
     this.env = _none,
     this.setUp,
+    this.afterOpen,
     this.animated = false,
   });
 
@@ -45,6 +46,7 @@ class ScreenshotFixture {
   final ScreenshotEnv Function() env;
   final Future<void> Function(WidgetTester tester, ProviderContainer container)?
   setUp;
+  final Future<void> Function(WidgetTester tester)? afterOpen;
 
   static ScreenshotEnv _none() => (
     paths: null,
@@ -369,6 +371,38 @@ final screenshotFixtures = <ScreenshotFixture>[
     name: 'provider',
     location: '/me/provider?id=p1',
     env: _settings,
+  ),
+  ScreenshotFixture(
+    name: 'provider_model_chooser_light',
+    location: '/me/provider?id=p1',
+    env: _settings,
+    afterOpen: (tester) async {
+      await tester.tap(find.byKey(const ValueKey('add-model-button')));
+      await tester.pumpAndSettle();
+    },
+  ),
+  ScreenshotFixture(
+    name: 'provider_model_chooser_dark',
+    location: '/me/provider?id=p1',
+    env: _settings,
+    setUp: (tester, _) async {
+      tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+      addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+      await tester.pumpAndSettle();
+    },
+    afterOpen: (tester) async {
+      await tester.tap(find.byKey(const ValueKey('add-model-button')));
+      await tester.pumpAndSettle();
+    },
+  ),
+  ScreenshotFixture(
+    name: 'provider_model_settings',
+    location: '/me/provider?id=p1',
+    env: _settings,
+    afterOpen: (tester) async {
+      await tester.tap(find.byKey(const ValueKey('model-open-gpt-5.5')));
+      await tester.pumpAndSettle();
+    },
   ),
   const ScreenshotFixture(
     name: 'model',

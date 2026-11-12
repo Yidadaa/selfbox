@@ -99,6 +99,8 @@ import 'package:selfbox/features/settings/presentation/providers/__tests__/accou
     as t50;
 import 'package:selfbox/features/settings/presentation/providers/__tests__/app_preferences_controller_test.dart'
     as t51;
+import 'package:selfbox/features/settings/presentation/widgets/__tests__/provider_model_flow_test.dart'
+    as t52;
 
 const _registered = <String>[
   'lib/core/database/__tests__/app_store_test.dart',
@@ -153,6 +155,7 @@ const _registered = <String>[
   'lib/features/settings/presentation/pages/__tests__/talker_page_test.dart',
   'lib/features/settings/presentation/providers/__tests__/account_providers_test.dart',
   'lib/features/settings/presentation/providers/__tests__/app_preferences_controller_test.dart',
+  'lib/features/settings/presentation/widgets/__tests__/provider_model_flow_test.dart',
 ];
 
 void main() {
@@ -330,6 +333,10 @@ void main() {
   group(
     'lib/features/settings/presentation/providers/__tests__/app_preferences_controller_test.dart',
     t51.main,
+  );
+  group(
+    'lib/features/settings/presentation/widgets/__tests__/provider_model_flow_test.dart',
+    t52.main,
   );
 
   test('registers every lib/**/__tests__/*_test.dart', () {

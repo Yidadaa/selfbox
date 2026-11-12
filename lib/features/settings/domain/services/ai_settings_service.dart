@@ -86,6 +86,14 @@ class AiSettingsService {
   TaskEither<AppFailure, AiSettings> saveModel(ModelConfig model) =>
       _track(_edit((s) => s.upsertModel(model)));
 
+  TaskEither<AppFailure, AiSettings> addModels(
+    String providerId,
+    Set<String> modelIds,
+  ) => _track(_edit((s) => s.addModels(providerId, modelIds)));
+
+  TaskEither<AppFailure, AiSettings> removeModel(ModelRef ref) =>
+      _track(_edit((s) => s.removeModel(ref)));
+
   TaskEither<AppFailure, AiSettings> selectModel(ModelRef ref) =>
       _track(_edit((s) => s.selectModel(ref)));
 

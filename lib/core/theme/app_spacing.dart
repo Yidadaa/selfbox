@@ -30,6 +30,7 @@ abstract final class AppSizes {
   static const double attachmentThumbnail = 64;
   static const double profileAvatar = 80;
   static const double profileActionWidth = 160;
+  static const double smallTabHeight = 36;
 }
 
 abstract final class AppInsets {

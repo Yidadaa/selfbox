@@ -28,12 +28,13 @@ extension AiSettingsEdits on AiSettings {
       for (final m in models.where((m) => m.providerId == providerId))
         m.modelId: m,
     };
-    final ids = {...fetchedIds}.toList()..sort();
+    final fetched = fetchedIds.toSet();
+    final ids = fetched.toList()..sort();
     final merged = [
       for (final id in ids)
         existing[id] ?? ModelConfig(providerId: providerId, modelId: id),
       for (final kept in existing.values)
-        if (kept.enabled && !ids.contains(kept.modelId)) kept,
+        if (kept.enabled && !fetched.contains(kept.modelId)) kept,
     ];
     return copyWith(
       models: [...models.where((m) => m.providerId != providerId), ...merged],
@@ -55,6 +56,31 @@ extension AiSettingsEdits on AiSettings {
     return activeStillValid
         ? next
         : next.copyWith(activeModel: next.enabledModels.firstOrNull?.ref);
+  }
+
+  /// Catalog entries remain available after removal, so they can be added
+  /// again without another network request.
+  AiSettings addModels(String providerId, Set<String> modelIds) {
+    if (modelIds.isEmpty) return this;
+    final next = copyWith(
+      models: [
+        for (final model in models)
+          model.providerId == providerId && modelIds.contains(model.modelId)
+              ? model.copyWith(enabled: true)
+              : model,
+      ],
+    );
+    final activeStillValid = next.enabledModels.any(
+      (model) => model.ref == next.activeModel,
+    );
+    return activeStillValid
+        ? next
+        : next.copyWith(activeModel: next.enabledModels.firstOrNull?.ref);
+  }
+
+  AiSettings removeModel(ModelRef ref) {
+    final model = models.where((candidate) => candidate.ref == ref).firstOrNull;
+    return model == null ? this : upsertModel(model.copyWith(enabled: false));
   }
 
   AiSettings selectModel(ModelRef ref) {

@@ -121,6 +121,30 @@ void main() {
       expect(settings.resolvedModel?.modelId, 'model-b');
     });
 
+    test(
+      'batch add enables selected models and remove makes one selectable again',
+      () async {
+        _ok(await service.saveProvider(_provider, apiKey: 'sk').run());
+        _ok(await service.refreshModels('p1').run());
+
+        final added = _ok(await service.addModels('p1', {'model-b'}).run());
+        expect(added.enabledModels.map((m) => m.modelId), ['model-b']);
+        expect(added.activeModel?.modelId, 'model-b');
+
+        final removed = _ok(
+          await service
+              .removeModel(const ModelRef(providerId: 'p1', modelId: 'model-b'))
+              .run(),
+        );
+        expect(removed.enabledModels, isEmpty);
+        expect(removed.modelsOf('p1').map((m) => m.modelId), [
+          'model-a',
+          'model-b',
+        ]);
+        expect(removed.activeModel, isNull);
+      },
+    );
+
     test('setHistoryTurns persists the clamped value', () async {
       _ok(await service.setHistoryTurns(7).run());
       expect(repo.current.historyTurns, 7);
