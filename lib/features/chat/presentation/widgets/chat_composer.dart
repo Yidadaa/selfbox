@@ -25,6 +25,7 @@ class ChatComposer extends HookConsumerWidget {
       text: ref.read(composerControllerProvider).text,
     );
     final focusNode = useFocusNode();
+    useListenable(focusNode);
     final safeArea = MediaQuery.paddingOf(context);
     final keyboard = MediaQuery.viewInsetsOf(context).bottom;
     final reserved =
@@ -68,7 +69,8 @@ class ChatComposer extends HookConsumerWidget {
         ChatComposerInput(
           controller: controller,
           focusNode: focusNode,
-          keyboardOpen: keyboardOpen,
+          // Restore navigation on blur while the keyboard is still dismissing.
+          keyboardOpen: keyboardOpen && focusNode.hasFocus,
           maxHeight: maxInputHeight,
           navigation: navigation,
         ),
