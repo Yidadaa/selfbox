@@ -7,6 +7,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/storage/data_reset_controller.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../../core/widgets/app_list_tile.dart';
@@ -111,6 +112,7 @@ class _UsageCard extends StatelessWidget {
       const Gap(AppSpacing.xl),
       GlassGroupedSection(
         quality: GlassQuality.standard,
+        shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
         margin: AppInsets.section,
         children: [
           AppListTile(

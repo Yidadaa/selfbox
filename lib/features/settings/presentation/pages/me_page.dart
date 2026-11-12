@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
@@ -23,6 +24,7 @@ class MePage extends ConsumerWidget {
         const Gap(AppSpacing.xxl),
         GlassGroupedSection(
           quality: GlassQuality.standard,
+          shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
           margin: AppInsets.section,
           children: [
             AppListTile(

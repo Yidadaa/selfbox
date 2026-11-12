@@ -179,7 +179,7 @@ class _ProviderForm extends HookConsumerWidget {
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           children: [
             GlassContainer.card(
-              surfaceStyle: GlassSurfaceStyle.solid,
+              quality: GlassQuality.standard,
               shape: const LiquidRoundedSuperellipse(
                 borderRadius: AppRadius.lg,
               ),
@@ -351,7 +351,8 @@ class _ModelsSection extends HookConsumerWidget {
       children: [
         GlassGroupedSection(
           margin: AppInsets.section,
-          surfaceStyle: GlassSurfaceStyle.solid,
+          quality: GlassQuality.standard,
+          shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
           header: SectionHeader(t.settings.provider.models),
           children: [
             if (models.isEmpty)

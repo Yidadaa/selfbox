@@ -142,7 +142,10 @@ class _ModelForm extends HookConsumerWidget {
           children: [
             GlassGroupedSection(
               margin: AppInsets.section,
-              surfaceStyle: GlassSurfaceStyle.solid,
+              quality: GlassQuality.standard,
+              shape: const LiquidRoundedSuperellipse(
+                borderRadius: AppRadius.lg,
+              ),
               children: [
                 _SwitchRow(control: _enabled, label: t.settings.model.enabled),
                 _SwitchRow(control: _images, label: t.settings.model.images),
@@ -163,7 +166,7 @@ class _ModelForm extends HookConsumerWidget {
             ),
             const Gap(AppSpacing.lg),
             GlassContainer.card(
-              surfaceStyle: GlassSurfaceStyle.solid,
+              quality: GlassQuality.standard,
               shape: const LiquidRoundedSuperellipse(
                 borderRadius: AppRadius.lg,
               ),

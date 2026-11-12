@@ -9,6 +9,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
@@ -56,6 +57,7 @@ class _SettingsList extends ConsumerWidget {
         GlassGroupedSection(
           margin: AppInsets.section,
           quality: GlassQuality.standard,
+          shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
           header: SectionHeader(t.settings.aiSection),
           children: [
             AppListTile(
@@ -78,6 +80,7 @@ class _SettingsList extends ConsumerWidget {
         GlassGroupedSection(
           margin: AppInsets.section,
           quality: GlassQuality.standard,
+          shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
           header: SectionHeader(t.settings.providers),
           children: [
             for (final provider in settings.providers)

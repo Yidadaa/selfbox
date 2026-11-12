@@ -9,6 +9,7 @@ import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
+import 'package:selfbox/core/theme/app_radius.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/features/settings/presentation/pages/model_page.dart';
 import 'package:selfbox/features/settings/presentation/pages/provider_page.dart';
@@ -51,7 +52,103 @@ Finder _field(String label) => find.descendant(
   matching: find.byType(EditableText),
 );
 
+void _expectLiquidSections(WidgetTester tester, int count) {
+  final sections = tester.widgetList<GlassGroupedSection>(
+    find.byType(GlassGroupedSection),
+  );
+  expect(sections, hasLength(count));
+  for (final section in sections) {
+    expect(section.surfaceStyle, GlassSurfaceStyle.glass);
+    expect(section.quality, GlassQuality.standard);
+    expect(
+      section.shape,
+      const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
+    );
+  }
+}
+
+void _expectLiquidFormCard(WidgetTester tester, String fieldLabel) {
+  final label = find.text(fieldLabel);
+  final card = tester.widget<GlassContainer>(
+    find.ancestor(of: label, matching: find.byType(GlassContainer)).first,
+  );
+  expect(card.quality, GlassQuality.standard);
+  expect(
+    card.shape,
+    const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
+  );
+  expect(
+    find.ancestor(of: label, matching: find.byType(AdaptiveGlass)),
+    findsWidgets,
+  );
+}
+
 void main() {
+  testWidgets('settings list sections share the standard liquid surface', (
+    tester,
+  ) async {
+    final container = await _open(
+      tester,
+      '/me',
+      settings: FakeAiSettingsRepository(
+        settings: const AiSettings(
+          providers: [_provider],
+          models: [ModelConfig(providerId: 'p1', modelId: 'gpt-x')],
+        ),
+      ),
+    );
+    final router = container.read(appRouterProvider);
+    _expectLiquidSections(tester, 1);
+
+    for (final (location, count) in [
+      ('/me/providers', 2),
+      ('/me/storage', 1),
+      ('/me/provider?id=p1', 1),
+      ('/me/model?provider=p1&model=gpt-x', 1),
+    ]) {
+      router.go(location);
+      await tester.pumpAndSettle();
+      _expectLiquidSections(tester, count);
+    }
+  });
+
+  testWidgets('provider and model form cards use liquid surfaces', (
+    tester,
+  ) async {
+    final container = await _open(
+      tester,
+      '/me/provider?id=p1',
+      settings: FakeAiSettingsRepository(
+        settings: const AiSettings(
+          providers: [_provider],
+          models: [ModelConfig(providerId: 'p1', modelId: 'gpt-x')],
+        ),
+      ),
+    );
+    _expectLiquidFormCard(tester, t.settings.provider.name);
+
+    container.read(appRouterProvider).go('/me/model?provider=p1&model=gpt-x');
+    await tester.pumpAndSettle();
+    _expectLiquidFormCard(tester, t.settings.model.inputTokens);
+  });
+
+  testWidgets('provider cards retain liquid surfaces in dark mode', (
+    tester,
+  ) async {
+    tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+    addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+    await _open(
+      tester,
+      '/me/provider?id=p1',
+      settings: FakeAiSettingsRepository(
+        settings: const AiSettings(providers: [_provider]),
+      ),
+    );
+
+    _expectLiquidSections(tester, 1);
+    _expectLiquidFormCard(tester, t.settings.provider.name);
+  });
+
   group('AiProvidersPage', () {
     testWidgets('shows not-set model, history turns and an add row', (
       tester,
