@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/misc.dart' show Override;
@@ -192,6 +193,26 @@ ScreenshotEnv _chatAsking() {
 }
 
 final screenshotFixtures = <ScreenshotFixture>[
+  ScreenshotFixture(
+    name: 'chat_keyboard',
+    location: '/chat',
+    env: _chatWithHistory,
+    setUp: (tester, _) async {
+      await tester.enterText(find.byType(EditableText), '帮我整理一下这周的想法');
+      tester.view.viewInsets = const FakeViewPadding(bottom: 300 * 3);
+      await tester.pumpAndSettle();
+    },
+  ),
+  ScreenshotFixture(
+    name: 'chat_dark',
+    location: '/chat',
+    env: _chatWithHistory,
+    setUp: (tester, _) async {
+      tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+      addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+      await tester.pumpAndSettle();
+    },
+  ),
   const ScreenshotFixture(name: 'chat_empty', location: '/chat'),
   const ScreenshotFixture(
     name: 'chat_history',

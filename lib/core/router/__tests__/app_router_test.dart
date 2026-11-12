@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+import 'package:selfbox/core/router/app_dock_tabs.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/router/not_found_page.dart';
 import 'package:selfbox/core/router/shell_scope.dart';
@@ -11,9 +12,11 @@ import 'package:selfbox/features/memory/presentation/pages/memory_page.dart';
 import 'package:selfbox/features/settings/presentation/pages/me_page.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
-// GlassTabBar paints each label in both a selected and an unselected layer.
 Finder _tab(String label) => find
-    .descendant(of: find.byType(GlassTabBar), matching: find.text(label))
+    .descendant(
+      of: find.byWidgetPredicate((w) => w is AppDockTabs),
+      matching: find.text(label),
+    )
     .first;
 
 void main() {
@@ -22,7 +25,7 @@ void main() {
       final container = await tester.pumpApp();
 
       expect(find.byType(ChatPage), findsOneWidget);
-      expect(find.byType(GlassTabBar), findsOneWidget);
+      expect(find.byType(AppDockTabs), findsOneWidget);
       expect(container.read(appRouterProvider).state.matchedLocation, '/chat');
     });
 
@@ -72,7 +75,7 @@ void main() {
       await tester.pumpApp();
 
       final context = tester.element(find.byType(ChatPage));
-      final barHeight = tester.getSize(find.byType(GlassTabBar)).height;
+      final barHeight = tester.getSize(find.byType(AppDockTabs)).height;
       expect(
         ShellScope.bottomInsetOf(context),
         greaterThanOrEqualTo(barHeight),

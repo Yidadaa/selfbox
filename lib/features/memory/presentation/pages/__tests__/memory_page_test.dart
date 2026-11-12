@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+import 'package:selfbox/core/router/app_dock_tabs.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_memory_repository.dart';
@@ -73,7 +74,7 @@ void main() {
 
       expect(find.byType(MemoryFilePage), findsOneWidget);
       expect(find.byType(SmoothMarkdown), findsOneWidget);
-      expect(find.byType(GlassTabBar), findsOneWidget);
+      expect(find.byType(AppDockTabs), findsOneWidget);
     });
 
     testWidgets('deleting from the file page removes it and goes back', (

@@ -25,6 +25,8 @@ abstract final class AppSizes {
   static const double appBarHeight = 44;
   static const double iconMd = 24;
   static const double iconHero = 48;
+  static const double sendIcon = 36;
+  static const double attachmentThumbnail = 64;
 }
 
 abstract final class AppInsets {

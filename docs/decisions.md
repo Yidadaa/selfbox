@@ -1,5 +1,17 @@
 # 架构决策记录 (ADR)
 
+### [ADR-016] 首页输入与导航共用完整 Liquid 表面
+
+- **背景**：首页原有输入框与 Tab 是两条独立悬浮栏；参考 ref-chat / ref-input 要求收起时合并、键盘打开时拆分。
+- **决策**：Shell 统一持有 ChatComposer 与 AppDockTabs、实测停靠区高度，并通过 ShellScope 向页面传递底部避让。导航通过 Widget 插槽放入 GlassTextField.bottom，共用一层玻璃；键盘态隐藏导航并分离附件按钮。当前 liquid_glass_widgets 1.17.2 的 full shader 管线名为 GlassQuality.premium，底座、输入框、AI 胶囊、附件按钮显式使用该档位。
+- **影响**：聊天页不再计算第二份键盘/导航偏移；bottom 插槽常驻、输入组件 Key 稳定以保留焦点与选区。输入最大高度扣除安全区、标题、键盘与附件，时间线跟随实测高度。Tab 保持 go_router 分支切换，不引入业务状态或新依赖。
+
+### [ADR-017] ObjectBox 模型 JSON 必须参与构建输入
+
+- **背景**：UI 任务的代码生成门禁发现 `lib/gen/**` 的排除规则令 ObjectBox 无法读取已提交模型，重新生成了实体与属性 UID。
+- **决策**：恢复原模型，排除范围改为 `lib/gen/**/*.dart`；模型 JSON 保持为 source input。
+- **影响**：生成代码仍全部输出至 lib/gen；无数据库结构改动时，objectbox-model.json 的 UID 必须保持不变。
+
 ### [ADR-001] Flutter 工具链本地化至 `.tools/`
 
 - **背景**：机器上已有全局 Flutter（`C:\dev\flutter`），版本可能与项目要求漂移；需要可复现、项目私有的工具链。
@@ -10,7 +22,7 @@
 
 - **背景**：`*.g.dart` / `*.freezed.dart` 散落在业务目录会污染代码审查与搜索。
 - **决策**：
-  - `build.yaml` 用 `build_extensions` 把 `freezed` 与 `source_gen|combining_builder`（json_serializable、riverpod_generator、retrofit_generator 等）映射到 `lib/gen/{{}}`；`sources` 排除 `lib/**/__tests__/**` 与 `lib/gen/**`。
+  - `build.yaml` 用 `build_extensions` 把 `freezed` 与 `source_gen|combining_builder`（json_serializable、riverpod_generator、retrofit_generator 等）映射到 `lib/gen/{{}}`；`sources` 排除 `lib/**/__tests__/**` 与 `lib/gen/**/*.dart`，保留 ObjectBox 模型 JSON（ADR-017）。
   - `flutter_gen` → `lib/gen/assets/`；`objectbox` → `output_dir: gen/database`；`slang` → `lib/gen/i18n/`。
   - 业务源码的 `part` 用相对路径指向 `lib/gen/...`。
 - **影响**：每次 `build_runner` 后必须确认 `lib/gen/` 之外无生成文件；`lib/gen/` 提交进版本库还是忽略见 ADR-005。

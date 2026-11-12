@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-/// Space the floating tab bar occupies at the bottom of every tab page.
+/// Space occupied by the measured dock and keyboard below every tab page.
 ///
 /// Tab pages extend underneath the glass bar, so scrollable bodies pad their
 /// trailing edge by this amount instead of guessing the bar's height.

@@ -8,7 +8,8 @@ targets:
         - $package$
       exclude:
         - lib/**/__tests__/**
-        - lib/gen/**
+        # ObjectBox's checked-in model JSON is an input: excluding it resets UIDs.
+        - lib/gen/**/*.dart
     builders:
       freezed:
         options:

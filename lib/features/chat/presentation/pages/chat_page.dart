@@ -7,12 +7,10 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/router/shell_scope.dart';
-import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/time/clock.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
-import '../../../../core/widgets/measure_size.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../data/chat_data_providers.dart';
 import '../../domain/models/message.dart';
@@ -21,47 +19,24 @@ import '../providers/chat_feed.dart';
 import '../providers/chat_timeline.dart';
 import '../providers/message_actions.dart';
 import '../widgets/assistant_status_bubble.dart';
-import '../widgets/chat_composer.dart';
 import '../widgets/day_pill.dart';
 import '../widgets/message_bubble.dart';
 
-class ChatPage extends HookConsumerWidget {
+class ChatPage extends ConsumerWidget {
   const ChatPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final composerHeight = useState(AppSizes.minTouchTarget);
-    final keyboard = MediaQuery.viewInsetsOf(context).bottom;
-    // With the keyboard up the tab bar is hidden behind it, so the composer
-    // rides the keyboard instead of the bar.
-    final composerBottom = keyboard > 0
-        ? keyboard + AppSpacing.xs
-        : ShellScope.bottomInsetOf(context);
-    final listBottom = composerBottom + composerHeight.value + AppSpacing.sm;
+    final listBottom = ShellScope.bottomInsetOf(context) + AppSpacing.sm;
 
     return AppPageScaffold(
       title: context.t.chat.title,
-      // The composer follows the keyboard explicitly below.
+      // The shell already accounts for the keyboard in bottomInset.
       resizeToAvoidBottomInset: false,
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () => FocusScope.of(context).unfocus(),
-        child: Stack(
-          children: [
-            Positioned.fill(child: _ChatBody(bottomPadding: listBottom)),
-            AnimatedPositioned(
-              duration: AppMotion.fast,
-              curve: AppMotion.emphasized,
-              left: AppSpacing.sm,
-              right: AppSpacing.sm,
-              bottom: composerBottom,
-              child: MeasureSize(
-                onChange: (size) => composerHeight.value = size.height,
-                child: const ChatComposer(),
-              ),
-            ),
-          ],
-        ),
+        child: _ChatBody(bottomPadding: listBottom),
       ),
     );
   }
@@ -76,8 +51,8 @@ class _ChatBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final feed = ref.watch(chatFeedProvider);
     return switch (feed) {
-      AsyncData(:final value) when value.items.isEmpty => Padding(
-        padding: EdgeInsets.only(bottom: bottomPadding),
+      AsyncData(:final value) when value.items.isEmpty => _ChatPlaceholder(
+        bottomPadding: bottomPadding,
         child: EmptyState(
           icon: Icons.chat_bubble_outline_rounded,
           label: context.t.chat.empty,
@@ -87,21 +62,47 @@ class _ChatBody extends ConsumerWidget {
         feed: value,
         bottomPadding: bottomPadding,
       ),
-      AsyncError() => EmptyState(
-        icon: Icons.error_outline_rounded,
-        label: context.t.chat.empty,
-        action: GlassButton.custom(
-          onTap: () => ref.invalidate(chatMessagesProvider),
-          height: AppSizes.minTouchTarget,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-            child: Center(widthFactor: 1, child: Text(context.t.common.retry)),
+      AsyncError() => _ChatPlaceholder(
+        bottomPadding: bottomPadding,
+        child: EmptyState(
+          icon: Icons.error_outline_rounded,
+          label: context.t.chat.empty,
+          action: GlassButton.custom(
+            onTap: () => ref.invalidate(chatMessagesProvider),
+            height: AppSizes.minTouchTarget,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+              child: Center(
+                widthFactor: 1,
+                child: Text(context.t.common.retry),
+              ),
+            ),
           ),
         ),
       ),
       AsyncLoading() => _TimelineSkeleton(bottomPadding: bottomPadding),
     };
   }
+}
+
+class _ChatPlaceholder extends ConsumerWidget {
+  const _ChatPlaceholder({required this.bottomPadding, required this.child});
+
+  final double bottomPadding;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => CustomScrollView(
+    slivers: [
+      SliverPadding(
+        padding: EdgeInsets.only(
+          top: AppPageInsets.of(context).top,
+          bottom: bottomPadding,
+        ),
+        sliver: SliverFillRemaining(hasScrollBody: false, child: child),
+      ),
+    ],
+  );
 }
 
 class _Timeline extends HookConsumerWidget {

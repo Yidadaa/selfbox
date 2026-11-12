@@ -2,6 +2,16 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-12] [Test] `byType(Skeletonizer)` 找不到骨架组件 -> 工厂构造返回内部子类，byType 精确匹配运行时类型 -> 用 `byWidgetPredicate((widget) => widget is Skeletonizer)` 验证公开契约。
+- [2026-11-12] [PowerShell] 文本替换写入字面量 `\n` 导致 Dart 解析失败 -> PowerShell 单引号不展开换行 -> 多行源码使用 apply_patch 编辑。
+
+- [2026-11-12] [ObjectBox] 运行代码生成重置已提交的 Entity UID -> build.yaml 排除 lib/gen/** 导致 canRead(model.json) 为 false -> 只排除 lib/gen/**/*.dart，保留模型 JSON 为输入；生成后必须确认 UID diff 为空。
+
+- [2026-11-12] [Layout] 小屏键盘 + 六行草稿 + 附件把停靠区顶到标题并挤爆空态 -> 只限制行数、未计算剩余高度 -> 输入最大高度扣除键盘/安全区/标题/附件，空态用可滚动 SliverFillRemaining。
+
+- [2026-11-12] [DartFix] 指定 directives_ordering 的批量 fix 仍把 flutter_test 移到运行时依赖 -> 同级 lib 测试触发 pubspec 自动修复 -> 优先手动整理 import；批量 fix 后必须审查 pubspec diff。
+- [2026-11-12] [Semantics] AI 胶囊添加可见标签后无法按语义名定位 -> Pressable label 与 Text 合并成重复名称 -> 已有明确语义标签的装饰性文本用 ExcludeSemantics。
+
 - [2026-11-12] [Toolchain] 自动权限模式下执行新下载的 `.tools/flutter` 被拦截 -> 工具链落地后先由用户确认/授权 -> 需要 `.claude/settings.json` 允许 `Bash(./.tools/flutter/bin/*)` 或用户手动跑一次。
 - [2026-11-12] [Pub] `objectbox_generator` 稳定版与新版 analyzer 冲突导致求解失败 -> 生成器链 analyzer 主版本不一致 -> 新增生成器先 `pub add --dry-run` 单独探测，冲突时查各版本 `analyzer` 约束再定版（见 ADR-007）。
 - [2026-11-12] [BuildRunner] `build_runner build -d` 报 options removed -> build_runner 2.16 移除 `--delete-conflicting-outputs` -> 直接 `dart run build_runner build`。

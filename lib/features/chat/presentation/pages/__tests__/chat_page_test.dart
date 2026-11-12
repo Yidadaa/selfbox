@@ -8,10 +8,12 @@ import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/core/widgets/pressable.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/pages/image_viewer_page.dart';
+import 'package:selfbox/features/chat/presentation/providers/chat_feed.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer.dart';
 import 'package:selfbox/features/chat/presentation/widgets/day_pill.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 Message _msg(
   int id,
@@ -34,6 +36,51 @@ Finder _composerField() => find.descendant(
 
 void main() {
   group('ChatPage', () {
+    testWidgets('loading timeline keeps the merged composer available', (
+      tester,
+    ) async {
+      await tester.pumpApp(
+        overrides: [
+          chatMessagesProvider.overrideWith(
+            (ref) => const Stream<List<Message>>.empty(),
+          ),
+        ],
+        settle: false,
+      );
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(
+        find.byWidgetPredicate((widget) => widget is Skeletonizer),
+        findsOneWidget,
+      );
+      expect(find.byType(ChatComposer), findsOneWidget);
+      expect(find.text(t.tabs.memory), findsOneWidget);
+    });
+
+    testWidgets('timeline retry recovers without clearing the draft', (
+      tester,
+    ) async {
+      var attempts = 0;
+      await tester.pumpApp(
+        overrides: [
+          chatMessagesProvider.overrideWith(
+            (ref) => attempts++ == 0
+                ? Stream<List<Message>>.error(StateError('unavailable'))
+                : Stream.value([_msg(1, 'recovered')]),
+          ),
+        ],
+      );
+      await tester.enterText(_composerField(), 'keep this draft');
+      await tester.pump();
+      await tester.tap(find.text(t.common.retry));
+      await tester.pumpAndSettle();
+      expect(find.text('recovered'), findsOneWidget);
+      expect(
+        tester.widget<EditableText>(_composerField()).controller.text,
+        'keep this draft',
+      );
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('shows the empty state with the composer', (tester) async {
       await tester.pumpApp();
 
