@@ -36,12 +36,15 @@ class AppShell extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final dockHeight = useState(AppSizes.minTouchTarget);
+    final chatDockHeight = useState(AppSizes.minTouchTarget);
+    final tabDockHeight = useState(AppSizes.minTouchTarget);
     final keyboard = MediaQuery.viewInsetsOf(context).bottom;
     final onChat = navigationShell.currentIndex == 0;
-    final bottom = onChat && keyboard > 0
+    final tabBottom = MediaQuery.paddingOf(context).bottom + AppSpacing.md;
+    final chatBottom = onChat && keyboard > 0
         ? keyboard + AppSpacing.xs
-        : MediaQuery.paddingOf(context).bottom + AppSpacing.md;
+        : tabBottom;
+    final bottom = onChat ? chatBottom : tabBottom;
     final navigation = AppDockTabs(
       selectedIndex: navigationShell.currentIndex,
       onSelected: _onTabSelected,
@@ -53,12 +56,17 @@ class AppShell extends HookConsumerWidget {
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          ShellScope(
-            bottomInset: dockHeight.value + bottom,
-            child: IndexedStack(
-              index: navigationShell.currentIndex,
-              children: children,
-            ),
+          IndexedStack(
+            index: navigationShell.currentIndex,
+            children: [
+              for (final (index, child) in children.indexed)
+                ShellScope(
+                  bottomInset: index == 0
+                      ? chatDockHeight.value + chatBottom
+                      : tabDockHeight.value + tabBottom,
+                  child: child,
+                ),
+            ],
           ),
           AnimatedPositioned(
             duration: AppMotion.fast,
@@ -67,7 +75,13 @@ class AppShell extends HookConsumerWidget {
             right: AppInsets.pageHorizontal,
             bottom: bottom,
             child: MeasureSize(
-              onChange: (size) => dockHeight.value = size.height,
+              onChange: (size) {
+                if (onChat) {
+                  chatDockHeight.value = size.height;
+                } else {
+                  tabDockHeight.value = size.height;
+                }
+              },
               child: onChat
                   ? ChatComposer(
                       keyboardOpen: keyboard > 0,

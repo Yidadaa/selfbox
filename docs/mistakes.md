@@ -98,3 +98,4 @@
 - [2026-11-13] [SlangTest] 清除语言偏好的单测报 WidgetsBinding 未初始化 -> 恢复设备语言会读取平台 locale -> 独立 Provider 测试先初始化 `TestWidgetsFlutterBinding`。
 - [2026-11-13] [SettingsReset] 清除 AI 配置误删通用偏好 -> 旧实现递归删除整个 `config` 目录 -> 仓库只删除自己拥有的配置文件，并由总重置流程清除通用偏好。
 - [2026-11-13] [SettingsReset] 缩小配置删除范围后 `.tmp` 仍残留 -> 原子写入的临时文件也属于同一仓库 -> `clearAll` 同时删除正式文件和对应 `.tmp`。
+- [2026-11-13] [ChatTab] 切回聊天首帧消息从 Tab 下方弹起 -> Shell 共用 Dock 高度被较矮的普通 Tab 覆盖，测量回调下一帧才恢复 -> 各分支独立缓存并提供底部避让，逐帧断言气泡位置。

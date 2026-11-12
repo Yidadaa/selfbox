@@ -10,6 +10,8 @@ import 'package:selfbox/core/router/shell_scope.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/features/chat/presentation/pages/chat_page.dart';
+import 'package:selfbox/features/chat/presentation/widgets/chat_composer.dart';
+import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:selfbox/features/memory/presentation/pages/memory_page.dart';
 import 'package:selfbox/features/settings/presentation/pages/me_page.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
@@ -140,6 +142,50 @@ void main() {
       expect(
         ShellScope.bottomInsetOf(context),
         greaterThanOrEqualTo(barHeight),
+      );
+    });
+
+    testWidgets('chat timeline keeps its bottom inset on the first return frame', (
+      tester,
+    ) async {
+      await tester.pumpApp();
+      final timeline = find.descendant(
+        of: find.byType(ChatPage),
+        matching: find.byType(ListView),
+      );
+      double bottomPadding() =>
+          (tester.widget<ListView>(timeline).padding! as EdgeInsets).bottom;
+      final original = bottomPadding();
+      final originalBubble = tester.getRect(find.byType(MessageBubble).first);
+
+      await tester.tap(_tab(t.tabs.memory));
+      await tester.pumpAndSettle();
+      await tester.tap(_tab(t.tabs.chat));
+      await tester.pump();
+      expect(bottomPadding(), original);
+      expect(tester.getRect(find.byType(MessageBubble).first), originalBubble);
+      await tester.pumpAndSettle();
+      expect(bottomPadding(), original);
+      expect(tester.getRect(find.byType(MessageBubble).first), originalBubble);
+    });
+
+    testWidgets('chat timeline follows a growing composer', (tester) async {
+      await tester.pumpApp();
+      final context = tester.element(find.byType(ChatPage));
+      final originalInset = ShellScope.bottomInsetOf(context);
+      final originalDock = tester.getSize(find.byType(ChatComposer)).height;
+
+      await tester.enterText(
+        find.byType(EditableText),
+        'one\ntwo\nthree\nfour\nfive',
+      );
+      await tester.pumpAndSettle();
+
+      final grownDock = tester.getSize(find.byType(ChatComposer)).height;
+      expect(grownDock, greaterThan(originalDock));
+      expect(
+        ShellScope.bottomInsetOf(context),
+        originalInset + grownDock - originalDock,
       );
     });
 
