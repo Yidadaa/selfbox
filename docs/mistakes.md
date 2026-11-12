@@ -91,3 +91,6 @@
 - [2026-11-13] [AgentLog] 实时片段加入 Riverpod 状态会进入 Talker -> 全局观察器默认记录完整状态值 -> Agent 状态 Provider 必须从通用日志中过滤，另以测试锁定正文不入日志。
 - [2026-11-13] [Lint] 合并状态动画后留下未使用的私有组件 `key` 参数 -> 参数只服务于旧控件结构 -> 改动组件职责后运行静态分析并移除无用构造参数。
 - [2026-11-13] [Lint] 模型默认值测试显式传入默认参数触发冗余参数告警 -> 测试应直接断言默认构造后的字段值。
+- [2026-11-13] [WidgetTest] 首条发送后立即查找气泡失败 -> 消息流在零时长 pump 后才交付下一帧 -> 推进一帧再断言入场组件。
+- [2026-11-13] [WidgetTest] 图片发送测试挂起 -> 选图流程写真实文件，fake-async 不推进 I/O -> 用 `tester.runAsync` 执行选图。
+- [2026-11-13] [Flutter] `SizeTransition.axisAlignment` 静态分析报警 -> SDK 已弃用该参数 -> 用 `alignment: Alignment.bottomCenter` 保留底部锚点。

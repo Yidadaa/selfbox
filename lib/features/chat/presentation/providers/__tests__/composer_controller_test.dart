@@ -150,7 +150,9 @@ void main() {
         env.messages.added.single,
         const MessageDraft(author: MessageAuthor.me, text: '买牛奶'),
       );
-      expect(_state(env), const ComposerState());
+      expect(_state(env).lastSentMessageId, 1);
+      expect(_state(env).text, isEmpty);
+      expect(_state(env).attachments, isEmpty);
       expect(env.asked, isEmpty);
     });
 
@@ -166,6 +168,7 @@ void main() {
       expect(env.asked.single.text, '我上周说了什么？');
       expect(_state(env).aiMode, isTrue);
       expect(_state(env).text, isEmpty);
+      expect(_state(env).lastSentMessageId, env.asked.single.id);
     });
 
     test('a failed send keeps the draft and exposes the failure', () async {
@@ -179,6 +182,7 @@ void main() {
       expect(_state(env).text, 'keep me');
       expect(_state(env).sending, isFalse);
       expect(_state(env).failure.toNullable(), isA<DatabaseFailure>());
+      expect(_state(env).lastSentMessageId, isNull);
 
       _ctrl(env).dismissFailure();
       expect(_state(env).failure, const None());

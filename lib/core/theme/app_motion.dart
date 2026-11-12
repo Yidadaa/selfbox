@@ -9,4 +9,11 @@ abstract final class AppMotion {
   static const Duration medium = Duration(milliseconds: 280);
   static const Duration slow = Duration(milliseconds: 420);
   static const Curve emphasized = Curves.easeOutCubic;
+
+  static const Duration messageSend = Duration(milliseconds: 360);
+  static const Offset messageSendOffset = Offset(0.12, 0.28);
+  static const double messageSendScale = 0.96;
+  static const double messageSendOpacity = 0.55;
+  static const Curve messageSendCurve = Curves.easeOutCubic;
+  static const Curve messageSendSpring = Curves.easeOutBack;
 }

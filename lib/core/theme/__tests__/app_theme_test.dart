@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
+import 'package:selfbox/core/theme/app_motion.dart';
 import 'package:selfbox/core/theme/app_radius.dart';
 import 'package:selfbox/core/theme/app_scroll_behavior.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
@@ -14,6 +15,14 @@ double _contrast(Color a, Color b) {
 }
 
 void main() {
+  test('message send motion starts below and to the right, then settles', () {
+    expect(AppMotion.messageSend, greaterThan(AppMotion.medium));
+    expect(AppMotion.messageSendOffset.dx, greaterThan(0));
+    expect(AppMotion.messageSendOffset.dy, greaterThan(0));
+    expect(AppMotion.messageSendScale, inExclusiveRange(0, 1));
+    expect(AppMotion.messageSendOpacity, inExclusiveRange(0, 1));
+  });
+
   group('AppSpacing', () {
     test('every step sits on the 4pt grid', () {
       for (final step in AppSpacing.scale) {

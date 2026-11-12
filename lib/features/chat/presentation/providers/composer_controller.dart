@@ -27,6 +27,7 @@ abstract class ComposerState with _$ComposerState {
     @Default(false) bool aiMode,
     @Default(false) bool sending,
     @Default(false) bool picking,
+    int? lastSentMessageId,
     @Default(None()) Option<AppFailure> failure,
   }) = _ComposerState;
 
@@ -140,7 +141,8 @@ class ComposerController extends _$ComposerController {
     final result = await ref.read(messageRepositoryProvider).add(draft).run();
     state = result.match(
       (failure) => state.copyWith(sending: false, failure: Some(failure)),
-      (_) => ComposerState(aiMode: state.aiMode),
+      (message) =>
+          ComposerState(aiMode: state.aiMode, lastSentMessageId: message.id),
     );
     result
         .toOption()
