@@ -37,15 +37,17 @@ class ProfileHeader extends ConsumerWidget {
               borderRadius: AppRadius.pill,
             ),
             quality: GlassQuality.standard,
-            onTap: profile.hasError
-                ? () => ref.invalidate(userProfileProvider)
-                : () => const ProfileRoute().push<void>(context),
+            onTap:
+                profile.hasError
+                    ? () => ref.invalidate(userProfileProvider)
+                    : () => const ProfileRoute().push<void>(context),
             child: Text(
               profile.hasError
                   ? context.t.common.retry
                   : context.t.me.editProfile,
-              style: Theme.of(context).textTheme.labelLarge
-                  ?.copyWith(color: context.glass.foreground),
+              style: Theme.of(
+                context,
+              ).textTheme.labelLarge?.copyWith(color: context.glass.foreground),
             ),
           ),
         ],

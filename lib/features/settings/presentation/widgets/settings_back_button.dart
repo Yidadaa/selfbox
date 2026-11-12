@@ -8,6 +8,7 @@ class SettingsBackButton extends StatelessWidget {
   const SettingsBackButton({super.key});
   @override
   Widget build(BuildContext context) => GlassIconButton(
+    size: 40,
     quality: GlassQuality.premium,
     icon: const Icon(Icons.arrow_back_ios_new_rounded),
     semanticLabel: context.t.common.close,

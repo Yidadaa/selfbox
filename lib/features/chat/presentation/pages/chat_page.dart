@@ -73,9 +73,7 @@ class _ChatHeaderProfile extends ConsumerWidget {
           alignment: Alignment.topCenter,
           children: [
             Positioned(
-              top: 44,
-              left: AppSpacing.xs,
-              right: AppSpacing.xs,
+              top: 60,
               child: GlassContainer(
                 key: const ValueKey('chat-header-profile-surface'),
                 quality: GlassQuality.premium,
@@ -84,7 +82,7 @@ class _ChatHeaderProfile extends ConsumerWidget {
                 ),
                 padding: const EdgeInsets.fromLTRB(
                   AppSpacing.md,
-                  AppSpacing.sm,
+                  AppSpacing.xs,
                   AppSpacing.md,
                   AppSpacing.xxs,
                 ),
@@ -95,14 +93,15 @@ class _ChatHeaderProfile extends ConsumerWidget {
                         : name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodyMedium
-                        ?.copyWith(fontWeight: FontWeight.w600),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
             ),
             Positioned(
-              top: 0,
+              top: 10,
               child: ProfileAvatar(
                 key: const ValueKey('chat-header-avatar'),
                 path: profile?.avatar,
@@ -194,10 +193,11 @@ class _ChatPlaceholder extends ConsumerWidget {
     slivers: [
       SliverPadding(
         padding: EdgeInsets.only(
-          top: AppPageInsets.of(
-            context,
-            appBarHeight: AppSizes.chatHeaderHeight,
-          ).top,
+          top:
+              AppPageInsets.of(
+                context,
+                appBarHeight: AppSizes.chatHeaderHeight,
+              ).top,
           bottom: bottomPadding,
         ),
         sliver: SliverFillRemaining(hasScrollBody: false, child: child),
@@ -252,21 +252,25 @@ class _Timeline extends HookConsumerWidget {
           bottomPadding,
         ),
         itemCount: feed.items.length + lead,
-        itemBuilder: (context, index) => index < lead
-            ? AssistantStatusBubble(state: assistant)
-            : switch (feed.items[index - lead]) {
-                TimelineDay(:final day) => DayPill(day: day, now: now),
-                TimelineMessage(:final message) => MessageBubble(
-                  key: ValueKey(message.id),
-                  message: message,
-                  resolveImage: (path) => media.resolve(path).toNullable(),
-                  onImageTap: (path) => ImageViewerRoute(
-                    path: path,
-                    $extra: message.images,
-                  ).push<void>(context),
-                  onLongPress: () => _showActions(context, ref, message),
-                ),
-              },
+        itemBuilder:
+            (context, index) =>
+                index < lead
+                    ? AssistantStatusBubble(state: assistant)
+                    : switch (feed.items[index - lead]) {
+                      TimelineDay(:final day) => DayPill(day: day, now: now),
+                      TimelineMessage(:final message) => MessageBubble(
+                        key: ValueKey(message.id),
+                        message: message,
+                        resolveImage:
+                            (path) => media.resolve(path).toNullable(),
+                        onImageTap:
+                            (path) => ImageViewerRoute(
+                              path: path,
+                              $extra: message.images,
+                            ).push<void>(context),
+                        onLongPress: () => _showActions(context, ref, message),
+                      ),
+                    },
       ),
     );
   }
@@ -311,12 +315,13 @@ class _TimelineSkeleton extends StatelessWidget {
   final double bottomPadding;
 
   static final _placeholders = [
-    for (final (i, text) in const [
-      'Placeholder note',
-      'A slightly longer placeholder note',
-      'Short',
-      'Another placeholder note here',
-    ].indexed)
+    for (final (i, text)
+        in const [
+          'Placeholder note',
+          'A slightly longer placeholder note',
+          'Short',
+          'Another placeholder note here',
+        ].indexed)
       Message(
         id: -i - 1,
         createdAt: DateTime(2026),

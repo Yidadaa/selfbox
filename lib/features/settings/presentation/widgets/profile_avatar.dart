@@ -23,23 +23,24 @@ class ProfileAvatar extends ConsumerWidget {
     final valid = relative != null && p.posix.dirname(relative) == 'media';
     return ClipOval(
       child: ColoredBox(
-        color: context.glass.surfaceTint,
+        color: context.glass.foreground,
         child: SizedBox.square(
           dimension: dimension,
-          child: valid
-              ? Image.file(
-                  File(
-                    p.join(
-                      ref.watch(appPathsProvider).media.path,
-                      p.posix.basename(relative),
+          child:
+              valid
+                  ? Image.file(
+                    File(
+                      p.join(
+                        ref.watch(appPathsProvider).media.path,
+                        p.posix.basename(relative),
+                      ),
                     ),
-                  ),
-                  fit: BoxFit.cover,
-                  cacheWidth: 256,
-                  errorBuilder: (_, error, stack) =>
-                      _Placeholder(dimension: dimension),
-                )
-              : _Placeholder(dimension: dimension),
+                    fit: BoxFit.cover,
+                    cacheWidth: 256,
+                    errorBuilder:
+                        (_, error, stack) => _Placeholder(dimension: dimension),
+                  )
+                  : _Placeholder(dimension: dimension),
         ),
       ),
     );
@@ -52,9 +53,6 @@ class _Placeholder extends StatelessWidget {
   final double dimension;
 
   @override
-  Widget build(BuildContext context) => Icon(
-    Icons.person_outline_rounded,
-    size: dimension * 0.6,
-    color: context.glass.foregroundMuted,
-  );
+  Widget build(BuildContext context) =>
+      Icon(Icons.face_5, size: dimension * 0.6, color: context.glass.accent);
 }
