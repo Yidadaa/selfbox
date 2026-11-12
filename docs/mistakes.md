@@ -2,6 +2,9 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-12] [Patch] 新增 import 落到文件尾导致编译失败 -> 无上下文的空替换块匹配到 EOF -> import 修改必须绑定已有文件头上下文。
+- [2026-11-12] [MessageTest] 大字体长图文在窄屏 fixture 垂直溢出 -> 直接把可增长消息放入固定高度页面，未模拟生产滚动列表约束 -> 消息长内容测试使用可滚动父级，单独断言横向边界。
+
 - [2026-11-12] [Placeholder] 中文输入提示低于正文约 5.6dp -> Material dense 字体使用 ideographic，Cupertino 基线叠层对齐时 RenderParagraph 固定返回 alphabetic，RenderEditable 返回所请求基线 -> 输入正文与提示统一 alphabetic；测试必须检查提示实际位置，不能只检查编辑框中心。
 - [2026-11-12] [RenderTest] 直接转换 EditableText.renderObject 或在布局外调用 getDistanceToBaseline 报错 -> 外层渲染对象不是 RenderEditable，基线访问受布局阶段断言约束 -> 通过 EditableTextState.renderEditable 取编辑渲染器；诊断基线使用渲染器实际计算方法。
 - [2026-11-12] [PlaceholderTest] 输入提示原文后 find.text 仍命中两个控件 -> Cupertino 用 Visibility 保留提示布局，finder 也匹配 EditableText 正文 -> 输入态断言 controller 内容与几何，清空态断言提示实际位置。

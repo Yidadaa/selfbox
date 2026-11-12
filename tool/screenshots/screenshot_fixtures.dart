@@ -199,6 +199,31 @@ ScreenshotEnv _chatAsking() {
 
 final screenshotFixtures = <ScreenshotFixture>[
   ScreenshotFixture(
+    name: 'chat_photo_caption',
+    location: '/chat',
+    env: () {
+      final base = _chatWithHistory();
+      return (
+        paths: base.paths,
+        messages: FakeMessageRepository(
+          seed: [
+            Message(
+              id: 1,
+              createdAt: _at(12, 9, 30),
+              author: MessageAuthor.me,
+              text: '周末想去这里走走',
+              images: const ['media/aurora.png'],
+              askedAi: true,
+            ),
+          ],
+        ),
+        memory: null,
+        settings: null,
+        overrides: const [],
+      );
+    },
+  ),
+  ScreenshotFixture(
     name: 'chat_keyboard',
     location: '/chat',
     env: _chatWithHistory,

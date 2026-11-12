@@ -33,7 +33,6 @@ class MessageBubble extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mine = message.author == MessageAuthor.me;
-    final glass = context.glass;
     return Align(
       alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
       child: Padding(
@@ -45,17 +44,24 @@ class MessageBubble extends ConsumerWidget {
           ),
           child: GestureDetector(
             onLongPress: onLongPress,
-            child: ClipPath(
-              clipper: _SpeechClipper(mine),
-              child: ColoredBox(
-                key: const ValueKey('message-surface'),
-                color: mine ? glass.bubbleMine : glass.bubbleOther,
-                child: _BubbleContent(
-                  message: message,
-                  resolveImage: resolveImage,
-                  onImageTap: onImageTap,
-                ),
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: mine
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
+              children: [
+                if (message.images.isNotEmpty)
+                  MessageImageStack(
+                    paths: message.images,
+                    resolveImage: resolveImage,
+                    onTap: () => onImageTap?.call(message.images.first),
+                  ),
+                if (message.images.isNotEmpty && message.text.isNotEmpty)
+                  const Gap(AppSpacing.xs),
+                if (message.text.isNotEmpty) _TextBubble(message: message),
+                const Gap(AppSpacing.xxs),
+                _MessageFooter(message: message),
+              ],
             ),
           ),
         ),
@@ -64,72 +70,69 @@ class MessageBubble extends ConsumerWidget {
   }
 }
 
-class _BubbleContent extends ConsumerWidget {
-  const _BubbleContent({
-    required this.message,
-    required this.resolveImage,
-    this.onImageTap,
-  });
+class _TextBubble extends ConsumerWidget {
+  const _TextBubble({required this.message});
   final Message message;
-  final File? Function(String) resolveImage;
-  final ValueChanged<String>? onImageTap;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final glass = context.glass;
-    final foreground = message.author == MessageAuthor.me
-        ? glass.onBubbleMine
-        : glass.onBubbleOther;
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.xs,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          if (message.images.isNotEmpty) ...[
-            MessageImageStack(
-              paths: message.images,
-              resolveImage: resolveImage,
-              onTap: () => onImageTap?.call(message.images.first),
+    final mine = message.author == MessageAuthor.me;
+    final foreground = mine ? glass.onBubbleMine : glass.onBubbleOther;
+    return ClipPath(
+      clipper: _SpeechClipper(mine),
+      child: ColoredBox(
+        key: const ValueKey('message-surface'),
+        color: mine ? glass.bubbleMine : glass.bubbleOther,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.xs,
+          ),
+          child: switch (message.author) {
+            MessageAuthor.me => Text(
+              message.text,
+              style: Theme.of(context).textTheme.bodyLarge
+                  ?.copyWith(color: foreground),
             ),
-            if (message.text.isNotEmpty) const Gap(AppSpacing.xs),
+            MessageAuthor.ai => SmoothMarkdown(
+              data: message.text,
+              styleSheet: AppMarkdownTheme.of(context, textColor: foreground),
+            ),
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _MessageFooter extends ConsumerWidget {
+  const _MessageFooter({required this.message});
+  final Message message;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final foreground = context.glass.foregroundMuted;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (message.askedAi) ...[
+            Icon(
+              Icons.auto_awesome,
+              size: AppSpacing.sm,
+              color: foreground,
+              semanticLabel: context.t.chat.aiMode,
+            ),
+            const Gap(AppSpacing.xxs),
           ],
-          if (message.text.isNotEmpty)
-            switch (message.author) {
-              MessageAuthor.me => Text(
-                message.text,
-                style: Theme.of(context).textTheme.bodyLarge
-                    ?.copyWith(color: foreground),
-              ),
-              MessageAuthor.ai => SmoothMarkdown(
-                data: message.text,
-                styleSheet: AppMarkdownTheme.of(context, textColor: foreground),
-              ),
-            },
-          const Gap(AppSpacing.xxs),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (message.askedAi) ...[
-                Icon(
-                  Icons.auto_awesome,
-                  size: AppSpacing.sm,
-                  color: foreground,
-                  semanticLabel: context.t.chat.aiMode,
-                ),
-                const Gap(AppSpacing.xxs),
-              ],
-              Text(
-                formatClock(
-                  message.createdAt,
-                  locale: LocaleSettings.currentLocale.languageTag,
-                ),
-                style: Theme.of(context).textTheme.labelSmall
-                    ?.copyWith(color: foreground),
-              ),
-            ],
+          Text(
+            formatClock(
+              message.createdAt,
+              locale: LocaleSettings.currentLocale.languageTag,
+            ),
+            style: Theme.of(context).textTheme.labelSmall
+                ?.copyWith(color: foreground),
           ),
         ],
       ),

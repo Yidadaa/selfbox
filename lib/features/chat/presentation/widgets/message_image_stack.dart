@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_radius.dart';
@@ -24,45 +25,41 @@ class MessageImageStack extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => Pressable(
     onTap: onTap,
     semanticLabel: context.t.chat.attachImage,
-    child: SizedBox(
-      width: MessageTokens.imageWidth,
-      height:
-          MessageTokens.imageHeight + (paths.length > 1 ? AppSpacing.md : 0),
-      child: Stack(
-        children: [
-          for (var index = paths.take(3).length - 1; index >= 0; index--)
-            Positioned(
-              top: index * MessageTokens.stackInset,
-              left: AppSpacing.xxs + index * MessageTokens.stackInset,
-              right: AppSpacing.xxs + index * MessageTokens.stackInset,
-              height: MessageTokens.imageHeight,
-              child: Transform.rotate(
-                angle: index.isEven ? 0 : MessageTokens.stackAngle,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(AppRadius.sm),
-                    border: Border.all(color: context.glass.highlightBorder),
-                    boxShadow: [
-                      BoxShadow(
-                        color: context.glass.shadowBorder,
-                        blurRadius: AppSpacing.xs,
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppRadius.sm),
-                    child: _Photo(file: resolveImage(paths[index])),
+    child: RepaintBoundary(
+      child: SizedBox(
+        width: MessageTokens.imageWidth,
+        height:
+            MessageTokens.imageHeight + (paths.length > 1 ? AppSpacing.md : 0),
+        child: Stack(
+          children: [
+            for (var index = paths.take(3).length - 1; index >= 0; index--)
+              Positioned(
+                top: index * MessageTokens.stackInset,
+                left: AppSpacing.xxs + index * MessageTokens.stackInset,
+                right: AppSpacing.xxs + index * MessageTokens.stackInset,
+                height: MessageTokens.imageHeight,
+                child: Transform.rotate(
+                  angle: index.isEven ? 0 : MessageTokens.stackAngle,
+                  child: GlassContainer(
+                    quality: GlassQuality.standard,
+                    padding: const EdgeInsets.all(
+                      MessageTokens.imageFramePadding,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                      child: _Photo(file: resolveImage(paths[index])),
+                    ),
                   ),
                 ),
               ),
-            ),
-          if (paths.length > 1)
-            Positioned(
-              right: AppSpacing.sm,
-              bottom: AppSpacing.xl,
-              child: _PhotoCount(count: paths.length),
-            ),
-        ],
+            if (paths.length > 1)
+              Positioned(
+                right: AppSpacing.sm,
+                bottom: AppSpacing.xl,
+                child: _PhotoCount(count: paths.length),
+              ),
+          ],
+        ),
       ),
     ),
   );

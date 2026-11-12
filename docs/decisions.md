@@ -117,3 +117,9 @@
 - **决策**：停靠区统一 16dp 左右与安全区外底距，输入行用标准玻璃表面和垂直居中的文本框；仅独立悬浮按钮使用 premium，固定表单按钮、分组和导航表面使用 standard。所有二级路由由根 Navigator 覆盖底部栏。Agent 回合与工具状态写入全局 Talker，设置提供 TalkerScreen 入口。
 - **影响**：日志只含回合编号、消息 ID、工具名和状态，不记录正文、工具参数、结果或密钥；Talker 历史仅在当前进程保留。本文更新 ADR-018 中原先的 premium 范围。
 - **输入基线补充**：聊天正文与 placeholder 从同一 bodyLarge 派生并显式统一 alphabetic，避免中文主题 ideographic 与 RenderParagraph 基线实现差异导致提示下移；不改变全局中文排版。
+
+### [ADR-020] 消息元信息外置与图片轻玻璃框
+
+- **背景**：时间 / AI 标记需要显示在气泡外底部；图片不再被发送方实色消息背景包裹。
+- **决策**：MessageBubble 按消息方向排列独立图片堆叠、可选文字气泡和单一 footer；元信息统一使用 foregroundMuted。图片每层采用 standard GlassContainer、4dp 内边距与 16dp 外圆角 / 12dp 内圆角，通过测试锁定默认圆角契约；堆叠区域使用 RepaintBoundary。
+- **影响**：图文消息的文字单独显示为气泡，footer 位于整条消息内容底部；纯图片无实色气泡。保留最多 3 层堆叠、完整张数、预览与长按。本决策替代 ADR-018 的气泡内时间布局。
