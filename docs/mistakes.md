@@ -151,3 +151,4 @@
 - [2026-11-14] [AvatarGrid] 窄屏大字英文 Working/Sleeping 被拆成两行 -> 固定三列不考虑文字缩放 -> 根据 textScaler 和最小 tile 宽度选择 2–4 列，截图验收真实字体。
 - [2026-11-14] [ScriptEdit] UTF-8 Dart 被默认 GBK 读取失败，按缩进查找替换又误跨测试块 -> 文件编码和结构边界未显式固定 -> 脚本读写指定 UTF-8，用完整语法片段替换并检查 diff；formatter 失败不得继续测试或提交。
 - [2026-11-14] [SlangTest] locale.build().app 编译失败 -> 当前生成接口 build 返回 Future -> 多语言独立实例测试 await locale.build() 后读取字段。
+- [2026-11-14] [APKResources] 按原始 PNG 文件名找不到发布包图标 -> Android 资源优化将 res 文件名缩短 -> 结合 aapt 资源表和解码后的尺寸/像素验证打包图标，不依赖源码文件名。
