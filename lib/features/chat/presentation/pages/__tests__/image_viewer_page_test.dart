@@ -13,6 +13,7 @@ import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/widgets/pressable.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/pages/image_viewer_page.dart';
+import 'package:selfbox/features/chat/presentation/widgets/image_viewer_thumbnail.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
@@ -43,7 +44,10 @@ void main() {
       messages: history,
     );
     expect(find.text('2 / 3'), findsOneWidget);
-    await tester.drag(find.byType(PageView), const Offset(-300, 0));
+    await tester.drag(
+      find.byKey(const ValueKey('image-viewer-pages')),
+      const Offset(-300, 0),
+    );
     await tester.pumpAndSettle();
     expect(find.text('3 / 3'), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -58,10 +62,12 @@ void main() {
     );
 
     expect(find.text('3 / 3'), findsOneWidget);
-    final firstThumbnail = find.byKey(
-      const ValueKey('image-thumbnail-media/a.jpg'),
-    );
-    await tester.ensureVisible(firstThumbnail);
+    final firstThumbnail = find
+        .byWidgetPredicate(
+          (widget) =>
+              widget is ImageViewerThumbnail && widget.path == 'media/a.jpg',
+        )
+        .first;
     await tester.tap(firstThumbnail);
     await tester.pumpAndSettle();
 
@@ -83,19 +89,23 @@ void main() {
     );
 
     for (var index = 0; index < 16; index++) {
-      await tester.drag(find.byType(PageView), const Offset(-300, 0));
+      await tester.drag(
+        find.byKey(const ValueKey('image-viewer-pages')),
+        const Offset(-300, 0),
+      );
       await tester.pumpAndSettle();
     }
 
     expect(find.text('17 / 24'), findsOneWidget);
     final selected = find.byKey(
-      const ValueKey('image-thumbnail-media/image-16.jpg'),
+      const ValueKey('image-viewer-selected-thumbnail'),
     );
     final strip = find.byKey(const ValueKey('image-viewer-thumbnails'));
     final selectedRect = tester.getRect(selected);
     final stripRect = tester.getRect(strip);
     expect(selectedRect.left, greaterThanOrEqualTo(stripRect.left));
     expect(selectedRect.right, lessThanOrEqualTo(stripRect.right));
+    expect(selectedRect.center.dx, closeTo(stripRect.center.dx, 0.5));
   });
 
   testWidgets('close control remains visible and pops the viewer route', (

@@ -32,6 +32,7 @@ class MessageImageStack extends ConsumerWidget {
         height:
             MessageTokens.imageHeight + (paths.length > 1 ? AppSpacing.md : 0),
         child: Stack(
+          clipBehavior: Clip.none,
           children: [
             for (var index = paths.take(3).length - 1; index >= 0; index--)
               Positioned(
@@ -48,6 +49,16 @@ class MessageImageStack extends ConsumerWidget {
                   child: DecoratedBox(
                     decoration: ShapeDecoration(
                       color: context.glass.bubbleOther,
+                      shadows: paths.length > 1
+                          ? [
+                              BoxShadow(
+                                color: context.glass.imageStackShadow,
+                                blurRadius: MessageTokens.imageShadowBlur,
+                                spreadRadius: MessageTokens.imageShadowSpread,
+                                offset: MessageTokens.imageShadowOffset,
+                              ),
+                            ]
+                          : null,
                       shape: RoundedSuperellipseBorder(
                         borderRadius: BorderRadius.circular(
                           MessageTokens.imageFrameRadius,

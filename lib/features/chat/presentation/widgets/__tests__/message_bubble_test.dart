@@ -203,7 +203,15 @@ void main() {
         for (final frame in tester.widgetList<DecoratedBox>(frames)) {
           final decoration = frame.decoration as ShapeDecoration;
           expect(decoration.color, AppGlassTheme.of(brightness).bubbleOther);
-          expect(decoration.shadows, isNull);
+          if (count == 1) {
+            expect(decoration.shadows, isNull);
+          } else {
+            final shadow = decoration.shadows!.single;
+            expect(shadow.color, AppGlassTheme.of(brightness).imageStackShadow);
+            expect(shadow.color.a, inExclusiveRange(0, 0.4));
+            expect(shadow.blurRadius, greaterThanOrEqualTo(20));
+            expect(shadow.spreadRadius, greaterThan(0));
+          }
           expect(
             decoration.shape,
             isA<RoundedSuperellipseBorder>().having(
@@ -215,6 +223,14 @@ void main() {
         }
         expect(tester.getSize(stack).width, lessThanOrEqualTo(240));
         expect(tester.getSize(stack).height, lessThanOrEqualTo(220));
+        expect(
+          tester
+              .widget<Stack>(
+                find.descendant(of: stack, matching: find.byType(Stack)).first,
+              )
+              .clipBehavior,
+          Clip.none,
+        );
         await tester.tap(stack);
         expect(opened, images.first);
         expect(tester.takeException(), isNull);

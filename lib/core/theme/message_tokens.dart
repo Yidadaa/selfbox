@@ -1,3 +1,5 @@
+import 'package:flutter/painting.dart';
+
 import 'app_radius.dart';
 import 'app_spacing.dart';
 
@@ -11,6 +13,9 @@ abstract final class MessageTokens {
   static const stackAngle = 0.1;
   static const imageFramePadding = AppSpacing.xxs / 2;
   static const imageFrameRadius = AppRadius.sm + imageFramePadding;
+  static const imageShadowBlur = 24.0;
+  static const imageShadowSpread = 1.0;
+  static const imageShadowOffset = Offset(0, AppSpacing.xs);
 }
 
 const kBubbleImageDecodeWidth = 720;

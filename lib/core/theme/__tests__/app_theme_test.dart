@@ -164,6 +164,16 @@ void main() {
       expect(a.lerp(b, 0).foreground, a.foreground);
       expect(a.lerp(b, 1).foreground, b.foreground);
       expect(a.lerp(b, 1).canvasGradient, b.canvasGradient);
+      expect(a.lerp(b, 0).imageStackShadow, a.imageStackShadow);
+      expect(a.lerp(b, 1).imageStackShadow, b.imageStackShadow);
+      expect(
+        a.lerp(b, 0.5).imageStackShadow,
+        Color.lerp(a.imageStackShadow, b.imageStackShadow, 0.5),
+      );
+      expect(
+        a.copyWith(imageStackShadow: b.imageStackShadow).imageStackShadow,
+        b.imageStackShadow,
+      );
     });
 
     test('lerping toward null keeps the current theme', () {

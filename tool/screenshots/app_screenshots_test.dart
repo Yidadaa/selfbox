@@ -13,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/storage/app_paths.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
+import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
@@ -22,8 +23,15 @@ import 'assistant_transition_fixtures.dart';
 import 'brand_fixtures.dart';
 import 'composer_keyboard_fixtures.dart';
 import 'general_effects_fixtures.dart';
+import 'image_viewer_fixtures.dart';
 import 'screenshot_fixtures.dart';
 import 'short_term_memory_fixtures.dart';
+
+class _ScreenshotBinding extends AutomatedTestWidgetsFlutterBinding {
+  // Golden review needs the blurred shadows that the normal test binding skips.
+  @override
+  bool get disableShadows => false;
+}
 
 Future<void> _loadFont(String family, List<String> paths) async {
   final loader = FontLoader(family);
@@ -54,20 +62,35 @@ Future<void> _loadFonts() async {
 Future<void> _warmImages(AppPaths paths) async {
   if (!paths.media.existsSync()) return;
   for (final file in paths.media.listSync().whereType<File>()) {
-    final done = Completer<void>();
-    ResizeImage.resizeIfNeeded(kBubbleImageDecodeWidth, null, FileImage(file))
-        .resolve(ImageConfiguration.empty)
-        .addListener(
-          ImageStreamListener(
-            (_, _) => done.isCompleted ? null : done.complete(),
-            onError: (_, _) => done.isCompleted ? null : done.complete(),
-          ),
-        );
-    await done.future;
+    for (final provider in <ImageProvider>[
+      FileImage(file),
+      ResizeImage.resizeIfNeeded(
+        kBubbleImageDecodeWidth,
+        null,
+        FileImage(file),
+      ),
+      ResizeImage.resizeIfNeeded(
+        (AppSizes.attachmentThumbnail * 3).round(),
+        (AppSizes.attachmentThumbnail * 3).round(),
+        FileImage(file),
+      ),
+    ]) {
+      final done = Completer<void>();
+      provider
+          .resolve(ImageConfiguration.empty)
+          .addListener(
+            ImageStreamListener(
+              (_, _) => done.isCompleted ? null : done.complete(),
+              onError: (_, _) => done.isCompleted ? null : done.complete(),
+            ),
+          );
+      await done.future;
+    }
   }
 }
 
 void main() {
+  _ScreenshotBinding();
   setUpAll(_loadFonts);
 
   for (final shot in [
@@ -79,6 +102,7 @@ void main() {
     ...agentProfileFixtures,
     ...composerKeyboardFixtures,
     ...generalEffectsFixtures,
+    ...imageViewerFixtures,
   ]) {
     for (final locale in [AppLocale.zhCn]) {
       testWidgets('screenshot ${shot.name}', (tester) async {

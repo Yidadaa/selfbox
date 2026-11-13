@@ -2,6 +2,9 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-14] [ScreenshotShadow] 截图柔影变硬块，临时切换绘制变量又触发测试不变量 -> 默认测试 binding 禁用模糊阴影且在 tearDown 前校验 -> 视觉截图通过专用 binding 的 disableShadows=false 开启真实阴影，不在夹具修改全局调试变量。
+- [2026-11-14] [ThumbnailShadow] 选中缩略图变黑 -> foreground BoxDecoration 的阴影实心区域画在照片之上 -> 阴影放背景装饰，选中描边单独放前景装饰。
+
 - [2026-11-14] [Lint] 图标测试补充导入后 analyzer 报 directives_ordering -> 新 import 插入到现有 selfbox 导入之间 -> 同包导入按路径字母序整理，并在提交前重跑全量分析。
 
 - [2026-11-14] [Icons] 移除 cupertino_icons 后截图套件 setUpAll 找不到字体 -> 截图夹具还硬加载已移除的包资源 -> 图标库迁移同步清理测试字体注入，再跑完整截图套件。
@@ -177,3 +180,6 @@
 - [2026-11-14] [VersionFixture] 版本错误态测试重复覆盖 Provider -> pumpApp 已固定覆盖 appVersionProvider -> 版本状态测试使用单页 ProviderScope，避免在通用夹具中重复注入。
 - [2026-11-14] [ArtifactCleanup] 旧 APK 清理的批量与明确路径删除均被自动审批拒绝 -> 工具仅返回 blocked by policy -> 停止删除尝试，继续独立构建并明确报告清理未完成。
 - [2026-11-14] [TestConsolidation] 拆分图片预览测试漏带文件末尾的消息夹具，存储页移除样式断言后误删仍需的模型导入 -> 只搬运 main 内测试不能覆盖文件级依赖 -> 按 AST 确认完整声明边界，静态分析无错误后再运行回归。
+- [2026-11-14] [ImageViewer] 全屏照片遮住关闭按钮的玻璃背景 -> body 内按钮默认参与页面共享 blend group，Stack 顺序不能改变玻璃背景层级 -> 浮于图片之上的玻璃操作使用独立图层，并显式提供适合暗色查看画布的图标与底色。
+- [2026-11-14] [DartConst] 从 const 主题实例读取颜色后声明 static const 编译失败 -> 实例属性访问不属于 Dart 常量表达式 -> 派生 Token 使用 static final，引用该值的 Widget 不标 const。
+- [2026-11-14] [ViewerScreenshot] 查看器新增原图/缩略图后截图夹具只预热消息的 720px 图片，且独立 fixture 漏引 flutter_test -> 缓存 key 和测试依赖未覆盖新入口 -> 截图提前预热原图及匹配解码尺寸的缩略图，独立夹具显式引入测试 API。

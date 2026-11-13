@@ -29,6 +29,7 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     required this.composerGlowColors,
     required this.composerAiTint,
     required this.composerAiOutline,
+    required this.imageStackShadow,
   });
 
   static const AppGlassTheme dark = AppGlassTheme(
@@ -59,6 +60,7 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     ],
     composerAiTint: Color(0x99111827),
     composerAiOutline: Color(0x00FFFFFF),
+    imageStackShadow: Color(0x52000000),
   );
 
   static const AppGlassTheme light = AppGlassTheme(
@@ -89,6 +91,7 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     ],
     composerAiTint: Color(0x66FFFFFF),
     composerAiOutline: Color(0xE6FFFFFF),
+    imageStackShadow: Color(0x240B142B),
   );
 
   static AppGlassTheme of(Brightness brightness) => switch (brightness) {
@@ -124,6 +127,7 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
   final List<Color> composerGlowColors;
   final Color composerAiTint;
   final Color composerAiOutline;
+  final Color imageStackShadow;
 
   @override
   AppGlassTheme copyWith({
@@ -149,6 +153,7 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     List<Color>? composerGlowColors,
     Color? composerAiTint,
     Color? composerAiOutline,
+    Color? imageStackShadow,
   }) {
     return AppGlassTheme(
       canvasGradient: canvasGradient ?? this.canvasGradient,
@@ -176,6 +181,7 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
           : List.unmodifiable(composerGlowColors),
       composerAiTint: composerAiTint ?? this.composerAiTint,
       composerAiOutline: composerAiOutline ?? this.composerAiOutline,
+      imageStackShadow: imageStackShadow ?? this.imageStackShadow,
     );
   }
 
@@ -216,6 +222,7 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
       ]),
       composerAiTint: c(composerAiTint, other.composerAiTint),
       composerAiOutline: c(composerAiOutline, other.composerAiOutline),
+      imageStackShadow: c(imageStackShadow, other.imageStackShadow),
     );
   }
 }
