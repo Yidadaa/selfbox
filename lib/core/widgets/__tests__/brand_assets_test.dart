@@ -119,7 +119,7 @@ void main() {
       ('/chat', 'empty-welcome', ''),
       ('/memory', 'empty-files', ''),
       ('/chat/search', 'empty-search', ''),
-      ('/me/about', 'logo', '小懒'),
+      ('/me/about', 'state-reading', ''),
       ('/missing-brand-page', 'state-resting', ''),
     ]) {
       testWidgets('$route uses $image in ${brightness.name}', (tester) async {

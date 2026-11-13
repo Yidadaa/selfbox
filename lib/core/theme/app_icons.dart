@@ -38,6 +38,10 @@ abstract final class AppIcons {
   static const AppIconData profile = HugeIcons.strokeRoundedBlackHole01;
   static const AppIconData storage = HugeIcons.strokeRoundedDatabase02;
   static const AppIconData info = HugeIcons.strokeRoundedInformationCircle;
+  static const AppIconData appVersion = HugeIcons.strokeRoundedSoftware;
+  static const AppIconData updateDate = HugeIcons.strokeRoundedCalendar03;
+  static const AppIconData agreement = HugeIcons.strokeRoundedAgreement01;
+  static const AppIconData website = HugeIcons.strokeRoundedGlobe02;
   static const AppIconData warning = HugeIcons.strokeRoundedAlert02;
   static const AppIconData error = HugeIcons.strokeRoundedAlertCircle;
   static const AppIconData success = HugeIcons.strokeRoundedCheckmarkCircle02;

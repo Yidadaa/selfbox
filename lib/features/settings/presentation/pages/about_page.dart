@@ -1,54 +1,70 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-import '../../../../core/theme/app_artwork_tokens.dart';
+import '../../../../core/theme/app_effects.dart';
+import '../../../../core/theme/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_artwork.dart';
+import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../providers/account_providers.dart';
-import '../widgets/primary_button.dart';
 import '../widgets/settings_back_button.dart';
 
 class AboutPage extends ConsumerWidget {
   const AboutPage({super.key});
+
+  static const _updatedOn = '2026-11-14';
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final version = ref.watch(appVersionProvider);
+    final labels = context.t.me;
     return AppPageScaffold(
-      title: context.t.me.about,
+      title: labels.about,
       leading: const SettingsBackButton(),
       body: ListView(
         padding: AppPageInsets.of(context),
         children: [
+          const Gap(AppSpacing.xl),
+          const Center(child: AppArtwork(BrandArt.reading)),
           const Gap(AppSpacing.xxl),
-          const Center(
-            child: AppArtwork(BrandArt.logo, size: AppArtworkTokens.logo),
-          ),
-          const Gap(AppSpacing.xl),
-          Text(
-            context.t.app.name,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          const Gap(AppSpacing.sm),
-          if (version.hasError)
-            PrimaryButton(
-              label: context.t.common.retry,
-              onTap: () => ref.invalidate(appVersionProvider),
-            )
-          else
-            Text(
-              version.value ?? context.t.me.version,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          const Gap(AppSpacing.xl),
-          Text(
-            context.t.me.tagline,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge,
+          GlassGroupedSection(
+            quality: AppEffects.qualityOf(context, GlassQuality.standard),
+            shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
+            margin: AppInsets.section,
+            children: [
+              Skeletonizer(
+                enabled: version.isLoading,
+                child: AppListTile(
+                  icon: AppIcons.appVersion,
+                  title: labels.version,
+                  value: version.hasError
+                      ? context.t.common.retry
+                      : version.value ?? labels.version,
+                  onTap: version.hasError
+                      ? () => ref.invalidate(appVersionProvider)
+                      : null,
+                ),
+              ),
+              AppListTile(
+                icon: AppIcons.updateDate,
+                title: labels.updateDate,
+                value: _updatedOn,
+              ),
+              AppListTile(
+                icon: AppIcons.agreement,
+                title: labels.userAgreement,
+              ),
+              AppListTile(
+                icon: AppIcons.website,
+                title: labels.officialWebsite,
+              ),
+            ],
           ),
         ],
       ),

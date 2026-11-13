@@ -174,3 +174,4 @@
 - [2026-11-14] [KeyboardMotion] Tab 收起时只剩空白高度动画 -> 条件分支在动画起点移除了真实内容 -> 退场期间保留内容，按同一进度裁切高度并淡出，到零再卸载。
 - [2026-11-14] [ReducedMotion] 减少动态效果测试报 RenderAnimatedSize 在 layout 中再次 dirty -> AI 标签使用 duration:zero 的 AnimatedSize -> 禁用动画时直接绘制最终 Text，绕过尺寸动画 RenderObject。
 - [2026-11-14] [AiModeTest] AI 模式切换后 pumpAndSettle 超时 -> 输入光效无限循环 -> 模式动画测试按固定帧时长推进，不等待全局动画静止。
+- [2026-11-14] [VersionFixture] 版本错误态测试重复覆盖 Provider -> pumpApp 已固定覆盖 appVersionProvider -> 版本状态测试使用单页 ProviderScope，避免在通用夹具中重复注入。
