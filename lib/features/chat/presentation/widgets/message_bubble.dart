@@ -6,9 +6,11 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_markdown_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/message_tokens.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/app_markdown_builders.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/message.dart';
@@ -139,8 +141,8 @@ class _MessageFooter extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (message.askedAi) ...[
-            Icon(
-              Icons.auto_awesome,
+            AppIcon(
+              AppIcons.ai,
               size: AppSpacing.sm,
               color: foreground,
               semanticLabel: context.t.chat.aiMode,

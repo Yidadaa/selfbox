@@ -7,6 +7,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/theme/app_artwork_tokens.dart';
 import '../../../../core/theme/app_effects.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_action_button.dart';
@@ -81,7 +82,7 @@ class ProviderModelsSection extends HookConsumerWidget {
         PrimaryButton(
           key: const ValueKey('add-model-button'),
           label: context.t.settings.provider.addModel,
-          icon: Icons.add_rounded,
+          icon: AppIcons.add,
           onTap: () => showModelSelectionSheet(
             context: context,
             providerId: providerId,
@@ -91,7 +92,7 @@ class ProviderModelsSection extends HookConsumerWidget {
         const Gap(AppSpacing.xs),
         AppActionButton(
           onPressed: fetching.value ? null : fetch,
-          icon: Icons.sync_rounded,
+          icon: AppIcons.refresh,
           label: context.t.settings.provider.fetchModels,
           busy: fetching.value,
         ),

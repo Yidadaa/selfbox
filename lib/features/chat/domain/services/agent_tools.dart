@@ -9,8 +9,10 @@ import '../../../memory/domain/models/memory.dart';
 import '../../../memory/domain/repositories/memory_repository.dart';
 import '../models/message.dart';
 import '../repositories/message_repository.dart';
+import '../repositories/web_research_repository.dart';
 
 part 'agent_tool_support.dart';
+part 'agent_web_tools.dart';
 
 typedef ToolInput = Map<String, Object?>;
 
@@ -33,6 +35,7 @@ class AgentTools {
     required this.memory,
     required this.readImage,
     required this.canViewImages,
+    required this.web,
     this.onResult,
   });
 
@@ -40,6 +43,8 @@ class AgentTools {
   final MemoryRepository memory;
   final ImageReader readImage;
   final bool canViewImages;
+  final WebResearchRepository web;
+  final _webPages = <String, WebPageContent>{};
   final void Function(String toolName, bool succeeded)? onResult;
 
   /// Filled by `view_image`, keyed by tool call id.
@@ -52,6 +57,7 @@ class AgentTools {
   static const maxMemoryLength = 20000;
 
   ToolSet build() => {
+    ..._webTools(),
     'search_messages': _tool(
       'search_messages',
       'Search the user\'s chat notes, newest first. All keywords must match '

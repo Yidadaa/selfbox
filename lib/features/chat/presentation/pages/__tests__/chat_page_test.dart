@@ -11,7 +11,9 @@ import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
+import 'package:selfbox/core/testing/icon_finder.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
+import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
 import 'package:selfbox/core/widgets/empty_state.dart';
@@ -374,7 +376,7 @@ void main() {
       expect(
         find.descendant(
           of: find.byType(MessageBubble),
-          matching: find.byIcon(Icons.auto_awesome),
+          matching: findAppIcon(AppIcons.ai),
         ),
         findsOneWidget,
       );
@@ -606,7 +608,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 600));
 
       expect(find.text(t.chat.aiInputHint), findsOneWidget);
-      expect(find.byIcon(Icons.auto_awesome), findsWidgets);
+      expect(findAppIcon(AppIcons.ai), findsWidgets);
     });
 
     testWidgets('long-press offers copy and delete; delete removes it', (
@@ -677,7 +679,7 @@ void main() {
         tester.widget<Text>(label).style?.color,
         AppGlassTheme.dark.foregroundMuted,
       );
-      expect(find.byIcon(Icons.broken_image_outlined), findsNothing);
+      expect(findAppIcon(AppIcons.imageUnavailable), findsNothing);
     });
   });
 }

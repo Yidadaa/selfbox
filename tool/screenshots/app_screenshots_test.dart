@@ -41,11 +41,6 @@ Future<void> _loadFonts() async {
   await _loadFont('MaterialIcons', [
     '$sdk/bin/cache/artifacts/material_fonts/materialicons-regular.otf',
   ]);
-  final cupertino = FontLoader('packages/cupertino_icons/CupertinoIcons');
-  cupertino.addFont(
-    rootBundle.load('packages/cupertino_icons/assets/CupertinoIcons.ttf'),
-  );
-  await cupertino.load();
   // Test text falls back to "Roboto"; map it to a CJK-capable system font.
   await _loadFont('Roboto', ['$winFonts/msyh.ttc', '$winFonts/segoeui.ttf']);
   // Unstyled text (e.g. GlassTabBar labels) falls back to the test font.

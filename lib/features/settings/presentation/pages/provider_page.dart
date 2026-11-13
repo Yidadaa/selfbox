@@ -12,11 +12,13 @@ import '../../../../core/forms/glass_reactive_text_field.dart';
 import '../../../../core/forms/luthor_validator.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_effects.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
@@ -81,7 +83,7 @@ class _BackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => GlassIconButton(
     size: AppSizes.minTouchTarget,
-    icon: const Icon(Icons.arrow_back_ios_new_rounded),
+    icon: const AppIcon(AppIcons.back),
     quality: AppEffects.qualityOf(context, GlassQuality.standard),
     semanticLabel: context.t.common.close,
     onPressed: () => Navigator.of(context).maybePop(),
@@ -178,7 +180,7 @@ class _ProviderForm extends HookConsumerWidget {
         if (existing != null)
           GlassIconButton(
             size: AppSizes.minTouchTarget,
-            icon: const Icon(Icons.more_horiz_rounded),
+            icon: const AppIcon(AppIcons.more),
             quality: AppEffects.qualityOf(context, GlassQuality.standard),
             semanticLabel: t.common.more,
             onPressed: () => _showActions(context, ref, existing),
@@ -230,7 +232,7 @@ class _ProviderForm extends HookConsumerWidget {
                     subtitle: headers.value.isEmpty
                         ? t.settings.provider.noHeaders
                         : headers.value.keys.join(', '),
-                    icon: Icons.http_rounded,
+                    icon: AppIcons.api,
                     value: '${headers.value.length}',
                     onTap: () async {
                       final result = await showProviderHeadersSheet(

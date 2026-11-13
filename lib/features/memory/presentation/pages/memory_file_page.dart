@@ -9,12 +9,14 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_markdown_theme.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/app_markdown_builders.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
@@ -44,7 +46,7 @@ class MemoryFilePage extends ConsumerWidget {
       title: title,
       leading: GlassIconButton(
         size: AppSizes.minTouchTarget,
-        icon: const Icon(Icons.arrow_back_ios_new_rounded),
+        icon: const AppIcon(AppIcons.back),
         semanticLabel: t.common.close,
         onPressed: () => Navigator.of(context).maybePop(),
       ),
@@ -52,7 +54,7 @@ class MemoryFilePage extends ConsumerWidget {
         if (file case AsyncData(value: Some(:final value)))
           GlassIconButton(
             size: AppSizes.minTouchTarget,
-            icon: const Icon(Icons.edit_rounded),
+            icon: const AppIcon(AppIcons.edit),
             semanticLabel: t.memory.edit,
             onPressed: () =>
                 MemoryEditorRoute(path: value.path.value).push<void>(context),
@@ -60,7 +62,7 @@ class MemoryFilePage extends ConsumerWidget {
         if (file case AsyncData(value: Some(:final value)))
           GlassIconButton(
             size: AppSizes.minTouchTarget,
-            icon: const Icon(Icons.more_horiz_rounded),
+            icon: const AppIcon(AppIcons.more),
             semanticLabel: t.memory.more,
             onPressed: () => _showActions(context, ref, value.path),
           ),

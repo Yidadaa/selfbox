@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/message_tokens.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/pressable.dart';
 import '../../../../gen/i18n/strings.g.dart';
 
@@ -123,8 +125,8 @@ class _MissingPhoto extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => ColoredBox(
     color: context.glass.bubbleOther,
     child: Center(
-      child: Icon(
-        Icons.broken_image_outlined,
+      child: AppIcon(
+        AppIcons.imageUnavailable,
         color: context.glass.onBubbleOther,
       ),
     ),

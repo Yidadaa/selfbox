@@ -11,6 +11,7 @@ import '../../../../core/forms/glass_reactive_text_field.dart';
 import '../../../../core/forms/luthor_validator.dart';
 import '../../../../core/theme/app_dialog_tokens.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_action_button.dart';
@@ -151,7 +152,7 @@ class ModelSettingsSheet extends HookConsumerWidget {
                         onPressed: saving.value
                             ? null
                             : () => Navigator.of(context).pop(),
-                        icon: Icons.close_rounded,
+                        icon: AppIcons.close,
                       ),
                       Expanded(
                         child: Text(
@@ -206,7 +207,7 @@ class ModelSettingsSheet extends HookConsumerWidget {
                       AppActionButton(
                         key: const ValueKey('delete-model-button'),
                         onPressed: saving.value ? null : confirmRemove,
-                        icon: Icons.delete_outline_rounded,
+                        icon: AppIcons.delete,
                         label: context.t.settings.model.delete,
                         variant: AppActionButtonVariant.destructive,
                       ),

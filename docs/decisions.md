@@ -349,3 +349,17 @@
 - **背景**：通用设置需要统一切换玻璃渲染等级和动画效果；用户补充不必强行消除每个第三方控件的细节动画。
 - **决策**：AppPreferences 保存纯 Dart 的 AppRenderQuality（minimal / standard / premium）及 animationsEnabled，默认标准与开启，旧 JSON 自动补默认值。MaterialApp.builder 内的 AppEffects 向 Navigator、Sheet、Overlay 提供统一 GlassTheme、固定范围的 GlassAdaptiveScope、MediaQuery.disableAnimations 与 GlassAccessibilityScope。原显式档位通过 AppEffects.qualityOf 获取用户值，避免 Scope 仅作上限、无法把 standard 控件升级到 premium 的问题。
 - **影响**：覆盖此前局部固定档位预算；默认所有控件使用标准，用户可统一升降档。关闭动画使应用自己的页面/弹层过渡、键盘插画与 Tab、消息入场、思考点、输入光效和骨架闪烁静止或直接完成；系统减少动态效果优先，不使用全局 TickerMode 冻结应用状态。第三方 Switch、Toast 等保留库自身减少动画后的细节反馈，不复制或修改依赖源码。键盘过渡采用 hook controller，中途关闭立即落到终值且不重建编辑器。
+
+### [ADR-054] Hugeicons 统一图标与资料用语
+
+- **背景**：页面、导航、弹层与状态提示混用 Material 图标；资料页的 Agent 术语不能清楚说明头像和名字代表谁。
+- **决策**：使用 Hugeicons 免费 stroke-rounded 包；应用图标通过 `AppIcons` 语义表和 `AppIcon` 统一线宽、颜色及语义。共享按钮、列表项使用 `AppIconData`。Toast 显式注入图标，Markdown 图片错误态由自有 builder 呈现。第三方 TalkerScreen 不提供完整图标覆盖入口，日志页改为自有页面，保留搜索、过滤、排序、复制、导出、清除和日志开关。资料入口改为“编辑资料”，头像下方以小头像与气泡说明“我的名字”和“你的称呼”，气泡随表单草稿更新。
+- **影响**：`AGENTS.md` 禁止新增 Material/Cupertino 图标，并由 `icon_source_test.dart` 守卫；品牌图像与头像不属于图标库。新增图标需在组件库预览并覆盖明暗主题。
+
+- **补充**：用户指定四枚图标：消息 `strokeRoundedMessage02`，记忆 `strokeRoundedCards02`，我的 `strokeRoundedBlackHole01`，AI 模式 `strokeRoundedAiSparkles`。AI 按钮两种状态保持同一图形，以颜色和文字切换表达状态，避免重复图形的无意义入退场。
+
+### [ADR-055] Bing RSS 网页搜索与分段阅读
+
+- **背景**：原 Bing Search API 于 2025-08-11 退役；用户指定无需 Key 的 Bing RSS HTTP 搜索，并要求网页纯文本提取和硬切段，避免占满模型上下文。
+- **决策**：`WebResearchRepository` 作为 Agent Domain 边界，Data 层通过 Dio 请求 `https://www.bing.com/search?format=rss`，以 XML 解析标题、链接、摘要；`web_read` 只访问公开 HTTP(S) 页面，固定 20 秒请求时限、2 MB 下载上限、最多 4 次安全重定向。HTML 由解析器剔除脚本、样式、导航及标签，最多保存 80,000 字符纯文本，每次默认返回 6,000 字符、最多 12,000 字符，并返回 `next_offset` 供按需续读；同一次 Agent 回合缓存至多 4 页。解析放后台 isolate，外部内容标记不可信，提示词禁止执行网页内指令或擅自发送私人记忆。
+- **影响**：无需搜索 API Key，但 Bing RSS 的相关性与可用性不受应用保证；空结果和 HTTP 失败如实返回，不虚构来源。只支持 HTML 和纯文本，JavaScript 渲染页、登录页和 PDF 不承诺提取。网页搜索和阅读在 Agent 时间线显示独立状态，结果带来源 URL，私网地址在发起请求和重定向时均拒绝。

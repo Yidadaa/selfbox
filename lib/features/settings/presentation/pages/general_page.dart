@@ -4,6 +4,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/theme/app_effects.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_list_tile.dart';
@@ -41,7 +42,7 @@ class GeneralPage extends ConsumerWidget {
             shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
             children: [
               AppListTile(
-                icon: Icons.brightness_6_outlined,
+                icon: AppIcons.theme,
                 title: labels.theme,
                 value: switch (preferences.theme) {
                   AppThemeChoice.system => labels.system,
@@ -51,7 +52,7 @@ class GeneralPage extends ConsumerWidget {
                 onTap: () => _pickTheme(context, ref, preferences.theme),
               ),
               AppListTile(
-                icon: Icons.language_rounded,
+                icon: AppIcons.language,
                 title: labels.language,
                 value: switch (language) {
                   AppLanguageChoice.zhCn => labels.chinese,

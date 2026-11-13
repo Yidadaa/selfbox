@@ -4,7 +4,9 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
+import 'package:selfbox/core/testing/icon_finder.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
+import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
@@ -341,7 +343,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('model-open-gpt-x')));
     await tester.pumpAndSettle();
     expect(find.byType(BottomSheet), findsOneWidget);
-    expect(find.byIcon(Icons.chevron_right_rounded), findsWidgets);
+    expect(findAppIcon(AppIcons.next), findsWidgets);
     final sheetHeight = tester
         .getSize(find.byKey(const ValueKey('model-settings-sheet')))
         .height;

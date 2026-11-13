@@ -3,7 +3,9 @@ import 'package:gap/gap.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../theme/app_glass_theme.dart';
+import '../theme/app_icons.dart';
 import '../theme/app_spacing.dart';
+import 'app_icon.dart';
 
 /// [GlassListTile] with the app's type scale and colors applied (the glass
 /// tile otherwise falls back to unthemed Cupertino text).
@@ -20,7 +22,7 @@ class AppListTile extends StatelessWidget {
   });
 
   final String title;
-  final IconData? icon;
+  final AppIconData? icon;
   final String? subtitle;
 
   /// Short current value shown before the chevron, e.g. "20".
@@ -42,7 +44,9 @@ class AppListTile extends StatelessWidget {
     final value = this.value;
     final chevron = showChevron ?? onTap != null;
     return GlassListTile(
-      leading: icon == null ? null : Icon(icon, color: glass.foregroundMuted),
+      leading: icon == null
+          ? null
+          : AppIcon(icon, color: glass.foregroundMuted),
       title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
       titleStyle: text.bodyLarge?.copyWith(color: glass.foreground),
       subtitle: subtitle == null
@@ -67,8 +71,7 @@ class AppListTile extends StatelessWidget {
                   ),
                 ),
               if (value != null && chevron) const Gap(AppSpacing.xxs),
-              if (chevron)
-                Icon(Icons.chevron_right_rounded, color: glass.foregroundMuted),
+              if (chevron) AppIcon(AppIcons.next, color: glass.foregroundMuted),
             ],
           ),
       onTap: onTap,

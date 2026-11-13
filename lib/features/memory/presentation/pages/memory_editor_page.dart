@@ -18,6 +18,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_markdown_builders.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
+import '../../../../core/widgets/app_toast.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../../settings/presentation/widgets/primary_button.dart';
@@ -94,7 +95,11 @@ class _MemoryEditor extends HookConsumerWidget {
       final rawPath = name.endsWith('.md') ? name : '$name.md';
       final valid = MemoryPath.parse(rawPath);
       if (valid case Left()) {
-        GlassToast.show(context, message: context.t.memory.invalidName);
+        AppToast.show(
+          context,
+          message: context.t.memory.invalidName,
+          type: GlassToastType.warning,
+        );
         return;
       }
       final path = valid.toNullable();
@@ -122,11 +127,7 @@ class _MemoryEditor extends HookConsumerWidget {
         if (message == null) {
           showOutcome(context, failure: failure);
         } else {
-          GlassToast.show(
-            context,
-            message: message,
-            type: GlassToastType.error,
-          );
+          AppToast.show(context, message: message, type: GlassToastType.error);
         }
         return;
       }

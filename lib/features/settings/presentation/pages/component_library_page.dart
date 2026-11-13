@@ -7,6 +7,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../../../core/theme/app_artwork_tokens.dart';
 import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -14,6 +15,7 @@ import '../../../../core/widgets/ai_composer_glow.dart';
 import '../../../../core/widgets/app_action_button.dart';
 import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
@@ -38,23 +40,41 @@ class ComponentLibraryPage extends StatelessWidget {
         ),
         const Gap(AppSpacing.md),
         const _ButtonsPreview(),
+        SectionHeader(context.t.me.componentLibraryIcons),
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+          child: Wrap(
+            spacing: AppSpacing.lg,
+            runSpacing: AppSpacing.md,
+            children: [
+              AppIcon(AppIcons.chat),
+              AppIcon(AppIcons.memory),
+              AppIcon(AppIcons.profile),
+              AppIcon(AppIcons.ai),
+              AppIcon(AppIcons.search),
+              AppIcon(AppIcons.settings),
+              AppIcon(AppIcons.add),
+              AppIcon(AppIcons.send),
+            ],
+          ),
+        ),
         GlassGroupedSection(
           quality: AppEffects.qualityOf(context, GlassQuality.standard),
           shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
           margin: AppInsets.section,
           children: [
             AppListTile(
-              icon: Icons.tune_rounded,
+              icon: AppIcons.preferences,
               title: context.t.me.componentLibraryDialog,
               onTap: () => _showDialogPreview(context),
             ),
             AppListTile(
-              icon: Icons.warning_amber_rounded,
+              icon: AppIcons.warning,
               title: context.t.me.componentLibraryConfirmDialog,
               onTap: () => _showConfirmDialog(context),
             ),
             AppListTile(
-              icon: Icons.checklist_rounded,
+              icon: AppIcons.checklist,
               title: context.t.me.componentLibraryTile,
               subtitle: context.t.me.componentLibraryDescription,
             ),
@@ -202,18 +222,18 @@ class _ButtonsPreview extends StatelessWidget {
               children: [
                 AppActionIconButton(
                   tooltip: context.t.common.cancel,
-                  icon: Icons.close_rounded,
+                  icon: AppIcons.close,
                   onPressed: () {},
                 ),
                 AppActionIconButton(
                   tooltip: context.t.common.save,
-                  icon: Icons.save_outlined,
+                  icon: AppIcons.save,
                   onPressed: () {},
                   variant: AppActionButtonVariant.primary,
                 ),
                 AppActionIconButton(
                   tooltip: context.t.common.delete,
-                  icon: Icons.delete_outline_rounded,
+                  icon: AppIcons.delete,
                   onPressed: () {},
                   variant: AppActionButtonVariant.destructive,
                 ),

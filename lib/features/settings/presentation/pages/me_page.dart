@@ -5,6 +5,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_effects.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_list_tile.dart';
@@ -29,22 +30,22 @@ class MePage extends ConsumerWidget {
           margin: AppInsets.section,
           children: [
             AppListTile(
-              icon: Icons.tune_rounded,
+              icon: AppIcons.preferences,
               title: context.t.me.general,
               onTap: () => const GeneralRoute().push<void>(context),
             ),
             AppListTile(
-              icon: Icons.storage_rounded,
+              icon: AppIcons.storage,
               title: context.t.me.storage,
               onTap: () => const StorageRoute().push<void>(context),
             ),
             AppListTile(
-              icon: Icons.auto_awesome_outlined,
+              icon: AppIcons.aiIdle,
               title: context.t.me.providers,
               onTap: () => const AiProvidersRoute().push<void>(context),
             ),
             AppListTile(
-              icon: Icons.info_outline_rounded,
+              icon: AppIcons.info,
               title: context.t.me.about,
               onTap: () => const AboutRoute().push<void>(context),
             ),
@@ -57,12 +58,12 @@ class MePage extends ConsumerWidget {
           header: SectionHeader(context.t.me.developer),
           children: [
             AppListTile(
-              icon: Icons.receipt_long_outlined,
+              icon: AppIcons.logs,
               title: context.t.me.logs,
               onTap: () => const TalkerRoute().push<void>(context),
             ),
             AppListTile(
-              icon: Icons.widgets_outlined,
+              icon: AppIcons.components,
               title: context.t.me.componentLibrary,
               subtitle: context.t.me.componentLibraryDescription,
               onTap: () => const ComponentLibraryRoute().push<void>(context),

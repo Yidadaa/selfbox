@@ -5,11 +5,15 @@ import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../theme/app_icons.dart';
 import '../theme/app_markdown_theme.dart';
 import '../theme/app_spacing.dart';
+import 'app_icon.dart';
+import 'app_markdown_image.dart';
 
-BuilderRegistry appMarkdownBuilders() =>
-    BuilderRegistry()..register('list', const _ListBuilder());
+BuilderRegistry appMarkdownBuilders() => BuilderRegistry()
+  ..register('list', const _ListBuilder())
+  ..register('image', const AppMarkdownImageBuilder());
 
 class _ListBuilder extends MarkdownWidgetBuilder {
   const _ListBuilder();
@@ -112,8 +116,8 @@ class _MarkdownListItem extends ConsumerWidget {
               child: Align(
                 alignment: AlignmentDirectional.topEnd,
                 child: switch (item.checked) {
-                  final checked? => Icon(
-                    checked ? Icons.check_box : Icons.check_box_outline_blank,
+                  final checked? => AppIcon(
+                    checked ? AppIcons.checked : AppIcons.unchecked,
                     size: AppMarkdownTheme.taskMarkerSize,
                     color: sheet.textStyle?.color,
                   ),

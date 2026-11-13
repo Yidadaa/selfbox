@@ -46,7 +46,7 @@
   "me": {
     "title": "我的",
     "defaultName": "我的空间",
-    "editProfile": "编辑 Agent",
+    "editProfile": "编辑资料",
     "nickname": "昵称",
     "changeAvatar": "更换头像",
     "general": "通用",
@@ -76,8 +76,11 @@
     "version": "版本",
     "tagline": "留给自己的思考空间。",
     "agentDefaultName": "小懒",
-    "agentName": "Agent 名字",
-    "callMe": "AI 如何称呼我",
+    "agentName": "我的名字",
+    "callMe": "你的称呼",
+    "profileGreeting": "你好，我是{agentName}，你可以在这里修改我的名字，也可以告诉我该如何称呼你～",
+    "profileGreetingNamed": "{username}你好，我是{agentName}，你可以在这里修改我的名字，也可以告诉我该如何称呼你～",
+    "componentLibraryIcons": "图标",
     "avatarGallery": "从相册选取",
     "avatarPresets": {
       "defaultAvatar": "经典",
@@ -193,6 +196,8 @@
     "english": "英文"
   },
   "assistant": {
+    "searchingWeb": "搜索网页",
+    "readingWeb": "阅读网页",
     "thinking": "思考中",
     "searching": "翻阅聊天记录",
     "reading": "查看消息",
@@ -202,5 +207,22 @@
     "typing": "正在输入",
     "setup": "去设置",
     "dismiss": "关闭"
+  },
+  "logs": {
+    "search": "搜索日志",
+    "empty": "暂无日志",
+    "actions": "日志操作",
+    "reverse": "反转顺序",
+    "copyAll": "复制全部日志",
+    "copyFiltered": "复制筛选结果",
+    "expand": "展开全部",
+    "collapse": "收起全部",
+    "clear": "清空日志",
+    "share": "导出日志",
+    "copied": "已复制",
+    "enabled": "记录日志",
+    "console": "控制台输出",
+    "history": "保留历史",
+    "settings": "日志设置"
   }
 }

@@ -85,7 +85,7 @@
 | **Markdown 渲染与编辑** | `flutter_smooth_markdown` (`JackCaow/flutter-smooth-markdown`)          | **全局唯一 Markdown 渲染与富文本编辑引擎**。静态内容用 `SmoothMarkdown`，AI/实时流式输出用 `StreamMarkdown`，编辑场景用 `SmoothMarkdownEditor` + `MarkdownEditorController`。内置支持 LaTeX、Mermaid、表格、AI 聊天块（`<thinking>`/`<artifact>`/`<tool_use>`）与跨块丝滑文本选择（`SmoothSelectionController`）。样式与编辑器主题（`MarkdownStyleSheet` / `MarkdownEditorThemeData`）必须统一从 `lib/core/theme/` 的 Liquid Glass Token 派生，严禁混用 `flutter_markdown` 等其他 Markdown 库。 |
 | **动效与加载体验**      | `flutter_animate` + `skeletonizer`                                      | 列表/卡片异步加载状态统一使用 `Skeletonizer` 包裹真实布局（禁止到处写简陋的 `CircularProgressIndicator`）；微交互与转场统一使用 `flutter_animate` 声明式链式调用。                                                                                                                                                                                                                                                                                                                              |
 | **表单与校验**          | `reactive_forms` + `luthor`                                             | 所有表单必须使用 `reactive_forms` 管理状态，配合 `luthor` 定义强校验 Schema。禁止手写一堆 `TextEditingController` + `if/else` 校验。                                                                                                                                                                                                                                                                                                                                                            |
-| **静态资源与国际化**    | `flutter_gen` + `slang` + `flutter_svg`                                 | **代码中严禁出现硬编码文案与硬编码资源路径**。所有 UI 文本必须走 `slang` (`t.xxx`)；所有图标/图片走 `Assets.xxx` (`flutter_gen`) + `flutter_svg`。全部生成至 `lib/gen/`。                                                                                                                                                                                                                                                                                                                       |
+| **图标、静态资源与国际化** | `hugeicons` + `flutter_gen` + `slang` + `flutter_svg` | **UI 图标只能使用 Hugeicons stroke-rounded，通过 `AppIcons` + `AppIcon` 接入**，禁止 Material/Cupertino/其他图标库。图片与品牌插画使用 `Assets.xxx`；所有文案走 `slang` (`t.xxx`)，生成文件统一至 `lib/gen/`。 |
 | **环境变量**            | `envied`                                                                | 使用 `@Envied` 处理编译期配置，生成代码输出至 `lib/gen/`。                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | **列表与图片**          | `infinite_scroll_pagination` + `cached_network_image`                   | 长列表采用分页加载 + `Sliver` 家族懒加载，网络图片统一走缓存渲染并指定合理的 `memCacheWidth` / `memCacheHeight`，防止移动端内存峰值 OOM。                                                                                                                                                                                                                                                                                                                                                       |
 | **可观测性与调试**      | `talker_flutter` + `talker_dio_logger` + `talker_riverpod_logger`       | 全局唯一日志与异常监控中心。禁止使用 `print()` 或 `debugPrint()`，必须全部收敛至 `talker`。                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -257,6 +257,14 @@ test/
 - 组件预览必须使用真实组件和当前主题 Token，至少覆盖明暗主题相关样式、禁用态或危险态等存在的变体；弹窗预览调用自建 Dialog，不在展示页另造一套样式。
 - `AppActionButton` 与 `AppActionIconButton` 是弹层和表单 action 的唯一共享按钮入口；新增 action 语义优先扩展其主题变体，不在业务页面复制按钮装饰参数。
 
+### 4.5 Hugeicons 唯一图标来源（强制）
+
+- 所有应用 UI 图标统一使用 **Hugeicons 的 stroke-rounded** 风格。语义映射集中在 `lib/core/theme/app_icons.dart` 的 `AppIcons`，渲染统一使用 `lib/core/widgets/app_icon.dart` 的 `AppIcon`。尺寸沿用 `AppSizes`，线宽沿用 `AppIconTokens`，颜色继承主题或语义状态。
+- **禁止使用 `Icons.*`、`CupertinoIcons.*`、裸 `Icon(...)`、`ImageIcon(...)`、自定义字体图标以及其他图标库**；不要把 SVG 路径或图标码点散落在业务组件中。共享按钮/列表项的图标参数必须使用 `AppIconData`，不得重新引入 Flutter `IconData`。
+- 第三方组件提供的图标插槽必须显式传入 `AppIcon`，尤其是 Toast、状态提示、导航和搜索控件。应用控制的选择标记同样使用 Hugeicons；不通过更换字体、改包缓存或隐藏功能来伪装完成迁移。
+- 图标是装饰时由所属按钮提供语义；独立表达含义时传入已国际化的 `semanticLabel`。切换状态保留至少 48dp 的交互热区；明暗主题与禁用态须验证。
+- 品牌 Logo、头像、插画、用户上传图片属于图像内容，继续走 `Assets` / 图片组件，不属于图标库。新增图标必须通过 `icon_source_test.dart` 守卫，公共图标风格在组件库预览。
+
 ---
 
 ## 5. 核心工程实现规范与代码品味范式 (Implementation Paradigms)
@@ -319,7 +327,7 @@ TaskEither<AppFailure, Unit> syncSnapshot() {
 3. **禁止过度设计（No Speculative Abstraction）**：禁止单行透传 `UseCase`、禁止只有一个实现类的内部 `Interface`、禁止用不到的泛型参数。
 4. **禁止平台分裂 UI**：禁止业务页面使用 Liquid Dialog / GlassActionSheet 或直接构造 Material / Cupertino 弹窗；仅 `lib/core/widgets/` 的自有 Dialog 可以封装 Flutter `Dialog` 基础组件。禁止使用 `SizedBox` 充当间距（强制用 `Gap`）。
 5. **禁止忽略 Linter 警告与类型逃逸**：代码必须通过 `flutter analyze` 且 **0 issues**；严禁使用 `dynamic`、严禁无理由使用 `!`（非空断言操作符，必须通过模式匹配或 `Option` 安全解包）。
-6. **禁止魔法数字与硬编码文本/资源**：间距、圆角、模糊度、动画时长全部走 `lib/core/theme/` 设计 Token；所有文案走 `slang` (`t.xxx`)；所有图标/图片走 `Assets.xxx`。
+6. **禁止魔法数字与硬编码文本/资源**：间距、圆角、模糊度、动画时长全部走 `lib/core/theme/` 设计 Token；所有文案走 `slang` (`t.xxx`)；图标只能使用 Hugeicons（`AppIcons` + `AppIcon`），图片走 `Assets.xxx`。
 7. **禁止阻塞移动端 UI 线程**：JSON 大载荷解析、加密哈希、音频/图像二进制处理、大批量数据库写入必须放入 `Isolate.run` 或 ObjectBox 异步事务中执行，确保 UI 帧耗时稳定低于 `8ms`（120Hz 标准）。
 
 ---

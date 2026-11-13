@@ -6,9 +6,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/theme/app_dialog_tokens.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_action_button.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/pressable.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/agent_avatar.dart';
@@ -59,7 +61,7 @@ class AgentAvatarSheet extends ConsumerWidget {
                     ),
                   ),
                   AppActionIconButton(
-                    icon: Icons.close_rounded,
+                    icon: AppIcons.close,
                     tooltip: context.t.common.close,
                     onPressed: busy ? null : () => context.pop(),
                   ),
@@ -122,8 +124,8 @@ class _AvatarTile extends StatelessWidget {
                   Positioned(
                     right: 0,
                     bottom: 0,
-                    child: Icon(
-                      Icons.check_circle_rounded,
+                    child: AppIcon(
+                      AppIcons.success,
                       color: context.glass.accent,
                     ),
                   ),
@@ -153,8 +155,8 @@ class _GalleryIcon extends StatelessWidget {
       shape: BoxShape.circle,
       color: context.glass.dialogActionFill,
     ),
-    child: Icon(
-      Icons.add_photo_alternate_outlined,
+    child: AppIcon(
+      AppIcons.addImage,
       color: context.glass.foreground,
       size: AppSizes.iconMd,
     ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/widgets/app_action_button.dart';
 
 /// Full-width glass action button; ignores taps while [busy].
@@ -14,7 +15,7 @@ class PrimaryButton extends StatelessWidget {
 
   final String label;
   final VoidCallback onTap;
-  final IconData? icon;
+  final AppIconData? icon;
   final bool busy;
 
   @override

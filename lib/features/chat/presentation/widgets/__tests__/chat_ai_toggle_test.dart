@@ -1,11 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
+import 'package:selfbox/core/testing/icon_finder.dart';
+import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/app_motion.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer_controls.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
 void main() {
+  testWidgets('AI toggle keeps the selected sparkle glyph in both states', (
+    tester,
+  ) async {
+    expect(AppIcons.aiIdle, HugeIcons.strokeRoundedAiSparkles);
+    expect(AppIcons.ai, HugeIcons.strokeRoundedAiSparkles);
+    await tester.pumpApp();
+    expect(findAppIcon(AppIcons.ai), findsOneWidget);
+    await tester.tap(find.byType(ChatAiToggle));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(findAppIcon(AppIcons.ai), findsOneWidget);
+  });
   for (final locale in AppLocale.values) {
     testWidgets('AI label crossfades and resizes smoothly in ${locale.name}', (
       tester,

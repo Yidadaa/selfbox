@@ -95,7 +95,7 @@ void main() {
       );
       await tester.tap(find.text(t.me.logs));
       await tester.pumpAndSettle();
-      final screen = tester.widget<TalkerScreen>(find.byType(TalkerScreen));
+      final screen = tester.widget<TalkerBuilder>(find.byType(TalkerBuilder));
       expect(screen.talker, same(container.read(talkerProvider)));
       expect(find.byType(AppDockTabs), findsNothing);
     });
@@ -226,7 +226,6 @@ void main() {
 
       expect(find.byType(NotFoundPage), findsOneWidget);
       expect(find.text(t.notFound.title), findsOneWidget);
-      expect(find.byIcon(Icons.explore_off_rounded), findsNothing);
       expect(
         find.ancestor(
           of: find.text(t.notFound.title),

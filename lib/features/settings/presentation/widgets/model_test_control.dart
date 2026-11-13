@@ -7,8 +7,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../core/error/app_failure.dart';
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_action_button.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../../../model_test_providers.dart';
 import '../../domain/models/ai_settings.dart';
@@ -48,7 +50,7 @@ class ModelTestControl extends HookConsumerWidget {
         AppActionButton(
           key: const ValueKey('test-model-button'),
           onPressed: state.value.loading ? null : test,
-          icon: state.value.loading ? null : Icons.play_arrow_rounded,
+          icon: state.value.loading ? null : AppIcons.play,
           label: state.value.loading
               ? context.t.settings.model.testing
               : context.t.settings.model.testModel,
@@ -58,10 +60,8 @@ class ModelTestControl extends HookConsumerWidget {
           const Gap(AppSpacing.xs),
           Row(
             children: [
-              Icon(
-                succeeded
-                    ? Icons.check_circle_outline_rounded
-                    : Icons.error_outline_rounded,
+              AppIcon(
+                succeeded ? AppIcons.success : AppIcons.error,
                 color: color,
                 size: AppSizes.iconMd,
               ),

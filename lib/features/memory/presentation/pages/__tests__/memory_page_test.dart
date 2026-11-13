@@ -249,7 +249,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text(t.memory.missing), findsOneWidget);
-      expect(find.byIcon(Icons.find_in_page_outlined), findsNothing);
       expect(
         find.ancestor(
           of: find.text(t.memory.missing),

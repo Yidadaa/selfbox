@@ -110,7 +110,7 @@ void main() {
       find.byWidgetPredicate(
         (w) => w is AppArtwork && w.artwork == BrandArt.working,
       ),
-      findsOneWidget,
+      findsNWidgets(2),
     );
     await tester.tap(find.text(t.common.save));
     await tester.pumpAndSettle();

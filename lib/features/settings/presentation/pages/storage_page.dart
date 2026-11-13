@@ -8,10 +8,12 @@ import '../../../../core/error/failure_message.dart';
 import '../../../../core/storage/data_reset_controller.dart';
 import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -55,7 +57,7 @@ class StoragePage extends ConsumerWidget {
               const Gap(AppSpacing.xxl),
               PrimaryButton(
                 label: busy ? context.t.me.clearing : context.t.me.clearAll,
-                icon: Icons.delete_outline_rounded,
+                icon: AppIcons.delete,
                 busy: busy,
                 onTap: () => _confirm(context, ref),
               ),
@@ -99,8 +101,8 @@ class _UsageCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      Icon(
-        Icons.storage_rounded,
+      AppIcon(
+        AppIcons.storage,
         size: AppSizes.iconHero,
         color: context.glass.accent,
       ),
@@ -122,22 +124,22 @@ class _UsageCard extends StatelessWidget {
         children: [
           AppListTile(
             title: context.t.me.photos,
-            icon: Icons.photo_library_outlined,
+            icon: AppIcons.album,
             value: _bytes(usage.mediaBytes),
           ),
           AppListTile(
             title: context.t.memory.title,
-            icon: Icons.folder_outlined,
+            icon: AppIcons.folder,
             value: _bytes(usage.memoryBytes),
           ),
           AppListTile(
             title: context.t.me.database,
-            icon: Icons.chat_bubble_outline_rounded,
+            icon: AppIcons.chat,
             value: _bytes(usage.databaseBytes),
           ),
           AppListTile(
             title: context.t.me.configuration,
-            icon: Icons.tune_rounded,
+            icon: AppIcons.preferences,
             value: _bytes(usage.settingsBytes),
           ),
         ],

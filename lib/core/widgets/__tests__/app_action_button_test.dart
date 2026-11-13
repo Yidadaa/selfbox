@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
+import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/widgets/app_action_button.dart';
 
 void main() {
@@ -105,7 +106,7 @@ void main() {
       const Center(
         child: AppActionIconButton(
           tooltip: 'Close',
-          icon: Icons.close_rounded,
+          icon: AppIcons.close,
           onPressed: _noop,
         ),
       ),

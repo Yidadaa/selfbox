@@ -27,6 +27,7 @@ import 'fake_ai_settings.dart';
 import 'fake_app_preferences_repository.dart';
 import 'fake_memory_repository.dart';
 import 'fake_message_repository.dart';
+import 'fake_web_research_repository.dart';
 import 'scripted_language_model.dart';
 import 'temp_storage.dart';
 
@@ -55,6 +56,7 @@ List<Override> testAppOverrides({
   messageRepositoryProvider.overrideWithValue(
     messages ?? FakeMessageRepository(),
   ),
+  webResearchRepositoryProvider.overrideWithValue(FakeWebResearchRepository()),
   clockProvider.overrideWithValue(() => now ?? kTestNow),
   memoryRepositoryProvider.overrideWithValue(memory ?? FakeMemoryRepository()),
   aiSettingsRepositoryProvider.overrideWithValue(

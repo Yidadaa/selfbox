@@ -10,11 +10,14 @@ import '../../../../core/error/failure_message.dart';
 import '../../../../core/theme/app_artwork_tokens.dart';
 import '../../../../core/theme/app_dialog_tokens.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_action_button.dart';
 import '../../../../core/widgets/app_artwork.dart';
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/ai_settings.dart';
@@ -116,7 +119,7 @@ class ModelSelectionSheet extends HookConsumerWidget {
                       onPressed: saving.value
                           ? null
                           : () => Navigator.of(context).pop(),
-                      icon: Icons.close_rounded,
+                      icon: AppIcons.close,
                       tooltip: context.t.common.cancel,
                     ),
                     Expanded(
@@ -149,7 +152,7 @@ class ModelSelectionSheet extends HookConsumerWidget {
                 child: GlassTextField(
                   key: const ValueKey('model-search-input'),
                   placeholder: context.t.settings.provider.searchModels,
-                  prefixIcon: const Icon(Icons.search_rounded),
+                  prefixIcon: const AppIcon(AppIcons.search),
                   surfaceStyle: GlassSurfaceStyle.solid,
                   shape: const LiquidRoundedSuperellipse(
                     borderRadius: AppRadius.sm,
@@ -188,35 +191,38 @@ class ModelSelectionSheet extends HookConsumerWidget {
                             padding: const EdgeInsets.symmetric(
                               vertical: AppSpacing.xxs,
                             ),
-                            child: CheckboxListTile(
+                            child: Semantics(
                               key: ValueKey('model-option-${model.modelId}'),
-                              value: selected.value.contains(model.modelId),
-                              onChanged: saving.value
-                                  ? null
-                                  : (checked) =>
-                                        selected.value = checked == true
-                                        ? {...selected.value, model.modelId}
-                                        : selected.value.difference({
-                                            model.modelId,
-                                          }),
-                              title: Text(
-                                model.modelId,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              controlAffinity: ListTileControlAffinity.leading,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: AppSpacing.sm,
-                              ),
-                              tileColor: context.glass.bubbleOther,
-                              activeColor: context.glass.accent,
-                              checkColor: context.glass.onAccent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  AppRadius.sm,
+                              checked: selected.value.contains(model.modelId),
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: context.glass.bubbleOther,
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.sm,
+                                  ),
+                                  border: Border.all(
+                                    color: context.glass.shadowBorder,
+                                  ),
                                 ),
-                                side: BorderSide(
-                                  color: context.glass.shadowBorder,
+                                child: AppListTile(
+                                  title: model.modelId,
+                                  icon: selected.value.contains(model.modelId)
+                                      ? AppIcons.checked
+                                      : AppIcons.unchecked,
+                                  showChevron: false,
+                                  onTap: saving.value
+                                      ? null
+                                      : () => selected.value =
+                                            selected.value.contains(
+                                              model.modelId,
+                                            )
+                                            ? selected.value.difference({
+                                                model.modelId,
+                                              })
+                                            : {
+                                                ...selected.value,
+                                                model.modelId,
+                                              },
                                 ),
                               ),
                             ),

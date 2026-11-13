@@ -9,9 +9,11 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../core/router/shell_scope.dart';
 import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/time/clock.dart';
 import '../../../../core/widgets/app_artwork.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -68,7 +70,7 @@ class MemoryPage extends ConsumerWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.add_rounded, color: context.glass.foreground),
+                    AppIcon(AppIcons.add, color: context.glass.foreground),
                     const Gap(AppSpacing.xs),
                     Text(
                       context.t.memory.add,
@@ -159,10 +161,7 @@ class _FolderSection extends ConsumerWidget {
       children: [
         for (final entry in folder.entries)
           GlassListTile(
-            leading: Icon(
-              Icons.description_outlined,
-              color: glass.foregroundMuted,
-            ),
+            leading: AppIcon(AppIcons.file, color: glass.foregroundMuted),
             title: Text(entry.title),
             titleStyle: text.bodyLarge?.copyWith(color: glass.foreground),
             subtitleStyle: text.bodySmall?.copyWith(
@@ -171,10 +170,7 @@ class _FolderSection extends ConsumerWidget {
             subtitle: Text(
               '${entry.path.fileName} · ${formatDayLabel(entry.updatedAt, now, locale: locale, today: t.chat.today, yesterday: t.chat.yesterday)}',
             ),
-            trailing: Icon(
-              Icons.chevron_right_rounded,
-              color: glass.foregroundMuted,
-            ),
+            trailing: AppIcon(AppIcons.next, color: glass.foregroundMuted),
             onTap: () =>
                 MemoryFileRoute(path: entry.path.value).push<void>(context),
           ),

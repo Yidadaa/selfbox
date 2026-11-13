@@ -7,6 +7,7 @@ import 'package:selfbox/core/testing/fake_account_repository.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/core/testing/fake_memory_repository.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
+import 'package:selfbox/core/testing/fake_web_research_repository.dart';
 import 'package:selfbox/core/testing/scripted_language_model.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/domain/services/assistant_agent.dart';
@@ -38,6 +39,7 @@ Future<String> _prompt({
     [scriptedText('ok')],
   ]);
   final agent = AssistantAgent(
+    web: FakeWebResearchRepository(),
     settings: FakeAiSettingsRepository(settings: settings, apiKeys: {'p': 'k'}),
     account: FakeAccountRepository(),
     messages: FakeMessageRepository(seed: [...notes, question]),

@@ -8,6 +8,8 @@ enum AgentToolKind {
   searchMessages,
   readMessages,
   viewImage,
+  searchWeb,
+  readWeb,
   readMemory,
   writeMemory;
 
@@ -15,6 +17,8 @@ enum AgentToolKind {
     'search_messages' => AgentToolKind.searchMessages,
     'read_messages' => AgentToolKind.readMessages,
     'view_image' => AgentToolKind.viewImage,
+    'web_search' => AgentToolKind.searchWeb,
+    'web_read' => AgentToolKind.readWeb,
     'memory_list' ||
     'memory_read' ||
     'memory_search' => AgentToolKind.readMemory,

@@ -5,8 +5,10 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/router/shell_scope.dart';
 import '../../../../core/theme/app_effects.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/pressable.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -109,7 +111,7 @@ class _ChatHeaderButton extends StatelessWidget {
   Widget build(BuildContext context) => GlassIconButton(
     size: AppSizes.minTouchTarget,
     quality: AppEffects.qualityOf(context, GlassQuality.premium),
-    icon: const Icon(Icons.settings_outlined),
+    icon: const AppIcon(AppIcons.settings),
     semanticLabel: context.t.chat.openSettings,
     onPressed: () => const MeRoute().go(context),
   );
@@ -122,7 +124,7 @@ class _ChatSearchButton extends StatelessWidget {
   Widget build(BuildContext context) => GlassIconButton(
     size: AppSizes.minTouchTarget,
     quality: AppEffects.qualityOf(context, GlassQuality.premium),
-    icon: const Icon(Icons.search_rounded),
+    icon: const AppIcon(AppIcons.search),
     semanticLabel: context.t.chat.searchMessages,
     onPressed: () => const MessageSearchRoute().push<void>(context),
   );

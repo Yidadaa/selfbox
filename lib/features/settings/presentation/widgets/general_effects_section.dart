@@ -4,6 +4,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/theme/app_effects.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_list_tile.dart';
@@ -25,7 +26,7 @@ class GeneralEffectsSection extends ConsumerWidget {
       shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
       children: [
         AppListTile(
-          icon: Icons.blur_on_rounded,
+          icon: AppIcons.rendering,
           title: labels.rendering,
           value: switch (preferences.renderQuality) {
             AppRenderQuality.minimal => labels.minimal,
@@ -35,7 +36,7 @@ class GeneralEffectsSection extends ConsumerWidget {
           onTap: () => _pickQuality(context, ref, preferences.renderQuality),
         ),
         AppListTile(
-          icon: Icons.animation_rounded,
+          icon: AppIcons.animation,
           title: labels.animations,
           onTap: () =>
               _setAnimations(context, ref, !preferences.animationsEnabled),

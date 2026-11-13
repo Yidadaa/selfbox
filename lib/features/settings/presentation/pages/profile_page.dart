@@ -20,6 +20,7 @@ import '../providers/account_providers.dart';
 import '../widgets/agent_avatar_sheet.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/profile_avatar.dart';
+import '../widgets/profile_introduction.dart';
 import '../widgets/settings_back_button.dart';
 import '../widgets/settings_load_failure.dart';
 
@@ -160,7 +161,9 @@ class _ProfileFields extends StatelessWidget {
           ),
         ),
       ),
-      const Gap(AppSpacing.xxl),
+      const Gap(AppSpacing.lg),
+      ProfileIntroduction(avatar: avatar),
+      const Gap(AppSpacing.lg),
       GlassReactiveTextField<String>(
         formControlName: 'agentName',
         label: context.t.me.agentName,

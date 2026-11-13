@@ -3,8 +3,10 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/agent_activity.dart';
 import '../providers/assistant_controller.dart';
@@ -87,18 +89,20 @@ class _ActivityLabel extends StatelessWidget {
     final a = context.t.assistant;
     final glass = context.glass;
     final (icon, label) = switch (activity.kind) {
-      AgentToolKind.searchMessages => (Icons.search_rounded, a.searching),
-      AgentToolKind.readMessages => (Icons.chat_outlined, a.reading),
-      AgentToolKind.viewImage => (Icons.image_outlined, a.viewing),
-      AgentToolKind.readMemory => (Icons.auto_awesome_outlined, a.recalling),
-      AgentToolKind.writeMemory => (Icons.edit_note_rounded, a.remembering),
+      AgentToolKind.searchMessages => (AppIcons.search, a.searching),
+      AgentToolKind.readMessages => (AppIcons.chat, a.reading),
+      AgentToolKind.viewImage => (AppIcons.image, a.viewing),
+      AgentToolKind.searchWeb => (AppIcons.webSearch, a.searchingWeb),
+      AgentToolKind.readWeb => (AppIcons.webRead, a.readingWeb),
+      AgentToolKind.readMemory => (AppIcons.memory, a.recalling),
+      AgentToolKind.writeMemory => (AppIcons.edit, a.remembering),
     };
     return AssistantStatusSurface(
       pending: true,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: AppSpacing.md, color: glass.accent),
+          AppIcon(icon, size: AppSpacing.md, color: glass.accent),
           const Gap(AppSpacing.xs),
           Flexible(
             child: Text(

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
@@ -87,7 +86,6 @@ void main() {
       await openSettingsPage(tester, '/me/model?provider=p1&model=nope');
       final label = find.text(t.settings.errors.generic);
       expect(label, findsOneWidget);
-      expect(find.byIcon(Icons.memory_rounded), findsNothing);
       expect(
         find.ancestor(of: label, matching: find.byType(GlassContainer)),
         findsNothing,

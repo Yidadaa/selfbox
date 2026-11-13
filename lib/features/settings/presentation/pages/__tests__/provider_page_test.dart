@@ -82,7 +82,6 @@ void main() {
         find.ancestor(of: empty, matching: find.byType(GlassGroupedSection)),
         findsNothing,
       );
-      expect(find.byIcon(Icons.inventory_2_outlined), findsNothing);
     });
 
     testWidgets('a new provider needs a name and an API key', (tester) async {

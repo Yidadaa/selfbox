@@ -5,6 +5,8 @@ import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/error/failure_message.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
+import 'package:selfbox/core/testing/icon_finder.dart';
+import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/app_markdown_theme.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
@@ -118,7 +120,7 @@ void _expectInlineLayout(WidgetTester tester) {
     tester.getSize(content).height / lineHeight,
     closeTo((tester.getSize(content).height / lineHeight).round(), 0.01),
   );
-  expect(find.byIcon(Icons.close_rounded), findsNothing);
+  expect(findAppIcon(AppIcons.close), findsNothing);
   expect(tester.takeException(), isNull);
 }
 

@@ -10,9 +10,11 @@ import '../../../../core/forms/glass_reactive_text_field.dart';
 import '../../../../core/forms/luthor_validator.dart';
 import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_artwork.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
@@ -66,7 +68,7 @@ class _Back extends StatelessWidget {
   @override
   Widget build(BuildContext context) => GlassIconButton(
     size: AppSizes.minTouchTarget,
-    icon: const Icon(Icons.arrow_back_ios_new_rounded),
+    icon: const AppIcon(AppIcons.back),
     semanticLabel: context.t.common.close,
     onPressed: () => Navigator.of(context).maybePop(),
   );

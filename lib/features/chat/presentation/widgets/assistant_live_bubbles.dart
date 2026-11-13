@@ -7,10 +7,12 @@ import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:gap/gap.dart';
 
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_markdown_theme.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/message_tokens.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/app_markdown_builders.dart';
 import 'assistant_status_surface.dart';
 
@@ -76,8 +78,8 @@ class AssistantThinkingBubble extends HookWidget {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            Icons.auto_awesome_rounded,
+                          AppIcon(
+                            AppIcons.ai,
                             size: AppSpacing.md,
                             color: glass.accent,
                           ),

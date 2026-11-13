@@ -8,6 +8,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../../../core/theme/app_artwork_tokens.dart';
 import '../../../../core/theme/app_dialog_tokens.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -125,7 +126,7 @@ class ProviderHeadersSheet extends HookWidget {
                       key: const ValueKey('cancel-provider-headers'),
                       expand: false,
                       onPressed: () => Navigator.of(context).pop(),
-                      icon: Icons.close_rounded,
+                      icon: AppIcons.close,
                       label: context.t.common.cancel,
                     ),
                     Expanded(
@@ -189,7 +190,7 @@ class ProviderHeadersSheet extends HookWidget {
                 child: AppActionButton(
                   key: const ValueKey('add-provider-header'),
                   onPressed: add,
-                  icon: Icons.add_rounded,
+                  icon: AppIcons.add,
                   label: context.t.settings.provider.addHeader,
                 ),
               ),
@@ -250,7 +251,7 @@ class _HeaderRow extends HookWidget {
           variant: AppActionButtonVariant.destructive,
           onPressed: onRemove,
           tooltip: context.t.settings.provider.removeHeader,
-          icon: Icons.remove_circle_outline_rounded,
+          icon: AppIcons.remove,
         ),
       ],
     );

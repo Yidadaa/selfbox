@@ -2,6 +2,16 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-14] [Lint] 图标测试补充导入后 analyzer 报 directives_ordering -> 新 import 插入到现有 selfbox 导入之间 -> 同包导入按路径字母序整理，并在提交前重跑全量分析。
+
+- [2026-11-14] [Icons] 移除 cupertino_icons 后截图套件 setUpAll 找不到字体 -> 截图夹具还硬加载已移除的包资源 -> 图标库迁移同步清理测试字体注入，再跑完整截图套件。
+
+- [2026-11-14] [Isolate] HTTP 冒烟时 Isolate.run 报 unsendable _HttpClientConnection -> 解析闭包隐式捕获了持有 Dio 的仓库上下文 -> 将纯解析函数提至顶层并通过 compute 传可发送的记录参数。
+
+- [2026-11-14] [WebHTTP] HttpClient cascade 被解释成 String 的 setter -> 箭头回调后紧跟级联导致绑定到返回值 -> 将 findProxy 闭包加括号；HTML fragment.text 是可空值，解析器统一回退空串。
+
+- [2026-11-14] [Hugeicons] 图标迁移后可选按钮参数与 Toast 枚举编译失败 -> 矢量图标要求非空路径，Toast 另有 neutral 状态 -> 用模式匹配解包图标，所有 Toast 类型穷尽映射并测试。
+
 - [2026-11-14] [SwitchLayout] 增大最小热区后开关偏离文字中线 -> 直接约束 GlassSwitch 高度使其内部绘制贴上沿 -> 外层热区内使用 Center 保持控件自然尺寸，并用截图与中心坐标验证。
 
 - [2026-11-14] [SettingsTest] 通用页新增效果分组后旧布局契约仍断言一个分组 -> 公共页面测试保存了旧结构 -> 增加设置分组时同步更新跨页面布局断言，保留各组材质验证。

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
+import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/app_motion.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
+import 'package:selfbox/core/widgets/app_icon.dart';
 import 'package:selfbox/core/widgets/pressable.dart';
 
 void main() {
@@ -71,7 +73,7 @@ void main() {
           child: Pressable(
             onTap: null,
             semanticLabel: 'Send',
-            child: Icon(Icons.send),
+            child: AppIcon(AppIcons.send),
           ),
         ),
       );

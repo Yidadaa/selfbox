@@ -3,7 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
+import 'package:selfbox/core/testing/icon_finder.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
+import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/app_radius.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/core/theme/message_tokens.dart';
@@ -30,7 +32,7 @@ void main() {
         find.byKey(const ValueKey('message-surface')),
       );
       final time = tester.getRect(find.text('09:30'));
-      expect(find.byIcon(Icons.auto_awesome), findsNothing);
+      expect(findAppIcon(AppIcons.ai), findsNothing);
       expect(time.top, greaterThan(surface.bottom));
       expect(surface.contains(time.topLeft), isFalse);
       expect(
@@ -66,7 +68,7 @@ void main() {
             brightness: brightness,
           );
           final time = tester.getRect(find.text('09:30'));
-          final status = tester.getRect(find.byIcon(Icons.auto_awesome));
+          final status = tester.getRect(findAppIcon(AppIcons.ai));
           final contentFinder = content == 'photo'
               ? find.byType(MessageImageStack)
               : find.byKey(const ValueKey('message-surface'));

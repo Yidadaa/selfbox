@@ -4,9 +4,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../gen/i18n/strings.g.dart';
 import '../theme/app_glass_theme.dart';
+import '../theme/app_icons.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
+import '../widgets/app_icon.dart';
 import '../widgets/pressable.dart';
 
 /// Navigation content shares its host's glass surface without nesting shaders.
@@ -24,9 +26,9 @@ class AppDockTabs extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = context.t;
     final tabs = [
-      (Icons.chat_bubble_outline_rounded, t.tabs.chat),
-      (Icons.auto_awesome_outlined, t.tabs.memory),
-      (Icons.person_outline_rounded, t.tabs.me),
+      (AppIcons.chat, t.tabs.chat),
+      (AppIcons.memory, t.tabs.memory),
+      (AppIcons.profile, t.tabs.me),
     ];
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -60,7 +62,7 @@ class _DockTab extends ConsumerWidget {
     required this.onTap,
   });
 
-  final IconData icon;
+  final AppIconData icon;
   final String label;
   final bool selected;
   final VoidCallback onTap;
@@ -89,7 +91,7 @@ class _DockTab extends ConsumerWidget {
                   color: selected ? glass.shadowBorder : Colors.transparent,
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
-                child: Icon(icon, color: color, size: AppSizes.iconMd),
+                child: AppIcon(icon, color: color, size: AppSizes.iconMd),
               ),
               const Gap(AppSpacing.xxs),
               Text(

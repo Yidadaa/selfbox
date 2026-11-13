@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
+import 'package:selfbox/core/testing/icon_finder.dart';
+import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/app_markdown_theme.dart';
 import 'package:selfbox/core/widgets/app_markdown_builders.dart';
 
@@ -99,8 +101,8 @@ void main() {
             '     - [ ] Pending',
       ),
     );
-    expect(find.byIcon(Icons.check_box), findsOneWidget);
-    expect(find.byIcon(Icons.check_box_outline_blank), findsOneWidget);
+    expect(findAppIcon(AppIcons.checked), findsOneWidget);
+    expect(findAppIcon(AppIcons.unchecked), findsOneWidget);
     expect(find.text('Done', findRichText: true), findsOneWidget);
     expect(find.text('Guide', findRichText: true), findsOneWidget);
     expect(find.text('Pending', findRichText: true), findsOneWidget);

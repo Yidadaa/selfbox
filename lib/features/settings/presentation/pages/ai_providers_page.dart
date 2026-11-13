@@ -7,6 +7,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_effects.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_list_tile.dart';
@@ -61,7 +62,7 @@ class _SettingsList extends ConsumerWidget {
           header: SectionHeader(t.settings.aiSection),
           children: [
             AppListTile(
-              icon: Icons.auto_awesome_outlined,
+              icon: AppIcons.aiIdle,
               title: t.settings.activeModel,
               value: active?.modelId ?? t.common.notSet,
               onTap: settings.enabledModels.isEmpty
@@ -69,7 +70,7 @@ class _SettingsList extends ConsumerWidget {
                   : () => _pickModel(context, ref),
             ),
             AppListTile(
-              icon: Icons.history_rounded,
+              icon: AppIcons.history,
               title: t.settings.shortTermMemory,
               value: t.settings.memoryPercent(
                 value: settings.shortTermMemoryPercent,
@@ -90,7 +91,7 @@ class _SettingsList extends ConsumerWidget {
           children: [
             for (final provider in settings.providers)
               AppListTile(
-                icon: Icons.dns_outlined,
+                icon: AppIcons.server,
                 title: provider.name,
                 subtitle:
                     '${provider.format.label(context)} · '
@@ -98,7 +99,7 @@ class _SettingsList extends ConsumerWidget {
                 onTap: () => ProviderRoute(id: provider.id).push<void>(context),
               ),
             AppListTile(
-              icon: Icons.add_rounded,
+              icon: AppIcons.add,
               title: t.settings.addProvider,
               onTap: () => const ProviderRoute().push<void>(context),
             ),

@@ -5,9 +5,11 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/pressable.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../data/chat_data_providers.dart';
@@ -36,15 +38,9 @@ class ChatAiToggle extends ConsumerWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  AnimatedSwitcher(
-                    duration: AppMotion.duration(context, AppMotion.fast),
-                    transitionBuilder: (child, animation) =>
-                        ScaleTransition(scale: animation, child: child),
-                    child: Icon(
-                      active ? Icons.auto_awesome : Icons.auto_awesome_outlined,
-                      key: ValueKey(active),
-                      color: active ? glass.accent : glass.foregroundMuted,
-                    ),
+                  AppIcon(
+                    AppIcons.ai,
+                    color: active ? glass.accent : glass.foregroundMuted,
                   ),
                   const Gap(AppSpacing.xs),
                   ExcludeSemantics(child: _AiToggleLabel(active: active)),
@@ -118,7 +114,7 @@ class ChatAttachButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => Pressable(
     onTap: onTap,
     semanticLabel: context.t.chat.attachImage,
-    child: Icon(Icons.add_rounded, color: context.glass.foregroundMuted),
+    child: AppIcon(AppIcons.add, color: context.glass.foregroundMuted),
   );
 }
 
@@ -146,8 +142,8 @@ class ChatSendButton extends ConsumerWidget {
           shape: BoxShape.circle,
           color: enabled ? glass.bubbleMine : glass.shadowBorder,
         ),
-        child: Icon(
-          Icons.arrow_upward_rounded,
+        child: AppIcon(
+          AppIcons.send,
           size: AppSizes.iconMd,
           color: enabled ? glass.onBubbleMine : glass.foregroundMuted,
         ),
@@ -198,8 +194,8 @@ class ChatAttachmentStrip extends ConsumerWidget {
               Pressable(
                 onTap: () => onRemove(path),
                 semanticLabel: context.t.chat.removeImage,
-                child: Icon(
-                  Icons.cancel,
+                child: AppIcon(
+                  AppIcons.dismiss,
                   size: AppSizes.iconMd,
                   color: context.glass.foreground,
                 ),

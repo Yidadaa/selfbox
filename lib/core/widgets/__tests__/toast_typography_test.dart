@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/widgets/app_page_scaffold.dart';
+import 'package:selfbox/core/widgets/app_toast.dart';
 
 void main() {
   for (final brightness in Brightness.values) {
@@ -14,7 +16,7 @@ void main() {
       await tester.pumpApp();
       final context = tester.element(find.byType(AppPageScaffold).first);
       for (final type in GlassToastType.values) {
-        GlassToast.show(context, message: 'Saved', type: type);
+        AppToast.show(context, message: 'Saved', type: type);
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 600));
         final richText = tester.widget<RichText>(
@@ -24,6 +26,20 @@ void main() {
           ),
         );
         final style = richText.text.style;
+        expect(
+          find.descendant(
+            of: find.byType(GlassToast),
+            matching: find.byType(HugeIcon),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(
+            of: find.byType(GlassToast),
+            matching: find.byType(Icon),
+          ),
+          findsNothing,
+        );
         expect(style?.decoration, TextDecoration.none);
         expect(
           style?.fontFamily,

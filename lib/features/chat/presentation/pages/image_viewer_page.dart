@@ -9,8 +9,10 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_artwork.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../data/chat_data_providers.dart';
@@ -70,7 +72,7 @@ class ImageViewerPage extends HookConsumerWidget {
             child: GlassIconButton(
               key: const ValueKey('image-viewer-close'),
               quality: AppEffects.qualityOf(context, GlassQuality.premium),
-              icon: const Icon(Icons.close_rounded),
+              icon: const AppIcon(AppIcons.close),
               semanticLabel: context.t.common.close,
               size: AppSizes.minTouchTarget,
               onPressed: () => context.pop(),

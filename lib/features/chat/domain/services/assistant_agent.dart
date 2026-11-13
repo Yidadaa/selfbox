@@ -13,6 +13,7 @@ import '../models/agent_activity.dart';
 import '../models/message.dart';
 import '../repositories/language_model_factory.dart';
 import '../repositories/message_repository.dart';
+import '../repositories/web_research_repository.dart';
 import 'agent_history.dart';
 import 'agent_model_support.dart';
 import 'agent_prompt.dart';
@@ -36,6 +37,7 @@ class AssistantAgent {
     required this.clock,
     required this.languageTag,
     required this.defaultAgentName,
+    required this.web,
   });
 
   final AiSettingsRepository settings;
@@ -47,6 +49,7 @@ class AssistantAgent {
   final DateTime Function() clock;
   final String Function() languageTag;
   final String Function() defaultAgentName;
+  final WebResearchRepository web;
 
   /// Upper bound on model round-trips per question.
   static const maxSteps = 16;
@@ -157,6 +160,7 @@ class AssistantAgent {
   }) => TaskEither.tryCatch(() async {
     final model = setup.model;
     final tools = AgentTools(
+      web: web,
       messages: messages,
       memory: memory,
       readImage: readImage,

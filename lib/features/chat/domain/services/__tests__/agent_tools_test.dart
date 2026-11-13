@@ -7,6 +7,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/testing/fake_memory_repository.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
+import 'package:selfbox/core/testing/fake_web_research_repository.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/domain/services/agent_tools.dart';
 
@@ -30,6 +31,7 @@ _Env _env({bool images = true, List<Message> seed = const []}) {
     seed: {'user/prefer.md': '# Prefer\n- coffee: latte\n'},
   );
   final tools = AgentTools(
+    web: FakeWebResearchRepository(),
     messages: FakeMessageRepository(seed: seed),
     memory: memory,
     readImage: (path) => path == 'media/a.png'
@@ -60,6 +62,8 @@ void main() {
   group('AgentTools', () {
     test('exposes the documented tool names', () {
       expect(_env().tools.build().keys, [
+        'web_search',
+        'web_read',
         'search_messages',
         'read_messages',
         'view_image',

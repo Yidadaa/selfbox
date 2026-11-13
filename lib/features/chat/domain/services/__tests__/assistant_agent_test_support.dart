@@ -7,6 +7,7 @@ import 'package:selfbox/core/testing/fake_account_repository.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/core/testing/fake_memory_repository.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
+import 'package:selfbox/core/testing/fake_web_research_repository.dart';
 import 'package:selfbox/core/testing/scripted_language_model.dart';
 import 'package:selfbox/features/chat/domain/models/agent_activity.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
@@ -56,11 +57,13 @@ AgentTestEnv createAgentTestEnv(
   Map<String, String> keys = const {'p1': 'sk'},
   Object? error,
   UserProfile profile = const UserProfile(),
+  FakeWebResearchRepository? web,
 }) {
   final model = ScriptedLanguageModel(steps, error: error);
   final factory = FakeLanguageModelFactory(model);
   final memory = FakeMemoryRepository();
   final agent = AssistantAgent(
+    web: web ?? FakeWebResearchRepository(),
     settings: FakeAiSettingsRepository(
       settings: settings ?? agentTestSettings(),
       apiKeys: keys,

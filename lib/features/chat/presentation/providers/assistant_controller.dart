@@ -33,6 +33,7 @@ sealed class AssistantState with _$AssistantState {
 
 @Riverpod(keepAlive: true)
 AssistantAgent assistantAgent(Ref ref) => AssistantAgent(
+  web: ref.watch(webResearchRepositoryProvider),
   settings: ref.watch(aiSettingsRepositoryProvider),
   account: ref.watch(accountRepositoryProvider),
   messages: ref.watch(messageRepositoryProvider),

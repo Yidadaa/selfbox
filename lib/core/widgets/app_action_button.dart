@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 import '../theme/app_glass_theme.dart';
+import '../theme/app_icons.dart';
 import '../theme/app_spacing.dart';
+import 'app_icon.dart';
 
 /// The shared action surface used by dialogs, sheets, and settings forms.
 ///
@@ -25,7 +27,7 @@ class AppActionButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final AppActionButtonVariant variant;
-  final IconData? icon;
+  final AppIconData? icon;
   final bool busy;
   final bool expand;
 
@@ -95,7 +97,7 @@ class _ActionButtonContent extends StatelessWidget {
   });
 
   final String label;
-  final IconData? icon;
+  final AppIconData? icon;
   final bool busy;
   final bool expand;
   final Color foreground;
@@ -113,8 +115,8 @@ class _ActionButtonContent extends StatelessWidget {
           ),
           child: CircularProgressIndicator(strokeWidth: 2, color: foreground),
         )
-      else if (icon != null)
-        Icon(icon, size: AppSizes.iconMd),
+      else if (icon case final icon?)
+        AppIcon(icon, size: AppSizes.iconMd),
       if (busy || icon != null) const Gap(AppSpacing.xs),
       Flexible(
         child: Text(
@@ -139,7 +141,7 @@ class AppActionIconButton extends StatelessWidget {
   });
 
   final String tooltip;
-  final IconData icon;
+  final AppIconData icon;
   final VoidCallback? onPressed;
   final AppActionButtonVariant variant;
 
@@ -159,7 +161,7 @@ class AppActionIconButton extends StatelessWidget {
     return IconButton(
       tooltip: tooltip,
       onPressed: onPressed,
-      icon: Icon(icon, size: AppSizes.iconMd),
+      icon: AppIcon(icon, size: AppSizes.iconMd),
       constraints: const BoxConstraints.tightFor(
         width: AppSizes.minTouchTarget,
         height: AppSizes.minTouchTarget,

@@ -46,7 +46,7 @@
   "me": {
     "title": "Me",
     "defaultName": "My space",
-    "editProfile": "Edit Agent",
+    "editProfile": "Edit profile",
     "nickname": "Nickname",
     "changeAvatar": "Choose avatar",
     "general": "General",
@@ -76,8 +76,11 @@
     "version": "Version",
     "tagline": "A private space for your thoughts.",
     "agentDefaultName": "Dozy",
-    "agentName": "Agent name",
-    "callMe": "What AI calls me",
+    "agentName": "My name",
+    "callMe": "What I call you",
+    "profileGreeting": "Hi, I'm {agentName}! You can change my name here and tell me what you'd like me to call you.",
+    "profileGreetingNamed": "Hi {username}, I'm {agentName}! You can change my name here and tell me what you'd like me to call you.",
+    "componentLibraryIcons": "Icons",
     "avatarGallery": "Photos",
     "avatarPresets": {
       "defaultAvatar": "Classic",
@@ -193,6 +196,8 @@
     "english": "English"
   },
   "assistant": {
+    "searchingWeb": "Searching the web",
+    "readingWeb": "Reading a page",
     "thinking": "Thinking",
     "searching": "Searching notes",
     "reading": "Reading notes",
@@ -202,5 +207,22 @@
     "typing": "Typing",
     "setup": "Set up",
     "dismiss": "Dismiss"
+  },
+  "logs": {
+    "search": "Search logs",
+    "empty": "No logs",
+    "actions": "Log actions",
+    "reverse": "Reverse order",
+    "copyAll": "Copy all logs",
+    "copyFiltered": "Copy matching logs",
+    "expand": "Expand all",
+    "collapse": "Collapse all",
+    "clear": "Clear logs",
+    "share": "Export logs",
+    "copied": "Copied",
+    "enabled": "Record logs",
+    "console": "Console output",
+    "history": "Keep history",
+    "settings": "Log settings"
   }
 }
