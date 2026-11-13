@@ -12,7 +12,6 @@ import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/ai_composer_glow.dart';
-import '../../../../core/widgets/app_action_button.dart';
 import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../../core/widgets/app_icon.dart';
@@ -21,6 +20,7 @@ import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/pressable.dart';
 import '../../../../gen/i18n/strings.g.dart';
+import '../widgets/component_actions_preview.dart';
 import '../widgets/settings_back_button.dart';
 
 class ComponentLibraryPage extends StatelessWidget {
@@ -39,7 +39,8 @@ class ComponentLibraryPage extends StatelessWidget {
               ?.copyWith(color: context.glass.foregroundMuted),
         ),
         const Gap(AppSpacing.md),
-        const _ButtonsPreview(),
+        const ComponentActionsPreview(),
+        const ComponentPageActionsPreview(),
         SectionHeader(context.t.me.componentLibraryIcons),
         const Padding(
           padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
@@ -192,60 +193,4 @@ class _ComposerGlowPreview extends HookConsumerWidget {
       ],
     );
   }
-}
-
-class _ButtonsPreview extends StatelessWidget {
-  const _ButtonsPreview();
-  @override
-  Widget build(BuildContext context) => GlassGroupedSection(
-    quality: AppEffects.qualityOf(context, GlassQuality.standard),
-    shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
-    margin: AppInsets.section,
-    header: SectionHeader(context.t.me.componentLibraryButtons),
-    children: [
-      Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          children: [
-            AppActionButton(
-              label: context.t.common.save,
-              onPressed: () {},
-              variant: AppActionButtonVariant.primary,
-            ),
-            const Gap(AppSpacing.xs),
-            AppActionButton(label: context.t.common.cancel, onPressed: () {}),
-            const Gap(AppSpacing.xs),
-            AppActionButton(
-              label: context.t.common.delete,
-              onPressed: () {},
-              variant: AppActionButtonVariant.destructive,
-            ),
-            const Gap(AppSpacing.md),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                AppActionIconButton(
-                  tooltip: context.t.common.cancel,
-                  icon: AppIcons.close,
-                  onPressed: () {},
-                ),
-                AppActionIconButton(
-                  tooltip: context.t.common.save,
-                  icon: AppIcons.save,
-                  onPressed: () {},
-                  variant: AppActionButtonVariant.primary,
-                ),
-                AppActionIconButton(
-                  tooltip: context.t.common.delete,
-                  icon: AppIcons.delete,
-                  onPressed: () {},
-                  variant: AppActionButtonVariant.destructive,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
 }

@@ -2,6 +2,10 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-14] [Popover] post-frame 插入的 flutter_animate 留下零时长启动 Timer，圆角处长按测试又落在卡片外 -> 默认动效延迟启动与圆角命中范围被忽略 -> 浮层入场交由 hook controller 驱动并禁用自动启动，卡片手势测试使用圆角内的 padding 点。
+- [2026-11-14] [SelectionTest] 独立消息选择测试报 LocaleDataException -> 组件夹具不初始化 intl 日期表 -> 带消息 footer 的独立套件在 setUpAll 调用 initializeDateFormatting。
+- [2026-11-14] [DartFix] 按 lint code 批量排序导入时仍改动 pubspec 的 flutter_test 依赖 -> SDK 自动依赖迁移超出 Dart lint 范围 -> fix 后检查完整 diff，恢复非本任务的依赖迁移，保持测试 SDK 依赖仅在 dev_dependencies。
+
 - [2026-11-14] [ScreenshotShadow] 截图柔影变硬块，临时切换绘制变量又触发测试不变量 -> 默认测试 binding 禁用模糊阴影且在 tearDown 前校验 -> 视觉截图通过专用 binding 的 disableShadows=false 开启真实阴影，不在夹具修改全局调试变量。
 - [2026-11-14] [ThumbnailShadow] 选中缩略图变黑 -> foreground BoxDecoration 的阴影实心区域画在照片之上 -> 阴影放背景装饰，选中描边单独放前景装饰。
 

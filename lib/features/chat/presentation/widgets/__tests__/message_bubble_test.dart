@@ -38,7 +38,7 @@ void main() {
                     askedAi: flagged,
                   ),
                   resolveImage: (_) => null,
-                  onLongPress: () => longPressed = true,
+                  onLongPress: (_) => longPressed = true,
                 ),
               ),
             ),
@@ -140,7 +140,8 @@ void main() {
               expect(tester.getBottomLeft(image).dy, lessThan(surface.top));
             }
           }
-          await tester.longPress(contentFinder);
+          // Card padding owns message actions; glyphs own text selection.
+          await tester.longPressAt(surface.topLeft + const Offset(24, 4));
           expect(longPressed, isTrue);
           if (content == 'text') {
             askedAi.value = false;

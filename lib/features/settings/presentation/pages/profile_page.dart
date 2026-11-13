@@ -13,12 +13,12 @@ import '../../../../core/forms/luthor_validator.dart';
 import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_page_button.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/user_profile.dart';
 import '../providers/account_providers.dart';
 import '../widgets/agent_avatar_sheet.dart';
-import '../widgets/primary_button.dart';
 import '../widgets/profile_avatar.dart';
 import '../widgets/profile_introduction.dart';
 import '../widgets/settings_back_button.dart';
@@ -174,7 +174,11 @@ class _ProfileFields extends StatelessWidget {
         label: context.t.me.callMe,
       ),
       const Gap(AppSpacing.xl),
-      PrimaryButton(label: context.t.common.save, busy: busy, onTap: onSave),
+      AppPageButton(
+        label: context.t.common.save,
+        busy: busy,
+        onPressed: onSave,
+      ),
     ],
   );
 }

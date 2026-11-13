@@ -20,12 +20,12 @@ import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/app_list_tile.dart';
+import '../../../../core/widgets/app_page_button.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/ai_settings.dart';
 import '../providers/settings_providers.dart';
-import '../widgets/primary_button.dart';
 import '../widgets/provider_format_picker.dart';
 import '../widgets/provider_headers_sheet.dart';
 import '../widgets/provider_models_section.dart';
@@ -246,10 +246,10 @@ class _ProviderForm extends HookConsumerWidget {
               ),
             ),
             const Gap(AppSpacing.lg),
-            PrimaryButton(
+            AppPageButton(
               label: t.common.save,
               busy: saving.value,
-              onTap: save,
+              onPressed: save,
             ),
             if (existing != null) ...[
               const Gap(AppSpacing.xl),

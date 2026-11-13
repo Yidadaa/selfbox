@@ -59,7 +59,9 @@
     "componentLibrary": "Component library UI",
     "componentLibraryDescription": "Preview and validate shared components",
     "componentLibraryArtwork": "Brand artwork",
-    "componentLibraryButtons": "Shared action buttons",
+    "componentLibraryButtons": "Overlay actions",
+    "componentLibraryPageButtons": "Page actions",
+    "componentLibraryPopover": "Message menu",
     "componentLibraryDialog": "Preview dialog actions",
     "componentLibraryConfirmDialog": "Preview confirmation dialog",
     "componentLibraryTile": "List tile",
@@ -102,6 +104,7 @@
   },
   "common": {
     "copy": "Copy",
+    "selectAll": "Select all",
     "delete": "Delete",
     "cancel": "Cancel",
     "retry": "Retry",

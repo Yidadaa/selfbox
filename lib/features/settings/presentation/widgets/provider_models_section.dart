@@ -10,15 +10,14 @@ import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/widgets/app_action_button.dart';
 import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_list_tile.dart';
+import '../../../../core/widgets/app_page_button.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../providers/settings_providers.dart';
 import 'added_model_tile.dart';
 import 'model_selection_sheet.dart';
-import 'primary_button.dart';
 
 class ProviderModelsSection extends HookConsumerWidget {
   const ProviderModelsSection({required this.providerId, super.key});
@@ -79,18 +78,18 @@ class ProviderModelsSection extends HookConsumerWidget {
             ],
           ),
         const Gap(AppSpacing.md),
-        PrimaryButton(
+        AppPageButton(
           key: const ValueKey('add-model-button'),
           label: context.t.settings.provider.addModel,
           icon: AppIcons.add,
-          onTap: () => showModelSelectionSheet(
+          onPressed: () => showModelSelectionSheet(
             context: context,
             providerId: providerId,
             models: models,
           ),
         ),
         const Gap(AppSpacing.xs),
-        AppActionButton(
+        AppPageButton(
           onPressed: fetching.value ? null : fetch,
           icon: AppIcons.refresh,
           label: context.t.settings.provider.fetchModels,

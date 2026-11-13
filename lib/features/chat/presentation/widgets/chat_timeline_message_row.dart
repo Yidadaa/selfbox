@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_motion.dart';
-import '../../../../core/widgets/app_confirm_dialog.dart';
+import '../../../../core/theme/message_tokens.dart';
+import '../../../../core/widgets/app_action_popover.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../data/chat_data_providers.dart';
 import '../../domain/models/message.dart';
@@ -27,14 +29,40 @@ class ChatTimelineMessageRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final media = ref.watch(mediaStoreProvider);
-    final bubble = MessageBubble(
-      message: message,
-      resolveImage: (path) => media.resolve(path).toNullable(),
-      onImageTap: (path) => ImageViewerRoute(
-        path: path,
-        $extra: message.images,
-      ).push<void>(context),
-      onLongPress: () => _showActions(context, ref),
+    void remove() {
+      HapticFeedback.heavyImpact();
+      ref.read(messageActionsProvider.notifier).delete(message);
+    }
+
+    final bubble = AppPopoverRegion(
+      radius: message.text.isEmpty
+          ? MessageTokens.imageFrameRadius
+          : MessageTokens.radius,
+      actions: [
+        if (message.text.isNotEmpty)
+          AppPopoverAction(
+            label: context.t.common.copy,
+            icon: AppIcons.copy,
+            onPressed: () =>
+                Clipboard.setData(ClipboardData(text: message.text)),
+          ),
+        AppPopoverAction(
+          label: context.t.common.delete,
+          icon: AppIcons.delete,
+          destructive: true,
+          onPressed: remove,
+        ),
+      ],
+      builder: (_, open) => MessageBubble(
+        message: message,
+        resolveImage: (path) => media.resolve(path).toNullable(),
+        onImageTap: (path) => ImageViewerRoute(
+          path: path,
+          $extra: message.images,
+        ).push<void>(context),
+        onLongPress: open,
+        onDelete: remove,
+      ),
     );
     return entering
         ? OutgoingMessageEntrance(
@@ -50,33 +78,5 @@ class ChatTimelineMessageRow extends ConsumerWidget {
             child: bubble,
           )
         : bubble;
-  }
-
-  Future<void> _showActions(BuildContext context, WidgetRef ref) {
-    final t = context.t;
-    return showDialog<void>(
-      context: context,
-      animationStyle: AppMotion.style(context),
-      builder: (_) => AppActionDialog(
-        cancelLabel: t.common.cancel,
-        actions: [
-          if (message.text.isNotEmpty)
-            AppDialogAction(
-              label: t.common.copy,
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: message.text));
-              },
-            ),
-          AppDialogAction(
-            label: t.common.delete,
-            destructive: true,
-            onPressed: () {
-              HapticFeedback.heavyImpact();
-              ref.read(messageActionsProvider.notifier).delete(message);
-            },
-          ),
-        ],
-      ),
-    );
   }
 }

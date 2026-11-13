@@ -15,11 +15,11 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/app_list_tile.dart';
+import '../../../../core/widgets/app_page_button.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/user_profile.dart';
 import '../providers/account_providers.dart';
-import '../widgets/primary_button.dart';
 import '../widgets/settings_back_button.dart';
 import '../widgets/settings_load_failure.dart';
 
@@ -55,11 +55,12 @@ class StoragePage extends ConsumerWidget {
                     ?.copyWith(color: context.glass.foregroundMuted),
               ),
               const Gap(AppSpacing.xxl),
-              PrimaryButton(
+              AppPageButton(
                 label: busy ? context.t.me.clearing : context.t.me.clearAll,
                 icon: AppIcons.delete,
                 busy: busy,
-                onTap: () => _confirm(context, ref),
+                destructive: true,
+                onPressed: () => _confirm(context, ref),
               ),
             ],
           ),

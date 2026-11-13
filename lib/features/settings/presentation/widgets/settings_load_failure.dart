@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/app_artwork.dart';
+import '../../../../core/widgets/app_page_button.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
-import 'primary_button.dart';
 
 class SettingsLoadFailure extends StatelessWidget {
   const SettingsLoadFailure({required this.onRetry, super.key});
@@ -12,6 +12,6 @@ class SettingsLoadFailure extends StatelessWidget {
   Widget build(BuildContext context) => EmptyState(
     illustration: BrandArt.error,
     label: context.t.settings.errors.generic,
-    action: PrimaryButton(label: context.t.common.retry, onTap: onRetry),
+    action: AppPageButton(label: context.t.common.retry, onPressed: onRetry),
   );
 }

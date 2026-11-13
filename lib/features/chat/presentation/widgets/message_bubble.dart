@@ -1,21 +1,19 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_icons.dart';
-import '../../../../core/theme/app_markdown_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/message_tokens.dart';
 import '../../../../core/widgets/app_icon.dart';
-import '../../../../core/widgets/app_markdown_builders.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/message.dart';
 import 'date_labels.dart';
 import 'message_image_stack.dart';
+import 'message_text_content.dart';
 
 export '../../../../core/theme/message_tokens.dart'
     show kBubbleImageDecodeWidth;
@@ -26,13 +24,15 @@ class MessageBubble extends ConsumerWidget {
     required this.resolveImage,
     this.onImageTap,
     this.onLongPress,
+    this.onDelete,
     this.showFooter = true,
     super.key,
   });
   final Message message;
   final File? Function(String relativePath) resolveImage;
   final ValueChanged<String>? onImageTap;
-  final VoidCallback? onLongPress;
+  final ValueChanged<Offset>? onLongPress;
+  final VoidCallback? onDelete;
   final bool showFooter;
 
   @override
@@ -48,7 +48,9 @@ class MessageBubble extends ConsumerWidget {
                 MediaQuery.sizeOf(context).width * MessageTokens.widthFactor,
           ),
           child: GestureDetector(
-            onLongPress: onLongPress,
+            onLongPressStart: onLongPress == null
+                ? null
+                : (details) => onLongPress?.call(details.globalPosition),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: mine
@@ -63,7 +65,8 @@ class MessageBubble extends ConsumerWidget {
                   ),
                 if (message.images.isNotEmpty && message.text.isNotEmpty)
                   const Gap(AppSpacing.xs),
-                if (message.text.isNotEmpty) _TextBubble(message: message),
+                if (message.text.isNotEmpty)
+                  _TextBubble(message: message, onDelete: onDelete),
                 if (showFooter) ...[
                   const Gap(AppSpacing.xxs),
                   _MessageFooter(message: message),
@@ -78,30 +81,18 @@ class MessageBubble extends ConsumerWidget {
 }
 
 class _TextBubble extends ConsumerWidget {
-  const _TextBubble({required this.message});
+  const _TextBubble({required this.message, this.onDelete});
   final Message message;
+  final VoidCallback? onDelete;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final glass = context.glass;
-    final mine = message.author == MessageAuthor.me;
-    final foreground = mine ? glass.onBubbleMine : glass.onBubbleOther;
     final content = Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
         vertical: AppSpacing.xs,
       ),
-      child: switch (message.author) {
-        MessageAuthor.me => Text(
-          message.text,
-          style: Theme.of(context).textTheme.bodyLarge
-              ?.copyWith(color: foreground),
-        ),
-        MessageAuthor.ai => SmoothMarkdown(
-          data: message.text,
-          builderRegistry: appMarkdownBuilders(),
-          styleSheet: AppMarkdownTheme.of(context, textColor: foreground),
-        ),
-      },
+      child: MessageTextContent(message: message, onDelete: onDelete),
     );
     return switch (message.author) {
       MessageAuthor.me => ClipPath(

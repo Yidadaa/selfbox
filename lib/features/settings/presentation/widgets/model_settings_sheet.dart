@@ -20,7 +20,6 @@ import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/ai_settings.dart';
 import '../providers/settings_providers.dart';
 import 'model_test_control.dart';
-import 'primary_button.dart';
 
 Future<void> showModelSettingsSheet({
   required BuildContext context,
@@ -197,11 +196,12 @@ class ModelSettingsSheet extends HookConsumerWidget {
                         valueAccessor: IntValueAccessor(),
                       ),
                       const Gap(AppSpacing.xl),
-                      PrimaryButton(
+                      AppActionButton(
                         key: const ValueKey('save-model-settings'),
                         label: context.t.common.save,
                         busy: saving.value,
-                        onTap: save,
+                        onPressed: save,
+                        variant: AppActionButtonVariant.primary,
                       ),
                       const Gap(AppSpacing.md),
                       AppActionButton(

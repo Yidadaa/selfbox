@@ -6,7 +6,7 @@ import '../theme/app_icons.dart';
 import '../theme/app_spacing.dart';
 import 'app_icon.dart';
 
-/// The shared action surface used by dialogs, sheets, and settings forms.
+/// The shared action surface used by dialogs and sheets.
 ///
 /// Every variant keeps the same touch target and rounded geometry. A tonal fill
 /// carries the interaction cue so secondary and destructive actions stay quiet

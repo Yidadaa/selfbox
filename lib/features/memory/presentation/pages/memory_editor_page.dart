@@ -17,11 +17,11 @@ import '../../../../core/theme/app_markdown_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_markdown_builders.dart';
+import '../../../../core/widgets/app_page_button.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/app_toast.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
-import '../../../settings/presentation/widgets/primary_button.dart';
 import '../../../settings/presentation/widgets/settings_back_button.dart';
 import '../../data/memory_data_providers.dart';
 import '../../domain/models/memory.dart';
@@ -181,10 +181,10 @@ class _MemoryEditor extends HookConsumerWidget {
                 : const SizedBox.shrink(),
           ),
           const Gap(AppSpacing.lg),
-          PrimaryButton(
+          AppPageButton(
             label: context.t.common.save,
             busy: busy.value,
-            onTap: save,
+            onPressed: save,
           ),
         ],
       ),

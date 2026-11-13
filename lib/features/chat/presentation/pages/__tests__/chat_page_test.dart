@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
-import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
+import 'package:selfbox/core/theme/message_tokens.dart';
+import 'package:selfbox/core/widgets/app_action_popover.dart';
 import 'package:selfbox/core/widgets/empty_state.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/pages/chat_page.dart';
@@ -11,6 +12,7 @@ import 'package:selfbox/features/chat/presentation/providers/chat_feed.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer.dart';
 import 'package:selfbox/features/chat/presentation/widgets/day_pill.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
+import 'package:selfbox/features/chat/presentation/widgets/message_image_stack.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -160,10 +162,11 @@ void main() {
 
       await tester.longPress(find.text('remove me'));
       await tester.pumpAndSettle();
-      expect(find.byType(AppActionDialog), findsOneWidget);
+      expect(find.byType(AppActionPopover), findsOneWidget);
+      expect(find.byType(Dialog), findsNothing);
       expect(find.text(t.common.copy), findsOneWidget);
 
-      await tester.tap(find.text(t.common.cancel));
+      await tester.tapAt(const Offset(24, 420));
       await tester.pumpAndSettle();
       expect(find.text('remove me'), findsOneWidget);
 
@@ -175,6 +178,37 @@ void main() {
 
       expect(find.text('remove me'), findsNothing);
       expect(find.byType(MessageBubble), findsNWidgets(3));
+    });
+
+    testWidgets('photo long press opens a matching popover and deletes it', (
+      tester,
+    ) async {
+      await tester.pumpApp(
+        messages: FakeMessageRepository(
+          seed: [
+            testMessage(1, '', images: ['media/missing.jpg']),
+          ],
+        ),
+      );
+      final photo = find.byType(MessageImageStack);
+      final anchor = tester.getCenter(photo);
+      await tester.longPressAt(anchor);
+      await tester.pumpAndSettle();
+      expect(find.byType(Dialog), findsNothing);
+      expect(find.text(t.common.copy), findsNothing);
+      final surface = find.byKey(const ValueKey('app-popover-surface'));
+      final decoration =
+          tester.widget<DecoratedBox>(surface).decoration as BoxDecoration;
+      expect(
+        decoration.borderRadius,
+        BorderRadius.circular(MessageTokens.imageFrameRadius),
+      );
+      expect(tester.getRect(surface).bottom, closeTo(anchor.dy - 8, 1));
+      await tester.tap(find.text(t.common.delete));
+      await tester.pumpAndSettle();
+      expect(photo, findsNothing);
+      expect(find.byType(AppActionPopover), findsNothing);
+      expect(tester.takeException(), isNull);
     });
   });
 }

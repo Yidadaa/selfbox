@@ -246,7 +246,7 @@ test/
 
 ### 4.3 Dialog 专用规范
 
-- 所有确认弹窗使用 `AppConfirmDialog`，消息等多操作弹窗使用 `AppActionDialog`；业务页面只负责调用 `showDialog` 和传入已确定的文案、回调。Dialog 自身使用不透明主题表面和项目 Token，不启用 Liquid Glass shader 或实时模糊。
+- 所有确认弹窗使用 `AppConfirmDialog`，其他多操作弹窗使用 `AppActionDialog`；消息长按操作是例外，必须使用锚定触摸位置的 `AppPopoverRegion` / `AppActionPopover`，纯白实心背景、主题 Token 扩散阴影、与卡片相同圆角及 Hugeicons + 文字项，禁止退回 Dialog。消息文本长按应保留选区复制，并复用 `AppSelectionPopover`。Dialog 自身使用不透明主题表面和项目 Token，不启用 Liquid Glass shader 或实时模糊。
 - **禁止使用 `liquid_glass_widgets` 的 Liquid Dialog、`showGlassActionSheet`、`GlassActionSheet`，也禁止业务页面直接构造 `AlertDialog` / `CupertinoAlertDialog` / 裸 `Dialog`。**新增 Dialog 样式先扩展 `lib/core/widgets/` 的自有组件并覆盖明暗主题与交互测试。
 - 所有自定义 Dialog 和 Bottom Sheet 内的保存、取消、确认、删除等操作统一使用 `AppActionButton`；纯图标操作使用 `AppActionIconButton`。按钮采用胶囊圆角、至少 48dp 高触控区和主题派生的实色低对比度描边，按 primary、secondary、destructive 区分语义；禁止渐变描边、高对比度描边以及业务层直接使用 Material 按钮拼出另一套样式。
 - Bottom Sheet + Picker 是选择器，不属于 Dialog；保留其独立交互。弹窗 builder 不得在页面可能卸载后通过外层页面 `BuildContext` 读取主题或翻译，打开弹窗前先取得所需值。
@@ -255,7 +255,7 @@ test/
 
 - 可复用的应用 UI 原子组件集中在 `lib/core/widgets/`，并在“我的 > 开发工具 > 组件库 UI”提供可运行的组件预览；新增共享组件时同步增加预览和同级 `__tests__` 测试。
 - 组件预览必须使用真实组件和当前主题 Token，至少覆盖明暗主题相关样式、禁用态或危险态等存在的变体；弹窗预览调用自建 Dialog，不在展示页另造一套样式。
-- `AppActionButton` 与 `AppActionIconButton` 是弹层和表单 action 的唯一共享按钮入口；新增 action 语义优先扩展其主题变体，不在业务页面复制按钮装饰参数。
+- `AppActionButton` 与 `AppActionIconButton` 是弹层 action 的唯一共享按钮入口，保持现有样式；页面内部全宽主按钮（保存、删除、添加等）统一使用 `AppPageButton`，以 standard 档 `GlassButton` 普通玻璃效果为默认并遵从全局渲染偏好。禁止页面与浮层混用入口或在业务层复制按钮装饰参数。
 
 ### 4.5 Hugeicons 唯一图标来源（强制）
 

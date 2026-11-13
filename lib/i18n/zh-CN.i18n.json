@@ -59,7 +59,9 @@
     "componentLibrary": "组件库 UI",
     "componentLibraryDescription": "查看和验收小懒的公共组件",
     "componentLibraryArtwork": "品牌素材",
-    "componentLibraryButtons": "统一 Action Button",
+    "componentLibraryButtons": "浮层操作按钮",
+    "componentLibraryPageButtons": "页面主按钮",
+    "componentLibraryPopover": "消息菜单",
     "componentLibraryDialog": "查看 Dialog 按钮规范",
     "componentLibraryConfirmDialog": "查看确认 Dialog",
     "componentLibraryTile": "列表项",
@@ -102,6 +104,7 @@
   },
   "common": {
     "copy": "复制",
+    "selectAll": "全选",
     "delete": "删除",
     "cancel": "取消",
     "retry": "重试",
