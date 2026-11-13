@@ -146,3 +146,4 @@
 - [2026-11-13] [IllustratedState] Chat 错误态触发布局异常 -> SliverFillRemaining 无滚动体会查询 LayoutBuilder 的 intrinsic 尺寸 -> 可自适应滚动的错误态直接在约束后的 Padding 内布局，避免 intrinsic 依赖；无界列表内不嵌套 ScrollView。
 - [2026-11-13] [ScreenshotTheme] 截图夹具报 Provider 重复覆盖 -> pumpApp 已注入初始偏好 -> 明暗截图通过测试平台亮度切换，不重复覆盖 initialAppPreferencesProvider。
 - [2026-11-14] [WelcomeMascot] 键盘完全收起时输入 Dock 再次变高 -> 插画尺寸仅依赖 inset，晚于输入框失焦恢复 -> 插画与输入框共同依据 keyboardOpen && focusNode.hasFocus 切换布局。
+- [2026-11-14] [Arm64APK] 仅指定 target-platform android-arm64 的 APK 仍含其他 ABI -> AAR 依赖的 JNI 文件未被该参数过滤 -> arm64 交付必须同时使用 --split-per-abi，并用 aapt 核验所有 lib 路径。
