@@ -50,7 +50,7 @@ List<Override> testAppOverrides({
   accountRepositoryProvider.overrideWithValue(
     account ?? FakeAccountRepository(),
   ),
-  appVersionProvider.overrideWith((ref) async => '0.1.0 (1)'),
+  appVersionProvider.overrideWith((ref) async => '0.3.0 (3)'),
   appPathsProvider.overrideWithValue(paths ?? createTempAppPaths()),
   messageRepositoryProvider.overrideWithValue(
     messages ?? FakeMessageRepository(),

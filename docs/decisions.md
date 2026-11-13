@@ -301,3 +301,21 @@
 - **背景**：自定义 Dialog 和设置 Sheet 中的确认、取消、保存、删除操作使用了多种 Material 按钮，圆角、触控高度与边框对比度不一致；共享组件缺少集中预览入口。
 - **决策**：`AppActionButton` 与 `AppActionIconButton` 统一承载弹层和表单 action，提供 primary、secondary、destructive 主题变体，采用胶囊圆角、48dp 最小触控区和主题派生的低对比度纯色描边。所有共享 UI 原子组件在“我的 > 开发工具 > 组件库 UI”提供真实组件预览。
 - **影响**：Dialog / Sheet 中不再直接构造 Material action button；新增共享组件需要补充预览与同级 Widget 测试，并覆盖适用的明暗主题和语义变体。
+
+### [ADR-046] 提交前统一格式化 Dart 代码
+
+- **背景**：提交前若只格式化局部文件，未格式化的 Dart 代码可能进入版本库，导致代码风格和审查结果不一致。
+- **决策**：每次 `git commit` 前必须在仓库根目录使用本地工具链执行 `.\\tools\\flutter\\bin\\dart.bat format .`，覆盖项目全部 Dart 代码，并在提交前检查格式化产生的 diff。
+- **影响**：后续修改或代码生成完成后若再次产生 Dart 变更，必须重新执行全量格式化；格式化失败时不得提交。
+
+### [ADR-047] Asset kit 品牌与状态插画
+
+- **背景**：用户要求使用已有 asset-kit 统一应用 Logo、头像及状态页；本次明确需求替代 ADR-028 对这些页面仅用纯文本的约定。
+- **决策**：原始素材保留在 docs/design，prepare_brand_assets.dart 生成按显示尺寸缩小的透明 PNG、各平台图标及 Android/iOS 启动素材。AppArtwork 通过 FlutterGen 类型化引用、固定布局与按 DPR 限制解码；EmptyState 按可用高度缩放插画并允许滚动。欢迎页保留三条临时气泡，错误消息的行内操作保持原交互。
+- **影响**：Android/iOS 使用同一小狗品牌与明暗启动底色，未新增权限；空状态与真实内容共用主题文本，组件库展示全部素材。修改源素材后需重新运行生成脚本。
+
+### [ADR-048] Overlay 默认正文样式
+
+- **背景**：GlassToast.show 创建独立 OverlayEntry，只捕获玻璃及 Cupertino 主题；文本局部样式继承 MaterialApp 的黄色双下划线回退值。
+- **决策**：在 MaterialApp.builder 中给 Navigator 及其 Overlay 提供主题 bodyMedium DefaultTextStyle，明确 decoration:none；保留 Liquid Glass Toast 的位置、交互、动画与自动关闭。
+- **影响**：所有现有 Toast 调用直接获修复，无需修改依赖缓存；真实应用测试覆盖全部 Toast 类型和明暗主题的最终 RichText 样式及退场。

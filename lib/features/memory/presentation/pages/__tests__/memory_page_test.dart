@@ -27,7 +27,8 @@ void main() {
   group('MemoryPage', () {
     testWidgets('offers creation without an empty-state card', (tester) async {
       await _openMemoryTab(tester, FakeMemoryRepository());
-      expect(find.byType(EmptyState), findsNothing);
+      expect(find.byType(EmptyState), findsOneWidget);
+      expect(find.text(t.memory.empty), findsOneWidget);
       expect(find.byKey(const ValueKey('add-memory')), findsOneWidget);
       expect(
         tester.widget<Text>(find.text(t.memory.add)).style,
@@ -238,7 +239,8 @@ void main() {
 
       expect(memory.contentOf('user/profile.md'), isNull);
       expect(find.byType(MemoryFilePage), findsNothing);
-      expect(find.byType(EmptyState), findsNothing);
+      expect(find.byType(EmptyState), findsOneWidget);
+      expect(find.text(t.memory.empty), findsOneWidget);
     });
 
     testWidgets('an unknown file shows the missing state', (tester) async {

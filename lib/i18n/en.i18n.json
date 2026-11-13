@@ -30,6 +30,7 @@
   },
   "memory": {
     "title": "Memory",
+    "empty": "No memories yet",
     "rootFolder": "General",
     "deleted": "Deleted",
     "missing": "File not found",
@@ -56,6 +57,7 @@
     "developer": "Developer",
     "componentLibrary": "Component library UI",
     "componentLibraryDescription": "Preview and validate Selfbox shared components",
+    "componentLibraryArtwork": "Brand artwork",
     "componentLibraryButtons": "Shared action buttons",
     "componentLibraryDialog": "Preview dialog actions",
     "componentLibraryConfirmDialog": "Preview confirmation dialog",

@@ -192,6 +192,6 @@ void main() {
     final container = await tester.pumpApp();
     container.read(appRouterProvider).go('/me/about');
     await tester.pumpAndSettle();
-    expect(find.text('0.1.0 (1)'), findsOneWidget);
+    expect(find.text('0.3.0 (3)'), findsOneWidget);
   });
 }

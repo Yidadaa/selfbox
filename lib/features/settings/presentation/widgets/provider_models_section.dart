@@ -5,9 +5,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/error/failure_message.dart';
+import '../../../../core/theme/app_artwork_tokens.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_action_button.dart';
+import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -57,7 +59,11 @@ class ProviderModelsSection extends HookConsumerWidget {
         if (added.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
-            child: EmptyState(label: context.t.settings.provider.noAddedModels),
+            child: EmptyState(
+              label: context.t.settings.provider.noAddedModels,
+              illustration: BrandArt.empty,
+              illustrationSize: AppArtworkTokens.compact,
+            ),
           )
         else
           GlassGroupedSection(

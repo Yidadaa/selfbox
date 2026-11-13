@@ -7,12 +7,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/error/failure_message.dart';
+import '../../../../core/theme/app_artwork_tokens.dart';
 import '../../../../core/theme/app_dialog_tokens.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_action_button.dart';
+import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/ai_settings.dart';
@@ -161,6 +163,10 @@ class ModelSelectionSheet extends HookConsumerWidget {
               Expanded(
                 child: filtered.isEmpty
                     ? EmptyState(
+                        illustration: query.value.trim().isEmpty
+                            ? BrandArt.empty
+                            : BrandArt.search,
+                        illustrationSize: AppArtworkTokens.feedback,
                         label: query.value.trim().isEmpty
                             ? context.t.settings.provider.noAvailableModels
                             : context.t.settings.provider.noSearchResults,

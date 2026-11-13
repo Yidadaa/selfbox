@@ -15,6 +15,7 @@ import '../../../../core/forms/glass_reactive_text_field.dart';
 import '../../../../core/forms/luthor_validator.dart';
 import '../../../../core/theme/app_markdown_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_markdown_builders.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
@@ -40,8 +41,10 @@ class MemoryEditorPage extends ConsumerWidget {
       body: switch (file) {
         null => const _MemoryEditor(),
         AsyncData(value: Some(:final value)) => _MemoryEditor(file: value),
-        AsyncData(value: None()) ||
-        AsyncError() => EmptyState(label: context.t.memory.missing),
+        AsyncData(value: None()) || AsyncError() => EmptyState(
+          label: context.t.memory.missing,
+          illustration: BrandArt.error,
+        ),
         AsyncLoading() => const SizedBox.expand(),
       },
     );

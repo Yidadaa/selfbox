@@ -13,6 +13,7 @@ import '../../../../core/forms/luthor_validator.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
@@ -46,7 +47,10 @@ class ProviderPage extends ConsumerWidget {
             ? AppPageScaffold(
                 title: t.settings.provider.title,
                 leading: const _BackButton(),
-                body: EmptyState(label: t.settings.errors.generic),
+                body: EmptyState(
+                  label: t.settings.errors.generic,
+                  illustration: BrandArt.error,
+                ),
               )
             : _ProviderForm(
                 existing: id == null ? null : s.providerOf(id),
@@ -55,7 +59,10 @@ class ProviderPage extends ConsumerWidget {
       (AsyncError(), _) || (_, AsyncError()) => AppPageScaffold(
         title: t.settings.provider.title,
         leading: const _BackButton(),
-        body: EmptyState(label: t.settings.errors.generic),
+        body: EmptyState(
+          label: t.settings.errors.generic,
+          illustration: BrandArt.error,
+        ),
       ),
       _ => AppPageScaffold(
         title: t.settings.provider.title,

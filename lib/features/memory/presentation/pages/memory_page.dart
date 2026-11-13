@@ -10,6 +10,7 @@ import '../../../../core/router/shell_scope.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/time/clock.dart';
+import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -30,6 +31,7 @@ class MemoryPage extends ConsumerWidget {
           switch (folders) {
             AsyncData(:final value) => _FolderList(folders: value),
             AsyncError() => EmptyState(
+              illustration: BrandArt.error,
               label: context.t.common.loadFailed,
               action: GlassButton.custom(
                 height: AppSizes.minTouchTarget,
@@ -104,6 +106,20 @@ class _FolderList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (folders.isEmpty) {
+      return Padding(
+        padding: AppPageInsets.of(context).copyWith(
+          bottom:
+              ShellScope.bottomInsetOf(context) +
+              AppSizes.minTouchTarget +
+              AppSpacing.xxl,
+        ),
+        child: EmptyState(
+          label: context.t.memory.empty,
+          illustration: BrandArt.files,
+        ),
+      );
+    }
     return ListView.separated(
       padding: AppPageInsets.of(context).copyWith(
         bottom:

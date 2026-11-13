@@ -8,6 +8,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/time/clock.dart';
+import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -57,6 +58,7 @@ class ChatTimelineView extends HookConsumerWidget {
       AsyncError() => _ChatPlaceholder(
         bottomPadding: bottomPadding,
         child: EmptyState(
+          illustration: BrandArt.error,
           label: context.t.common.loadFailed,
           action: GlassButton.custom(
             onTap: () => ref.invalidate(chatMessagesProvider),
@@ -86,19 +88,15 @@ class _ChatPlaceholder extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => CustomScrollView(
-    slivers: [
-      SliverPadding(
-        padding: EdgeInsets.only(
-          top: AppPageInsets.of(
-            context,
-            appBarHeight: AppSizes.chatHeaderHeight,
-          ).top,
-          bottom: bottomPadding,
-        ),
-        sliver: SliverFillRemaining(hasScrollBody: false, child: child),
-      ),
-    ],
+  Widget build(BuildContext context) => Padding(
+    padding: EdgeInsets.only(
+      top: AppPageInsets.of(
+        context,
+        appBarHeight: AppSizes.chatHeaderHeight,
+      ).top,
+      bottom: bottomPadding,
+    ),
+    child: child,
   );
 }
 

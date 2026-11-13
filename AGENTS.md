@@ -357,7 +357,10 @@ TaskEither<AppFailure, Unit> syncSnapshot() {
      2. `flutter analyze`（确认 **0 issues**）
      3. `flutter test`（确认 `test/all_tests.dart` 桥接的所有同级 `__tests__` 用例 **100% 通过**）
    - 遇到任何报错、陷阱或返工，修正后**立即追加一行高信息熵总结到 `docs/mistakes.md`**。
-5. 每次完成一个完整的模块或者功能，都要 commit 一次，必须使用 `verb: desc` 的 msg 格式。
+5. **Step 5 - 提交前全量格式化（强制）**：
+   - 每次执行 `git commit` 前，必须先在仓库根目录运行 `.\tools\flutter\bin\dart.bat format .`，使用 formatter 格式化项目全部 Dart 代码（包括测试与生成代码），禁止仅格式化本次修改的文件或跳过此步骤。
+   - 格式化必须成功完成；检查格式化产生的 diff，并将应提交的格式化结果纳入暂存区后，才可执行 commit。若之后再次修改或生成代码，必须重新执行全量格式化。
+6. 每次完成一个完整的模块或者功能，都要 commit 一次，必须使用 `verb: desc` 的 msg 格式。
 
 ## 9. 工具链
 

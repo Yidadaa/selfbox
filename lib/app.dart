@@ -33,6 +33,12 @@ class SelfboxApp extends ConsumerWidget {
       supportedLocales: AppLocaleUtils.supportedLocales,
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       scrollBehavior: const AppScrollBehavior(),
+      // Overlay entries sit outside page Materials and need their own baseline.
+      builder: (context, child) => DefaultTextStyle(
+        style: (Theme.of(context).textTheme.bodyMedium ?? const TextStyle())
+            .copyWith(decoration: TextDecoration.none),
+        child: child ?? const SizedBox.shrink(),
+      ),
       routerConfig: ref.watch(appRouterProvider),
     );
   }

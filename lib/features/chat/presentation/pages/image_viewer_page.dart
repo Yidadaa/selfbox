@@ -9,6 +9,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../data/chat_data_providers.dart';
@@ -241,6 +242,7 @@ class _ViewerImage extends ConsumerWidget {
     final file = ref.watch(mediaStoreProvider).resolve(path).toNullable();
     return file == null
         ? EmptyState(
+            illustration: BrandArt.error,
             label: context.t.chat.imageFailed,
             color: AppGlassTheme.dark.foregroundMuted,
           )
@@ -250,6 +252,7 @@ class _ViewerImage extends ConsumerWidget {
               child: Image.file(
                 file,
                 errorBuilder: (_, _, _) => EmptyState(
+                  illustration: BrandArt.error,
                   label: context.t.chat.imageFailed,
                   color: AppGlassTheme.dark.foregroundMuted,
                 ),

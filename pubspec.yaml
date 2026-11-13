@@ -1,7 +1,7 @@
 name: selfbox
 description: "Selfbox — a private, mobile-first personal space built with Flutter."
 publish_to: 'none'
-version: 0.2.0+2
+version: 0.3.0+3
 
 environment:
   sdk: ^3.13.7
@@ -78,6 +78,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/brand/
 
 # Code generation outputs are redirected into lib/gen (ADR-002).
 flutter_gen:

@@ -12,6 +12,7 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_markdown_theme.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../../core/widgets/app_markdown_builders.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
@@ -67,8 +68,10 @@ class MemoryFilePage extends ConsumerWidget {
         AsyncData(value: Some(:final value)) => _MarkdownBody(
           content: value.content,
         ),
-        AsyncData(value: None()) ||
-        AsyncError() => EmptyState(label: t.memory.missing),
+        AsyncData(value: None()) || AsyncError() => EmptyState(
+          label: t.memory.missing,
+          illustration: BrandArt.files,
+        ),
         AsyncLoading() => const Skeletonizer(
           child: _MarkdownBody(content: '# Placeholder\n\nLoading content…'),
         ),

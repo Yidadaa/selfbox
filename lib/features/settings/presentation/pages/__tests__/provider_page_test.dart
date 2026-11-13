@@ -65,7 +65,9 @@ void main() {
       },
     );
 
-    testWidgets('no models shows only unframed small text', (tester) async {
+    testWidgets('no models shows an unframed illustrated placeholder', (
+      tester,
+    ) async {
       await openSettingsPage(
         tester,
         '/me/provider?id=p1',
@@ -201,6 +203,8 @@ void main() {
         ),
       );
 
+      await tester.ensureVisible(find.text(t.settings.provider.fetchModels));
+      await tester.pumpAndSettle();
       await tester.tap(find.text(t.settings.provider.fetchModels));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));

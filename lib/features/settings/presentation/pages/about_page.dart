@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../../core/theme/app_artwork_tokens.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
-import '../../../../gen/assets/assets.gen.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../providers/account_providers.dart';
 import '../widgets/primary_button.dart';
@@ -22,9 +23,8 @@ class AboutPage extends ConsumerWidget {
         padding: AppPageInsets.of(context),
         children: [
           const Gap(AppSpacing.xxl),
-          Assets.images.logo.svg(
-            width: AppSizes.profileAvatar,
-            height: AppSizes.profileAvatar,
+          const Center(
+            child: AppArtwork(BrandArt.logo, size: AppArtworkTokens.logo),
           ),
           const Gap(AppSpacing.xl),
           Text(

@@ -5,9 +5,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import '../../../../core/error/app_failure.dart';
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -51,6 +53,9 @@ class MessageSearchPage extends HookConsumerWidget {
             child: switch (result) {
               AsyncData(:final value) => value.match(
                 (failure) => EmptyState(
+                  illustration: failure is NetworkFailure
+                      ? BrandArt.offline
+                      : BrandArt.error,
                   label: failureMessage(context, failure),
                   action: GlassButton.custom(
                     onTap: () => ref.invalidate(
@@ -75,6 +80,7 @@ class MessageSearchPage extends HookConsumerWidget {
                 child: Skeletonizer(child: _SearchResultSkeleton()),
               ),
               AsyncError() => EmptyState(
+                illustration: BrandArt.error,
                 label: context.t.settings.errors.generic,
                 action: GlassButton.custom(
                   onTap: () =>
@@ -108,10 +114,16 @@ class _SearchResults extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (query.trim().isEmpty) {
-      return EmptyState(label: context.t.chat.searchPrompt);
+      return EmptyState(
+        label: context.t.chat.searchPrompt,
+        illustration: BrandArt.search,
+      );
     }
     if (messages.isEmpty) {
-      return EmptyState(label: context.t.chat.noSearchResults);
+      return EmptyState(
+        label: context.t.chat.noSearchResults,
+        illustration: BrandArt.search,
+      );
     }
     return ListView.separated(
       padding: EdgeInsets.fromLTRB(

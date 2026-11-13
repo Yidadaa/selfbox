@@ -11,6 +11,7 @@ import '../../../../core/forms/luthor_validator.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
@@ -49,7 +50,10 @@ class ModelPage extends ConsumerWidget {
       _ => AppPageScaffold(
         title: modelId,
         leading: const _Back(),
-        body: EmptyState(label: context.t.settings.errors.generic),
+        body: EmptyState(
+          label: context.t.settings.errors.generic,
+          illustration: BrandArt.error,
+        ),
       ),
     };
   }

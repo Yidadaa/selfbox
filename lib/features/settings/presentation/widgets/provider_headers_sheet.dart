@@ -5,12 +5,14 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+import '../../../../core/theme/app_artwork_tokens.dart';
 import '../../../../core/theme/app_dialog_tokens.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_action_button.dart';
+import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
 
@@ -145,7 +147,11 @@ class ProviderHeadersSheet extends HookWidget {
               ),
               Expanded(
                 child: rows.value.isEmpty
-                    ? EmptyState(label: context.t.settings.provider.noHeaders)
+                    ? EmptyState(
+                        label: context.t.settings.provider.noHeaders,
+                        illustration: BrandArt.empty,
+                        illustrationSize: AppArtworkTokens.compact,
+                      )
                     : ListView.separated(
                         padding: const EdgeInsets.fromLTRB(
                           AppSpacing.md,

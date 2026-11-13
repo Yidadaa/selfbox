@@ -139,3 +139,9 @@
 - [2026-11-13] [AiGlow] 动画中珊瑚色移出后只剩冷色，显得塑料 -> 暖色中心摆幅超过自身边缘距离且颜色叠加太浓 -> 暖色锚点固定在左侧第三分区、降低透明度，并对紧凑/完整高度扫描整个循环相位。
 - [2026-11-13] [Screenshot] 组件库新预览文字显示为红色裁切块 -> 裸 Text 未继承正文主题 -> 自绘控制内的 Text 必须显式取主题 TextStyle，生成截图后逐张验收。
 - [2026-11-13] [SheetActions] 320dp 模型选择器标题行右侧溢出 20dp -> 两个按内容取宽的文字动作挤满整行 -> 关闭使用共享图标按钮，确认动作受 Flexible 宽度约束，标题单行截断并验证操作区边界。
+- [2026-11-13] [ToastTypography] Toast 文本出现黄色双下划线 -> Overlay 在页面 Material 之外，局部 TextStyle 继承 MaterialApp 错误样式 -> Navigator 上方显式提供主题 DefaultTextStyle，并断言最终 RichText 样式。
+- [2026-11-13] [ArtworkTest] 插画尺寸测试得到全屏大小，搜索路由找不到素材 -> 根 home 强约束与误用路由字面量 -> 独立插画测试用 Center 解除紧约束，页面测试核对强类型路由。
+- [2026-11-13] [BrandLint] 插画批量接入后 import 顺序和单行条件触发 lint -> 自动插入未遵守现有排序和大括号规范 -> 格式化之外仍需运行 analyzer 并修正静态检查。
+- [2026-11-13] [DartFix] dart fix 把同级测试的 flutter_test 移成 hosted any，导致求解失败 -> 自动 dependency 修复不适配本项目 lib 内测试约定 -> 审查 pubspec diff，flutter_test 必须保留 dev_dependencies 的 sdk:flutter。
+- [2026-11-13] [IllustratedState] Chat 错误态触发布局异常 -> SliverFillRemaining 无滚动体会查询 LayoutBuilder 的 intrinsic 尺寸 -> 可自适应滚动的错误态直接在约束后的 Padding 内布局，避免 intrinsic 依赖；无界列表内不嵌套 ScrollView。
+- [2026-11-13] [ScreenshotTheme] 截图夹具报 Provider 重复覆盖 -> pumpApp 已注入初始偏好 -> 明暗截图通过测试平台亮度切换，不重复覆盖 initialAppPreferencesProvider。

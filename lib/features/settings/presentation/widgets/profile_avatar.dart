@@ -5,8 +5,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path/path.dart' as p;
 
 import '../../../../core/storage/app_paths.dart';
-import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_artwork.dart';
 
 class ProfileAvatar extends ConsumerWidget {
   const ProfileAvatar({
@@ -21,28 +21,23 @@ class ProfileAvatar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final relative = path;
     final valid = relative != null && p.posix.dirname(relative) == 'media';
-    return ClipOval(
-      child: ColoredBox(
-        color: context.glass.foreground,
-        child: SizedBox.square(
-          dimension: dimension,
-          child:
-              valid
-                  ? Image.file(
-                    File(
-                      p.join(
-                        ref.watch(appPathsProvider).media.path,
-                        p.posix.basename(relative),
-                      ),
-                    ),
-                    fit: BoxFit.cover,
-                    cacheWidth: 256,
-                    errorBuilder:
-                        (_, error, stack) => _Placeholder(dimension: dimension),
-                  )
-                  : _Placeholder(dimension: dimension),
-        ),
-      ),
+    return SizedBox.square(
+      dimension: dimension,
+      child: valid
+          ? Image.file(
+              File(
+                p.join(
+                  ref.watch(appPathsProvider).media.path,
+                  p.posix.basename(relative),
+                ),
+              ),
+              fit: BoxFit.cover,
+              cacheWidth: 256,
+              frameBuilder: (_, child, _, _) => ClipOval(child: child),
+              errorBuilder: (_, error, stack) =>
+                  _Placeholder(dimension: dimension),
+            )
+          : _Placeholder(dimension: dimension),
     );
   }
 }
@@ -54,5 +49,5 @@ class _Placeholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      Icon(Icons.face_5, size: dimension * 0.6, color: context.glass.accent);
+      AppArtwork(BrandArt.avatar, size: dimension);
 }
