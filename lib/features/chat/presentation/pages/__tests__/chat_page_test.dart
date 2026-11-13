@@ -31,6 +31,7 @@ import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_image_stack.dart';
 import 'package:selfbox/features/chat/presentation/widgets/outgoing_message_entrance.dart';
 import 'package:selfbox/features/chat/presentation/widgets/welcome_timeline.dart';
+import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 import 'package:selfbox/features/settings/presentation/pages/me_page.dart';
 import 'package:selfbox/features/settings/presentation/pages/profile_page.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
@@ -334,7 +335,7 @@ void main() {
     testWidgets('puts my notes on the right and AI replies on the left', (
       tester,
     ) async {
-      await tester.pumpApp(
+      final container = await tester.pumpApp(
         messages: FakeMessageRepository(
           seed: [
             _msg(1, 'mine'),
@@ -342,6 +343,9 @@ void main() {
           ],
         ),
       );
+
+      container.read(composerControllerProvider.notifier).toggleAiMode();
+      await tester.pump(const Duration(milliseconds: 600));
 
       final width =
           tester.view.physicalSize.width / tester.view.devicePixelRatio;
@@ -367,11 +371,13 @@ void main() {
     });
 
     testWidgets('marks notes that were sent to the AI', (tester) async {
-      await tester.pumpApp(
+      final container = await tester.pumpApp(
         messages: FakeMessageRepository(
           seed: [_msg(1, 'plain'), _msg(2, 'asked').copyWith(askedAi: true)],
         ),
       );
+      container.read(composerControllerProvider.notifier).toggleAiMode();
+      await tester.pump(const Duration(milliseconds: 600));
       // Filled sparkle = AI question mark (the composer toggle is outlined).
       expect(
         find.descendant(
@@ -468,14 +474,82 @@ void main() {
       tester,
     ) async {
       final messages = FakeMessageRepository(seed: [_msg(1, 'older')]);
-      await tester.pumpApp(messages: messages);
+      final container = await tester.pumpApp(messages: messages);
+      container.read(composerControllerProvider.notifier).toggleAiMode();
+      await tester.pump(const Duration(milliseconds: 600));
       await messages
           .add(const MessageDraft(author: MessageAuthor.ai, text: 'reply'))
           .run();
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 600));
 
       expect(find.byType(OutgoingMessageEntrance), findsNothing);
       expect(find.text('reply', findRichText: true), findsOneWidget);
+    });
+
+    testWidgets('folds AI exchanges and opens them from the summary', (
+      tester,
+    ) async {
+      final day = kTestNow;
+      final messages = FakeMessageRepository(
+        seed: [
+          _msg(1, 'ordinary before', at: day),
+          _msg(2, 'first question', at: day).copyWith(askedAi: true),
+          _msg(3, 'first answer', author: MessageAuthor.ai, at: day),
+          _msg(4, 'second question', at: day).copyWith(askedAi: true),
+          _msg(5, 'second answer', author: MessageAuthor.ai, at: day),
+          _msg(6, 'ordinary after', at: day),
+        ],
+      );
+      final container = await tester.pumpApp(messages: messages);
+      final summary = t.chat.hiddenAiGroups(count: 2);
+
+      expect(find.text(summary), findsOneWidget);
+      expect(find.text('ordinary before'), findsOneWidget);
+      expect(find.text('ordinary after'), findsOneWidget);
+      expect(find.text('first question'), findsNothing);
+      expect(find.text('first answer', findRichText: true), findsNothing);
+
+      final summaryX = tester.getTopLeft(find.text(summary)).dx;
+      await tester.tap(find.byKey(const ValueKey('hidden-ai-group')));
+      await tester.pump();
+      expect(container.read(composerControllerProvider).aiMode, isTrue);
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.text(summary), findsOneWidget);
+      expect(find.text('first answer', findRichText: true), findsOneWidget);
+      expect(
+        tester.getTopLeft(find.text('first answer', findRichText: true)).dx,
+        closeTo(summaryX, AppSpacing.md),
+      );
+      await tester.pump(const Duration(milliseconds: 600));
+      expect(find.text(summary), findsNothing);
+      expect(find.text('first question'), findsOneWidget);
+      expect(find.text('second question'), findsOneWidget);
+
+      container.read(composerControllerProvider.notifier).toggleAiMode();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.text(summary), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 600));
+      expect(find.text(summary), findsOneWidget);
+      expect(find.text('first question'), findsNothing);
+      expect(find.text('first answer', findRichText: true), findsNothing);
+      expect(find.byType(OutgoingMessageEntrance), findsNothing);
+    });
+
+    testWidgets('folded AI messages switch immediately with animations off', (
+      tester,
+    ) async {
+      final container = await tester.pumpApp(
+        initialPreferences: const AppPreferences(animationsEnabled: false),
+        messages: FakeMessageRepository(
+          seed: [_msg(1, 'question').copyWith(askedAi: true)],
+        ),
+      );
+      expect(find.text(t.chat.hiddenAiGroups(count: 1)), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('hidden-ai-group')));
+      await tester.pump();
+      expect(container.read(composerControllerProvider).aiMode, isTrue);
+      expect(find.text('question'), findsOneWidget);
+      expect(find.text(t.chat.hiddenAiGroups(count: 1)), findsNothing);
     });
 
     testWidgets('the first sent message enters after welcome', (tester) async {

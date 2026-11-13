@@ -17,6 +17,7 @@ import '../providers/chat_feed.dart';
 import '../providers/chat_timeline.dart';
 import '../providers/composer_controller.dart';
 import 'assistant_status_bubble.dart';
+import 'chat_ai_group_row.dart';
 import 'chat_timeline_message_row.dart';
 import 'chat_timeline_skeleton.dart';
 import 'day_pill.dart';
@@ -39,7 +40,15 @@ class ChatTimelineView extends HookConsumerWidget {
     );
     ref.listen(assistantReplyEventProvider, (previous, next) {
       if (next == null || next == previous) return;
+      if (!ref.read(composerControllerProvider).aiMode) return;
       enteringIds.value = Set.unmodifiable({...enteringIds.value, next});
+    });
+    ref.listen(composerControllerProvider.select((state) => state.aiMode), (
+      previous,
+      next,
+    ) {
+      if (next) return;
+      enteringIds.value = const {};
     });
 
     final feed = ref.watch(chatFeedProvider);
@@ -102,6 +111,9 @@ class _ChatPlaceholder extends StatelessWidget {
 
 Key _timelineKey(ChatTimelineItem item) => switch (item) {
   TimelineMessage(:final message) => ValueKey<int>(message.id),
+  TimelineAiGroup(:final messages) => ValueKey<String>(
+    'ai-group-${messages.last.id}',
+  ),
   TimelineDay(:final day) => ValueKey<DateTime>(day),
 };
 
@@ -122,7 +134,11 @@ class _Timeline extends HookWidget {
   Widget build(BuildContext context) {
     final scrollController = useScrollController();
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
-    final newest = feed.items.whereType<TimelineMessage>().firstOrNull?.message;
+    final newest = switch (feed.items.firstOrNull) {
+      TimelineMessage(:final message) => message,
+      TimelineAiGroup(:final messages) => messages.first,
+      TimelineDay() || null => null,
+    };
     final scrollTo = newest != null && enteringIds.contains(newest.id)
         ? newest.id
         : null;
@@ -180,8 +196,12 @@ class _TimelineList extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final now = ref.watch(clockProvider)();
     final assistant = ref.watch(assistantControllerProvider);
+    final aiMode = ref.watch(
+      composerControllerProvider.select((state) => state.aiMode),
+    );
+    final windowSize = ref.watch(chatWindowProvider);
     final requestedFor = useRef(-1);
-    final lead = assistant is AssistantIdle ? 0 : 1;
+    final lead = !aiMode || assistant is AssistantIdle ? 0 : 1;
     final childIndices = <Key, int>{
       for (final (index, item) in feed.items.indexed)
         _timelineKey(item): index + lead,
@@ -189,10 +209,8 @@ class _TimelineList extends HookConsumerWidget {
 
     bool onScroll(ScrollNotification notification) {
       final nearOldest = notification.metrics.extentAfter < _loadMoreThreshold;
-      if (nearOldest &&
-          feed.hasMore &&
-          requestedFor.value != feed.items.length) {
-        requestedFor.value = feed.items.length;
+      if (nearOldest && feed.hasMore && requestedFor.value != windowSize) {
+        requestedFor.value = windowSize;
         ref.read(chatWindowProvider.notifier).loadMore();
       }
       return false;
@@ -230,6 +248,14 @@ class _TimelineList extends HookConsumerWidget {
                   entering: enteringIds.contains(message.id),
                   onEntered: () => onMessageEntered(message.id),
                 ),
+                TimelineAiGroup(:final messages, :final groupCount) =>
+                  ChatAiGroupRow(
+                    key: ValueKey<String>('ai-group-${messages.last.id}'),
+                    messages: messages,
+                    groupCount: groupCount,
+                    enteringIds: enteringIds,
+                    onMessageEntered: onMessageEntered,
+                  ),
               },
       ),
     );

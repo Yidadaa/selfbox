@@ -5,8 +5,15 @@ import 'package:selfbox/features/chat/presentation/providers/chat_timeline.dart'
 Message _m(int id, DateTime at) =>
     Message(id: id, createdAt: at, author: MessageAuthor.me, text: '$id');
 
+Message _question(int id, DateTime at) => _m(id, at).copyWith(askedAi: true);
+
+Message _answer(int id, DateTime at) =>
+    _m(id, at).copyWith(author: MessageAuthor.ai);
+
 String _describe(ChatTimelineItem item) => switch (item) {
   TimelineMessage(:final message) => 'm${message.id}',
+  TimelineAiGroup(:final messages, :final groupCount) =>
+    'ai$groupCount:${messages.map((message) => message.id).join(',')}',
   TimelineDay(:final day) => 'd${day.month}/${day.day}',
 };
 
@@ -53,6 +60,55 @@ void main() {
         () => items.add(ChatTimelineItem.day(DateTime(2026))),
         throwsUnsupportedError,
       );
+    });
+
+    test('combines adjacent AI exchanges and counts questions', () {
+      final day = DateTime(2026, 11, 12, 10);
+      final items = buildChatTimeline([
+        _answer(6, day),
+        _question(5, day),
+        _answer(4, day),
+        _question(3, day),
+        _m(2, day),
+        _m(1, day),
+      ]);
+      expect(items.map(_describe), ['ai2:6,5,4,3', 'm2', 'm1', 'd11/12']);
+      final group = items.first as TimelineAiGroup;
+      expect(() => group.messages.clear(), throwsUnsupportedError);
+    });
+
+    test('keeps separate AI groups around ordinary messages', () {
+      final day = DateTime(2026, 11, 12, 10);
+      final items = buildChatTimeline([
+        _answer(5, day),
+        _question(4, day),
+        _m(3, day),
+        _answer(2, day),
+        _question(1, day),
+      ]);
+      expect(items.map(_describe), ['ai1:5,4', 'm3', 'ai1:2,1', 'd11/12']);
+    });
+
+    test('counts orphan answers and a pending question', () {
+      final day = DateTime(2026, 11, 12, 10);
+      final items = buildChatTimeline([
+        _answer(3, day),
+        _answer(2, day),
+        _m(1, day),
+      ]);
+      expect(items.map(_describe), ['ai2:3,2', 'm1', 'd11/12']);
+      expect(buildChatTimeline([_question(4, day)]).map(_describe), [
+        'ai1:4',
+        'd11/12',
+      ]);
+    });
+
+    test('splits AI runs at calendar boundaries', () {
+      final items = buildChatTimeline([
+        _answer(2, DateTime(2026, 11, 13, 0, 1)),
+        _question(1, DateTime(2026, 11, 12, 23, 59)),
+      ]);
+      expect(items.map(_describe), ['ai1:2', 'd11/13', 'ai1:1', 'd11/12']);
     });
   });
 }

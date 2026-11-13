@@ -11,8 +11,10 @@ import 'package:selfbox/core/theme/app_markdown_theme.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/providers/assistant_controller.dart';
+import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
 import 'package:selfbox/features/chat/presentation/widgets/assistant_live_bubbles.dart';
 import 'package:selfbox/features/chat/presentation/widgets/assistant_status_bubble.dart';
+import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 import 'package:selfbox/features/settings/presentation/pages/ai_providers_page.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
@@ -37,6 +39,11 @@ class _FailedAssistant extends AssistantController {
 
   @override
   Future<void> retry() async => retries++;
+}
+
+class _AiComposer extends ComposerController {
+  @override
+  ComposerState build() => const ComposerState(aiMode: true);
 }
 
 class _Fixture extends ConsumerWidget {
@@ -219,11 +226,13 @@ void main() {
       tester,
     ) async {
       await tester.pumpApp(
+        initialPreferences: const AppPreferences(animationsEnabled: false),
         messages: FakeMessageRepository(seed: [_question]),
         overrides: [
           assistantControllerProvider.overrideWith(
             () => _FailedAssistant(failure),
           ),
+          composerControllerProvider.overrideWith(_AiComposer.new),
         ],
       );
       expect(find.byKey(_contentKey), findsOneWidget);

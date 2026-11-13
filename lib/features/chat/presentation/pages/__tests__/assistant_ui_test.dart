@@ -9,6 +9,7 @@ import 'package:selfbox/core/testing/scripted_language_model.dart';
 import 'package:selfbox/features/chat/domain/models/agent_activity.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/providers/assistant_controller.dart';
+import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
 import 'package:selfbox/features/chat/presentation/widgets/assistant_status_bubble.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
@@ -33,11 +34,17 @@ class _Fixed extends AssistantController {
   void show(AssistantState next) => state = next;
 }
 
+class _AiComposer extends ComposerController {
+  @override
+  ComposerState build() => const ComposerState(aiMode: true);
+}
+
 Future<void> _showState(WidgetTester tester, AssistantState state) =>
     tester.pumpApp(
       messages: FakeMessageRepository(seed: [_question]),
       overrides: [
         assistantControllerProvider.overrideWith(() => _Fixed(state)),
+        composerControllerProvider.overrideWith(_AiComposer.new),
       ],
       settle: false,
     );
@@ -118,6 +125,7 @@ void main() {
                   const AssistantState.working(AgentActivity.thinking()),
                 ),
               ),
+              composerControllerProvider.overrideWith(_AiComposer.new),
             ],
             settle: false,
           );

@@ -7,6 +7,7 @@ import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/features/chat/domain/models/agent_activity.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/providers/assistant_controller.dart';
+import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
 import 'package:selfbox/features/chat/presentation/widgets/assistant_status_bubble.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:selfbox/features/chat/presentation/widgets/outgoing_message_entrance.dart';
@@ -17,6 +18,11 @@ class _FinishingAssistant extends AssistantController {
       const AssistantState.working(AgentActivity.typing());
 
   void finish() => state = const AssistantState.idle();
+}
+
+class _AiComposer extends ComposerController {
+  @override
+  ComposerState build() => const ComposerState(aiMode: true);
 }
 
 void main() {
@@ -41,6 +47,7 @@ void main() {
         messages: messages,
         overrides: [
           assistantControllerProvider.overrideWith(_FinishingAssistant.new),
+          composerControllerProvider.overrideWith(_AiComposer.new),
         ],
         settle: false,
       );
