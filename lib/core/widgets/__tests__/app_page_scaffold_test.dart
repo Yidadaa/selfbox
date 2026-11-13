@@ -12,6 +12,7 @@ import 'package:selfbox/features/chat/presentation/pages/chat_page.dart';
 import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 import 'package:selfbox/features/settings/presentation/pages/general_page.dart';
 import 'package:selfbox/features/settings/presentation/providers/app_preferences_controller.dart';
+import 'package:selfbox/features/settings/presentation/widgets/settings_back_button.dart';
 
 LinearGradient _topFadeOf(WidgetTester tester, Finder page) {
   final fade = find.descendant(
@@ -100,6 +101,75 @@ void main() {
     final title = find.byKey(const ValueKey('page-title-capsule'));
     expect(appBar.toolbarHeight, AppSizes.appBarHeight);
     expect(tester.getSize(title).height, AppSizes.minTouchTarget);
+    expect(
+      tester.getSize(title).width,
+      lessThan(kPhoneViewport.width - 2 * AppInsets.pageHorizontal),
+    );
+  });
+
+  testWidgets('page title capsule width follows its content', (tester) async {
+    await tester.pumpPage(
+      const AppPageScaffold(title: 'Page', body: SizedBox.shrink()),
+    );
+    final shortWidth = tester
+        .getSize(find.byKey(const ValueKey('page-title-capsule')))
+        .width;
+
+    await tester.pumpPage(
+      const AppPageScaffold(title: 'Longer page', body: SizedBox.shrink()),
+    );
+
+    final title = find.byKey(const ValueKey('page-title-capsule'));
+    expect(tester.getSize(title).height, AppSizes.minTouchTarget);
+    expect(tester.getSize(title).width, greaterThan(shortWidth));
+    expect(
+      tester.getSize(title).width,
+      lessThan(kPhoneViewport.width - 2 * AppInsets.pageHorizontal),
+    );
+  });
+
+  testWidgets('standard title and back button share size and center baseline', (
+    tester,
+  ) async {
+    await tester.pumpPage(
+      const AppPageScaffold(
+        title: 'Storage',
+        leading: SettingsBackButton(),
+        body: SizedBox.shrink(),
+      ),
+    );
+    final title = tester.getRect(
+      find.byKey(const ValueKey('page-title-capsule')),
+    );
+    final button = tester.getRect(find.byType(GlassIconButton));
+    expect(button.size, const Size(48, 48));
+    expect(title.height, button.height);
+    expect(title.center.dy, button.center.dy);
+    expect(title.left, greaterThan(button.right));
+  });
+
+  testWidgets('long title truncates within header on a narrow screen', (
+    tester,
+  ) async {
+    await tester.pumpPage(
+      const AppPageScaffold(
+        title: 'An unusually long localized page heading',
+        leading: SettingsBackButton(),
+        body: SizedBox.shrink(),
+      ),
+    );
+    tester.view.physicalSize = const Size(280 * 3, 640 * 3);
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await tester.pumpAndSettle();
+    final title = tester.getRect(
+      find.byKey(const ValueKey('page-title-capsule')),
+    );
+    final button = tester.getRect(find.byType(GlassIconButton));
+    expect(title.height, AppSizes.minTouchTarget);
+    expect(title.left, greaterThanOrEqualTo(button.right));
+    expect(title.right, lessThanOrEqualTo(280 - AppInsets.pageHorizontal));
+    expect(tester.takeException(), isNull);
   });
 
   group('EmptyState', () {

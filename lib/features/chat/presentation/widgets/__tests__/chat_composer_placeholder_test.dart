@@ -41,7 +41,8 @@ void main() {
             }
 
             await tester.enterText(editable, hint);
-            await tester.pumpAndSettle();
+            await tester.pump();
+            await tester.pump(const Duration(milliseconds: 600));
             expect(tester.getRect(editable), input);
             if (keyboardOpen) {
               expectSendInsets(tester);
@@ -53,11 +54,13 @@ void main() {
             expect(tester.widget<EditableText>(editable).controller.text, hint);
 
             await tester.enterText(editable, '');
-            await tester.pumpAndSettle();
+            await tester.pump();
+            await tester.pump(const Duration(milliseconds: 600));
             expect(tester.getRect(find.text(hint)), placeholder);
             if (hint == t.chat.inputHint) {
               await tester.tap(find.bySemanticsLabel(t.chat.aiMode));
-              await tester.pumpAndSettle();
+              await tester.pump();
+              await tester.pump(const Duration(milliseconds: 600));
             }
           }
           expect(tester.takeException(), isNull);

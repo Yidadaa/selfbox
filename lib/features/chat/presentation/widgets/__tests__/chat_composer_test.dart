@@ -10,7 +10,7 @@ import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
-import 'package:selfbox/core/widgets/ai_mode_chrome.dart';
+import 'package:selfbox/core/widgets/ai_composer_glow.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer.dart';
@@ -190,7 +190,7 @@ void main() {
               .quality,
           GlassQuality.premium,
         );
-        expect(find.byType(AiModeChrome), findsAtLeastNWidgets(2));
+        expect(find.byType(AiComposerGlow), findsOneWidget);
         expect(
           find.descendant(
             of: find.byKey(const ValueKey('chat-input')),
@@ -315,7 +315,8 @@ void main() {
 
       for (final enabled in [true, false]) {
         await tester.tap(find.bySemanticsLabel(t.chat.aiMode));
-        await tester.pumpAndSettle();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 600));
         expect(container.read(composerControllerProvider).aiMode, enabled);
         final field = tester.widget<EditableText>(editable);
         expect(field.focusNode.hasFocus, isTrue);

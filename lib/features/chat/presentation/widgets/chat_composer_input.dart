@@ -8,9 +8,12 @@ import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/ai_composer_glow.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../providers/composer_controller.dart';
 import 'chat_composer_controls.dart';
+
+const _inputShape = LiquidRoundedSuperellipse(borderRadius: AppRadius.xl);
 
 class ChatComposerInput extends ConsumerWidget {
   const ChatComposerInput({
@@ -31,6 +34,9 @@ class ChatComposerInput extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final notifier = ref.read(composerControllerProvider.notifier);
+    final aiMode = ref.watch(
+      composerControllerProvider.select((state) => state.aiMode),
+    );
     final glass = context.glass;
     return TextFieldTapRegion(
       child: Row(
@@ -52,12 +58,16 @@ class ChatComposerInput extends ConsumerWidget {
           ],
           Expanded(
             key: const ValueKey('chat-input'),
-            child: _InputSurface(
-              controller: controller,
-              focusNode: focusNode,
-              keyboardOpen: keyboardOpen,
-              maxHeight: maxHeight,
-              navigation: navigation,
+            child: AiComposerGlow(
+              active: aiMode,
+              shape: _inputShape,
+              child: _InputSurface(
+                controller: controller,
+                focusNode: focusNode,
+                keyboardOpen: keyboardOpen,
+                maxHeight: maxHeight,
+                navigation: navigation,
+              ),
             ),
           ),
         ],
@@ -83,21 +93,13 @@ class _InputSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final glass = context.glass;
     final navigationHeight = keyboardOpen
         ? 0.0
         : AppSizes.minTouchTarget + AppSpacing.sm;
     final verticalPadding = keyboardOpen ? 0.0 : AppSpacing.md;
     final editorMaxHeight = (maxHeight - navigationHeight - verticalPadding)
         .clamp(AppSizes.iconMd, double.infinity);
-    return GlassContainer(
-      quality: GlassQuality.standard,
-      useOwnLayer: true,
-      settings: LiquidGlassSettings(
-        blur: glass.chromeBlur,
-        glassColor: glass.chromeTint,
-      ),
-      shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.xl),
+    return _ComposerGlassSurface(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -116,6 +118,40 @@ class _InputSurface extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ComposerGlassSurface extends ConsumerWidget {
+  const _ComposerGlassSurface({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final aiMode = ref.watch(
+      composerControllerProvider.select((state) => state.aiMode),
+    );
+    final glass = context.glass;
+    return TweenAnimationBuilder<Color?>(
+      tween: ColorTween(end: aiMode ? glass.composerAiTint : glass.chromeTint),
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : aiMode
+          ? AppMotion.composerGlowEnter
+          : AppMotion.composerGlowExit,
+      curve: Curves.easeInOutCubic,
+      builder: (context, tint, child) => GlassContainer(
+        quality: GlassQuality.standard,
+        useOwnLayer: true,
+        settings: LiquidGlassSettings(
+          blur: glass.chromeBlur,
+          glassColor: tint ?? glass.chromeTint,
+        ),
+        shape: _inputShape,
+        child: child,
+      ),
+      child: child,
     );
   }
 }

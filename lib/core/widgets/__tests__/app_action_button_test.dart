@@ -5,6 +5,37 @@ import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/widgets/app_action_button.dart';
 
 void main() {
+  for (final brightness in Brightness.values) {
+    for (final variant in AppActionButtonVariant.values) {
+      testWidgets('disabled $variant remains quiet in $brightness', (
+        tester,
+      ) async {
+        await tester.pumpPage(
+          Center(
+            child: AppActionButton(
+              label: 'Action',
+              variant: variant,
+              onPressed: null,
+            ),
+          ),
+          brightness: brightness,
+        );
+        final button = tester.widget<TextButton>(find.byType(TextButton));
+        final style = button.style;
+        final enabled = style?.backgroundColor?.resolve({});
+        final disabled = style?.backgroundColor?.resolve({
+          WidgetState.disabled,
+        });
+        expect(disabled?.a, lessThan(enabled?.a ?? 0));
+        expect(style?.side?.resolve({WidgetState.disabled}), BorderSide.none);
+        expect(
+          DefaultTextStyle.of(tester.element(find.text('Action'))).style.color,
+          style?.foregroundColor?.resolve({WidgetState.disabled}),
+        );
+      });
+    }
+  }
+
   testWidgets('shared action buttons use rounded low-contrast surfaces', (
     tester,
   ) async {
@@ -24,8 +55,7 @@ void main() {
     final side = button.style?.side?.resolve({});
     expect(shape, const StadiumBorder());
     expect(tester.getSize(find.byType(TextButton)).height, 48);
-    expect(side?.width, 1);
-    expect(side?.color.a, lessThanOrEqualTo(0.4));
+    expect(side, BorderSide.none);
     expect(button.style?.backgroundColor?.resolve({}), isNotNull);
   });
 
@@ -61,7 +91,11 @@ void main() {
       secondary.style?.backgroundColor?.resolve({}),
       AppGlassTheme.dark.dialogActionFill,
     );
-    expect(destructive.style?.side?.resolve({})?.color.a, lessThan(0.4));
+    expect(
+      destructive.style?.backgroundColor?.resolve({}),
+      AppGlassTheme.dark.dialogDestructiveFill,
+    );
+    expect(destructive.style?.side?.resolve({}), BorderSide.none);
   });
 
   testWidgets('icon action buttons keep the shared rounded hit target', (
@@ -81,7 +115,7 @@ void main() {
     final button = tester.widget<IconButton>(find.byType(IconButton));
     expect(tester.getSize(find.byType(IconButton)), const Size(48, 48));
     expect(button.style?.shape?.resolve({}), const StadiumBorder());
-    expect(button.style?.side?.resolve({})?.color.a, lessThanOrEqualTo(0.4));
+    expect(button.style?.side?.resolve({}), BorderSide.none);
     expect(button.style?.backgroundColor?.resolve({}), isNotNull);
   });
 }

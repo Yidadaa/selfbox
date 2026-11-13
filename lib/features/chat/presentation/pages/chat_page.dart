@@ -106,6 +106,7 @@ class _ChatHeaderButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GlassIconButton(
+    size: AppSizes.minTouchTarget,
     quality: GlassQuality.premium,
     icon: const Icon(Icons.settings_outlined),
     semanticLabel: context.t.chat.openSettings,
@@ -118,6 +119,7 @@ class _ChatSearchButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GlassIconButton(
+    size: AppSizes.minTouchTarget,
     quality: GlassQuality.premium,
     icon: const Icon(Icons.search_rounded),
     semanticLabel: context.t.chat.searchMessages,

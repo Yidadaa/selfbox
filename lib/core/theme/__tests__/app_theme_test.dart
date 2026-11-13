@@ -91,6 +91,37 @@ void main() {
           expect(_contrast(glass!.onAccent, glass.accent), greaterThan(4.5));
         });
 
+        test('composer glow covers luminous coral, mint, blue and lilac', () {
+          expect(glass!.composerGlowColors, hasLength(4));
+          expect(glass.composerAiOutline.r, 1);
+          expect(glass.composerAiOutline.g, 1);
+          expect(glass.composerAiOutline.b, 1);
+          expect(
+            glass.composerAiOutline.a,
+            brightness == Brightness.dark ? 0 : greaterThan(0),
+          );
+          expect(glass.composerAiTint.a, lessThan(glass.chromeTint.a));
+          final hues = glass.composerGlowColors
+              .map(HSLColor.fromColor)
+              .map((c) => c.hue);
+          expect(hues, contains(inInclusiveRange(0, 20)));
+          expect(hues, contains(inInclusiveRange(150, 185)));
+          expect(hues, contains(inInclusiveRange(200, 235)));
+          expect(hues, contains(inInclusiveRange(260, 290)));
+          for (final color in glass.composerGlowColors) {
+            final hsl = HSLColor.fromColor(color);
+            expect(hsl.saturation, inInclusiveRange(0.2, 0.8));
+            expect(hsl.lightness, greaterThan(0.7));
+            expect(color.a, inInclusiveRange(0.55, 0.76));
+            final litCanvas = Color.alphaBlend(
+              color,
+              glass.canvasGradient.first,
+            );
+            final surface = Color.alphaBlend(glass.composerAiTint, litCanvas);
+            expect(_contrast(glass.foreground, surface), greaterThan(4.5));
+          }
+        });
+
         test('bubble text meets WCAG AA on both bubble colors', () {
           expect(
             _contrast(glass!.onBubbleMine, glass.bubbleMine),

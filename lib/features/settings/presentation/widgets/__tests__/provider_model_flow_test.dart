@@ -133,7 +133,10 @@ void main() {
     );
     await tester.tap(find.byKey(const ValueKey('remove-provider-header-1')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const ValueKey('remove-provider-header-1')), findsNothing);
+    expect(
+      find.byKey(const ValueKey('remove-provider-header-1')),
+      findsNothing,
+    );
     final fields = find.descendant(
       of: sheet,
       matching: find.byType(EditableText),
@@ -246,6 +249,13 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expect(find.byKey(const ValueKey('model-search-input')), findsOneWidget);
+    final sheet = tester.getRect(find.byKey(const ValueKey('model-chooser')));
+    for (final key in ['cancel-model-selection', 'confirm-add-models']) {
+      final button = tester.getRect(find.byKey(ValueKey(key)));
+      expect(button.left, greaterThanOrEqualTo(sheet.left));
+      expect(button.right, lessThanOrEqualTo(sheet.right));
+      expect(button.height, greaterThanOrEqualTo(48));
+    }
     expect(
       tester.getBottomRight(find.byKey(const ValueKey('model-chooser'))).dy,
       lessThanOrEqualTo(640),

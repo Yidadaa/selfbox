@@ -24,7 +24,11 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     required this.bubbleOther,
     required this.onBubbleOther,
     required this.dialogActionFill,
+    required this.dialogDestructiveFill,
     required this.dialogDestructive,
+    required this.composerGlowColors,
+    required this.composerAiTint,
+    required this.composerAiOutline,
   });
 
   static const AppGlassTheme dark = AppGlassTheme(
@@ -44,8 +48,17 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     onBubbleMine: Color(0xFFFFFFFF),
     bubbleOther: Color(0xFF252B3C),
     onBubbleOther: Color(0xFFF5F7FF),
-    dialogActionFill: Color(0x33FFFFFF),
+    dialogActionFill: Color(0x18FFFFFF),
+    dialogDestructiveFill: Color(0x1FFF8A80),
     dialogDestructive: Color(0xFFFF8A80),
+    composerGlowColors: [
+      Color(0xBFE8B0A8),
+      Color(0x99B8D5D0),
+      Color(0xB3B4C9E8),
+      Color(0x99CDB8E0),
+    ],
+    composerAiTint: Color(0x99111827),
+    composerAiOutline: Color(0x00FFFFFF),
   );
 
   static const AppGlassTheme light = AppGlassTheme(
@@ -65,8 +78,17 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     onBubbleMine: Color(0xFFFFFFFF),
     bubbleOther: Colors.white,
     onBubbleOther: Color(0xFF0B0F1A),
-    dialogActionFill: Color(0x260B0F1A),
+    dialogActionFill: Color(0x120B0F1A),
+    dialogDestructiveFill: Color(0x12B42318),
     dialogDestructive: Color(0xFFB42318),
+    composerGlowColors: [
+      Color(0xBFF4B4AA),
+      Color(0x99C1DDD8),
+      Color(0xB3BED0F1),
+      Color(0x99D7C2EC),
+    ],
+    composerAiTint: Color(0x66FFFFFF),
+    composerAiOutline: Color(0xE6FFFFFF),
   );
 
   static AppGlassTheme of(Brightness brightness) => switch (brightness) {
@@ -97,7 +119,11 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
   final Color bubbleOther;
   final Color onBubbleOther;
   final Color dialogActionFill;
+  final Color dialogDestructiveFill;
   final Color dialogDestructive;
+  final List<Color> composerGlowColors;
+  final Color composerAiTint;
+  final Color composerAiOutline;
 
   @override
   AppGlassTheme copyWith({
@@ -118,7 +144,11 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     Color? bubbleOther,
     Color? onBubbleOther,
     Color? dialogActionFill,
+    Color? dialogDestructiveFill,
     Color? dialogDestructive,
+    List<Color>? composerGlowColors,
+    Color? composerAiTint,
+    Color? composerAiOutline,
   }) {
     return AppGlassTheme(
       canvasGradient: canvasGradient ?? this.canvasGradient,
@@ -138,7 +168,14 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
       bubbleOther: bubbleOther ?? this.bubbleOther,
       onBubbleOther: onBubbleOther ?? this.onBubbleOther,
       dialogActionFill: dialogActionFill ?? this.dialogActionFill,
+      dialogDestructiveFill:
+          dialogDestructiveFill ?? this.dialogDestructiveFill,
       dialogDestructive: dialogDestructive ?? this.dialogDestructive,
+      composerGlowColors: composerGlowColors == null
+          ? this.composerGlowColors
+          : List.unmodifiable(composerGlowColors),
+      composerAiTint: composerAiTint ?? this.composerAiTint,
+      composerAiOutline: composerAiOutline ?? this.composerAiOutline,
     );
   }
 
@@ -168,7 +205,17 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
       bubbleOther: c(bubbleOther, other.bubbleOther),
       onBubbleOther: c(onBubbleOther, other.onBubbleOther),
       dialogActionFill: c(dialogActionFill, other.dialogActionFill),
+      dialogDestructiveFill: c(
+        dialogDestructiveFill,
+        other.dialogDestructiveFill,
+      ),
       dialogDestructive: c(dialogDestructive, other.dialogDestructive),
+      composerGlowColors: List.unmodifiable([
+        for (var i = 0; i < composerGlowColors.length; i++)
+          c(composerGlowColors[i], other.composerGlowColors[i]),
+      ]),
+      composerAiTint: c(composerAiTint, other.composerAiTint),
+      composerAiOutline: c(composerAiOutline, other.composerAiOutline),
     );
   }
 }

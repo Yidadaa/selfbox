@@ -5,13 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
-import '../../features/chat/presentation/providers/composer_controller.dart';
 import '../../features/chat/presentation/widgets/chat_composer.dart';
 import '../theme/app_glass_theme.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
-import '../widgets/ai_mode_chrome.dart';
 import '../widgets/app_canvas.dart';
 import '../widgets/measure_size.dart';
 import 'app_dock_tabs.dart';
@@ -43,9 +41,6 @@ class AppShell extends HookConsumerWidget {
     final tabDockHeight = useState(AppSizes.minTouchTarget);
     final keyboard = MediaQuery.viewInsetsOf(context).bottom;
     final onChat = navigationShell.currentIndex == 0;
-    final aiMode = ref.watch(
-      composerControllerProvider.select((state) => state.aiMode),
-    );
     final tabBottom = MediaQuery.paddingOf(context).bottom + AppSpacing.md;
     final chatBottom = onChat && keyboard > 0
         ? keyboard + AppSpacing.xs
@@ -88,15 +83,9 @@ class AppShell extends HookConsumerWidget {
               }
             },
             child: onChat
-                ? AiModeChrome(
-                    active: aiMode,
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(AppRadius.xl),
-                    ),
-                    child: ChatComposer(
-                      keyboardOpen: keyboard > 0,
-                      navigation: navigation,
-                    ),
+                ? ChatComposer(
+                    keyboardOpen: keyboard > 0,
+                    navigation: navigation,
                   )
                 : GlassContainer(
                     quality: GlassQuality.standard,

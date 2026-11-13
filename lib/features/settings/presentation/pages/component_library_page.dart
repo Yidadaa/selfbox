@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/ai_composer_glow.dart';
 import '../../../../core/widgets/app_action_button.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
+import '../../../../core/widgets/pressable.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../widgets/settings_back_button.dart';
 
@@ -109,6 +113,9 @@ class ComponentLibraryPage extends StatelessWidget {
         SectionHeader(context.t.me.componentLibraryEmptyState),
         const Gap(AppSpacing.xs),
         EmptyState(label: context.t.common.notSet),
+        const Gap(AppSpacing.md),
+        SectionHeader(context.t.chat.aiMode),
+        const _ComposerGlowPreview(),
       ],
     ),
   );
@@ -141,4 +148,53 @@ class ComponentLibraryPage extends StatelessWidget {
           onPrimary: () {},
         ),
       );
+}
+
+class _ComposerGlowPreview extends HookConsumerWidget {
+  const _ComposerGlowPreview();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final active = useState(false);
+    const shape = LiquidRoundedSuperellipse(borderRadius: AppRadius.xl);
+    final glass = context.glass;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Align(
+          alignment: Alignment.centerRight,
+          child: Pressable(
+            key: const ValueKey('component-glow-toggle'),
+            semanticLabel: context.t.chat.aiMode,
+            onTap: () => active.value = !active.value,
+            child: ExcludeSemantics(
+              child: Text(
+                active.value ? context.t.chat.aiStandby : context.t.chat.aiMode,
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
+            ),
+          ),
+        ),
+        AiComposerGlow(
+          active: active.value,
+          shape: shape,
+          child: GlassContainer(
+            quality: GlassQuality.standard,
+            useOwnLayer: true,
+            shape: shape,
+            settings: LiquidGlassSettings(
+              blur: glass.chromeBlur,
+              glassColor: glass.composerAiTint,
+            ),
+            padding: const EdgeInsets.all(AppSpacing.xl),
+            child: Text(
+              context.t.chat.aiInputHint,
+              style: Theme.of(context).textTheme.bodyLarge
+                  ?.copyWith(color: glass.foregroundMuted),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }

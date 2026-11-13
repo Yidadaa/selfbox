@@ -602,7 +602,8 @@ void main() {
       expect(find.text(t.chat.inputHint), findsOneWidget);
 
       await tester.tap(find.bySemanticsLabel(t.chat.aiMode));
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 600));
 
       expect(find.text(t.chat.aiInputHint), findsOneWidget);
       expect(find.byIcon(Icons.auto_awesome), findsWidgets);

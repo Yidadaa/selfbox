@@ -41,6 +41,7 @@ class MemoryFilePage extends ConsumerWidget {
     return AppPageScaffold(
       title: title,
       leading: GlassIconButton(
+        size: AppSizes.minTouchTarget,
         icon: const Icon(Icons.arrow_back_ios_new_rounded),
         semanticLabel: t.common.close,
         onPressed: () => Navigator.of(context).maybePop(),
@@ -48,6 +49,7 @@ class MemoryFilePage extends ConsumerWidget {
       actions: [
         if (file case AsyncData(value: Some(:final value)))
           GlassIconButton(
+            size: AppSizes.minTouchTarget,
             icon: const Icon(Icons.edit_rounded),
             semanticLabel: t.memory.edit,
             onPressed: () =>
@@ -55,6 +57,7 @@ class MemoryFilePage extends ConsumerWidget {
           ),
         if (file case AsyncData(value: Some(:final value)))
           GlassIconButton(
+            size: AppSizes.minTouchTarget,
             icon: const Icon(Icons.more_horiz_rounded),
             semanticLabel: t.memory.more,
             onPressed: () => _showActions(context, ref, value.path),

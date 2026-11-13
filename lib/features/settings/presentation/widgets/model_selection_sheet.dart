@@ -108,31 +108,35 @@ class ModelSelectionSheet extends HookConsumerWidget {
                 ),
                 child: Row(
                   children: [
-                    AppActionButton(
+                    AppActionIconButton(
                       key: const ValueKey('cancel-model-selection'),
-                      expand: false,
                       onPressed: saving.value
                           ? null
                           : () => Navigator.of(context).pop(),
                       icon: Icons.close_rounded,
-                      label: context.t.common.cancel,
+                      tooltip: context.t.common.cancel,
                     ),
                     Expanded(
                       child: Text(
                         context.t.settings.provider.models,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(color: context.glass.onBubbleOther),
                       ),
                     ),
-                    AppActionButton(
-                      key: const ValueKey('confirm-add-models'),
-                      expand: false,
-                      variant: AppActionButtonVariant.primary,
-                      onPressed: saving.value || selected.value.isEmpty
-                          ? null
-                          : add,
-                      label: context.t.settings.provider.addModel,
+                    Flexible(
+                      flex: 2,
+                      child: AppActionButton(
+                        key: const ValueKey('confirm-add-models'),
+                        expand: false,
+                        variant: AppActionButtonVariant.primary,
+                        onPressed: saving.value || selected.value.isEmpty
+                            ? null
+                            : add,
+                        label: context.t.settings.provider.addModel,
+                      ),
                     ),
                   ],
                 ),

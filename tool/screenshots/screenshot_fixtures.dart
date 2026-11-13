@@ -19,6 +19,7 @@ import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 import 'package:selfbox/features/settings/domain/repositories/ai_settings_repository.dart';
 import 'package:selfbox/features/settings/presentation/providers/app_preferences_controller.dart';
+import 'package:selfbox/gen/i18n/strings.g.dart';
 
 typedef ScreenshotEnv = ({
   AppPaths? paths,
@@ -224,6 +225,57 @@ Future<void> _finishReasoningScroll(WidgetTester tester) async {
 }
 
 final screenshotFixtures = <ScreenshotFixture>[
+  for (final brightness in Brightness.values)
+    for (final keyboard in [false, true])
+      ScreenshotFixture(
+        name:
+            'composer_glow_${brightness.name}_${keyboard ? 'keyboard' : 'tabs'}',
+        location: '/chat',
+        animated: true,
+        setUp: (tester, container) async {
+          await container
+              .read(appPreferencesControllerProvider.notifier)
+              .setTheme(
+                brightness == Brightness.dark
+                    ? AppThemeChoice.dark
+                    : AppThemeChoice.light,
+              );
+          await tester.pumpAndSettle();
+          if (keyboard) {
+            await tester.showKeyboard(find.byType(EditableText));
+            tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+            await tester.pumpAndSettle();
+          }
+        },
+        afterOpen: (tester) async {
+          await tester.tap(find.bySemanticsLabel(t.chat.aiMode));
+          await tester.pump();
+          await tester.pump(const Duration(milliseconds: 900));
+        },
+      ),
+  const ScreenshotFixture(
+    name: 'component_library',
+    location: '/me/components',
+  ),
+  for (final brightness in Brightness.values)
+    ScreenshotFixture(
+      name: 'confirm_dialog_${brightness.name}',
+      location: '/me/components',
+      setUp: (tester, container) async {
+        await container
+            .read(appPreferencesControllerProvider.notifier)
+            .setTheme(
+              brightness == Brightness.dark
+                  ? AppThemeChoice.dark
+                  : AppThemeChoice.light,
+            );
+        await tester.pumpAndSettle();
+      },
+      afterOpen: (tester) async {
+        await tester.tap(find.text(t.me.componentLibraryConfirmDialog));
+        await tester.pumpAndSettle();
+      },
+    ),
   ScreenshotFixture(
     name: 'chat_review',
     location: '/chat',

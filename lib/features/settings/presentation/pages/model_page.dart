@@ -60,6 +60,7 @@ class _Back extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GlassIconButton(
+    size: AppSizes.minTouchTarget,
     icon: const Icon(Icons.arrow_back_ios_new_rounded),
     semanticLabel: context.t.common.close,
     onPressed: () => Navigator.of(context).maybePop(),

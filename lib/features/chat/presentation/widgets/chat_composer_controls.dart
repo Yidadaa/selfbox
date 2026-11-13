@@ -7,7 +7,6 @@ import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/widgets/ai_mode_chrome.dart';
 import '../../../../core/widgets/pressable.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../data/chat_data_providers.dart';
@@ -24,48 +23,85 @@ class ChatAiToggle extends ConsumerWidget {
     return TextFieldTapRegion(
       child: Semantics(
         toggled: active,
-        child: AiModeChrome(
-          active: active,
-          borderRadius: const BorderRadius.all(Radius.circular(AppRadius.pill)),
-          child: GlassContainer(
-            quality: GlassQuality.premium,
-            useOwnLayer: true,
-            shape: const LiquidRoundedSuperellipse(
-              borderRadius: AppRadius.pill,
-            ),
-            child: Pressable(
-              onTap: onTap,
-              semanticLabel: context.t.chat.aiMode,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AnimatedSwitcher(
-                      duration: AppMotion.fast,
-                      transitionBuilder: (child, animation) =>
-                          ScaleTransition(scale: animation, child: child),
-                      child: Icon(
-                        active
-                            ? Icons.auto_awesome
-                            : Icons.auto_awesome_outlined,
-                        key: ValueKey(active),
-                        color: active ? glass.accent : glass.foregroundMuted,
-                      ),
+        child: GlassContainer(
+          quality: GlassQuality.premium,
+          useOwnLayer: true,
+          shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.pill),
+          child: Pressable(
+            onTap: onTap,
+            semanticLabel: context.t.chat.aiMode,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedSwitcher(
+                    duration: AppMotion.fast,
+                    transitionBuilder: (child, animation) =>
+                        ScaleTransition(scale: animation, child: child),
+                    child: Icon(
+                      active ? Icons.auto_awesome : Icons.auto_awesome_outlined,
+                      key: ValueKey(active),
+                      color: active ? glass.accent : glass.foregroundMuted,
                     ),
-                    const Gap(AppSpacing.xs),
-                    ExcludeSemantics(
-                      child: Text(
-                        context.t.chat.aiMode,
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: active ? glass.accent : glass.foreground,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  const Gap(AppSpacing.xs),
+                  ExcludeSemantics(child: _AiToggleLabel(active: active)),
+                ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AiToggleLabel extends StatelessWidget {
+  const _AiToggleLabel({required this.active});
+
+  final bool active;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = active ? context.t.chat.aiStandby : context.t.chat.aiMode;
+    final duration = MediaQuery.disableAnimationsOf(context)
+        ? Duration.zero
+        : AppMotion.aiLabelTransition;
+    return AnimatedSize(
+      duration: duration,
+      curve: Curves.easeInOutCubic,
+      alignment: Alignment.centerRight,
+      child: AnimatedSwitcher(
+        duration: duration,
+        switchInCurve: Curves.easeOutCubic,
+        switchOutCurve: Curves.easeInCubic,
+        layoutBuilder: (current, previous) => Stack(
+          alignment: Alignment.centerRight,
+          children: [
+            for (final child in previous)
+              Positioned.fill(
+                child: Align(alignment: Alignment.centerRight, child: child),
+              ),
+            ?current,
+          ],
+        ),
+        transitionBuilder: (child, animation) => FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: Tween(
+              begin: AppMotion.aiLabelOffset,
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
+        ),
+        child: Text(
+          label,
+          key: ValueKey(label),
+          maxLines: 1,
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+            color: active ? context.glass.accent : context.glass.foreground,
           ),
         ),
       ),

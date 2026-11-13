@@ -289,7 +289,8 @@ void main() {
           );
           await tester.pump(const Duration(milliseconds: 100));
         }
-        await tester.pumpAndSettle();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 600));
 
         expect(messages.added.first.askedAi, isTrue);
         expect(messages.added.last.author, MessageAuthor.ai);

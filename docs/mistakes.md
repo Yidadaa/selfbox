@@ -116,3 +116,8 @@
 - [2026-11-13] [MediaStore] 图片优化接入后旧 Controller 测试仍用随机字节并断言原始扩展名 -> 解码失败会按设计拒绝损坏图片且统一输出 JPEG -> 图片夹具必须使用可解码样本，并断言压缩后的 JPEG 属性。
 - [2026-11-13] [WidgetTest] 新增循环 pending 动效后 `pumpPage` 的 `pumpAndSettle` 超时 -> 夹具默认等待动画静止 -> 无限循环状态测试使用 `settle: false` 并固定推进帧。
 - [2026-11-13] [GlassPerformance] 服务商配置页交互控件继承主题的 premium 质量导致滚动与切换成本叠加 -> 交互式玻璃控件必须显式使用 `GlassQuality.standard`，并以 Widget 测试锁定页面预算。
+- [2026-11-13] [Toolchain] 全局 SDK 导致求解失败，递归查找又误判项目 SDK 缺失 -> 搜索未命中不代表路径不存在 -> 先直接验证并使用 `.tools/flutter/bin/flutter.bat`，不要用全局 SDK 格式化或分析项目。
+- [2026-11-13] [AiChrome] 彩边围住开关和留白且键盘态错位 -> Shell 包裹整个 Composer Column，RRect 也不等于玻璃 superellipse -> 背景/浅色细边只绑定输入玻璃的实际 bounds，并复用同一 LiquidShape。
+- [2026-11-13] [AiGlow] 动画中珊瑚色移出后只剩冷色，显得塑料 -> 暖色中心摆幅超过自身边缘距离且颜色叠加太浓 -> 暖色锚点固定在左侧第三分区、降低透明度，并对紧凑/完整高度扫描整个循环相位。
+- [2026-11-13] [Screenshot] 组件库新预览文字显示为红色裁切块 -> 裸 Text 未继承正文主题 -> 自绘控制内的 Text 必须显式取主题 TextStyle，生成截图后逐张验收。
+- [2026-11-13] [SheetActions] 320dp 模型选择器标题行右侧溢出 20dp -> 两个按内容取宽的文字动作挤满整行 -> 关闭使用共享图标按钮，确认动作受 Flexible 宽度约束，标题单行截断并验证操作区边界。

@@ -71,6 +71,7 @@ class _BackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GlassIconButton(
+    size: AppSizes.minTouchTarget,
     icon: const Icon(Icons.arrow_back_ios_new_rounded),
     quality: GlassQuality.standard,
     semanticLabel: context.t.common.close,
@@ -167,6 +168,7 @@ class _ProviderForm extends HookConsumerWidget {
       actions: [
         if (existing != null)
           GlassIconButton(
+            size: AppSizes.minTouchTarget,
             icon: const Icon(Icons.more_horiz_rounded),
             quality: GlassQuality.standard,
             semanticLabel: t.common.more,
