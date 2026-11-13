@@ -1,7 +1,6 @@
-import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:ai_sdk_dart/ai_sdk_dart.dart';
-import 'package:ai_sdk_provider/ai_sdk_provider.dart';
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/error/app_failure.dart';
@@ -14,6 +13,8 @@ import '../models/agent_activity.dart';
 import '../models/message.dart';
 import '../repositories/language_model_factory.dart';
 import '../repositories/message_repository.dart';
+import 'agent_history.dart';
+import 'agent_model_support.dart';
 import 'agent_prompt.dart';
 import 'agent_tools.dart';
 import 'vercel_gateway_options.dart';
@@ -61,22 +62,17 @@ class AssistantAgent {
         .load()
         .flatMap(_resolveModel)
         .flatMap(
-          (setup) => messages
-              .latest(setup.settings.historyTurns + 1)
-              .flatMap(
-                (recent) => memory.list().flatMap(
-                  (index) => _run(
-                    setup: setup,
-                    question: question,
-                    recent: recent,
-                    index: index,
-                    userName: profile.nickname.trim(),
-                    onActivity: onActivity,
-                    onToolEvent: onToolEvent,
-                    cancel: cancel,
-                  ),
-                ),
-              ),
+          (setup) => memory.list().flatMap(
+            (index) => _run(
+              setup: setup,
+              question: question,
+              index: index,
+              userName: profile.nickname.trim(),
+              onActivity: onActivity,
+              onToolEvent: onToolEvent,
+              cancel: cancel,
+            ),
+          ),
         ),
   );
 
@@ -108,9 +104,46 @@ class AssistantAgent {
   TaskEither<AppFailure, String> _run({
     required _Setup setup,
     required Message question,
-    required List<Message> recent,
     required List<MemoryEntry> index,
     required String userName,
+    required void Function(AgentActivity) onActivity,
+    required AgentToolTrace? onToolEvent,
+    required CancellationToken? cancel,
+  }) {
+    final model = setup.model;
+    final instructions = buildAgentInstructions(
+      now: clock(),
+      memory: index,
+      canViewImages: model.supportsImages,
+      userName: userName,
+      languageTag: languageTag(),
+    );
+    final budget = math.min(
+      model.shortTermMemoryTokens(setup.settings.shortTermMemoryPercent),
+      model.maxInputTokens -
+          model.maxOutputTokens -
+          estimateTokens(instructions),
+    );
+    return loadAgentHistory(
+      messages: messages,
+      question: question,
+      budget: budget,
+    ).flatMap(
+      (recent) => _stream(
+        setup: setup,
+        history: buildAgentHistory(recent),
+        instructions: instructions,
+        onActivity: onActivity,
+        onToolEvent: onToolEvent,
+        cancel: cancel,
+      ),
+    );
+  }
+
+  TaskEither<AppFailure, String> _stream({
+    required _Setup setup,
+    required List<ModelMessage> history,
+    required String instructions,
     required void Function(AgentActivity) onActivity,
     required AgentToolTrace? onToolEvent,
     required CancellationToken? cancel,
@@ -126,25 +159,6 @@ class AssistantAgent {
         succeeded ? AgentToolPhase.succeeded : AgentToolPhase.failed,
       ),
     );
-    final instructions = buildAgentInstructions(
-      now: clock(),
-      memory: index,
-      canViewImages: model.supportsImages,
-      userName: userName,
-      languageTag: languageTag(),
-    );
-    // The question is normally the newest note; keep it even if it is not.
-    final notes = recent.any((m) => m.id == question.id)
-        ? recent
-        : [question, ...recent];
-    final history = buildAgentHistory(
-      fitHistory(
-        notes,
-        budget: model.maxInputTokens - model.maxOutputTokens,
-        instructions: instructions,
-      ),
-    );
-
     final handle = models.create(setup.provider, setup.apiKey, model.modelId);
     try {
       onActivity(const AgentActivity.thinking());
@@ -155,14 +169,14 @@ class AssistantAgent {
         tools: tools.build(),
         maxSteps: maxSteps,
         maxOutputTokens: model.maxOutputTokens,
-        reasoning: _reasoning(model),
+        reasoning: agentReasoning(model),
         providerOptions: vercelGatewayProviderOptions(
           provider: setup.provider,
           model: model,
         ),
         abortSignal: cancel,
         timeout: const TimeoutConfiguration(total: timeout),
-        prepareStep: (step) => _attachViewedImages(step, tools),
+        prepareStep: (step) => attachViewedImages(step, tools),
       );
 
       Object? streamError;
@@ -220,7 +234,7 @@ class AssistantAgent {
     } finally {
       handle.dispose();
     }
-  }, _toFailure);
+  }, agentFailure);
 
   static const _maxReasoningCodeUnits = 8192;
   static const _retainedReasoningCodeUnits = 4096;
@@ -233,67 +247,6 @@ class AssistantAgent {
     }
     return text.substring(start);
   }
-
-  /// Tool results carry text only, so images fetched by `view_image` are
-  /// attached as a user turn right after the matching result. Re-derived on
-  /// every step because step overrides do not persist.
-  static GenerateTextPrepareStepResult? _attachViewedImages(
-    GenerateTextPrepareStepContext step,
-    AgentTools tools,
-  ) {
-    if (tools.viewedImages.isEmpty) return null;
-    final out = <LanguageModelV4Message>[];
-    for (final message in step.messages) {
-      out.add(message);
-      if (message.role != LanguageModelV4Role.tool) continue;
-      final images = [
-        for (final part in message.content)
-          if (part case LanguageModelV4ToolResultPart(:final toolCallId))
-            if (tools.viewedImages[toolCallId] case final image?)
-              LanguageModelV4ImagePart(
-                image: DataContentBytes(image.bytes),
-                mediaType: image.mediaType,
-              ),
-      ];
-      if (images.isNotEmpty) {
-        out.add(
-          LanguageModelV4Message(
-            role: LanguageModelV4Role.user,
-            content: images,
-          ),
-        );
-      }
-    }
-    return GenerateTextPrepareStepResult(messages: out);
-  }
-
-  static LanguageModelV4Reasoning _reasoning(ModelConfig model) {
-    if (!model.supportsReasoning) {
-      return LanguageModelV4Reasoning.providerDefault;
-    }
-    return switch (model.reasoningEffort) {
-      ReasoningEffort.minimal => LanguageModelV4Reasoning.minimal,
-      ReasoningEffort.low => LanguageModelV4Reasoning.low,
-      ReasoningEffort.medium => LanguageModelV4Reasoning.medium,
-      ReasoningEffort.high => LanguageModelV4Reasoning.high,
-      ReasoningEffort.xhigh => LanguageModelV4Reasoning.xhigh,
-    };
-  }
-
-  static AppFailure _toFailure(Object error, StackTrace stack) =>
-      switch (error) {
-        final AppFailure failure => failure,
-        AiRetryError(:final lastError) => _toFailure(lastError, stack),
-        AiApiCallError(:final message, :final statusCode) => AppFailure.network(
-          message: message,
-          statusCode: statusCode,
-        ),
-        AiOperationCancelledError() => const AppFailure.network(
-          message: 'cancelled',
-        ),
-        TimeoutException() => const AppFailure.network(message: 'timed out'),
-        _ => AppFailure.unexpected(error: error, stackTrace: stack),
-      };
 }
 
 class _Setup {

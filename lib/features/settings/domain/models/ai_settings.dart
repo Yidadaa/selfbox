@@ -63,6 +63,14 @@ abstract class ModelConfig with _$ModelConfig {
       _$ModelConfigFromJson(json);
 
   ModelRef get ref => ModelRef(providerId: providerId, modelId: modelId);
+
+  int shortTermMemoryTokens(int percent) =>
+      maxInputTokens *
+      percent.clamp(
+        AiSettings.minShortTermMemoryPercent,
+        AiSettings.maxShortTermMemoryPercent,
+      ) ~/
+      100;
 }
 
 @freezed
@@ -83,16 +91,19 @@ abstract class AiSettings with _$AiSettings {
     @Default(<ModelConfig>[]) List<ModelConfig> models,
     ModelRef? activeModel,
 
-    /// Most recent chat turns (from either side) sent as conversation history.
-    @Default(AiSettings.defaultHistoryTurns) int historyTurns,
+    /// Share of the model's full context used for recent conversation text.
+    @JsonKey(fromJson: _readShortTermMemoryPercent)
+    @Default(AiSettings.defaultShortTermMemoryPercent)
+    int shortTermMemoryPercent,
   }) = _AiSettings;
 
   const AiSettings._();
 
-  static const defaultHistoryTurns = 20;
-  static const minHistoryTurns = 0;
-  static const maxHistoryTurns = 100;
+  static const defaultShortTermMemoryPercent = 20;
+  static const minShortTermMemoryPercent = 10;
+  static const maxShortTermMemoryPercent = 60;
 
+  // A legacy message count has no percentage equivalent; use the new default.
   factory AiSettings.fromJson(Map<String, dynamic> json) =>
       _$AiSettingsFromJson(json);
 
@@ -114,6 +125,11 @@ abstract class AiSettings with _$AiSettings {
       providers.where((p) => p.id == id).firstOrNull;
 }
 
+int _readShortTermMemoryPercent(int value) => value.clamp(
+  AiSettings.minShortTermMemoryPercent,
+  AiSettings.maxShortTermMemoryPercent,
+);
+
 /// Validation rules shared by the settings forms and the repository.
 abstract final class AiSettingsSchema {
   static const maxNameLength = 40;
@@ -132,8 +148,8 @@ abstract final class AiSettingsSchema {
 
   static final outputTokens = l.int().min(256).max(maxTokens).required();
 
-  static final historyTurns = l.int()
-      .min(AiSettings.minHistoryTurns)
-      .max(AiSettings.maxHistoryTurns)
+  static final shortTermMemoryPercent = l.int()
+      .min(AiSettings.minShortTermMemoryPercent)
+      .max(AiSettings.maxShortTermMemoryPercent)
       .required();
 }

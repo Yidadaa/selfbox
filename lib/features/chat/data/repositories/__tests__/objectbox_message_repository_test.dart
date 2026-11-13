@@ -91,6 +91,23 @@ void main() {
       expect(_texts(await repo.latest(2).run()), ['c', 'b']);
     });
 
+    test(
+      'latest pages by offset, including messages sharing a timestamp',
+      () async {
+        final repo = ObjectBoxMessageRepository(
+          await openTempStore(),
+          clock: () => _t0,
+        );
+        for (final text in ['a', 'b', 'c', 'd', 'e']) {
+          await _add(repo, text);
+        }
+        expect(_texts(await repo.latest(2).run()), ['e', 'd']);
+        expect(_texts(await repo.latest(2, offset: 2).run()), ['c', 'b']);
+        expect(_texts(await repo.latest(2, offset: 4).run()), ['a']);
+        expect(_texts(await repo.latest(2, offset: 5).run()), isEmpty);
+      },
+    );
+
     test('watchLatest emits immediately and again after writes', () async {
       final repo = await _repo();
       await _add(repo, 'a');

@@ -101,7 +101,8 @@
   "settings": {
     "aiSection": "AI",
     "activeModel": "Model",
-    "historyTurns": "History turns",
+    "shortTermMemory": "Short-term memory length",
+    "memoryPercent": "{value}%",
     "providers": "Providers",
     "addProvider": "Add provider",
     "provider": {

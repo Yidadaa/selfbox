@@ -97,6 +97,6 @@ class AiSettingsService {
   TaskEither<AppFailure, AiSettings> selectModel(ModelRef ref) =>
       _track(_edit((s) => s.selectModel(ref)));
 
-  TaskEither<AppFailure, AiSettings> setHistoryTurns(int turns) =>
-      _track(_edit((s) => s.withHistoryTurns(turns)));
+  TaskEither<AppFailure, AiSettings> setShortTermMemoryPercent(int percent) =>
+      _track(_edit((s) => s.withShortTermMemoryPercent(percent)));
 }

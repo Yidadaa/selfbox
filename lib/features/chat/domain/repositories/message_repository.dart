@@ -16,8 +16,8 @@ abstract interface class MessageRepository {
 
   TaskEither<AppFailure, Option<Message>> byId(int id);
 
-  /// The newest [limit] messages.
-  TaskEither<AppFailure, List<Message>> latest(int limit);
+  /// The newest [limit] messages after skipping [offset] newer rows.
+  TaskEither<AppFailure, List<Message>> latest(int limit, {int offset = 0});
 
   /// Every referenced image path, oldest message first, without duplicates.
   TaskEither<AppFailure, List<String>> allImagePaths();

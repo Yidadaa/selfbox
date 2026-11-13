@@ -28,16 +28,19 @@ void main() {
       expect(renamed.providers.single.name, 'Mine');
     });
 
-    test('upsertProvider preserves custom headers when replacing other fields', () {
-      final configured = _openai.copyWith(
-        headers: const {'X-Client': 'selfbox', 'X-Mode': 'fast'},
-      );
-      final renamed = const AiSettings()
-          .upsertProvider(configured)
-          .upsertProvider(configured.copyWith(name: 'Mine'));
+    test(
+      'upsertProvider preserves custom headers when replacing other fields',
+      () {
+        final configured = _openai.copyWith(
+          headers: const {'X-Client': 'selfbox', 'X-Mode': 'fast'},
+        );
+        final renamed = const AiSettings()
+            .upsertProvider(configured)
+            .upsertProvider(configured.copyWith(name: 'Mine'));
 
-      expect(renamed.providers.single.headers, configured.headers);
-    });
+        expect(renamed.providers.single.headers, configured.headers);
+      },
+    );
 
     test('removeProvider drops its models and clears a dangling selection', () {
       final settings = AiSettings(
@@ -147,10 +150,25 @@ void main() {
       expect(settings.selectModel(b).activeModel?.modelId, 'a');
     });
 
-    test('withHistoryTurns clamps to the allowed range', () {
-      expect(const AiSettings().withHistoryTurns(-3).historyTurns, 0);
-      expect(const AiSettings().withHistoryTurns(500).historyTurns, 100);
-      expect(const AiSettings().withHistoryTurns(12).historyTurns, 12);
+    test('withShortTermMemoryPercent clamps to the allowed range', () {
+      expect(
+        const AiSettings()
+            .withShortTermMemoryPercent(-3)
+            .shortTermMemoryPercent,
+        10,
+      );
+      expect(
+        const AiSettings()
+            .withShortTermMemoryPercent(500)
+            .shortTermMemoryPercent,
+        60,
+      );
+      expect(
+        const AiSettings()
+            .withShortTermMemoryPercent(12)
+            .shortTermMemoryPercent,
+        12,
+      );
     });
   });
 
@@ -167,7 +185,7 @@ void main() {
           ),
         ],
         activeModel: const ModelRef(providerId: 'p1', modelId: 'a'),
-        historyTurns: 8,
+        shortTermMemoryPercent: 35,
       );
       expect(AiSettings.fromJson(settings.toJson()), settings);
     });
@@ -186,7 +204,10 @@ void main() {
 
     test('defaults are usable on an empty document', () {
       final settings = AiSettings.fromJson(const {});
-      expect(settings.historyTurns, AiSettings.defaultHistoryTurns);
+      expect(
+        settings.shortTermMemoryPercent,
+        AiSettings.defaultShortTermMemoryPercent,
+      );
       expect(settings.resolvedModel, isNull);
     });
 

@@ -101,7 +101,8 @@
   "settings": {
     "aiSection": "AI",
     "activeModel": "模型",
-    "historyTurns": "历史轮数",
+    "shortTermMemory": "短时记忆长度",
+    "memoryPercent": "{value}%",
     "providers": "服务商",
     "addProvider": "添加服务商",
     "provider": {

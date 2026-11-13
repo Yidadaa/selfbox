@@ -18,6 +18,7 @@ import 'package:selfbox/gen/i18n/strings.g.dart';
 
 import 'assistant_transition_fixtures.dart';
 import 'screenshot_fixtures.dart';
+import 'short_term_memory_fixtures.dart';
 
 Future<void> _loadFont(String family, List<String> paths) async {
   final loader = FontLoader(family);
@@ -64,7 +65,11 @@ Future<void> _warmImages(AppPaths paths) async {
 void main() {
   setUpAll(_loadFonts);
 
-  for (final shot in [...screenshotFixtures, ...assistantTransitionFixtures]) {
+  for (final shot in [
+    ...screenshotFixtures,
+    ...assistantTransitionFixtures,
+    ...shortTermMemoryFixtures,
+  ]) {
     for (final locale in [AppLocale.zhCn]) {
       testWidgets('screenshot ${shot.name}', (tester) async {
         final env = shot.env();

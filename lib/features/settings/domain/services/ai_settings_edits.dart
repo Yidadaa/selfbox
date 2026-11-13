@@ -88,10 +88,10 @@ extension AiSettingsEdits on AiSettings {
     return enabled ? copyWith(activeModel: ref) : this;
   }
 
-  AiSettings withHistoryTurns(int turns) => copyWith(
-    historyTurns: turns.clamp(
-      AiSettings.minHistoryTurns,
-      AiSettings.maxHistoryTurns,
+  AiSettings withShortTermMemoryPercent(int percent) => copyWith(
+    shortTermMemoryPercent: percent.clamp(
+      AiSettings.minShortTermMemoryPercent,
+      AiSettings.maxShortTermMemoryPercent,
     ),
   );
 }

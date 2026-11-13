@@ -17,6 +17,7 @@ import '../widgets/settings_back_button.dart';
 import '../widgets/settings_labels.dart';
 import '../widgets/settings_load_failure.dart';
 import '../widgets/settings_picker_sheet.dart';
+import '../widgets/short_term_memory_sheet.dart';
 
 class AiProvidersPage extends ConsumerWidget {
   const AiProvidersPage({super.key});
@@ -68,9 +69,14 @@ class _SettingsList extends ConsumerWidget {
             ),
             AppListTile(
               icon: Icons.history_rounded,
-              title: t.settings.historyTurns,
-              value: '${settings.historyTurns}',
-              onTap: () => _pickHistory(context, ref),
+              title: t.settings.shortTermMemory,
+              value: t.settings.memoryPercent(
+                value: settings.shortTermMemoryPercent,
+              ),
+              onTap: () => showShortTermMemorySheet(
+                context: context,
+                initialPercent: settings.shortTermMemoryPercent,
+              ),
             ),
           ],
         ),
@@ -128,33 +134,4 @@ class _SettingsList extends ConsumerWidget {
       },
     );
   }
-
-  Future<void> _pickHistory(BuildContext context, WidgetRef ref) =>
-      showSettingsPicker(
-        context: context,
-        title: context.t.settings.historyTurns,
-        pickerKey: const ValueKey('history-turns-picker'),
-        labels: [
-          for (
-            var turns = AiSettings.minHistoryTurns;
-            turns <= AiSettings.maxHistoryTurns;
-            turns++
-          )
-            '$turns',
-        ],
-        initialIndex: settings.historyTurns.clamp(
-          AiSettings.minHistoryTurns,
-          AiSettings.maxHistoryTurns,
-        ),
-        onSave: (index) async {
-          final result = await ref
-              .read(aiSettingsServiceProvider)
-              .setHistoryTurns(index)
-              .run();
-          if (context.mounted) {
-            showOutcome(context, failure: result.getLeft().toNullable());
-          }
-          return result.isRight();
-        },
-      );
 }

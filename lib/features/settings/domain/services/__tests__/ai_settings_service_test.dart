@@ -145,9 +145,11 @@ void main() {
       },
     );
 
-    test('setHistoryTurns persists the clamped value', () async {
-      _ok(await service.setHistoryTurns(7).run());
-      expect(repo.current.historyTurns, 7);
+    test('setShortTermMemoryPercent persists the clamped value', () async {
+      _ok(await service.setShortTermMemoryPercent(7).run());
+      expect(repo.current.shortTermMemoryPercent, 10);
+      _ok(await service.setShortTermMemoryPercent(75).run());
+      expect(repo.current.shortTermMemoryPercent, 60);
     });
   });
 }

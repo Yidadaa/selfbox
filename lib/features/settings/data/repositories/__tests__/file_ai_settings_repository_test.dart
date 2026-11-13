@@ -64,7 +64,10 @@ void main() {
     });
 
     test('saves and reloads the full document', () async {
-      const settings = AiSettings(providers: [_provider], historyTurns: 5);
+      const settings = AiSettings(
+        providers: [_provider],
+        shortTermMemoryPercent: 35,
+      );
       _ok(await repo.save(settings).run());
 
       final reloaded = FileAiSettingsRepository(paths, secrets);
@@ -99,17 +102,19 @@ void main() {
     });
 
     test('watch emits the stored value and then every save', () async {
-      _ok(await repo.save(const AiSettings(historyTurns: 1)).run());
+      _ok(await repo.save(const AiSettings(shortTermMemoryPercent: 21)).run());
 
       final seen = <int>[];
-      final sub = repo.watch().listen((s) => seen.add(s.historyTurns));
+      final sub = repo.watch().listen(
+        (s) => seen.add(s.shortTermMemoryPercent),
+      );
       addTearDown(sub.cancel);
 
       await _waitFor(() => seen.isNotEmpty);
-      _ok(await repo.save(const AiSettings(historyTurns: 2)).run());
+      _ok(await repo.save(const AiSettings(shortTermMemoryPercent: 22)).run());
       await _waitFor(() => seen.length >= 2);
 
-      expect(seen, [1, 2]);
+      expect(seen, [21, 22]);
     });
   });
 }

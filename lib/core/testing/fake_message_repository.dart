@@ -34,8 +34,11 @@ class FakeMessageRepository implements MessageRepository {
 
   Option<AppFailure> failNextAdd = const None();
 
-  List<Message> get _newestFirst =>
-      [..._rows]..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  List<Message> get _newestFirst => [..._rows]
+    ..sort((a, b) {
+      final time = b.createdAt.compareTo(a.createdAt);
+      return time == 0 ? b.id.compareTo(a.id) : time;
+    });
 
   @override
   Stream<List<Message>> watchLatest(int limit) async* {
@@ -78,8 +81,8 @@ class FakeMessageRepository implements MessageRepository {
   );
 
   @override
-  TaskEither<AppFailure, List<Message>> latest(int limit) =>
-      TaskEither.right(_newestFirst.take(limit).toList());
+  TaskEither<AppFailure, List<Message>> latest(int limit, {int offset = 0}) =>
+      TaskEither.right(_newestFirst.skip(offset).take(limit).toList());
 
   @override
   TaskEither<AppFailure, List<String>> allImagePaths() {

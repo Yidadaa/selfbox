@@ -58,22 +58,6 @@ void main() {
     });
   });
 
-  group('fitHistory', () {
-    test('keeps everything within budget', () {
-      final notes = [_m(2, 'b'), _m(1, 'a')];
-      expect(fitHistory(notes, budget: 10000, instructions: 'x'), notes);
-    });
-
-    test('drops the oldest notes first and always keeps the question', () {
-      final notes = [_m(3, 'q'), _m(2, 'x' * 300), _m(1, 'y' * 300)];
-      final kept = fitHistory(notes, budget: 150, instructions: '');
-      expect(kept.map((m) => m.id), [3, 2]);
-
-      final tiny = fitHistory(notes, budget: 1, instructions: 'long ' * 100);
-      expect(tiny.map((m) => m.id), [3]);
-    });
-  });
-
   group('buildAgentInstructions', () {
     final entry = MemoryEntry(
       path: MemoryPath.parse('user/profile.md').getOrElse((f) => throw f),

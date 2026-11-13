@@ -68,10 +68,7 @@ List<ModelMessage> buildAgentHistory(List<Message> recent) {
       MessageAuthor.me => ModelMessageRole.user,
       MessageAuthor.ai => ModelMessageRole.assistant,
     };
-    final text = switch (message.author) {
-      MessageAuthor.me => _userLine(message),
-      MessageAuthor.ai => message.text,
-    };
+    final text = _historyText(message);
     if (turns.isNotEmpty && turns.last.role == role) {
       turns.last.parts.add(text);
     } else {
@@ -87,27 +84,25 @@ List<ModelMessage> buildAgentHistory(List<Message> recent) {
   ];
 }
 
-/// Rough token estimate (≈3 chars per token for mixed CJK/Latin text) used
-/// to keep the request within the model's input budget.
-int estimateTokens(String text) => (text.length / 3).ceil();
-
-/// Drops the oldest notes until instructions plus history fit [budget].
-/// The newest note (the question) is always kept.
-List<Message> fitHistory(
-  List<Message> newestFirst, {
-  required int budget,
-  required String instructions,
-}) {
-  var remaining = budget - estimateTokens(instructions);
-  final kept = <Message>[];
-  for (final (i, message) in newestFirst.indexed) {
-    final cost = estimateTokens(_userLine(message)) + 8;
-    if (i > 0 && cost > remaining) break;
-    kept.add(message);
-    remaining -= cost;
+/// Lightweight estimate: three ASCII characters, one non-ASCII BMP character,
+/// or half a supplementary character per token. Count Unicode scalars so CJK
+/// and emoji do not inherit the much cheaper ASCII estimate.
+int estimateTokens(String text) {
+  var units = 0;
+  for (final rune in text.runes) {
+    units += rune <= 0x7F ? 1 : (rune <= 0xFFFF ? 3 : 6);
   }
-  return kept;
+  return (units + 2) ~/ 3;
 }
+
+/// Includes the actual timestamp/attachment text and a small envelope allowance.
+int estimateMessageTokens(Message message) =>
+    estimateTokens(_historyText(message)) + 8;
+
+String _historyText(Message message) => switch (message.author) {
+  MessageAuthor.me => _userLine(message),
+  MessageAuthor.ai => message.text,
+};
 
 String _userLine(Message m) {
   final images = m.images.isEmpty

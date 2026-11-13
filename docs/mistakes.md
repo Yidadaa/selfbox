@@ -2,6 +2,17 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-13] [Lint] 数字等宽字形新增 dart:ui 后触发冗余导入 -> material.dart 已导出 FontFeature -> 直接使用现有 Flutter 导入，并保持静态分析零问题。
+- [2026-11-13] [ToastTest] 底部保存按钮重试被 Toast 遮挡 -> 推进自动关闭计时后退场动画尚未完成 -> 时间推进后继续 pumpAndSettle，确认覆盖层已退出再点击底部动作。
+- [2026-11-13] [Freezed] 设置迁移改用块体 fromJson 后丢失 JSON 生成方法 -> Freezed 依赖箭头式 fromJson 识别序列化入口 -> 保留生成工厂，字段归一化使用 JsonKey 转换器。
+- [2026-11-13] [Slang] 带变量的新文案生成成普通字符串 -> 忽略项目 `string_interpolation: braces` 配置而写成 `$value` -> 新文案变量统一使用 `{value}`，生成后检查调用签名。
+- [2026-11-13] [SliderTest] 点击轨道后百分比不变 -> GlassSlider 仅通过水平拖动更新数值，点击只触发按压反馈 -> 交互测试使用真实拖动验证数值与实时预算。
+- [2026-11-13] [PowerShell] 测试拆分脚本因 `_Env` / `_env` 重复键解析失败 -> PowerShell Hashtable 键不区分大小写 -> 大小写敏感的 Dart 符号重命名使用有序字符串对和带单词边界的 .NET 正则。
+- [2026-11-13] [SliderSemantics] 自定义百分比语义触发 increase 断言 -> 带 value 的可调节点还必须声明 increasedValue / decreasedValue -> 当前值、增减后的值和动作统一按实际百分比生成。
+- [2026-11-13] [SemanticsTest] 全量测试报告额外 SemanticsHandle 未释放 -> testWidgets 已启用语义，addTearDown 晚于该句柄门禁 -> 直接使用现有语义树；额外句柄须在测试体内释放。
+- [2026-11-13] [MemorySheet] 280dp 大字体英文标题被省略 -> 标题与两个动作争用一行宽度且固定两行 -> 窄屏标题与动作分行，允许标题按字体度量完整换行，测试与真实字体截图共同验收。
+- [2026-11-13] [TokenBudget] 统一按字符串长度除三会低估中文历史 -> 中文与 ASCII 共用同一字符成本 -> 按 Unicode 标量分别估算 ASCII、BMP 非 ASCII 与增补字符，端到端预算用例必须包含长中文消息。
+
 - [2026-11-13] [AgentTransition] 工具卡先出现在思考卡右侧再向左跳 -> AnimatedSwitcher 默认居中叠放宽度不同的前后卡片，旧卡移除后重新取宽 -> 状态切换的 Stack 与 AnimatedSize 统一左下锚点，逐帧验证全部存活表面的左坐标。
 - [2026-11-13] [ReplyEntrance] 最终 AI 回答从右侧漂入 -> 复用了用户发送的横向位移与右下缩放锚点 -> AI 入场只保留纵向位移并以左下缩放，测试实际消息表面而非仅检查动画参数。
 - [2026-11-13] [ToolLabel] 280dp 英文工具状态横向溢出 -> 工具标签未参与 Row 的宽度约束 -> 标签使用 Flexible、单行省略，窄屏下保留图标和 pending 指示器。

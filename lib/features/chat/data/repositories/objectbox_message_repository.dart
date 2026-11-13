@@ -30,7 +30,8 @@ class ObjectBoxMessageRepository implements MessageRepository {
 
   QueryBuilder<MessageEntity> _newestFirst([Condition<MessageEntity>? where]) =>
       _box.query(where)
-        ..order(MessageEntity_.createdAt, flags: Order.descending);
+        ..order(MessageEntity_.createdAt, flags: Order.descending)
+        ..order(MessageEntity_.id, flags: Order.descending);
 
   @override
   Stream<List<Message>> watchLatest(int limit) =>
@@ -62,8 +63,17 @@ class ObjectBoxMessageRepository implements MessageRepository {
   );
 
   @override
-  TaskEither<AppFailure, List<Message>> latest(int limit) =>
-      find(MessageQuery(limit: limit));
+  TaskEither<AppFailure, List<Message>> latest(int limit, {int offset = 0}) =>
+      _run(() async {
+        final query = _newestFirst().build()
+          ..limit = limit
+          ..offset = offset;
+        try {
+          return _toDomain(await query.findAsync());
+        } finally {
+          query.close();
+        }
+      });
 
   @override
   TaskEither<AppFailure, List<String>> allImagePaths() => _run(() async {
