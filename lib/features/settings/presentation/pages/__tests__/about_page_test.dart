@@ -38,7 +38,7 @@ void main() {
         );
         expect(find.byType(GlassGroupedSection), findsOneWidget);
         expect(find.byType(AppListTile), findsNWidgets(4));
-        expect(find.text('0.3.0 (3)'), findsOneWidget);
+        expect(find.text('0.4.0 (4)'), findsOneWidget);
         expect(find.text('2026-11-14'), findsOneWidget);
         expect(find.text(t.me.tagline), findsNothing);
         expect(find.text(t.app.name), findsNothing);
@@ -74,7 +74,7 @@ void main() {
       ProviderScope(
         overrides: [
           appVersionProvider.overrideWith((ref) async {
-            return ++attempts == 1 ? pending.future : '0.3.0 (3)';
+            return ++attempts == 1 ? pending.future : '0.4.0 (4)';
           }),
         ],
         child: TranslationProvider(
@@ -103,7 +103,7 @@ void main() {
     expect(tester.getSize(find.byType(AppListTile).first).height, rowHeight);
     await tester.tap(find.text(t.common.retry));
     await tester.pumpAndSettle();
-    expect(find.text('0.3.0 (3)'), findsOneWidget);
+    expect(find.text('0.4.0 (4)'), findsOneWidget);
     expect(tester.getSize(find.byType(AppListTile).first).height, rowHeight);
     expect(tester.takeException(), isNull);
   });

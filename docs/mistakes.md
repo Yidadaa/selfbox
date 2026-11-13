@@ -175,3 +175,4 @@
 - [2026-11-14] [ReducedMotion] 减少动态效果测试报 RenderAnimatedSize 在 layout 中再次 dirty -> AI 标签使用 duration:zero 的 AnimatedSize -> 禁用动画时直接绘制最终 Text，绕过尺寸动画 RenderObject。
 - [2026-11-14] [AiModeTest] AI 模式切换后 pumpAndSettle 超时 -> 输入光效无限循环 -> 模式动画测试按固定帧时长推进，不等待全局动画静止。
 - [2026-11-14] [VersionFixture] 版本错误态测试重复覆盖 Provider -> pumpApp 已固定覆盖 appVersionProvider -> 版本状态测试使用单页 ProviderScope，避免在通用夹具中重复注入。
+- [2026-11-14] [ArtifactCleanup] 旧 APK 清理的批量与明确路径删除均被自动审批拒绝 -> 工具仅返回 blocked by policy -> 停止删除尝试，继续独立构建并明确报告清理未完成。
