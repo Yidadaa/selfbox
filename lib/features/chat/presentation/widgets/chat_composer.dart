@@ -8,6 +8,7 @@ import '../providers/chat_feed.dart';
 import '../providers/composer_controller.dart';
 import 'chat_composer_controls.dart';
 import 'chat_composer_input.dart';
+import 'chat_composer_keyboard_transition.dart';
 import 'chat_composer_layout.dart';
 
 /// A shared input and navigation surface with a floating AI-mode toggle.
@@ -33,14 +34,13 @@ class ChatComposer extends HookConsumerWidget {
         (feed) => feed is AsyncData<ChatFeed> && feed.value.items.isEmpty,
       ),
     );
-    final welcomeSize = welcome && attachments.isEmpty
+    final showWelcome = welcome && attachments.isEmpty;
+    final headerHeight = showWelcome
         ? AppArtworkTokens.welcomeSizeFor(
-            MediaQuery.sizeOf(context).width,
-            keyboardOpen: keyboardOpen && focusNode.hasFocus,
-          )
-        : 0.0;
-    final headerHeight = welcomeSize > 0
-        ? welcomeSize * (1 - AppArtworkTokens.welcomeOverlap)
+                MediaQuery.sizeOf(context).width,
+                keyboardOpen: false,
+              ) *
+              (1 - AppArtworkTokens.welcomeOverlap)
         : AppSizes.minTouchTarget + AppSpacing.sm;
     final safeArea = MediaQuery.paddingOf(context);
     final keyboard = MediaQuery.viewInsetsOf(context).bottom;
@@ -65,19 +65,21 @@ class ChatComposer extends HookConsumerWidget {
       if (controller.text != next) controller.text = next;
     });
 
-    return ChatComposerLayout(
-      toggle: ChatAiToggle(active: aiMode, onTap: notifier.toggleAiMode),
-      attachments: attachments,
-      onRemoveAttachment: notifier.removeAttachment,
-      welcomeSize: welcomeSize,
-      keyboardOpen: keyboardOpen && focusNode.hasFocus,
-      input: ChatComposerInput(
-        controller: controller,
-        focusNode: focusNode,
-        // Restore navigation on blur while the keyboard is still dismissing.
-        keyboardOpen: keyboardOpen && focusNode.hasFocus,
-        maxHeight: maxInputHeight,
-        navigation: navigation,
+    return ChatComposerKeyboardTransition(
+      editing: keyboardOpen && focusNode.hasFocus,
+      child: ChatComposerLayout(
+        toggle: ChatAiToggle(active: aiMode, onTap: notifier.toggleAiMode),
+        attachments: attachments,
+        onRemoveAttachment: notifier.removeAttachment,
+        showWelcome: showWelcome,
+        input: ChatComposerInput(
+          controller: controller,
+          focusNode: focusNode,
+          // Restore navigation on blur while the keyboard is still dismissing.
+          keyboardOpen: keyboardOpen && focusNode.hasFocus,
+          maxHeight: maxInputHeight,
+          navigation: navigation,
+        ),
       ),
     );
   }

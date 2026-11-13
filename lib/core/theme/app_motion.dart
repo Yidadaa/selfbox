@@ -7,6 +7,8 @@ abstract final class AppMotion {
 
   static const Duration fast = Duration(milliseconds: 180);
   static const Duration medium = Duration(milliseconds: 280);
+  static const Duration composerKeyboard = Duration(milliseconds: 280);
+  static const Curve composerKeyboardCurve = Curves.easeInOutCubic;
   static const Duration slow = Duration(milliseconds: 420);
   static const Duration statusTransition = Duration(milliseconds: 560);
   static const Offset assistantStageOffset = Offset(0, 0.08);

@@ -54,11 +54,15 @@ class AppArtwork extends StatelessWidget {
   const AppArtwork(
     this.artwork, {
     this.size = AppArtworkTokens.hero,
+    this.decodeSize,
     super.key,
   });
 
   final BrandArt artwork;
   final double size;
+
+  /// Keeps the decoded image stable while its display size animates.
+  final double? decodeSize;
 
   @override
   Widget build(BuildContext context) => artwork.asset.image(
@@ -67,7 +71,7 @@ class AppArtwork extends StatelessWidget {
     fit: BoxFit.contain,
     excludeFromSemantics: true,
     cacheWidth: math.min(
-      (size * MediaQuery.devicePixelRatioOf(context)).ceil(),
+      ((decodeSize ?? size) * MediaQuery.devicePixelRatioOf(context)).ceil(),
       AppArtworkTokens.maxDecodeSize,
     ),
   );

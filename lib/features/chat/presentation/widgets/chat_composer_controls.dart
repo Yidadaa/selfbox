@@ -65,9 +65,16 @@ class _AiToggleLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = active ? context.t.chat.aiStandby : context.t.chat.aiMode;
-    final duration = MediaQuery.disableAnimationsOf(context)
-        ? Duration.zero
-        : AppMotion.aiLabelTransition;
+    final text = Text(
+      label,
+      key: ValueKey(label),
+      maxLines: 1,
+      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+        color: active ? context.glass.accent : context.glass.foreground,
+      ),
+    );
+    if (MediaQuery.disableAnimationsOf(context)) return text;
+    const duration = AppMotion.aiLabelTransition;
     return AnimatedSize(
       duration: duration,
       curve: Curves.easeInOutCubic,
@@ -96,14 +103,7 @@ class _AiToggleLabel extends StatelessWidget {
             child: child,
           ),
         ),
-        child: Text(
-          label,
-          key: ValueKey(label),
-          maxLines: 1,
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            color: active ? context.glass.accent : context.glass.foreground,
-          ),
-        ),
+        child: text,
       ),
     );
   }
