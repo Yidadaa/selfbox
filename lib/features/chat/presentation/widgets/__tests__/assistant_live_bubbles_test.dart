@@ -23,6 +23,7 @@ void main() {
           ),
         ),
       ),
+      settle: false,
     );
     await tester.pump(const Duration(milliseconds: 100));
     expect(

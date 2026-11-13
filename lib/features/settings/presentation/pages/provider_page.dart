@@ -14,6 +14,7 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
+import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -21,6 +22,7 @@ import '../../domain/models/ai_settings.dart';
 import '../providers/settings_providers.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/provider_format_picker.dart';
+import '../widgets/provider_headers_sheet.dart';
 import '../widgets/provider_models_section.dart';
 
 /// Create (no [id]) or edit a provider, and manage its models.
@@ -92,6 +94,9 @@ class _ProviderForm extends HookConsumerWidget {
     final existing = this.existing;
     final id = useMemoized(() => existing?.id ?? const Uuid().v4());
     final saving = useState(false);
+    final headers = useState<Map<String, String>>(
+      Map<String, String>.of(existing?.headers ?? const {}),
+    );
     final form = useMemoized(
       () => FormGroup({
         _name: FormControl<String>(
@@ -125,6 +130,7 @@ class _ProviderForm extends HookConsumerWidget {
         name: (form.control(_name).value as String).trim(),
         format: format,
         baseUrl: (form.control(_baseUrl).value as String).trim(),
+        headers: Map.unmodifiable(headers.value),
       );
       saving.value = true;
       final service = ref.read(aiSettingsServiceProvider);
@@ -203,6 +209,23 @@ class _ProviderForm extends HookConsumerWidget {
                         ? t.settings.provider.apiKeyKept
                         : null,
                     obscureText: true,
+                  ),
+                  const Gap(AppSpacing.md),
+                  AppListTile(
+                    key: const ValueKey('edit-provider-headers'),
+                    title: t.settings.provider.headers,
+                    subtitle: headers.value.isEmpty
+                        ? t.settings.provider.noHeaders
+                        : headers.value.keys.join(', '),
+                    icon: Icons.http_rounded,
+                    value: '${headers.value.length}',
+                    onTap: () async {
+                      final result = await showProviderHeadersSheet(
+                        context: context,
+                        headers: headers.value,
+                      );
+                      if (result != null) headers.value = result;
+                    },
                   ),
                 ],
               ),

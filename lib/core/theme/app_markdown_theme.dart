@@ -21,8 +21,12 @@ abstract final class AppMarkdownTheme {
     final theme = Theme.of(context);
     final glass = context.glass;
     final color = textColor ?? glass.foreground;
-    final base = (theme.textTheme.bodyLarge ?? const TextStyle(fontSize: 16))
-        .copyWith(color: color, height: 1.5);
+    final body = theme.textTheme.bodyLarge ?? const TextStyle(fontSize: 16);
+    final base = body.copyWith(
+      fontSize: thinking ? 14 : body.fontSize,
+      color: thinking ? color.withValues(alpha: 0.72) : color,
+      height: thinking ? 1.4 : 1.5,
+    );
     final heading = base.copyWith(
       fontSize: (base.fontSize ?? 16) + (thinking ? 0 : _headingSizeIncrement),
       fontWeight: FontWeight.w600,

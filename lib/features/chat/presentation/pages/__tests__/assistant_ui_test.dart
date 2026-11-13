@@ -59,6 +59,20 @@ void main() {
       expect(find.byType(AssistantStatusBubble), findsOneWidget);
       expect(find.text(t.assistant.searching), findsOneWidget);
       expect(find.text(t.assistant.thinking), findsNothing);
+      for (var index = 0; index < 3; index++) {
+        expect(find.byKey(ValueKey('pending-dot-$index')), findsOneWidget);
+      }
+      final pendingDot = find.byKey(const ValueKey('pending-dot-0'));
+      final initialOffset = tester
+          .widget<Transform>(pendingDot)
+          .transform
+          .getTranslation()
+          .y;
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(
+        tester.widget<Transform>(pendingDot).transform.getTranslation().y,
+        isNot(initialOffset),
+      );
       // Sits below the question (reversed list: bottom is newest).
       expect(
         tester.getTopLeft(find.byType(AssistantStatusBubble)).dy,
@@ -124,6 +138,9 @@ void main() {
           await tester.pump(const Duration(milliseconds: 100));
           await tester.pump(const Duration(milliseconds: 100));
           expect(find.byType(StreamMarkdown), findsOneWidget);
+          for (var index = 0; index < 3; index++) {
+            expect(find.byKey(ValueKey('pending-dot-$index')), findsOneWidget);
+          }
           expect(
             tester.widget<SmoothMarkdown>(find.byType(SmoothMarkdown)).data,
             contains('第四行'),

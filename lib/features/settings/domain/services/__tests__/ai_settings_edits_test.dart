@@ -28,6 +28,17 @@ void main() {
       expect(renamed.providers.single.name, 'Mine');
     });
 
+    test('upsertProvider preserves custom headers when replacing other fields', () {
+      final configured = _openai.copyWith(
+        headers: const {'X-Client': 'selfbox', 'X-Mode': 'fast'},
+      );
+      final renamed = const AiSettings()
+          .upsertProvider(configured)
+          .upsertProvider(configured.copyWith(name: 'Mine'));
+
+      expect(renamed.providers.single.headers, configured.headers);
+    });
+
     test('removeProvider drops its models and clears a dangling selection', () {
       final settings = AiSettings(
         providers: const [_openai, _anthropic],
@@ -146,7 +157,9 @@ void main() {
   group('AiSettings', () {
     test('round-trips through JSON', () {
       final settings = AiSettings(
-        providers: const [_openai],
+        providers: [
+          _openai.copyWith(headers: const {'X-Client': 'selfbox'}),
+        ],
         models: [
           _m('p1', 'a', enabled: true).copyWith(
             supportsReasoning: true,
@@ -157,6 +170,18 @@ void main() {
         historyTurns: 8,
       );
       expect(AiSettings.fromJson(settings.toJson()), settings);
+    });
+
+    test('provider headers default to an empty map', () {
+      expect(
+        ProviderConfig.fromJson(const {
+          'id': 'p',
+          'name': 'Gateway',
+          'format': 'chatCompletions',
+          'baseUrl': 'https://example.com/v1',
+        }).headers,
+        isEmpty,
+      );
     });
 
     test('defaults are usable on an empty document', () {

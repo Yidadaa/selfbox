@@ -114,6 +114,8 @@ class AssistantThinkingBubble extends HookWidget {
                           maxHeight: maxHeight,
                         ),
                 ),
+                const Gap(AppSpacing.xxs),
+                AssistantPendingIndicator(color: glass.accent),
               ],
             ),
           ),
@@ -202,11 +204,6 @@ class AssistantTypingBubble extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final glass = context.glass;
-    final animation = useAnimationController(duration: AppMotion.slow * 3);
-    useEffect(() {
-      animation.repeat();
-      return null;
-    }, [animation]);
     return Semantics(
       label: label,
       child: ExcludeSemantics(
@@ -220,34 +217,60 @@ class AssistantTypingBubble extends HookWidget {
                     ?.copyWith(color: glass.onBubbleOther),
               ),
               const Gap(AppSpacing.xs),
-              for (var index = 0; index < 3; index++) ...[
-                if (index > 0) const Gap(AppSpacing.xxs),
-                AnimatedBuilder(
-                  animation: animation,
-                  builder: (context, child) {
-                    final phase = (animation.value * 3 - index) % 3;
-                    final lift = phase < 1
-                        ? math.sin(math.pi * phase) * AppSpacing.xxs
-                        : 0.0;
-                    return Transform.translate(
-                      key: ValueKey('typing-dot-$index'),
-                      offset: Offset(0, -lift),
-                      child: child,
-                    );
-                  },
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: glass.accent,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const SizedBox.square(dimension: AppSpacing.xxs),
-                  ),
-                ),
-              ],
+              AssistantPendingIndicator(
+                color: glass.accent,
+                keyPrefix: 'typing-dot',
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class AssistantPendingIndicator extends HookWidget {
+  const AssistantPendingIndicator({
+    required this.color,
+    this.keyPrefix = 'pending-dot',
+    super.key,
+  });
+
+  final Color color;
+  final String keyPrefix;
+
+  @override
+  Widget build(BuildContext context) {
+    final animation = useAnimationController(duration: AppMotion.slow * 3);
+    useEffect(() {
+      animation.repeat();
+      return null;
+    }, [animation]);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var index = 0; index < 3; index++) ...[
+          if (index > 0) const Gap(AppSpacing.xxs),
+          AnimatedBuilder(
+            animation: animation,
+            builder: (context, child) {
+              final phase = (animation.value * 3 - index) % 3;
+              final lift = phase < 1
+                  ? math.sin(math.pi * phase) * AppSpacing.xxs
+                  : 0.0;
+              return Transform.translate(
+                key: ValueKey('$keyPrefix-$index'),
+                offset: Offset(0, -lift),
+                child: child,
+              );
+            },
+            child: DecoratedBox(
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+              child: const SizedBox.square(dimension: AppSpacing.xxs),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

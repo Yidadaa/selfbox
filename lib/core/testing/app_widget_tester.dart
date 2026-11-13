@@ -147,6 +147,7 @@ extension AppWidgetTester on WidgetTester {
     MemoryRepository? memory,
     AppLocale locale = AppLocale.en,
     Brightness brightness = Brightness.dark,
+    bool settle = true,
   }) async {
     usePhoneViewport();
     LocaleSettings.setLocaleSync(locale);
@@ -175,7 +176,7 @@ extension AppWidgetTester on WidgetTester {
         ),
       ),
     );
-    await pumpAndSettle();
+    settle ? await pumpAndSettle() : await pump(const Duration(seconds: 1));
     return container;
   }
 }

@@ -35,7 +35,7 @@ class ChatComposerInput extends ConsumerWidget {
       children: [
         if (keyboardOpen) ...[
           GlassContainer(
-            quality: GlassQuality.premium,
+            quality: GlassQuality.standard,
             useOwnLayer: true,
             shape: const LiquidRoundedSuperellipse(
               borderRadius: AppRadius.pill,

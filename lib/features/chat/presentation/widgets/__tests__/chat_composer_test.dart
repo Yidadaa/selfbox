@@ -197,6 +197,19 @@ void main() {
     );
     final attach = tester.getRect(find.byType(ChatAttachButton));
     final send = tester.getRect(find.byType(ChatSendButton));
+    expect(
+      tester
+          .widget<GlassContainer>(
+            find
+                .ancestor(
+                  of: find.byType(ChatAttachButton),
+                  matching: find.byType(GlassContainer),
+                )
+                .first,
+          )
+          .quality,
+      GlassQuality.standard,
+    );
     expect(attach.center.dy, closeTo(input.center.dy, 1));
     expect(send.center.dy, closeTo(input.center.dy, 1));
     final sendCircle = tester.widget<AnimatedContainer>(

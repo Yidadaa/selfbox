@@ -63,7 +63,7 @@ class _ChatHeaderProfile extends ConsumerWidget {
               top: 60,
               child: GlassContainer(
                 key: const ValueKey('chat-header-profile-surface'),
-                quality: GlassQuality.premium,
+                quality: GlassQuality.standard,
                 shape: const LiquidRoundedSuperellipse(
                   borderRadius: AppRadius.pill,
                 ),

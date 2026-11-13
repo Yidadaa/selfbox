@@ -10,6 +10,7 @@ void main() {
     ) async {
       late List<TextStyle?> headings;
       late TextStyle? paragraph;
+      late TextStyle? thinkingParagraph;
       late List<TextStyle?> thinkingHeadings;
       await tester.pumpWidget(
         MaterialApp(
@@ -21,6 +22,7 @@ void main() {
               final normal = AppMarkdownTheme.of(context);
               final thinking = AppMarkdownTheme.of(context, thinking: true);
               paragraph = normal.paragraphStyle;
+              thinkingParagraph = thinking.paragraphStyle;
               headings = [
                 normal.h1Style,
                 normal.h2Style,
@@ -51,9 +53,11 @@ void main() {
         expect(heading.color, paragraph!.color);
       }
       for (final heading in thinkingHeadings) {
-        expect(heading!.fontSize, bodySize);
+        expect(heading!.fontSize, thinkingParagraph!.fontSize);
         expect(heading.fontWeight, FontWeight.w600);
       }
+      expect(thinkingParagraph!.fontSize, lessThan(bodySize));
+      expect(thinkingParagraph!.color!.a, lessThan(paragraph!.color!.a));
     });
   }
 }

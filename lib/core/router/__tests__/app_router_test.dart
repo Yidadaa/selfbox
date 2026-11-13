@@ -31,6 +31,7 @@ void main() {
       final container = await tester.pumpApp();
 
       expect(find.byType(ChatPage), findsOneWidget);
+      expect(find.byType(GlassScaffold), findsOneWidget);
       expect(find.byType(AppDockTabs), findsOneWidget);
       expect(container.read(appRouterProvider).state.matchedLocation, '/chat');
     });

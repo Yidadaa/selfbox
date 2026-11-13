@@ -32,6 +32,7 @@ abstract class ProviderConfig with _$ProviderConfig {
     required String name,
     required ApiFormat format,
     required String baseUrl,
+    @Default(<String, String>{}) Map<String, String> headers,
   }) = _ProviderConfig;
 
   factory ProviderConfig.fromJson(Map<String, dynamic> json) =>

@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/database/app_store.dart';
+import '../../../core/network/dio_factory.dart';
 import '../../../core/storage/app_paths.dart';
 import '../domain/repositories/language_model_factory.dart';
 import '../domain/repositories/message_repository.dart';
@@ -19,4 +20,4 @@ MediaStore mediaStore(Ref ref) => MediaStore(ref.watch(appPathsProvider));
 
 @Riverpod(keepAlive: true)
 LanguageModelFactory languageModelFactory(Ref ref) =>
-    const SdkLanguageModelFactory();
+    SdkLanguageModelFactory(ref.watch(dioFactoryProvider));

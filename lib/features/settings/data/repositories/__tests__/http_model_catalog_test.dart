@@ -9,6 +9,7 @@ const _gateway = ProviderConfig(
   name: 'Gateway',
   format: ApiFormat.chatCompletions,
   baseUrl: 'https://gateway.example.com/v1',
+  headers: {'X-Gateway': 'enabled'},
 );
 
 void main() {
@@ -36,6 +37,7 @@ void main() {
       final request = adapter.requests.single;
       expect(request.uri.toString(), 'https://gateway.example.com/v1/models');
       expect(request.headers['Authorization'], 'Bearer sk-1');
+      expect(request.headers['X-Gateway'], 'enabled');
     });
 
     test('uses Anthropic headers and asks for the full list', () async {
@@ -71,6 +73,34 @@ void main() {
       );
       expect(request.headers.containsKey('Authorization'), isFalse);
     });
+
+    test(
+      'authentication headers take precedence ignoring header case',
+      () async {
+        final adapter = FakeHttpAdapter(
+          (_) => (status: 200, body: {'data': <Object>[]}),
+        );
+        final catalog = HttpModelCatalog(fakeDioFactory(adapter));
+        final provider = _gateway.copyWith(
+          headers: const {
+            'Authorization': 'Bearer wrong',
+            'authorization': 'Bearer also-wrong',
+            'X-Trace': 'trace-1',
+          },
+        );
+
+        await catalog.fetch(provider, 'sk-1').run();
+
+        expect(adapter.requests.single.headers['Authorization'], 'Bearer sk-1');
+        expect(adapter.requests.single.headers['X-Trace'], 'trace-1');
+        expect(
+          adapter.requests.single.headers.keys
+              .where((name) => name.toLowerCase() == 'authorization')
+              .length,
+          1,
+        );
+      },
+    );
 
     test('maps HTTP errors to a network failure with the status', () async {
       final adapter = FakeHttpAdapter(

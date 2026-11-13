@@ -52,60 +52,57 @@ class AppShell extends HookConsumerWidget {
       onSelected: _onTabSelected,
     );
 
-    return GlassScaffold(
-      background: const AppCanvas(),
-      // The dock owns the keyboard offset; the page keeps its full viewport.
-      resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: [
-          IndexedStack(
-            index: navigationShell.currentIndex,
-            children: [
-              for (final (index, child) in children.indexed)
-                ShellScope(
-                  bottomInset: index == 0
-                      ? chatDockHeight.value + chatBottom
-                      : tabDockHeight.value + tabBottom,
-                  child: child,
-                ),
-            ],
-          ),
-          AnimatedPositioned(
-            duration: AppMotion.fast,
-            curve: AppMotion.emphasized,
-            left: AppInsets.pageHorizontal,
-            right: AppInsets.pageHorizontal,
-            bottom: bottom,
-            child: MeasureSize(
-              onChange: (size) {
-                if (onChat) {
-                  chatDockHeight.value = size.height;
-                } else {
-                  tabDockHeight.value = size.height;
-                }
-              },
-              child: onChat
-                  ? ChatComposer(
-                      keyboardOpen: keyboard > 0,
-                      navigation: navigation,
-                    )
-                  : GlassContainer(
-                      quality: GlassQuality.standard,
-                      useOwnLayer: true,
-                      settings: LiquidGlassSettings(
-                        blur: glass.chromeBlur,
-                        glassColor: glass.chromeTint,
-                      ),
-                      padding: const EdgeInsets.only(top: AppSpacing.xs),
-                      shape: const LiquidRoundedSuperellipse(
-                        borderRadius: AppRadius.xl,
-                      ),
-                      child: navigation,
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        const AppCanvas(),
+        IndexedStack(
+          index: navigationShell.currentIndex,
+          children: [
+            for (final (index, child) in children.indexed)
+              ShellScope(
+                bottomInset: index == 0
+                    ? chatDockHeight.value + chatBottom
+                    : tabDockHeight.value + tabBottom,
+                child: child,
+              ),
+          ],
+        ),
+        AnimatedPositioned(
+          duration: AppMotion.fast,
+          curve: AppMotion.emphasized,
+          left: AppInsets.pageHorizontal,
+          right: AppInsets.pageHorizontal,
+          bottom: bottom,
+          child: MeasureSize(
+            onChange: (size) {
+              if (onChat) {
+                chatDockHeight.value = size.height;
+              } else {
+                tabDockHeight.value = size.height;
+              }
+            },
+            child: onChat
+                ? ChatComposer(
+                    keyboardOpen: keyboard > 0,
+                    navigation: navigation,
+                  )
+                : GlassContainer(
+                    quality: GlassQuality.standard,
+                    useOwnLayer: true,
+                    settings: LiquidGlassSettings(
+                      blur: glass.chromeBlur,
+                      glassColor: glass.chromeTint,
                     ),
-            ),
+                    padding: const EdgeInsets.only(top: AppSpacing.xs),
+                    shape: const LiquidRoundedSuperellipse(
+                      borderRadius: AppRadius.xl,
+                    ),
+                    child: navigation,
+                  ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

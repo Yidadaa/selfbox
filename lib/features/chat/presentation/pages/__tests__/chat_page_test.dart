@@ -181,7 +181,7 @@ void main() {
               find.byKey(const ValueKey('chat-header-profile-surface')),
             )
             .quality,
-        GlassQuality.premium,
+        GlassQuality.standard,
       );
       final avatar = tester.getRect(
         find.byKey(const ValueKey('chat-header-avatar')),

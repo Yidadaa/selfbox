@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -80,13 +79,13 @@ class _ActivityLabel extends StatelessWidget {
         children: [
           Icon(icon, size: AppSpacing.md, color: glass.accent),
           const Gap(AppSpacing.xs),
-          _Pulse(
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium
-                  ?.copyWith(color: glass.foregroundMuted),
-            ),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodyMedium
+                ?.copyWith(color: glass.foregroundMuted),
           ),
+          const Gap(AppSpacing.xs),
+          AssistantPendingIndicator(color: glass.accent),
         ],
       ),
     );
@@ -162,27 +161,6 @@ class _FailureRow extends ConsumerWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// Gentle opacity breathing for "in progress" labels; hook-owned so nothing
-/// outlives the widget.
-class _Pulse extends HookWidget {
-  const _Pulse({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = useAnimationController(duration: AppMotion.slow * 2);
-    useEffect(() {
-      controller.repeat(reverse: true);
-      return null;
-    }, [controller]);
-    return FadeTransition(
-      opacity: Tween<double>(begin: 0.45, end: 1).animate(controller),
-      child: child,
     );
   }
 }

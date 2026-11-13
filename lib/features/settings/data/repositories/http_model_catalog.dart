@@ -34,7 +34,7 @@ class HttpModelCatalog implements ModelCatalog {
     final api = ModelsApi(
       _dio(
         baseUrl: provider.baseUrl,
-        headers: authHeaders(provider.format, apiKey),
+        headers: _requestHeaders(provider, apiKey),
       ),
     );
     final list = await api.list(
@@ -42,6 +42,20 @@ class HttpModelCatalog implements ModelCatalog {
     );
     return [for (final model in list.data) model.id];
   }, _toFailure);
+
+  static Map<String, String> _requestHeaders(
+    ProviderConfig provider,
+    String apiKey,
+  ) {
+    final auth = authHeaders(provider.format, apiKey);
+    final authNames = auth.keys.map((key) => key.toLowerCase()).toSet();
+    return {
+      for (final entry in provider.headers.entries)
+        if (!authNames.contains(entry.key.toLowerCase()))
+          entry.key: entry.value,
+      ...auth,
+    };
+  }
 
   static AppFailure _toFailure(Object error, StackTrace stack) =>
       switch (error) {
