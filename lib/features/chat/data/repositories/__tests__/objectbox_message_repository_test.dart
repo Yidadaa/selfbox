@@ -63,6 +63,20 @@ void main() {
       expect(loaded.toNullable()?.images, ['media/a.jpg']);
     });
 
+    test('allImagePaths returns unique paths in chronological order', () async {
+      final repo = await _repo();
+      await _add(repo, 'first', images: ['media/a.jpg', 'media/b.jpg']);
+      await _add(repo, 'second', images: ['media/c.jpg', 'media/a.jpg']);
+      await _add(repo, 'without image');
+
+      final result = await repo.allImagePaths().run();
+      expect(result.getOrElse((failure) => fail('$failure')), [
+        'media/a.jpg',
+        'media/b.jpg',
+        'media/c.jpg',
+      ]);
+    });
+
     test('byId returns none for unknown ids', () async {
       final repo = await _repo();
       final result = await repo.byId(999).run();

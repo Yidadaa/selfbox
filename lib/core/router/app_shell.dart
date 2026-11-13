@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../features/chat/presentation/widgets/chat_composer.dart';
+import '../theme/app_glass_theme.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
@@ -45,6 +46,7 @@ class AppShell extends HookConsumerWidget {
         ? keyboard + AppSpacing.xs
         : tabBottom;
     final bottom = onChat ? chatBottom : tabBottom;
+    final glass = context.glass;
     final navigation = AppDockTabs(
       selectedIndex: navigationShell.currentIndex,
       onSelected: _onTabSelected,
@@ -89,6 +91,11 @@ class AppShell extends HookConsumerWidget {
                     )
                   : GlassContainer(
                       quality: GlassQuality.standard,
+                      useOwnLayer: true,
+                      settings: LiquidGlassSettings(
+                        blur: glass.chromeBlur,
+                        glassColor: glass.chromeTint,
+                      ),
                       padding: const EdgeInsets.only(top: AppSpacing.xs),
                       shape: const LiquidRoundedSuperellipse(
                         borderRadius: AppRadius.xl,

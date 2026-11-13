@@ -111,3 +111,5 @@
 - [2026-11-13] [ThinkingScroll] 思考 Markdown 增长后仍停在顶部 -> 仅监听滚动指标未覆盖内层内容重排 -> 用 `SizeChangedLayoutNotifier` 在内容变高后滚到末尾。
 - [2026-11-13] [Screenshot] 思考截图拍到滚动中途的截断文字 -> 截图夹具只推进了动效起始帧 -> 捕获前继续推进滚动完成帧。
 - [2026-11-13] [Lint] `MarkdownConfig(enableHtml: false)` 触发冗余默认参数告警 -> 库默认即禁用 HTML -> 保持默认配置并用静态分析守门。
+- [2026-11-13] [FlutterTest] 并行启动多个 Flutter 测试命令导致共享 `build/test_cache` 的 dill 文件冲突 -> 测试编译器写入同一缓存 -> Flutter 测试命令串行运行。
+- [2026-11-13] [MediaStore] 图片优化接入后旧 Controller 测试仍用随机字节并断言原始扩展名 -> 解码失败会按设计拒绝损坏图片且统一输出 JPEG -> 图片夹具必须使用可解码样本，并断言压缩后的 JPEG 属性。

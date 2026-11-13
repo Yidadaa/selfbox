@@ -19,6 +19,9 @@ abstract interface class MessageRepository {
   /// The newest [limit] messages.
   TaskEither<AppFailure, List<Message>> latest(int limit);
 
+  /// Every referenced image path, oldest message first, without duplicates.
+  TaskEither<AppFailure, List<String>> allImagePaths();
+
   /// Newest-first matches for [query].
   TaskEither<AppFailure, List<Message>> find(MessageQuery query);
 

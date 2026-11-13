@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart' as p;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/error/app_failure.dart';
@@ -84,18 +83,10 @@ class ComposerController extends _$ComposerController {
       _pickFailure,
     ).run();
     for (final file in picked.getOrElse((_) => [])) {
-      final saved = await TaskEither.tryCatch(file.readAsBytes, _pickFailure)
-          .flatMap(
-            (bytes) => ref
-                .read(mediaStoreProvider)
-                .saveImage(
-                  bytes,
-                  extension: p.extension(
-                    file.path.isEmpty ? file.name : file.path,
-                  ),
-                ),
-          )
-          .run();
+      final saved = await TaskEither.tryCatch(
+        file.readAsBytes,
+        _pickFailure,
+      ).flatMap((bytes) => ref.read(mediaStoreProvider).saveImage(bytes)).run();
       state = saved.match(
         (failure) => state.copyWith(failure: Some(failure)),
         (path) => state.copyWith(attachments: [...state.attachments, path]),

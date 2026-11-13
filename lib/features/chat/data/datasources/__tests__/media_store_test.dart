@@ -2,32 +2,57 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as p;
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/testing/temp_storage.dart';
 import 'package:selfbox/features/chat/data/datasources/media_store.dart';
+
+Uint8List _jpeg({int width = 640, int height = 480}) =>
+    Uint8List.fromList(img.encodeJpg(img.Image(width: width, height: height)));
 
 void main() {
   group('MediaStore', () {
     late MediaStore store;
     setUp(() => store = MediaStore(createTempAppPaths()));
 
-    test('saves bytes under media/ and returns a relative path', () async {
-      final bytes = Uint8List.fromList([1, 2, 3]);
-      final relative = (await store.saveImage(bytes, extension: '.PNG').run())
-          .getOrElse((f) => fail('$f'));
+    test('normalizes stored photos to bounded JPEG files', () async {
+      final relative =
+          (await store.saveImage(_jpeg(width: 3600, height: 1800)).run())
+              .getOrElse((failure) => fail('$failure'));
 
-      expect(relative, matches(RegExp(r'^media/[0-9a-f-]{36}\.png$')));
-      final file = store.resolve(relative).toNullable();
-      expect(file?.readAsBytesSync(), bytes);
+      expect(relative, matches(RegExp(r'^media/[0-9a-f-]{36}\.jpg$')));
+      final stored = (await store.read(relative).run()).getOrElse(
+        (failure) => fail('$failure'),
+      );
+      final decoded = img.decodeImage(stored);
+      expect(decoded, isNotNull);
+      expect(decoded!.width, 2048);
+      expect(decoded.height, 1024);
     });
 
-    test('falls back to jpg when the extension is missing', () async {
-      final relative =
-          (await store.saveImage(Uint8List(1), extension: '').run()).getOrElse(
-            (f) => fail('$f'),
-          );
-      expect(p.extension(relative), '.jpg');
+    test('creates a small JPEG thumbnail beside its full-size image', () async {
+      final relative = (await store.saveImage(_jpeg()).run()).getOrElse(
+        (failure) => fail('$failure'),
+      );
+      final thumbnail = store.thumbnail(relative).toNullable();
+      expect(thumbnail, isNotNull);
+      expect(thumbnail!.existsSync(), isTrue);
+
+      final decoded = img.decodeImage(thumbnail.readAsBytesSync());
+      expect(decoded, isNotNull);
+      expect(decoded!.width, 320);
+      expect(decoded.height, 240);
+    });
+
+    test('rejects corrupt image bytes without creating files', () async {
+      final result = await store.saveImage(Uint8List.fromList([1, 2, 3])).run();
+
+      expect(result.getLeft().toNullable(), isA<ValidationFailure>());
+    });
+
+    test('thumbnail path rejects media paths outside its root', () {
+      expect(store.thumbnail('../private.jpg'), isA<None>());
     });
 
     test('resolves to a native-separator path under the root', () {
@@ -38,14 +63,15 @@ void main() {
       );
     });
 
-    test('reads back what it saved', () async {
-      final relative =
-          (await store
-                  .saveImage(Uint8List.fromList([9]), extension: 'jpg')
-                  .run())
-              .getOrElse((f) => fail('$f'));
+    test('reads back the optimized image', () async {
+      final relative = (await store.saveImage(_jpeg()).run()).getOrElse(
+        (failure) => fail('$failure'),
+      );
       final read = await store.read(relative).run();
-      expect(read.getOrElse((f) => fail('$f')), [9]);
+      expect(
+        img.decodeImage(read.getOrElse((failure) => fail('$failure'))),
+        isNotNull,
+      );
     });
 
     for (final hostile in [
@@ -71,13 +97,16 @@ void main() {
       expect(result.getLeft().toNullable(), isA<ValidationFailure>());
     });
 
-    test('delete removes the file and tolerates repeats', () async {
-      final relative =
-          (await store.saveImage(Uint8List(1), extension: 'jpg').run())
-              .getOrElse((f) => fail('$f'));
+    test('delete removes both files and tolerates repeats', () async {
+      final relative = (await store.saveImage(_jpeg()).run()).getOrElse(
+        (failure) => fail('$failure'),
+      );
+      final original = store.resolve(relative).toNullable()!;
+      final thumbnail = store.thumbnail(relative).toNullable()!;
 
       expect((await store.delete(relative).run()).isRight(), isTrue);
-      expect(store.resolve(relative).toNullable()?.existsSync(), isFalse);
+      expect(original.existsSync(), isFalse);
+      expect(thumbnail.existsSync(), isFalse);
       expect((await store.delete(relative).run()).isRight(), isTrue);
     });
   });

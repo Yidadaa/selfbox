@@ -8,6 +8,7 @@ import 'package:selfbox/core/router/app_routes.dart';
 import 'package:selfbox/core/router/not_found_page.dart';
 import 'package:selfbox/core/router/shell_scope.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
+import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/features/chat/presentation/pages/chat_page.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer.dart';
@@ -98,17 +99,36 @@ void main() {
     });
 
     for (final location in ['/memory', '/me']) {
-      testWidgets('$location tab dock follows the same screen insets', (
-        tester,
-      ) async {
-        final container = await tester.pumpApp();
-        container.read(appRouterProvider).go(location);
-        await tester.pumpAndSettle();
-        final tabs = tester.getRect(find.byType(AppDockTabs));
-        expect(tabs.left, AppSpacing.md);
-        expect(tabs.right, kPhoneViewport.width - AppSpacing.md);
-        expect(tabs.bottom, kPhoneViewport.height - 34 - AppSpacing.md);
-      });
+      for (final brightness in Brightness.values) {
+        testWidgets(
+          '$location tab dock uses themed chrome in ${brightness.name}',
+          (tester) async {
+            tester.platformDispatcher.platformBrightnessTestValue = brightness;
+            addTearDown(
+              tester.platformDispatcher.clearPlatformBrightnessTestValue,
+            );
+            final container = await tester.pumpApp();
+            container.read(appRouterProvider).go(location);
+            await tester.pumpAndSettle();
+            final tabs = tester.getRect(find.byType(AppDockTabs));
+            final dock = tester.widget<GlassContainer>(
+              find
+                  .ancestor(
+                    of: find.byType(AppDockTabs),
+                    matching: find.byType(GlassContainer),
+                  )
+                  .first,
+            );
+            expect(dock.useOwnLayer, isTrue);
+            final glass = AppGlassTheme.of(brightness);
+            expect(dock.settings?.blur, glass.chromeBlur);
+            expect(dock.settings?.glassColor, glass.chromeTint);
+            expect(tabs.left, AppSpacing.md);
+            expect(tabs.right, kPhoneViewport.width - AppSpacing.md);
+            expect(tabs.bottom, kPhoneViewport.height - 34 - AppSpacing.md);
+          },
+        );
+      }
     }
 
     for (final location in ['/memory', '/me']) {

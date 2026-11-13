@@ -133,12 +133,12 @@ class _MarkdownListItem extends ConsumerWidget {
             ),
           ],
         ),
-        // Nest from the marker edge, without reapplying depth-based padding
-        // inside the parent's already-indented text column.
+        // A nested marker begins where the parent's body begins. The parent
+        // row has already consumed its marker column and the marker gap.
         for (final list in nested)
           Padding(
             padding: EdgeInsetsDirectional.only(
-              start: markerWidth,
+              start: markerWidth + AppMarkdownTheme.listMarkerGap,
               top: AppSpacing.xxs,
             ),
             child: _MarkdownList(

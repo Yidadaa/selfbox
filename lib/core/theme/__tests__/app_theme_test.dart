@@ -65,6 +65,12 @@ void main() {
 
         test('chrome layer blurs more than the surface layer', () {
           expect(glass!.chromeBlur, greaterThan(glass.surfaceBlur));
+          expect(glass.chromeTint.a, greaterThanOrEqualTo(0.65));
+          final dockSurface = Color.alphaBlend(
+            glass.chromeTint,
+            glass.canvasGradient.first,
+          );
+          expect(_contrast(glass.foreground, dockSurface), greaterThan(4.5));
         });
 
         test('foreground text meets WCAG AA on every canvas stop', () {

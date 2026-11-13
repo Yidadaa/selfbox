@@ -16,7 +16,7 @@ void main() {
   for (final brightness in Brightness.values) {
     for (final streaming in [false, true]) {
       testWidgets(
-        '$brightness streaming=$streaming nests markers at the parent marker edge',
+        '$brightness streaming=$streaming nests markers at the parent text start',
         (tester) async {
           await tester.pumpPage(
             _MarkdownFixture(data: _nested, streaming: streaming),
@@ -34,14 +34,24 @@ void main() {
           for (var i = 1; i < rects.length; i++) {
             expect(
               rects[i].left,
-              closeTo(rects[i - 1].right, 0.01),
+              closeTo(
+                tester
+                    .getTopLeft(
+                      find.text(
+                        ['Level one', 'Level two', 'Level three'][i - 1],
+                        findRichText: true,
+                      ),
+                    )
+                    .dx,
+                0.01,
+              ),
               reason: 'Level ${i + 1} must not add depth-based padding.',
             );
           }
           final firstBody = tester.getRect(
             find.text('Level one', findRichText: true),
           );
-          expect(rects[1].left, lessThan(firstBody.left));
+          expect(rects[1].left, firstBody.left);
           final lastBody = tester.getRect(
             find.text(
               'Level four with enough text to wrap onto another line',

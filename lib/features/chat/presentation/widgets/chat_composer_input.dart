@@ -76,13 +76,20 @@ class _InputSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final navigationHeight =
-        keyboardOpen ? 0.0 : AppSizes.minTouchTarget + AppSpacing.sm;
+    final glass = context.glass;
+    final navigationHeight = keyboardOpen
+        ? 0.0
+        : AppSizes.minTouchTarget + AppSpacing.sm;
     final verticalPadding = keyboardOpen ? 0.0 : AppSpacing.md;
     final editorMaxHeight = (maxHeight - navigationHeight - verticalPadding)
         .clamp(AppSizes.iconMd, double.infinity);
     return GlassContainer(
       quality: GlassQuality.standard,
+      useOwnLayer: true,
+      settings: LiquidGlassSettings(
+        blur: glass.chromeBlur,
+        glassColor: glass.chromeTint,
+      ),
       shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.xl),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -98,10 +105,9 @@ class _InputSurface extends StatelessWidget {
           AnimatedSize(
             duration: AppMotion.fast,
             alignment: Alignment.topCenter,
-            child:
-                keyboardOpen
-                    ? const SizedBox.shrink()
-                    : navigation ?? const SizedBox.shrink(),
+            child: keyboardOpen
+                ? const SizedBox.shrink()
+                : navigation ?? const SizedBox.shrink(),
           ),
         ],
       ),
@@ -131,9 +137,8 @@ class _InputRow extends ConsumerWidget {
     final glass = context.glass;
     final t = context.t;
     // Cupertino overlays must use the alphabetic baseline reported by Text.
-    final textStyle = Theme.of(
-      context,
-    ).textTheme.bodyLarge?.copyWith(textBaseline: TextBaseline.alphabetic);
+    final textStyle = Theme.of(context).textTheme.bodyLarge
+        ?.copyWith(textBaseline: TextBaseline.alphabetic);
     return Padding(
       padding: EdgeInsets.fromLTRB(
         keyboardOpen ? AppSpacing.md : AppSpacing.xs,
@@ -154,8 +159,8 @@ class _InputRow extends ConsumerWidget {
                 controller: controller,
                 focusNode: focusNode,
                 onChanged: notifier.setText,
-                onTapOutside:
-                    (_) => FocusManager.instance.primaryFocus?.unfocus(),
+                onTapOutside: (_) =>
+                    FocusManager.instance.primaryFocus?.unfocus(),
                 minLines: 1,
                 maxLines: 6,
                 keyboardType: TextInputType.multiline,

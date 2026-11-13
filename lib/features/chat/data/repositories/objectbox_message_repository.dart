@@ -66,6 +66,20 @@ class ObjectBoxMessageRepository implements MessageRepository {
       find(MessageQuery(limit: limit));
 
   @override
+  TaskEither<AppFailure, List<String>> allImagePaths() => _run(() async {
+    final query = (_box.query()..order(MessageEntity_.createdAt)).build();
+    try {
+      final paths = <String>{};
+      for (final message in await query.findAsync()) {
+        paths.addAll(message.images);
+      }
+      return List.unmodifiable(paths);
+    } finally {
+      query.close();
+    }
+  });
+
+  @override
   TaskEither<AppFailure, List<Message>> find(MessageQuery query) =>
       _run(() async {
         final conditions = <Condition<MessageEntity>>[

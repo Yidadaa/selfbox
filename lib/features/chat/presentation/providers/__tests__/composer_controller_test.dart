@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/storage/app_paths.dart';
@@ -14,6 +15,9 @@ import 'package:selfbox/core/testing/temp_storage.dart';
 import 'package:selfbox/features/chat/data/chat_data_providers.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
+
+Uint8List _jpeg() =>
+    Uint8List.fromList(img.encodeJpg(img.Image(width: 16, height: 16)));
 
 class _FakePicker extends Fake implements ImagePicker {
   _FakePicker(this.result);
@@ -114,9 +118,9 @@ void main() {
       expect(calls, 1);
       expect(container.read(composerControllerProvider).canSend, false);
       selected.complete([
-        XFile.fromData(Uint8List.fromList([1]), name: 'a.jpg', path: 'a.jpg'),
+        XFile.fromData(_jpeg(), name: 'a.jpg', path: 'a.jpg'),
         XFile('nonexistent-image.jpg'),
-        XFile.fromData(Uint8List.fromList([2]), name: 'b.jpg', path: 'b.jpg'),
+        XFile.fromData(_jpeg(), name: 'b.jpg', path: 'b.jpg'),
       ]);
       await pending;
       final state = container.read(composerControllerProvider);
@@ -190,19 +194,15 @@ void main() {
 
     test('picking multiple images saves every attachment in order', () async {
       final env = _env(
-        picked: XFile.fromData(
-          Uint8List.fromList([1, 2]),
-          name: 'p.png',
-          path: 'p.png',
-        ),
+        picked: XFile.fromData(_jpeg(), name: 'p.png', path: 'p.png'),
       );
       await _ctrl(env).pickImage();
 
       expect(_state(env).attachments, hasLength(2));
       final path = _state(env).attachments.first;
-      expect(path, endsWith('.png'));
+      expect(path, endsWith('.jpg'));
       final file = env.container.read(mediaStoreProvider).resolve(path);
-      expect(file.toNullable()?.readAsBytesSync(), [1, 2]);
+      expect(img.decodeImage(file.toNullable()!.readAsBytesSync()), isNotNull);
       expect(_state(env).canSend, isTrue);
     });
 
@@ -214,11 +214,7 @@ void main() {
 
     test('an image-only note can be sent', () async {
       final env = _env(
-        picked: XFile.fromData(
-          Uint8List.fromList([1]),
-          name: 'p.jpg',
-          path: 'p.jpg',
-        ),
+        picked: XFile.fromData(_jpeg(), name: 'p.jpg', path: 'p.jpg'),
       );
       await _ctrl(env).pickImage();
       await _ctrl(env).send();
@@ -229,11 +225,7 @@ void main() {
 
     test('removing an attachment deletes the stored file', () async {
       final env = _env(
-        picked: XFile.fromData(
-          Uint8List.fromList([1]),
-          name: 'p.jpg',
-          path: 'p.jpg',
-        ),
+        picked: XFile.fromData(_jpeg(), name: 'p.jpg', path: 'p.jpg'),
       );
       await _ctrl(env).pickImage();
       final path = _state(env).attachments.first;

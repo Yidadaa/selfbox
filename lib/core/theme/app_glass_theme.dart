@@ -31,7 +31,7 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
     canvasGradient: [Color(0xFF0B0F1A), Color(0xFF1A1340), Color(0xFF0E2A3A)],
     surfaceTint: Color(0x1FFFFFFF),
     surfaceBlur: 16,
-    chromeTint: Color(0x33FFFFFF),
+    chromeTint: Color(0xAA111827),
     chromeBlur: 28,
     highlightBorder: Color(0x66FFFFFF),
     shadowBorder: Color(0x14FFFFFF),

@@ -127,53 +127,61 @@ void main() {
     });
   }
 
-  testWidgets(
-    'input controls share a center line and tabs use the dock edges',
-    (tester) async {
-      await tester.pumpApp();
-      final field = tester.widget<GlassContainer>(
-        find.descendant(
-          of: find.byKey(const ValueKey('chat-input')),
-          matching: find.byType(GlassContainer),
-        ),
-      );
-      expect(field.quality, GlassQuality.standard);
-      final input = tester.getRect(find.byType(EditableText));
-      final attach = tester.getRect(find.byType(ChatAttachButton));
-      final send = tester.getRect(find.byType(ChatSendButton));
-      expect(attach.center.dy, closeTo(input.center.dy, 1));
-      expect(send.center.dy, closeTo(input.center.dy, 1));
-      final dock = tester.getRect(find.byType(ChatComposer));
-      expect(
-        tester.getSize(find.byKey(const ValueKey('chat-input'))).height,
-        lessThan(140),
-      );
-      final tabs = tester.getRect(find.byType(AppDockTabs));
-      expect(dock.left, AppSpacing.md);
-      expect(dock.right, kPhoneViewport.width - AppSpacing.md);
-      expect(dock.bottom, kPhoneViewport.height - 34 - AppSpacing.md);
-      expect(tabs.left, dock.left);
-      expect(tabs.right, dock.right);
-      expect(
-        tester
-            .widget<GlassContainer>(
-              find.descendant(
-                of: find.byType(ChatAiToggle),
-                matching: find.byType(GlassContainer),
-              ),
-            )
-            .quality,
-        GlassQuality.premium,
-      );
-      expect(
-        find.descendant(
-          of: find.byKey(const ValueKey('chat-input')),
-          matching: find.text(t.tabs.memory),
-        ),
-        findsOneWidget,
-      );
-    },
-  );
+  for (final brightness in Brightness.values) {
+    testWidgets(
+      'input dock uses themed chrome and aligned controls in ${brightness.name}',
+      (tester) async {
+        tester.platformDispatcher.platformBrightnessTestValue = brightness;
+        addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+        await tester.pumpApp();
+        final field = tester.widget<GlassContainer>(
+          find.descendant(
+            of: find.byKey(const ValueKey('chat-input')),
+            matching: find.byType(GlassContainer),
+          ),
+        );
+        expect(field.quality, GlassQuality.standard);
+        expect(field.useOwnLayer, isTrue);
+        final glass = AppGlassTheme.of(brightness);
+        expect(field.settings?.blur, glass.chromeBlur);
+        expect(field.settings?.glassColor, glass.chromeTint);
+        final input = tester.getRect(find.byType(EditableText));
+        final attach = tester.getRect(find.byType(ChatAttachButton));
+        final send = tester.getRect(find.byType(ChatSendButton));
+        expect(attach.center.dy, closeTo(input.center.dy, 1));
+        expect(send.center.dy, closeTo(input.center.dy, 1));
+        final dock = tester.getRect(find.byType(ChatComposer));
+        expect(
+          tester.getSize(find.byKey(const ValueKey('chat-input'))).height,
+          lessThan(140),
+        );
+        final tabs = tester.getRect(find.byType(AppDockTabs));
+        expect(dock.left, AppSpacing.md);
+        expect(dock.right, kPhoneViewport.width - AppSpacing.md);
+        expect(dock.bottom, kPhoneViewport.height - 34 - AppSpacing.md);
+        expect(tabs.left, dock.left);
+        expect(tabs.right, dock.right);
+        expect(
+          tester
+              .widget<GlassContainer>(
+                find.descendant(
+                  of: find.byType(ChatAiToggle),
+                  matching: find.byType(GlassContainer),
+                ),
+              )
+              .quality,
+          GlassQuality.premium,
+        );
+        expect(
+          find.descendant(
+            of: find.byKey(const ValueKey('chat-input')),
+            matching: find.text(t.tabs.memory),
+          ),
+          findsOneWidget,
+        );
+      },
+    );
+  }
 
   testWidgets('keyboard input controls stay centered and aligned to edges', (
     tester,

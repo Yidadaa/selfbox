@@ -82,6 +82,17 @@ class FakeMessageRepository implements MessageRepository {
       TaskEither.right(_newestFirst.take(limit).toList());
 
   @override
+  TaskEither<AppFailure, List<String>> allImagePaths() {
+    final paths = <String>{};
+    for (final message in [
+      ..._rows,
+    ]..sort((a, b) => a.createdAt.compareTo(b.createdAt))) {
+      paths.addAll(message.images);
+    }
+    return TaskEither.right(List.unmodifiable(paths));
+  }
+
+  @override
   TaskEither<AppFailure, List<Message>> find(MessageQuery query) {
     bool matches(Message m) =>
         query.terms.every(

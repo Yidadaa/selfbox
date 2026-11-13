@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/error/app_failure.dart';
@@ -33,6 +34,9 @@ import 'package:selfbox/features/settings/presentation/pages/profile_page.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+Uint8List _jpeg() =>
+    Uint8List.fromList(img.encodeJpg(img.Image(width: 16, height: 16)));
+
 Message _msg(
   int id,
   String text, {
@@ -60,13 +64,7 @@ class _SingleImagePicker extends Fake implements ImagePicker {
     int? imageQuality,
     int? limit,
     bool requestFullMetadata = true,
-  }) async => [
-    XFile.fromData(
-      Uint8List.fromList([1]),
-      name: 'photo.png',
-      path: 'photo.png',
-    ),
-  ];
+  }) async => [XFile.fromData(_jpeg(), name: 'photo.png', path: 'photo.png')];
 }
 
 void main() {
