@@ -16,6 +16,7 @@ import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
+import 'assistant_transition_fixtures.dart';
 import 'screenshot_fixtures.dart';
 
 Future<void> _loadFont(String family, List<String> paths) async {
@@ -63,7 +64,7 @@ Future<void> _warmImages(AppPaths paths) async {
 void main() {
   setUpAll(_loadFonts);
 
-  for (final shot in screenshotFixtures) {
+  for (final shot in [...screenshotFixtures, ...assistantTransitionFixtures]) {
     for (final locale in [AppLocale.zhCn]) {
       testWidgets('screenshot ${shot.name}', (tester) async {
         final env = shot.env();

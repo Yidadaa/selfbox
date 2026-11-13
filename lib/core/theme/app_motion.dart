@@ -9,6 +9,7 @@ abstract final class AppMotion {
   static const Duration medium = Duration(milliseconds: 280);
   static const Duration slow = Duration(milliseconds: 420);
   static const Duration statusTransition = Duration(milliseconds: 560);
+  static const Offset assistantStageOffset = Offset(0, 0.08);
   static const Duration composerGlowLoop = Duration(seconds: 12);
   static const Duration composerGlowEnter = Duration(milliseconds: 700);
   static const Duration composerGlowExit = Duration(milliseconds: 500);

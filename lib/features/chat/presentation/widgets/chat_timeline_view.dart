@@ -1,31 +1,24 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
-import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/time/clock.dart';
-import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
-import '../../data/chat_data_providers.dart';
-import '../../domain/models/message.dart';
 import '../providers/assistant_controller.dart';
 import '../providers/chat_feed.dart';
 import '../providers/chat_timeline.dart';
 import '../providers/composer_controller.dart';
-import '../providers/message_actions.dart';
 import 'assistant_status_bubble.dart';
+import 'chat_timeline_message_row.dart';
 import 'chat_timeline_skeleton.dart';
 import 'day_pill.dart';
-import 'message_bubble.dart';
-import 'outgoing_message_entrance.dart';
 import 'welcome_timeline.dart';
 
 class ChatTimelineView extends HookConsumerWidget {
@@ -228,70 +221,13 @@ class _TimelineList extends HookConsumerWidget {
                   day: day,
                   now: now,
                 ),
-                TimelineMessage(:final message) => _TimelineMessageRow(
+                TimelineMessage(:final message) => ChatTimelineMessageRow(
                   key: ValueKey<int>(message.id),
                   message: message,
                   entering: enteringIds.contains(message.id),
                   onEntered: () => onMessageEntered(message.id),
                 ),
               },
-      ),
-    );
-  }
-}
-
-class _TimelineMessageRow extends ConsumerWidget {
-  const _TimelineMessageRow({
-    required this.message,
-    required this.entering,
-    required this.onEntered,
-    super.key,
-  });
-
-  final Message message;
-  final bool entering;
-  final VoidCallback onEntered;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final media = ref.watch(mediaStoreProvider);
-    final bubble = MessageBubble(
-      message: message,
-      resolveImage: (path) => media.resolve(path).toNullable(),
-      onImageTap: (path) => ImageViewerRoute(
-        path: path,
-        $extra: message.images,
-      ).push<void>(context),
-      onLongPress: () => _showActions(context, ref),
-    );
-    return entering
-        ? OutgoingMessageEntrance(onComplete: onEntered, child: bubble)
-        : bubble;
-  }
-
-  Future<void> _showActions(BuildContext context, WidgetRef ref) {
-    final t = context.t;
-    return showDialog<void>(
-      context: context,
-      builder: (_) => AppActionDialog(
-        cancelLabel: t.common.cancel,
-        actions: [
-          if (message.text.isNotEmpty)
-            AppDialogAction(
-              label: t.common.copy,
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: message.text));
-              },
-            ),
-          AppDialogAction(
-            label: t.common.delete,
-            destructive: true,
-            onPressed: () {
-              HapticFeedback.heavyImpact();
-              ref.read(messageActionsProvider.notifier).delete(message);
-            },
-          ),
-        ],
       ),
     );
   }

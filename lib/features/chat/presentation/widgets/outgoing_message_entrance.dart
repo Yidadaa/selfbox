@@ -5,16 +5,20 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../../../core/theme/app_motion.dart';
 
-/// Reveals one locally sent row while its height pushes older rows upward.
+/// Reveals a newly persisted row while its height pushes older rows upward.
 class OutgoingMessageEntrance extends HookWidget {
   const OutgoingMessageEntrance({
     required this.child,
     required this.onComplete,
+    this.alignment = Alignment.bottomRight,
+    this.offset = AppMotion.messageSendOffset,
     super.key,
   });
 
   final Widget child;
   final VoidCallback onComplete;
+  final Alignment alignment;
+  final Offset offset;
 
   @override
   Widget build(BuildContext context) {
@@ -41,11 +45,11 @@ class OutgoingMessageEntrance extends HookWidget {
           ).animate(progress),
           child: SlideTransition(
             position: Tween<Offset>(
-              begin: AppMotion.messageSendOffset,
+              begin: offset,
               end: Offset.zero,
             ).animate(progress),
             child: ScaleTransition(
-              alignment: Alignment.bottomRight,
+              alignment: alignment,
               scale: Tween<double>(
                 begin: AppMotion.messageSendScale,
                 end: 1,

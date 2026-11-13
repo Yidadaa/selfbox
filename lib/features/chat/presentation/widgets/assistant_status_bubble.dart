@@ -49,16 +49,22 @@ class AssistantStatusBubble extends ConsumerWidget {
         child: AnimatedSize(
           duration: AppMotion.statusTransition,
           curve: AppMotion.emphasized,
-          alignment: Alignment.centerLeft,
+          alignment: Alignment.bottomLeft,
           child: AnimatedSwitcher(
             duration: AppMotion.statusTransition,
             switchInCurve: Curves.easeOutCubic,
             switchOutCurve: Curves.easeInCubic,
+            // Each stage has a different width. Centering the overlap would
+            // move the next card when the wider outgoing stage disappears.
+            layoutBuilder: (current, previous) => Stack(
+              alignment: Alignment.bottomLeft,
+              children: [...previous, ?current],
+            ),
             transitionBuilder: (child, animation) => FadeTransition(
               opacity: animation,
               child: SlideTransition(
                 position: Tween<Offset>(
-                  begin: const Offset(0, 0.08),
+                  begin: AppMotion.assistantStageOffset,
                   end: Offset.zero,
                 ).animate(animation),
                 child: child,
@@ -95,10 +101,14 @@ class _ActivityLabel extends StatelessWidget {
         children: [
           Icon(icon, size: AppSpacing.md, color: glass.accent),
           const Gap(AppSpacing.xs),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodyMedium
-                ?.copyWith(color: glass.foregroundMuted),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: glass.foregroundMuted),
+            ),
           ),
           const Gap(AppSpacing.xs),
           AssistantPendingIndicator(color: glass.accent),
