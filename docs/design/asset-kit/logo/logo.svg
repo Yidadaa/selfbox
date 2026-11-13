@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1254 1254" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">懒狗 AI — 蓝色困困狗</title>
+  <desc id="desc">透明背景上的蓝白垂耳小狗，半眯着眼趴在青色消息气泡上，右上方有一颗黄色星星。由可编辑矢量路径与渐变组成。</desc>
+  <defs>
+    <radialGradient id="fur" cx=".38" cy=".23" r=".85"><stop stop-color="#fffefb"/><stop offset=".55" stop-color="#fff2e9"/><stop offset=".84" stop-color="#efd8c3"/><stop offset="1" stop-color="#b1bbc0"/></radialGradient>
+    <linearGradient id="cream" x1=".2" y1=".15" x2=".85" y2="1"><stop stop-color="#fffefd"/><stop offset=".55" stop-color="#fff2e8"/><stop offset="1" stop-color="#e9cdb2"/></linearGradient>
+    <linearGradient id="earBlue" x1=".3" y1="0" x2=".7" y2="1"><stop stop-color="#abedff"/><stop offset=".25" stop-color="#78c7ff"/><stop offset=".7" stop-color="#469cf1"/><stop offset="1" stop-color="#2679d2"/></linearGradient>
+    <radialGradient id="bubble" cx=".18" cy=".08" r="1.05"><stop stop-color="#b5ffff"/><stop offset=".28" stop-color="#43ecf5"/><stop offset=".65" stop-color="#0cd9eb"/><stop offset="1" stop-color="#00e4ce"/></radialGradient>
+    <linearGradient id="bubbleEdge" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#e4ffff" stop-opacity=".8"/><stop offset=".4" stop-color="#83ffff" stop-opacity=".2"/><stop offset="1" stop-color="#00c7c4" stop-opacity=".1"/></linearGradient>
+    <radialGradient id="blush"><stop stop-color="#ffa88c" stop-opacity=".6"/><stop offset="1" stop-color="#ffad90" stop-opacity="0"/></radialGradient>
+    <linearGradient id="eye" x1="0" y1="0" x2=".4" y2="1"><stop stop-color="#3b2923"/><stop offset="1" stop-color="#70503c"/></linearGradient>
+    <radialGradient id="nose" cx=".32" cy=".2" r=".75"><stop stop-color="#bd9180"/><stop offset=".22" stop-color="#77574d"/><stop offset=".6" stop-color="#4a2c21"/><stop offset="1" stop-color="#2c1c18"/></radialGradient>
+    <radialGradient id="star" cx=".35" cy=".3" r=".8"><stop stop-color="#fffca1"/><stop offset=".6" stop-color="#ffed54"/><stop offset="1" stop-color="#ffd12e"/></radialGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#674c38" flood-opacity=".21"/></filter>
+    <filter id="pawShadow" x="-20%" y="-20%" width="140%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="12" stdDeviation="9" flood-color="#006d7d" flood-opacity=".33"/></filter>
+    <filter id="blur"><feGaussianBlur stdDeviation="5"/></filter>
+    <clipPath id="pawLeftClip"><path d="M264 788C276 733 349 692 415 700C481 706 536 745 541 795C548 846 513 866 440 867C371 870 301 867 277 838C267 825 262 806 264 788Z"/></clipPath>
+    <clipPath id="pawRightClip"><path d="M731 786C742 741 799 698 862 703C925 701 981 739 992 784C1009 839 957 868 871 867C798 870 744 857 734 829C729 817 728 800 731 786Z"/></clipPath>
+  </defs>
+  <g id="message-bubble">
+    <path d="M295 792C197 793 139 849 128 930C116 1006 148 1066 224 1095C244 1103 220 1133 222 1153C224 1195 290 1167 341 1138C364 1125 378 1121 402 1121H920C1041 1121 1108 1062 1116 974C1125 881 1069 805 970 794C773 778 474 779 295 792Z" fill="url(#bubble)" stroke="url(#bubbleEdge)" stroke-width="4"/>
+  </g>
+  <g id="head" filter="url(#pawShadow)">
+    <path d="M209 690C226 585 266 381 377 305C451 254 526 237 640 237C800 238 914 340 984 513C1026 613 1062 700 1034 766C1017 809 947 818 874 819C707 825 494 829 308 818C230 814 183 779 209 690Z" fill="url(#fur)"/>
+  </g>
+  <g id="cheeks"><ellipse cx="397" cy="658" rx="111" ry="88" fill="url(#blush)"/><ellipse cx="894" cy="636" rx="100" ry="85" fill="url(#blush)"/></g>
+  <g id="ears" filter="url(#softShadow)">
+    <path id="left-ear" d="M442 278C368 250 283 290 214 368C159 429 89 498 60 571C25 648 27 715 68 758C101 792 161 796 207 769C248 746 270 691 283 624C298 541 309 435 356 353C382 310 414 283 442 278Z" fill="url(#cream)"/>
+    <path id="right-ear" d="M788 267C855 250 927 290 993 357C1057 420 1131 478 1175 550C1210 607 1215 660 1184 704C1160 743 1117 749 1076 728C1023 704 992 647 970 582C947 515 932 433 905 377C876 315 836 281 788 267Z" fill="url(#earBlue)"/>
+  </g>
+  <path id="hair-tuft" d="M439 278C491 242 552 235 609 217C663 200 725 163 765 180C804 194 809 224 793 263C778 308 731 322 684 317C639 314 615 296 594 286C548 270 490 284 439 278Z" fill="url(#cream)" filter="url(#softShadow)"/>
+  <g id="sleepy-face">
+    <path d="M420 560L538 534C540 565 523 590 493 599C461 610 431 593 420 560Z" fill="url(#eye)"/>
+    <path d="M377 572L537 533" stroke="#5a3b2a" stroke-width="17" stroke-linecap="round"/>
+    <path d="M746 519L866 528C861 558 842 578 811 575C777 574 754 550 746 519Z" fill="url(#eye)"/>
+    <path d="M746 519L899 531" stroke="#50362a" stroke-width="17" stroke-linecap="round"/>
+    <path d="M660 600C668 628 647 654 624 662C599 672 572 661 569 645M662 620C673 642 699 657 724 654C743 653 756 642 762 627" stroke="url(#eye)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M614 566C629 547 666 541 691 552C715 562 710 585 688 599C673 612 650 611 631 601C614 592 607 580 614 566Z" fill="url(#nose)" filter="url(#softShadow)"/>
+    <ellipse cx="646" cy="561" rx="17" ry="5" transform="rotate(-13 646 561)" fill="#fff1e5" opacity=".43" filter="url(#blur)"/>
+  </g>
+  <g id="front-paws" filter="url(#pawShadow)">
+    <path d="M264 788C276 733 349 692 415 700C481 706 536 745 541 795C548 846 513 866 440 867C371 870 301 867 277 838C267 825 262 806 264 788Z" fill="url(#cream)"/>
+    <g clip-path="url(#pawLeftClip)" stroke="#e8be94" stroke-opacity=".44" stroke-width="16" stroke-linecap="round"><path d="M399 786C411 811 409 845 396 864"/><path d="M478 780C493 811 492 838 477 860"/></g>
+    <path d="M731 786C742 741 799 698 862 703C925 701 981 739 992 784C1009 839 957 868 871 867C798 870 744 857 734 829C729 817 728 800 731 786Z" fill="url(#cream)"/>
+    <g clip-path="url(#pawRightClip)" stroke="#e8be94" stroke-opacity=".42" stroke-width="16" stroke-linecap="round"><path d="M795 781C778 804 779 836 790 854"/><path d="M870 789C856 815 858 843 867 860"/></g>
+  </g>
+  <g id="ai-sparkle">
+    <path d="M1017 184C1022 173 1031 175 1034 188C1041 216 1053 232 1082 246C1096 252 1095 261 1082 266C1050 277 1036 294 1023 320C1018 331 1010 328 1007 315C999 287 982 272 954 261C942 256 944 248 956 244C988 233 1004 214 1017 184Z" fill="url(#star)" stroke="#fff790" stroke-width="3"/>
+    <path d="M1019 190C1010 222 989 241 960 250" stroke="#fffbd0" stroke-width="5" stroke-linecap="round" opacity=".6"/>
+  </g>
+</svg>
