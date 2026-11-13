@@ -59,92 +59,94 @@ import 'package:selfbox/features/chat/presentation/providers/__tests__/chat_time
     as t30;
 import 'package:selfbox/features/chat/presentation/providers/__tests__/composer_controller_test.dart'
     as t31;
-import 'package:selfbox/features/chat/presentation/widgets/__tests__/assistant_live_bubbles_test.dart'
+import 'package:selfbox/features/chat/presentation/widgets/__tests__/assistant_failure_bubble_test.dart'
     as t32;
-import 'package:selfbox/features/chat/presentation/widgets/__tests__/assistant_reply_transition_test.dart'
+import 'package:selfbox/features/chat/presentation/widgets/__tests__/assistant_live_bubbles_test.dart'
     as t33;
-import 'package:selfbox/features/chat/presentation/widgets/__tests__/assistant_status_transition_test.dart'
+import 'package:selfbox/features/chat/presentation/widgets/__tests__/assistant_reply_transition_test.dart'
     as t34;
-import 'package:selfbox/features/chat/presentation/widgets/__tests__/chat_ai_toggle_test.dart'
+import 'package:selfbox/features/chat/presentation/widgets/__tests__/assistant_status_transition_test.dart'
     as t35;
-import 'package:selfbox/features/chat/presentation/widgets/__tests__/chat_composer_glow_test.dart'
+import 'package:selfbox/features/chat/presentation/widgets/__tests__/chat_ai_toggle_test.dart'
     as t36;
-import 'package:selfbox/features/chat/presentation/widgets/__tests__/chat_composer_keyboard_dismiss_test.dart'
+import 'package:selfbox/features/chat/presentation/widgets/__tests__/chat_composer_glow_test.dart'
     as t37;
-import 'package:selfbox/features/chat/presentation/widgets/__tests__/chat_composer_placeholder_test.dart'
+import 'package:selfbox/features/chat/presentation/widgets/__tests__/chat_composer_keyboard_dismiss_test.dart'
     as t38;
-import 'package:selfbox/features/chat/presentation/widgets/__tests__/chat_composer_test.dart'
+import 'package:selfbox/features/chat/presentation/widgets/__tests__/chat_composer_placeholder_test.dart'
     as t39;
-import 'package:selfbox/features/chat/presentation/widgets/__tests__/date_labels_test.dart'
+import 'package:selfbox/features/chat/presentation/widgets/__tests__/chat_composer_test.dart'
     as t40;
-import 'package:selfbox/features/chat/presentation/widgets/__tests__/message_bubble_test.dart'
+import 'package:selfbox/features/chat/presentation/widgets/__tests__/date_labels_test.dart'
     as t41;
-import 'package:selfbox/features/chat/presentation/widgets/__tests__/outgoing_message_entrance_test.dart'
+import 'package:selfbox/features/chat/presentation/widgets/__tests__/message_bubble_test.dart'
     as t42;
-import 'package:selfbox/features/memory/data/repositories/__tests__/file_memory_repository_test.dart'
+import 'package:selfbox/features/chat/presentation/widgets/__tests__/outgoing_message_entrance_test.dart'
     as t43;
-import 'package:selfbox/features/memory/domain/models/__tests__/memory_test.dart'
+import 'package:selfbox/features/memory/data/repositories/__tests__/file_memory_repository_test.dart'
     as t44;
-import 'package:selfbox/features/memory/domain/services/__tests__/unified_diff_test.dart'
+import 'package:selfbox/features/memory/domain/models/__tests__/memory_test.dart'
     as t45;
-import 'package:selfbox/features/memory/domain/services/__tests__/user_memory_service_test.dart'
+import 'package:selfbox/features/memory/domain/services/__tests__/unified_diff_test.dart'
     as t46;
-import 'package:selfbox/features/memory/presentation/pages/__tests__/memory_page_test.dart'
+import 'package:selfbox/features/memory/domain/services/__tests__/user_memory_service_test.dart'
     as t47;
-import 'package:selfbox/features/memory/presentation/providers/__tests__/memory_providers_test.dart'
+import 'package:selfbox/features/memory/presentation/pages/__tests__/memory_page_test.dart'
     as t48;
-import 'package:selfbox/features/settings/data/datasources/__tests__/profile_entity_test.dart'
+import 'package:selfbox/features/memory/presentation/providers/__tests__/memory_providers_test.dart'
     as t49;
-import 'package:selfbox/features/settings/data/repositories/__tests__/file_ai_settings_repository_test.dart'
+import 'package:selfbox/features/settings/data/datasources/__tests__/profile_entity_test.dart'
     as t50;
-import 'package:selfbox/features/settings/data/repositories/__tests__/file_app_preferences_repository_test.dart'
+import 'package:selfbox/features/settings/data/repositories/__tests__/file_ai_settings_repository_test.dart'
     as t51;
-import 'package:selfbox/features/settings/data/repositories/__tests__/http_model_catalog_test.dart'
+import 'package:selfbox/features/settings/data/repositories/__tests__/file_app_preferences_repository_test.dart'
     as t52;
-import 'package:selfbox/features/settings/data/repositories/__tests__/local_account_repository_test.dart'
+import 'package:selfbox/features/settings/data/repositories/__tests__/http_model_catalog_test.dart'
     as t53;
-import 'package:selfbox/features/settings/data/repositories/__tests__/sdk_model_probe_test.dart'
+import 'package:selfbox/features/settings/data/repositories/__tests__/local_account_repository_test.dart'
     as t54;
-import 'package:selfbox/features/settings/domain/models/__tests__/app_preferences_test.dart'
+import 'package:selfbox/features/settings/data/repositories/__tests__/sdk_model_probe_test.dart'
     as t55;
-import 'package:selfbox/features/settings/domain/models/__tests__/short_term_memory_budget_test.dart'
+import 'package:selfbox/features/settings/domain/models/__tests__/app_preferences_test.dart'
     as t56;
-import 'package:selfbox/features/settings/domain/models/__tests__/user_profile_test.dart'
+import 'package:selfbox/features/settings/domain/models/__tests__/short_term_memory_budget_test.dart'
     as t57;
-import 'package:selfbox/features/settings/domain/services/__tests__/ai_settings_edits_test.dart'
+import 'package:selfbox/features/settings/domain/models/__tests__/user_profile_test.dart'
     as t58;
-import 'package:selfbox/features/settings/domain/services/__tests__/ai_settings_service_test.dart'
+import 'package:selfbox/features/settings/domain/services/__tests__/ai_settings_edits_test.dart'
     as t59;
-import 'package:selfbox/features/settings/domain/services/__tests__/clear_app_data_test.dart'
+import 'package:selfbox/features/settings/domain/services/__tests__/ai_settings_service_test.dart'
     as t60;
-import 'package:selfbox/features/settings/domain/services/__tests__/model_test_service_test.dart'
+import 'package:selfbox/features/settings/domain/services/__tests__/clear_app_data_test.dart'
     as t61;
-import 'package:selfbox/features/settings/presentation/pages/__tests__/account_pages_test.dart'
+import 'package:selfbox/features/settings/domain/services/__tests__/model_test_service_test.dart'
     as t62;
-import 'package:selfbox/features/settings/presentation/pages/__tests__/ai_providers_page_test.dart'
+import 'package:selfbox/features/settings/presentation/pages/__tests__/account_pages_test.dart'
     as t63;
-import 'package:selfbox/features/settings/presentation/pages/__tests__/component_library_page_test.dart'
+import 'package:selfbox/features/settings/presentation/pages/__tests__/ai_providers_page_test.dart'
     as t64;
-import 'package:selfbox/features/settings/presentation/pages/__tests__/general_page_test.dart'
+import 'package:selfbox/features/settings/presentation/pages/__tests__/component_library_page_test.dart'
     as t65;
-import 'package:selfbox/features/settings/presentation/pages/__tests__/model_page_test.dart'
+import 'package:selfbox/features/settings/presentation/pages/__tests__/general_page_test.dart'
     as t66;
-import 'package:selfbox/features/settings/presentation/pages/__tests__/provider_page_test.dart'
+import 'package:selfbox/features/settings/presentation/pages/__tests__/model_page_test.dart'
     as t67;
-import 'package:selfbox/features/settings/presentation/pages/__tests__/settings_pages_test.dart'
+import 'package:selfbox/features/settings/presentation/pages/__tests__/provider_page_test.dart'
     as t68;
-import 'package:selfbox/features/settings/presentation/pages/__tests__/talker_page_test.dart'
+import 'package:selfbox/features/settings/presentation/pages/__tests__/settings_pages_test.dart'
     as t69;
-import 'package:selfbox/features/settings/presentation/providers/__tests__/account_providers_test.dart'
+import 'package:selfbox/features/settings/presentation/pages/__tests__/talker_page_test.dart'
     as t70;
-import 'package:selfbox/features/settings/presentation/providers/__tests__/app_preferences_controller_test.dart'
+import 'package:selfbox/features/settings/presentation/providers/__tests__/account_providers_test.dart'
     as t71;
-import 'package:selfbox/features/settings/presentation/widgets/__tests__/model_test_control_test.dart'
+import 'package:selfbox/features/settings/presentation/providers/__tests__/app_preferences_controller_test.dart'
     as t72;
-import 'package:selfbox/features/settings/presentation/widgets/__tests__/provider_model_flow_test.dart'
+import 'package:selfbox/features/settings/presentation/widgets/__tests__/model_test_control_test.dart'
     as t73;
-import 'package:selfbox/features/settings/presentation/widgets/__tests__/short_term_memory_sheet_test.dart'
+import 'package:selfbox/features/settings/presentation/widgets/__tests__/provider_model_flow_test.dart'
     as t74;
+import 'package:selfbox/features/settings/presentation/widgets/__tests__/short_term_memory_sheet_test.dart'
+    as t75;
 
 const _registered = <String>[
   'lib/core/database/__tests__/app_store_test.dart',
@@ -179,6 +181,7 @@ const _registered = <String>[
   'lib/features/chat/presentation/providers/__tests__/assistant_controller_test.dart',
   'lib/features/chat/presentation/providers/__tests__/chat_timeline_test.dart',
   'lib/features/chat/presentation/providers/__tests__/composer_controller_test.dart',
+  'lib/features/chat/presentation/widgets/__tests__/assistant_failure_bubble_test.dart',
   'lib/features/chat/presentation/widgets/__tests__/assistant_live_bubbles_test.dart',
   'lib/features/chat/presentation/widgets/__tests__/assistant_reply_transition_test.dart',
   'lib/features/chat/presentation/widgets/__tests__/assistant_status_transition_test.dart',
@@ -309,176 +312,180 @@ void main() {
     t31.main,
   );
   group(
-    'lib/features/chat/presentation/widgets/__tests__/assistant_live_bubbles_test.dart',
+    'lib/features/chat/presentation/widgets/__tests__/assistant_failure_bubble_test.dart',
     t32.main,
   );
   group(
-    'lib/features/chat/presentation/widgets/__tests__/assistant_reply_transition_test.dart',
+    'lib/features/chat/presentation/widgets/__tests__/assistant_live_bubbles_test.dart',
     t33.main,
   );
   group(
-    'lib/features/chat/presentation/widgets/__tests__/assistant_status_transition_test.dart',
+    'lib/features/chat/presentation/widgets/__tests__/assistant_reply_transition_test.dart',
     t34.main,
   );
   group(
-    'lib/features/chat/presentation/widgets/__tests__/chat_ai_toggle_test.dart',
+    'lib/features/chat/presentation/widgets/__tests__/assistant_status_transition_test.dart',
     t35.main,
   );
   group(
-    'lib/features/chat/presentation/widgets/__tests__/chat_composer_glow_test.dart',
+    'lib/features/chat/presentation/widgets/__tests__/chat_ai_toggle_test.dart',
     t36.main,
   );
   group(
-    'lib/features/chat/presentation/widgets/__tests__/chat_composer_keyboard_dismiss_test.dart',
+    'lib/features/chat/presentation/widgets/__tests__/chat_composer_glow_test.dart',
     t37.main,
   );
   group(
-    'lib/features/chat/presentation/widgets/__tests__/chat_composer_placeholder_test.dart',
+    'lib/features/chat/presentation/widgets/__tests__/chat_composer_keyboard_dismiss_test.dart',
     t38.main,
   );
   group(
-    'lib/features/chat/presentation/widgets/__tests__/chat_composer_test.dart',
+    'lib/features/chat/presentation/widgets/__tests__/chat_composer_placeholder_test.dart',
     t39.main,
   );
   group(
-    'lib/features/chat/presentation/widgets/__tests__/date_labels_test.dart',
+    'lib/features/chat/presentation/widgets/__tests__/chat_composer_test.dart',
     t40.main,
   );
   group(
-    'lib/features/chat/presentation/widgets/__tests__/message_bubble_test.dart',
+    'lib/features/chat/presentation/widgets/__tests__/date_labels_test.dart',
     t41.main,
   );
   group(
-    'lib/features/chat/presentation/widgets/__tests__/outgoing_message_entrance_test.dart',
+    'lib/features/chat/presentation/widgets/__tests__/message_bubble_test.dart',
     t42.main,
   );
   group(
-    'lib/features/memory/data/repositories/__tests__/file_memory_repository_test.dart',
+    'lib/features/chat/presentation/widgets/__tests__/outgoing_message_entrance_test.dart',
     t43.main,
   );
   group(
-    'lib/features/memory/domain/models/__tests__/memory_test.dart',
+    'lib/features/memory/data/repositories/__tests__/file_memory_repository_test.dart',
     t44.main,
   );
   group(
-    'lib/features/memory/domain/services/__tests__/unified_diff_test.dart',
+    'lib/features/memory/domain/models/__tests__/memory_test.dart',
     t45.main,
   );
   group(
-    'lib/features/memory/domain/services/__tests__/user_memory_service_test.dart',
+    'lib/features/memory/domain/services/__tests__/unified_diff_test.dart',
     t46.main,
   );
   group(
-    'lib/features/memory/presentation/pages/__tests__/memory_page_test.dart',
+    'lib/features/memory/domain/services/__tests__/user_memory_service_test.dart',
     t47.main,
   );
   group(
-    'lib/features/memory/presentation/providers/__tests__/memory_providers_test.dart',
+    'lib/features/memory/presentation/pages/__tests__/memory_page_test.dart',
     t48.main,
   );
   group(
-    'lib/features/settings/data/datasources/__tests__/profile_entity_test.dart',
+    'lib/features/memory/presentation/providers/__tests__/memory_providers_test.dart',
     t49.main,
   );
   group(
-    'lib/features/settings/data/repositories/__tests__/file_ai_settings_repository_test.dart',
+    'lib/features/settings/data/datasources/__tests__/profile_entity_test.dart',
     t50.main,
   );
   group(
-    'lib/features/settings/data/repositories/__tests__/file_app_preferences_repository_test.dart',
+    'lib/features/settings/data/repositories/__tests__/file_ai_settings_repository_test.dart',
     t51.main,
   );
   group(
-    'lib/features/settings/data/repositories/__tests__/http_model_catalog_test.dart',
+    'lib/features/settings/data/repositories/__tests__/file_app_preferences_repository_test.dart',
     t52.main,
   );
   group(
-    'lib/features/settings/data/repositories/__tests__/local_account_repository_test.dart',
+    'lib/features/settings/data/repositories/__tests__/http_model_catalog_test.dart',
     t53.main,
   );
   group(
-    'lib/features/settings/data/repositories/__tests__/sdk_model_probe_test.dart',
+    'lib/features/settings/data/repositories/__tests__/local_account_repository_test.dart',
     t54.main,
   );
   group(
-    'lib/features/settings/domain/models/__tests__/app_preferences_test.dart',
+    'lib/features/settings/data/repositories/__tests__/sdk_model_probe_test.dart',
     t55.main,
   );
   group(
-    'lib/features/settings/domain/models/__tests__/short_term_memory_budget_test.dart',
+    'lib/features/settings/domain/models/__tests__/app_preferences_test.dart',
     t56.main,
   );
   group(
-    'lib/features/settings/domain/models/__tests__/user_profile_test.dart',
+    'lib/features/settings/domain/models/__tests__/short_term_memory_budget_test.dart',
     t57.main,
   );
   group(
-    'lib/features/settings/domain/services/__tests__/ai_settings_edits_test.dart',
+    'lib/features/settings/domain/models/__tests__/user_profile_test.dart',
     t58.main,
   );
   group(
-    'lib/features/settings/domain/services/__tests__/ai_settings_service_test.dart',
+    'lib/features/settings/domain/services/__tests__/ai_settings_edits_test.dart',
     t59.main,
   );
   group(
-    'lib/features/settings/domain/services/__tests__/clear_app_data_test.dart',
+    'lib/features/settings/domain/services/__tests__/ai_settings_service_test.dart',
     t60.main,
   );
   group(
-    'lib/features/settings/domain/services/__tests__/model_test_service_test.dart',
+    'lib/features/settings/domain/services/__tests__/clear_app_data_test.dart',
     t61.main,
   );
   group(
-    'lib/features/settings/presentation/pages/__tests__/account_pages_test.dart',
+    'lib/features/settings/domain/services/__tests__/model_test_service_test.dart',
     t62.main,
   );
   group(
-    'lib/features/settings/presentation/pages/__tests__/ai_providers_page_test.dart',
+    'lib/features/settings/presentation/pages/__tests__/account_pages_test.dart',
     t63.main,
   );
   group(
-    'lib/features/settings/presentation/pages/__tests__/component_library_page_test.dart',
+    'lib/features/settings/presentation/pages/__tests__/ai_providers_page_test.dart',
     t64.main,
   );
   group(
-    'lib/features/settings/presentation/pages/__tests__/general_page_test.dart',
+    'lib/features/settings/presentation/pages/__tests__/component_library_page_test.dart',
     t65.main,
   );
   group(
-    'lib/features/settings/presentation/pages/__tests__/model_page_test.dart',
+    'lib/features/settings/presentation/pages/__tests__/general_page_test.dart',
     t66.main,
   );
   group(
-    'lib/features/settings/presentation/pages/__tests__/provider_page_test.dart',
+    'lib/features/settings/presentation/pages/__tests__/model_page_test.dart',
     t67.main,
   );
   group(
-    'lib/features/settings/presentation/pages/__tests__/settings_pages_test.dart',
+    'lib/features/settings/presentation/pages/__tests__/provider_page_test.dart',
     t68.main,
   );
   group(
-    'lib/features/settings/presentation/pages/__tests__/talker_page_test.dart',
+    'lib/features/settings/presentation/pages/__tests__/settings_pages_test.dart',
     t69.main,
   );
   group(
-    'lib/features/settings/presentation/providers/__tests__/account_providers_test.dart',
+    'lib/features/settings/presentation/pages/__tests__/talker_page_test.dart',
     t70.main,
   );
   group(
-    'lib/features/settings/presentation/providers/__tests__/app_preferences_controller_test.dart',
+    'lib/features/settings/presentation/providers/__tests__/account_providers_test.dart',
     t71.main,
   );
   group(
-    'lib/features/settings/presentation/widgets/__tests__/model_test_control_test.dart',
+    'lib/features/settings/presentation/providers/__tests__/app_preferences_controller_test.dart',
     t72.main,
   );
   group(
-    'lib/features/settings/presentation/widgets/__tests__/provider_model_flow_test.dart',
+    'lib/features/settings/presentation/widgets/__tests__/model_test_control_test.dart',
     t73.main,
   );
   group(
-    'lib/features/settings/presentation/widgets/__tests__/short_term_memory_sheet_test.dart',
+    'lib/features/settings/presentation/widgets/__tests__/provider_model_flow_test.dart',
     t74.main,
+  );
+  group(
+    'lib/features/settings/presentation/widgets/__tests__/short_term_memory_sheet_test.dart',
+    t75.main,
   );
 
   test('registers every lib/**/__tests__/*_test.dart', () {

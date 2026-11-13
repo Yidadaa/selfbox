@@ -16,6 +16,7 @@ import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
+import 'assistant_failure_fixtures.dart';
 import 'assistant_transition_fixtures.dart';
 import 'screenshot_fixtures.dart';
 import 'short_term_memory_fixtures.dart';
@@ -68,6 +69,7 @@ void main() {
   for (final shot in [
     ...screenshotFixtures,
     ...assistantTransitionFixtures,
+    ...assistantFailureFixtures,
     ...shortTermMemoryFixtures,
   ]) {
     for (final locale in [AppLocale.zhCn]) {

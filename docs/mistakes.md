@@ -2,7 +2,9 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
-- [2026-11-13] [Lint] 数字等宽字形新增 dart:ui 后触发冗余导入 -> material.dart 已导出 FontFeature -> 直接使用现有 Flutter 导入，并保持静态分析零问题。
+- [2026-11-13] [ScreenshotFixture] 独立截图夹具找不到 addTearDown -> 测试工具不通过其他夹具文件隐式导出 -> 使用测试生命周期 API 的文件显式导入 flutter_test。
+- [2026-11-13] [InlineAction] 大字行内按钮重复放大、纯按钮行多出行距 -> WidgetSpan 自动缩放且占位行使用独立字体指标 -> 内部 Text 禁用重复缩放，段落固定正文 StrutStyle，以真实高度和字母基线测试。
+- [2026-11-13] [Lint] FontFeature、RenderBox 新增独立导入后触发冗余导入 -> material.dart 已导出这些符号 -> 直接使用现有 Flutter 导入，并保持静态分析零问题。
 - [2026-11-13] [ToastTest] 底部保存按钮重试被 Toast 遮挡 -> 推进自动关闭计时后退场动画尚未完成 -> 时间推进后继续 pumpAndSettle，确认覆盖层已退出再点击底部动作。
 - [2026-11-13] [Freezed] 设置迁移改用块体 fromJson 后丢失 JSON 生成方法 -> Freezed 依赖箭头式 fromJson 识别序列化入口 -> 保留生成工厂，字段归一化使用 JsonKey 转换器。
 - [2026-11-13] [Slang] 带变量的新文案生成成普通字符串 -> 忽略项目 `string_interpolation: braces` 配置而写成 `$value` -> 新文案变量统一使用 `{value}`，生成后检查调用签名。

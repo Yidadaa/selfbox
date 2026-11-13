@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../../core/error/app_failure.dart';
-import '../../../../core/error/failure_message.dart';
-import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/widgets/pressable.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/agent_activity.dart';
 import '../providers/assistant_controller.dart';
+import 'assistant_failure_bubble.dart';
 import 'assistant_live_bubbles.dart';
 
 /// The current reasoning, latest tool, or a recoverable error.
@@ -37,7 +34,7 @@ class AssistantStatusBubble extends ConsumerWidget {
       ),
       AssistantWorking(activity: final AgentUsingTool activity) =>
         _ActivityLabel(key: ValueKey(activity.kind), activity: activity),
-      AssistantFailed(:final failure) => _FailureRow(
+      AssistantFailed(:final failure) => AssistantFailureBubble(
         key: const ValueKey('failure'),
         failure: failure,
       ),
@@ -114,79 +111,6 @@ class _ActivityLabel extends StatelessWidget {
           AssistantPendingIndicator(color: glass.accent),
         ],
       ),
-    );
-  }
-}
-
-class _FailureRow extends ConsumerWidget {
-  const _FailureRow({required this.failure, super.key});
-
-  final AppFailure failure;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final t = context.t;
-    final glass = context.glass;
-    final error = Theme.of(context).colorScheme.error;
-    final controller = ref.read(assistantControllerProvider.notifier);
-    final needsSetup = switch (failure) {
-      ValidationFailure(message: AppFailure.noModel) ||
-      ValidationFailure(message: AppFailure.missingApiKey) => true,
-      _ => false,
-    };
-    final text = Theme.of(context).textTheme;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Flexible(
-          child: AssistantStatusSurface(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.error_outline_rounded,
-                  size: AppSpacing.md,
-                  color: error,
-                ),
-                const Gap(AppSpacing.xs),
-                Flexible(
-                  child: Text(
-                    failureMessage(context, failure),
-                    style: text.bodyMedium?.copyWith(
-                      color: glass.onBubbleOther,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Pressable(
-          onTap: needsSetup
-              ? () {
-                  controller.dismiss();
-                  const AiProvidersRoute().go(context);
-                }
-              : controller.retry,
-          haptic: HapticKind.light,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
-            child: Text(
-              needsSetup ? t.assistant.setup : t.common.retry,
-              style: text.labelLarge?.copyWith(color: glass.accent),
-            ),
-          ),
-        ),
-        Pressable(
-          onTap: controller.dismiss,
-          semanticLabel: t.assistant.dismiss,
-          child: Icon(
-            Icons.close_rounded,
-            size: AppSpacing.lg,
-            color: glass.foregroundMuted,
-          ),
-        ),
-      ],
     );
   }
 }

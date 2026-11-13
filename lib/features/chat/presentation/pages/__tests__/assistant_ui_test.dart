@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
@@ -13,7 +12,6 @@ import 'package:selfbox/features/chat/presentation/providers/assistant_controlle
 import 'package:selfbox/features/chat/presentation/widgets/assistant_status_bubble.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
-import 'package:selfbox/features/settings/presentation/pages/ai_providers_page.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
 final _question = Message(
@@ -201,41 +199,6 @@ void main() {
         },
       );
     }
-
-    testWidgets('a missing model offers setup, which opens AI providers', (
-      tester,
-    ) async {
-      await _showState(
-        tester,
-        AssistantState.failed(
-          const AppFailure.validation(message: AppFailure.noModel),
-          _question,
-        ),
-      );
-
-      expect(find.text(t.settings.errors.noModel), findsOneWidget);
-      await tester.tap(find.text(t.assistant.setup));
-      await tester.pumpAndSettle();
-      expect(find.byType(AiProvidersPage), findsOneWidget);
-    });
-
-    testWidgets('network failures offer retry and can be dismissed', (
-      tester,
-    ) async {
-      await _showState(
-        tester,
-        AssistantState.failed(
-          const AppFailure.network(message: 'x'),
-          _question,
-        ),
-      );
-
-      expect(find.text(t.settings.errors.network), findsOneWidget);
-      expect(find.text(t.common.retry), findsOneWidget);
-      await tester.tap(find.bySemanticsLabel(t.assistant.dismiss));
-      await tester.pumpAndSettle();
-      expect(find.byType(AssistantStatusBubble), findsNothing);
-    });
 
     testWidgets(
       'sending in AI mode posts the full reply as rendered markdown',
