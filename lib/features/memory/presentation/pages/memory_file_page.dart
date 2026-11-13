@@ -13,6 +13,7 @@ import '../../../../core/theme/app_markdown_theme.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
+import '../../../../core/widgets/app_markdown_builders.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -111,6 +112,7 @@ class _MarkdownBody extends StatelessWidget {
           padding: const EdgeInsets.all(AppSpacing.lg),
           shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
           child: SmoothMarkdown(
+            builderRegistry: appMarkdownBuilders(),
             data: content,
             selectable: true,
             styleSheet: AppMarkdownTheme.of(context),

@@ -15,6 +15,7 @@ import '../../../../core/forms/glass_reactive_text_field.dart';
 import '../../../../core/forms/luthor_validator.dart';
 import '../../../../core/theme/app_markdown_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_markdown_builders.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -154,6 +155,7 @@ class _MemoryEditor extends HookConsumerWidget {
           Material(
             type: MaterialType.transparency,
             child: SmoothMarkdownEditor(
+              builderRegistry: appMarkdownBuilders(),
               controller: editor,
               initialMode: MarkdownEditorMode.source,
               showToolbar: false,

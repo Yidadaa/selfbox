@@ -9,6 +9,7 @@ import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_markdown_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/message_tokens.dart';
+import '../../../../core/widgets/app_markdown_builders.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/message.dart';
 import 'date_labels.dart';
@@ -95,6 +96,7 @@ class _TextBubble extends ConsumerWidget {
         ),
         MessageAuthor.ai => SmoothMarkdown(
           data: message.text,
+          builderRegistry: appMarkdownBuilders(),
           styleSheet: AppMarkdownTheme.of(context, textColor: foreground),
         ),
       },

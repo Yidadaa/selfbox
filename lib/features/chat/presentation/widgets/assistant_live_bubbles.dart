@@ -12,6 +12,7 @@ import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/message_tokens.dart';
+import '../../../../core/widgets/app_markdown_builders.dart';
 
 class AssistantStatusSurface extends StatelessWidget {
   const AssistantStatusSurface({required this.child, super.key});
@@ -180,7 +181,11 @@ class _ReasoningViewport extends StatelessWidget {
             controller: scroll,
             physics: const NeverScrollableScrollPhysics(),
             child: SizeChangedLayoutNotifier(
-              child: StreamMarkdown(stream: stream, styleSheet: sheet),
+              child: StreamMarkdown(
+                stream: stream,
+                styleSheet: sheet,
+                builderRegistry: appMarkdownBuilders(),
+              ),
             ),
           ),
         ),

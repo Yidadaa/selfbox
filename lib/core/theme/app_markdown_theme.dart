@@ -10,6 +10,8 @@ import 'app_spacing.dart';
 abstract final class AppMarkdownTheme {
   static const double _headingSizeIncrement = 1;
   static const int thinkingVisibleLines = 3;
+  static const double listMarkerGap = AppSpacing.xs;
+  static const double taskMarkerSize = AppSpacing.lg;
 
   static MarkdownStyleSheet of(
     BuildContext context, {
@@ -42,6 +44,7 @@ abstract final class AppMarkdownTheme {
       h5Style: heading,
       h6Style: heading,
       paragraphStyle: base,
+      listBulletStyle: base,
       codeBlockDecoration: inset,
       blockquoteDecoration: inset.copyWith(
         border: Border(left: BorderSide(color: glass.accent, width: 3)),
