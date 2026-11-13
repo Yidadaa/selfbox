@@ -83,20 +83,23 @@ void main() {
             AppRenderQuality.standard => GlassQuality.standard,
             AppRenderQuality.premium => GlassQuality.premium,
           };
+          final contentQuality = quality == AppRenderQuality.minimal
+              ? GlassQuality.minimal
+              : GlassQuality.standard;
           expect(
             GlassAdaptiveScopeData.of(context).effectiveQuality,
             expectedQuality,
           );
           expect(
             GlassThemeData.of(context).qualityFor(context),
-            expectedQuality,
+            contentQuality,
           );
           expect(
             tester
                 .widgetList<GlassGroupedSection>(
                   find.byType(GlassGroupedSection),
                 )
-                .every((section) => section.quality == expectedQuality),
+                .every((section) => section.quality == contentQuality),
             isTrue,
           );
           expect(

@@ -8,7 +8,6 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/error/failure_message.dart';
-import '../../../../core/forms/glass_reactive_text_field.dart';
 import '../../../../core/forms/luthor_validator.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_effects.dart';
@@ -26,7 +25,7 @@ import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/ai_settings.dart';
 import '../providers/settings_providers.dart';
-import '../widgets/provider_format_picker.dart';
+import '../widgets/provider_credentials_card.dart';
 import '../widgets/provider_headers_sheet.dart';
 import '../widgets/provider_models_section.dart';
 
@@ -96,10 +95,10 @@ class _ProviderForm extends HookConsumerWidget {
   final ProviderConfig? existing;
   final bool keyStored;
 
-  static const _name = 'name';
-  static const _format = 'format';
-  static const _baseUrl = 'baseUrl';
-  static const _apiKey = 'apiKey';
+  static const _name = ProviderCredentialsCard.name;
+  static const _format = ProviderCredentialsCard.format;
+  static const _baseUrl = ProviderCredentialsCard.baseUrl;
+  static const _apiKey = ProviderCredentialsCard.apiKey;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -192,58 +191,32 @@ class _ProviderForm extends HookConsumerWidget {
           padding: AppPageInsets.of(context),
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           children: [
-            GlassContainer.card(
+            ProviderCredentialsCard(form: form, keyStored: keyStored),
+            const Gap(AppSpacing.cardGroup),
+            GlassGroupedSection(
+              key: const ValueKey('edit-provider-headers'),
+              margin: EdgeInsets.zero,
               quality: AppEffects.qualityOf(context, GlassQuality.standard),
               shape: const LiquidRoundedSuperellipse(
                 borderRadius: AppRadius.lg,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  GlassReactiveTextField<String>(
-                    formControlName: _name,
-                    label: t.settings.provider.name,
-                  ),
-                  const Gap(AppSpacing.md),
-                  ProviderFormatPicker(
-                    form: form,
-                    formatControl: _format,
-                    baseUrlControl: _baseUrl,
-                  ),
-                  const Gap(AppSpacing.md),
-                  GlassReactiveTextField<String>(
-                    formControlName: _baseUrl,
-                    label: t.settings.provider.baseUrl,
-                    keyboardType: TextInputType.url,
-                  ),
-                  const Gap(AppSpacing.md),
-                  GlassReactiveTextField<String>(
-                    formControlName: _apiKey,
-                    label: t.settings.provider.apiKey,
-                    placeholder: keyStored
-                        ? t.settings.provider.apiKeyKept
-                        : null,
-                    obscureText: true,
-                  ),
-                  const Gap(AppSpacing.md),
-                  AppListTile(
-                    key: const ValueKey('edit-provider-headers'),
-                    title: t.settings.provider.headers,
-                    subtitle: headers.value.isEmpty
-                        ? t.settings.provider.noHeaders
-                        : headers.value.keys.join(', '),
-                    icon: AppIcons.api,
-                    value: '${headers.value.length}',
-                    onTap: () async {
-                      final result = await showProviderHeadersSheet(
-                        context: context,
-                        headers: headers.value,
-                      );
-                      if (result != null) headers.value = result;
-                    },
-                  ),
-                ],
-              ),
+              children: [
+                AppListTile(
+                  title: t.settings.provider.headers,
+                  subtitle: headers.value.isEmpty
+                      ? t.settings.provider.noHeaders
+                      : headers.value.keys.join(', '),
+                  icon: AppIcons.api,
+                  value: '${headers.value.length}',
+                  onTap: () async {
+                    final result = await showProviderHeadersSheet(
+                      context: context,
+                      headers: headers.value,
+                    );
+                    if (result != null) headers.value = result;
+                  },
+                ),
+              ],
             ),
             const Gap(AppSpacing.lg),
             AppPageButton(

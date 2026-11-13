@@ -17,6 +17,7 @@ import 'package:selfbox/features/chat/presentation/pages/chat_page.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:selfbox/features/memory/presentation/pages/memory_page.dart';
+import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 import 'package:selfbox/features/settings/presentation/pages/me_page.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 import 'package:talker_flutter/talker_flutter.dart';
@@ -93,7 +94,9 @@ void main() {
     }
 
     testWidgets('Me opens the Talker log screen without tabs', (tester) async {
-      final container = await tester.pumpApp();
+      final container = await tester.pumpApp(
+        initialPreferences: const AppPreferences(developerToolsUnlocked: true),
+      );
       await tester.tap(_tab(t.tabs.me));
       await tester.pumpAndSettle();
       expect(

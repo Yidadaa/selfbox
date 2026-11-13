@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../../core/theme/app_ai_tokens.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/message_tokens.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/pressable.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/message.dart';
@@ -109,10 +113,29 @@ class _HiddenAiGroup extends StatelessWidget {
                   horizontal: AppSpacing.md,
                   vertical: AppSpacing.sm,
                 ),
-                child: Text(
-                  label,
-                  style: Theme.of(context).textTheme.bodyMedium
-                      ?.copyWith(color: glass.onBubbleOther),
+                child: ShaderMask(
+                  blendMode: BlendMode.srcIn,
+                  shaderCallback: (bounds) => LinearGradient(
+                    colors: AppAiTokens.contentColors(
+                      Theme.of(context).brightness,
+                    ),
+                  ).createShader(bounds),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const AppIcon(AppIcons.ai, size: AppSizes.iconSm),
+                      const Gap(AppSpacing.xs),
+                      Flexible(
+                        child: Text(
+                          label,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: glass.onBubbleOther),
+                        ),
+                      ),
+                      const Gap(AppSpacing.xs),
+                      const AppIcon(AppIcons.next, size: AppSizes.iconSm),
+                    ],
+                  ),
                 ),
               ),
             ),

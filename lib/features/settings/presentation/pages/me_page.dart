@@ -11,6 +11,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../gen/i18n/strings.g.dart';
+import '../providers/app_preferences_controller.dart';
 import '../widgets/profile_header.dart';
 
 class MePage extends ConsumerWidget {
@@ -51,26 +52,41 @@ class MePage extends ConsumerWidget {
             ),
           ],
         ),
-        GlassGroupedSection(
-          quality: AppEffects.qualityOf(context, GlassQuality.standard),
-          shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
-          margin: AppInsets.section,
-          header: SectionHeader(context.t.me.developer),
-          children: [
-            AppListTile(
-              icon: AppIcons.logs,
-              title: context.t.me.logs,
-              onTap: () => const TalkerRoute().push<void>(context),
-            ),
-            AppListTile(
-              icon: AppIcons.components,
-              title: context.t.me.componentLibrary,
-              subtitle: context.t.me.componentLibraryDescription,
-              onTap: () => const ComponentLibraryRoute().push<void>(context),
-            ),
-          ],
-        ),
+        const _DeveloperToolsSection(),
       ],
     ),
   );
+}
+
+class _DeveloperToolsSection extends ConsumerWidget {
+  const _DeveloperToolsSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final unlocked = ref.watch(
+      appPreferencesControllerProvider.select(
+        (value) => value.developerToolsUnlocked,
+      ),
+    );
+    if (!unlocked) return const SizedBox.shrink();
+    return GlassGroupedSection(
+      key: const ValueKey('developer-tools'),
+      quality: AppEffects.qualityOf(context, GlassQuality.standard),
+      shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
+      margin: AppInsets.section,
+      header: SectionHeader(context.t.me.developer),
+      children: [
+        AppListTile(
+          icon: AppIcons.logs,
+          title: context.t.me.logs,
+          onTap: () => const TalkerRoute().push<void>(context),
+        ),
+        AppListTile(
+          icon: AppIcons.components,
+          title: context.t.me.componentLibrary,
+          onTap: () => const ComponentLibraryRoute().push<void>(context),
+        ),
+      ],
+    );
+  }
 }

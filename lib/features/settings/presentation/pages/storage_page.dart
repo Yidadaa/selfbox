@@ -12,8 +12,8 @@ import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
-import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_page_button.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
@@ -102,11 +102,7 @@ class _UsageCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      AppIcon(
-        AppIcons.storage,
-        size: AppSizes.iconHero,
-        color: context.glass.accent,
-      ),
+      const AppArtwork(BrandArt.files),
       const Gap(AppSpacing.md),
       Text(
         _bytes(usage.totalBytes),

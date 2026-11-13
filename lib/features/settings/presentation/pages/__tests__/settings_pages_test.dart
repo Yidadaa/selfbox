@@ -27,13 +27,13 @@ void main() {
           ),
         );
         final router = container.read(appRouterProvider);
-        expectLiquidSections(tester, 2);
+        expectLiquidSections(tester, 1);
 
         for (final (location, count, field) in [
           ('/me/general', 2, null),
           ('/me/providers', 2, null),
           ('/me/storage', 1, null),
-          ('/me/provider?id=p1', 1, t.settings.provider.name),
+          ('/me/provider?id=p1', 2, t.settings.provider.name),
           (
             '/me/model?provider=p1&model=gpt-x',
             1,

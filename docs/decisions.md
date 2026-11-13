@@ -395,3 +395,10 @@
 - **背景**：消息操作使用居中 Dialog，与被操作的卡片脱节且无法选择消息文本；页面全宽主按钮与浮层操作共用了实色组件。
 - **决策**：消息卡片长按坐标驱动 hook 瞬态状态，以 OverlayPortal 在根 Overlay 展示 Popover，纯白实心、扩散阴影、同卡片圆角及 Hugeicons + 文字项；布局避让安全区和键盘，点击外部或返回关闭。文本采用原生 SelectionArea / SmoothMarkdown 选区，同样的 Popover 提供所选内容复制、全选和删除，不阻断选择手柄。
 - **影响**：AppPageButton 集中到 core/widgets，使用 standard GlassButton 普通玻璃效果并遵从全局渲染档位、动画偏好，忙碌时阻止重复操作。Dialog / Bottom Sheet 继续使用原 AppActionButton，不受页面样式迁移影响；原 PrimaryButton 删除，跨 Feature 不再引用设置模块的按钮。组件库分别展示页面按钮、浮层按钮和消息菜单。
+
+
+### [ADR-061] 浮动玻璃预算与设置入口收敛
+
+- **背景**：高级档全局提升普通卡片造成无谓开销，部分图标被按钮约束放大；开发工具入口和状态提示过于突出或被遮挡。
+- **决策**：AppEffects 以请求档位作为组件预算，普通内容最高 standard、浮动 chrome 可 premium，minimal 全局降级；默认主题保持内容预算。AppIcon 居中松约束，20dp 小图标保留至少 48dp 热区；card group 间距统一 24dp。Headers 独立分组；开发工具默认隐藏，在“关于我们”插画累计五次点击后持久化解锁，退出页面重置未完成计数、清除数据重新隐藏。
+- **影响**：替代 ADR-053 的所有控件统一升为 premium 策略。Toast 复用 GlassToast 实际材质，由应用 Overlay 统一布局于安全区下方 48dp，保持正文主题、三秒自动退出、向上滑动与幂等手动关闭。AI 折叠提示采用明暗主题对应的文字渐变，不增加实时模糊。设置入口改称“AI 配置”与“关于我们”；无模型的记忆面板显示当前百分比。

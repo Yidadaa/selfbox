@@ -164,7 +164,7 @@ class _MemoryBudgetControl extends ConsumerWidget {
             control.value ?? AiSettings.defaultShortTermMemoryPercent;
         final tokens = model?.shortTermMemoryTokens(percent);
         final estimate = tokens == null
-            ? context.t.common.notSet
+            ? context.t.settings.memoryPercent(value: percent)
             : NumberFormat.decimalPattern(
                 LocaleSettings.currentLocale.languageTag,
               ).format(tokens);

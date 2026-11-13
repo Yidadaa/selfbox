@@ -11,6 +11,8 @@ abstract final class AppSpacing {
   static const double xxl = 32;
   static const double xxxl = 40;
   static const double huge = 48;
+  static const double cardGroup = xl;
+  static const double toastTop = huge;
 
   static const List<double> scale = [xxs, xs, sm, md, lg, xl, xxl, xxxl, huge];
 }
@@ -25,6 +27,7 @@ abstract final class AppSizes {
   static const double appBarHeight = 48;
   static const double chatHeaderHeight = 80;
   static const double iconMd = 24;
+  static const double iconSm = 20;
   static const double iconHero = 48;
   static const double sendIcon = 36;
   static const double attachmentThumbnail = 64;
@@ -41,5 +44,7 @@ abstract final class AppInsets {
 
   /// Grouped sections sit flush with the page padding; only the space
   /// between consecutive sections is theirs.
-  static const section = EdgeInsets.symmetric(vertical: AppSpacing.xxs);
+  static const section = EdgeInsets.symmetric(
+    vertical: AppSpacing.cardGroup / 2,
+  );
 }

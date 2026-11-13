@@ -7,6 +7,29 @@ import 'package:selfbox/core/widgets/ai_composer_glow.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 void main() {
+  for (final selected in GlassQuality.values) {
+    testWidgets('content and chrome respect the $selected budget', (
+      tester,
+    ) async {
+      await tester.pumpPage(
+        AppEffects(
+          quality: selected,
+          animationsEnabled: true,
+          child: const Text('probe'),
+        ),
+      );
+      final context = tester.element(find.text('probe'));
+      expect(
+        AppEffects.qualityOf(context, GlassQuality.standard),
+        selected == GlassQuality.minimal ? selected : GlassQuality.standard,
+      );
+      expect(AppEffects.qualityOf(context, GlassQuality.premium), selected);
+      expect(
+        GlassThemeData.of(context).qualityFor(context),
+        selected == GlassQuality.minimal ? selected : GlassQuality.standard,
+      );
+    });
+  }
   testWidgets('disabling motion stops active glow and skeleton loops', (
     tester,
   ) async {

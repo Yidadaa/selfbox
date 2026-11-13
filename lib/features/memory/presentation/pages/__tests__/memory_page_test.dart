@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/router/app_dock_tabs.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_memory_repository.dart';
+import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
 import 'package:selfbox/core/widgets/empty_state.dart';
 import 'package:selfbox/features/memory/domain/models/memory.dart';
@@ -30,6 +32,15 @@ void main() {
       expect(find.byType(EmptyState), findsOneWidget);
       expect(find.text(t.memory.empty), findsOneWidget);
       expect(find.byKey(const ValueKey('add-memory')), findsOneWidget);
+      expect(
+        tester.getSize(
+          find.descendant(
+            of: find.byKey(const ValueKey('add-memory')),
+            matching: find.byType(HugeIcon),
+          ),
+        ),
+        const Size.square(AppSizes.iconSm),
+      );
       expect(
         tester.widget<Text>(find.text(t.memory.add)).style,
         Theme.of(tester.element(find.text(t.memory.add))).textTheme.titleSmall,
@@ -182,6 +193,15 @@ void main() {
       expect(find.byType(MemoryFilePage), findsOneWidget);
       expect(find.byType(SmoothMarkdown), findsOneWidget);
       expect(find.byType(AppDockTabs), findsNothing);
+      expect(
+        tester.getSize(
+          find.descendant(
+            of: find.bySemanticsLabel(t.memory.edit),
+            matching: find.byType(HugeIcon),
+          ),
+        ),
+        const Size.square(AppSizes.iconSm),
+      );
       await tester.tap(find.bySemanticsLabel(t.memory.edit));
       await tester.pumpAndSettle();
       expect(find.byType(MemoryEditorPage), findsOneWidget);

@@ -28,6 +28,9 @@ class AppPreferencesController extends _$AppPreferencesController {
   Future<Either<AppFailure, Unit>> setAnimationsEnabled(bool enabled) =>
       _save(state.copyWith(animationsEnabled: enabled));
 
+  Future<Either<AppFailure, Unit>> unlockDeveloperTools() =>
+      _save(state.copyWith(developerToolsUnlocked: true));
+
   Future<Either<AppFailure, Unit>> _save(AppPreferences next) async {
     if (next == state) return const Right(unit);
     final previousLanguage = state.language;

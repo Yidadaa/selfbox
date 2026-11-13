@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../router/shell_scope.dart';
+import '../theme/app_effects.dart';
 import '../theme/app_glass_theme.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
@@ -113,6 +114,7 @@ class _TitleCapsule extends StatelessWidget {
       child: IntrinsicWidth(
         child: GlassContainer(
           key: const ValueKey('page-title-capsule'),
+          quality: AppEffects.qualityOf(context, GlassQuality.premium),
           shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.pill),
           child: ConstrainedBox(
             constraints: const BoxConstraints(

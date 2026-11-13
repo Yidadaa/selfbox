@@ -15,14 +15,28 @@ class AppEffects extends StatelessWidget {
   final bool animationsEnabled;
   final Widget child;
 
-  static GlassQuality qualityOf(BuildContext context, GlassQuality fallback) =>
-      GlassAdaptiveScopeData.maybeOf(context)?.effectiveQuality ?? fallback;
+  /// The requested quality is a budget: only floating chrome requests premium.
+  static GlassQuality qualityOf(BuildContext context, GlassQuality fallback) {
+    final selected =
+        GlassAdaptiveScopeData.maybeOf(context)?.effectiveQuality ?? fallback;
+    return switch (selected) {
+      GlassQuality.minimal => GlassQuality.minimal,
+      GlassQuality.standard =>
+        fallback == GlassQuality.minimal
+            ? GlassQuality.minimal
+            : GlassQuality.standard,
+      GlassQuality.premium => fallback,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
     final reduceMotion = !animationsEnabled || media.disableAnimations;
     final theme = GlassThemeData.of(context);
+    final contentQuality = quality == GlassQuality.minimal
+        ? GlassQuality.minimal
+        : GlassQuality.standard;
     final skeleton =
         SkeletonizerConfig.maybeOf(context) ?? const SkeletonizerConfigData();
     return MediaQuery(
@@ -31,8 +45,8 @@ class AppEffects extends StatelessWidget {
         reduceMotion: reduceMotion,
         child: GlassTheme(
           data: theme.copyWith(
-            light: theme.light.copyWith(quality: quality),
-            dark: theme.dark.copyWith(quality: quality),
+            light: theme.light.copyWith(quality: contentQuality),
+            dark: theme.dark.copyWith(quality: contentQuality),
             interaction: reduceMotion
                 ? const GlassInteractionSettings(
                     stretch: 0,

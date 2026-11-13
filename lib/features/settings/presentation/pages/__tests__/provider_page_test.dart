@@ -5,6 +5,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
+import 'package:selfbox/core/widgets/app_list_tile.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/features/settings/presentation/pages/provider_page.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
@@ -13,6 +14,31 @@ import 'settings_test_support.dart';
 
 void main() {
   group('ProviderPage', () {
+    testWidgets('custom headers are separate from the provider form card', (
+      tester,
+    ) async {
+      await openSettingsPage(tester, '/me/provider');
+      final nameCard = find
+          .ancestor(
+            of: settingsField(t.settings.provider.name),
+            matching: find.byType(GlassContainer),
+          )
+          .first;
+      expect(
+        find.descendant(
+          of: nameCard,
+          matching: find.widgetWithText(
+            AppListTile,
+            t.settings.provider.headers,
+          ),
+        ),
+        findsNothing,
+      );
+      expect(
+        find.widgetWithText(AppListTile, t.settings.provider.headers),
+        findsOneWidget,
+      );
+    });
     testWidgets(
       'provider controls use standard glass quality for a lower render cost',
       (tester) async {

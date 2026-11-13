@@ -158,7 +158,7 @@ class _GalleryIcon extends StatelessWidget {
     child: AppIcon(
       AppIcons.addImage,
       color: context.glass.foreground,
-      size: AppSizes.iconMd,
+      size: AppSizes.iconSm,
     ),
   );
 }

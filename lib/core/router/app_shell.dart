@@ -91,7 +91,7 @@ class AppShell extends HookConsumerWidget {
                 : GlassContainer(
                     quality: AppEffects.qualityOf(
                       context,
-                      GlassQuality.standard,
+                      GlassQuality.premium,
                     ),
                     useOwnLayer: true,
                     settings: LiquidGlassSettings(

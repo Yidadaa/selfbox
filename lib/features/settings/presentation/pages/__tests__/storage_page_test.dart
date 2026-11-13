@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_account_repository.dart';
+import 'package:selfbox/core/widgets/app_artwork.dart';
 import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
 import 'package:selfbox/features/settings/domain/models/user_profile.dart';
 import 'package:selfbox/features/settings/presentation/providers/account_providers.dart';
@@ -26,6 +27,12 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('0 B'), findsNWidgets(5));
     expect(find.text(t.me.clearAll), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is AppArtwork && widget.artwork == BrandArt.files,
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('storage requires confirmation; cancel preserves data', (

@@ -69,3 +69,6 @@
 截图入口使用专用 binding 开启真实模糊阴影；图片夹具预热原图及匹配解码尺寸的缓存，避免把未解码占位或测试默认的硬阴影误判为产品效果。
 
 2026-11-14 的全量审计结果、用例迁移和验证记录见 [任务 63](tasks/63-test-suite-consolidation.md)。
+
+
+UI 打磨覆盖补充见 [任务 66](tasks/66-ui-polish-and-settings-discoverability.md)：图标断言 HugeIcon 的实际绘制尺寸；玻璃档位以 minimal/standard/premium 矩阵验证预算；关于页五次点击解锁与偏好持久化分属页面和 Controller 边界。Toast 覆盖顶部安全距离、键盘态、滑动关闭、手动幂等关闭及自动退场。截图 `ui-polish-*` 使用真实页面，生成后销毁 Widget 树以清理提示定时器。

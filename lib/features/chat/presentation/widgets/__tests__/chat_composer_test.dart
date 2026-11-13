@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/router/app_dock_tabs.dart';
@@ -206,6 +207,15 @@ void main() {
         expect(size.width, greaterThanOrEqualTo(AppSizes.minTouchTarget));
         expect(size.height, greaterThanOrEqualTo(AppSizes.minTouchTarget));
       }
+      expect(
+        tester.getSize(
+          find.descendant(
+            of: find.byType(ChatSendButton),
+            matching: find.byType(HugeIcon),
+          ),
+        ),
+        const Size.square(AppSizes.iconSm),
+      );
       container.read(appRouterProvider).go('/memory');
       await tester.pumpAndSettle();
       container.read(appRouterProvider).go('/chat');

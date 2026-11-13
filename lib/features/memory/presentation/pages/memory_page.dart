@@ -70,7 +70,11 @@ class MemoryPage extends ConsumerWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    AppIcon(AppIcons.add, color: context.glass.foreground),
+                    AppIcon(
+                      AppIcons.add,
+                      size: AppSizes.iconSm,
+                      color: context.glass.foreground,
+                    ),
                     const Gap(AppSpacing.xs),
                     Text(
                       context.t.memory.add,

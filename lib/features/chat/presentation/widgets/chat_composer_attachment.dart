@@ -48,7 +48,7 @@ class ChatComposerAttachment extends ConsumerWidget {
                     GlassContainer(
                       quality: AppEffects.qualityOf(
                         context,
-                        GlassQuality.standard,
+                        GlassQuality.premium,
                       ),
                       useOwnLayer: true,
                       settings: LiquidGlassSettings(

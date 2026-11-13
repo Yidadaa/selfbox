@@ -2,6 +2,13 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-14] [SectionKey] Headers 拆组后 find.byKey 命中两项 -> GlassGroupedSection 将子项 LocalKey 复制给内部行包装 -> 页面操作标识放在独立 section，避免 wrapper 与 tile 共享定位 key。
+
+- [2026-11-14] [GlassQuality] 轻量档被错误提升到标准档 -> 依赖枚举声明顺序为 standard/premium/minimal，与成本顺序不同 -> 渲染预算使用穷尽 switch，禁止以 enum.index 比较等级。
+
+- [2026-11-14] [IconLayout] 发送与相册图标设置 size 后仍放大 -> 父容器的 tight constraints 拉伸 HugeIcon -> AppIcon 统一居中松约束，测试断言实际 glyph 尺寸而非参数。
+- [2026-11-14] [ThemeTokens] 新色彩 Token 找不到 Brightness，测试引用未导出的 GlassThemeHelpers -> painting.dart 与包公共入口未导出所需符号 -> 主题用 widgets.dart 公共导出，测试验证公开策略与实际控件。
+
 - [2026-11-14] [Popover] post-frame 插入的 flutter_animate 留下零时长启动 Timer，圆角处长按测试又落在卡片外 -> 默认动效延迟启动与圆角命中范围被忽略 -> 浮层入场交由 hook controller 驱动并禁用自动启动，卡片手势测试使用圆角内的 padding 点。
 - [2026-11-14] [SelectionTest] 独立消息选择测试报 LocaleDataException -> 组件夹具不初始化 intl 日期表 -> 带消息 footer 的独立套件在 setUpAll 调用 initializeDateFormatting。
 - [2026-11-14] [DartFix] 按 lint code 批量排序导入时仍改动 pubspec 的 flutter_test 依赖 -> SDK 自动依赖迁移超出 Dart lint 范围 -> fix 后检查完整 diff，恢复非本任务的依赖迁移，保持测试 SDK 依赖仅在 dev_dependencies。

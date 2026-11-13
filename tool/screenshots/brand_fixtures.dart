@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/widgets/app_artwork.dart';
 import 'package:selfbox/core/widgets/app_page_scaffold.dart';
+import 'package:selfbox/core/widgets/app_toast.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
 import 'screenshot_fixtures.dart';
@@ -69,11 +69,7 @@ final brandFixtures = [
           await _decodeArtwork(tester);
           if (name == 'toast') {
             final context = tester.element(find.byType(AppPageScaffold).first);
-            GlassToast.show(
-              context,
-              message: context.t.common.saved,
-              duration: Duration.zero,
-            );
+            AppToast.show(context, message: context.t.common.saved);
             await tester.pumpAndSettle();
           }
           expect(tester.takeException(), isNull);

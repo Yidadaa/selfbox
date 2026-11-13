@@ -9,6 +9,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_markdown_theme.dart';
 import '../../../../core/theme/app_motion.dart';
@@ -45,6 +46,7 @@ class MemoryFilePage extends ConsumerWidget {
     return AppPageScaffold(
       title: title,
       leading: GlassIconButton(
+        quality: AppEffects.qualityOf(context, GlassQuality.premium),
         size: AppSizes.minTouchTarget,
         icon: const AppIcon(AppIcons.back),
         semanticLabel: t.common.close,
@@ -53,14 +55,16 @@ class MemoryFilePage extends ConsumerWidget {
       actions: [
         if (file case AsyncData(value: Some(:final value)))
           GlassIconButton(
+            quality: AppEffects.qualityOf(context, GlassQuality.premium),
             size: AppSizes.minTouchTarget,
-            icon: const AppIcon(AppIcons.edit),
+            icon: const AppIcon(AppIcons.edit, size: AppSizes.iconSm),
             semanticLabel: t.memory.edit,
             onPressed: () =>
                 MemoryEditorRoute(path: value.path.value).push<void>(context),
           ),
         if (file case AsyncData(value: Some(:final value)))
           GlassIconButton(
+            quality: AppEffects.qualityOf(context, GlassQuality.premium),
             size: AppSizes.minTouchTarget,
             icon: const AppIcon(AppIcons.more),
             semanticLabel: t.memory.more,

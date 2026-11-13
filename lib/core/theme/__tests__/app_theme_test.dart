@@ -37,6 +37,11 @@ void main() {
     test('minimum touch target is 48dp', () {
       expect(AppSizes.minTouchTarget, 48);
     });
+
+    test('consecutive card groups share a 24dp separation', () {
+      expect(AppSpacing.cardGroup, 24);
+      expect(AppInsets.section.vertical, AppSpacing.cardGroup);
+    });
   });
 
   group('AppRadius.concentric', () {

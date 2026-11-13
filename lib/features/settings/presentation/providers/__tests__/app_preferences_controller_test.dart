@@ -11,6 +11,31 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test(
+    'developer unlock persists, fails atomically and resets on clear',
+    () async {
+      final repository = FakeAppPreferencesRepository();
+      final container = ProviderContainer(
+        overrides: testAppOverrides(preferences: repository),
+      );
+      addTearDown(container.dispose);
+      final controller = container.read(
+        appPreferencesControllerProvider.notifier,
+      );
+      repository.failure = const AppFailure.database(message: 'full');
+      expect((await controller.unlockDeveloperTools()).isLeft(), isTrue);
+      expect(
+        container.read(appPreferencesControllerProvider).developerToolsUnlocked,
+        isFalse,
+      );
+      repository.failure = null;
+      expect((await controller.unlockDeveloperTools()).isRight(), isTrue);
+      expect(repository.current.developerToolsUnlocked, isTrue);
+      await controller.clear();
+      expect(repository.current.developerToolsUnlocked, isFalse);
+    },
+  );
+
+  test(
     'effect preferences persist and failed changes retain saved state',
     () async {
       final repository = FakeAppPreferencesRepository();

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_account_repository.dart';
+import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/features/settings/domain/models/agent_avatar.dart';
 import 'package:selfbox/features/settings/domain/models/user_profile.dart';
 import 'package:selfbox/features/settings/presentation/providers/account_providers.dart';
@@ -83,6 +85,12 @@ void main() {
           expect(rect.right, lessThanOrEqualTo(280));
         }
         final gallery = find.byKey(const ValueKey('avatar-gallery'));
+        expect(
+          tester.getSize(
+            find.descendant(of: gallery, matching: find.byType(HugeIcon)),
+          ),
+          const Size.square(AppSizes.iconSm),
+        );
         await tester.ensureVisible(gallery);
         await tester.pumpAndSettle();
         expect(tester.getRect(gallery).bottom, lessThanOrEqualTo(600));

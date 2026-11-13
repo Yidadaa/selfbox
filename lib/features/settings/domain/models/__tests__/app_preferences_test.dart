@@ -6,6 +6,9 @@ void main() {
     final preferences = AppPreferences.fromJson({'theme': 'dark'});
     expect(preferences.renderQuality, AppRenderQuality.standard);
     expect(preferences.animationsEnabled, isTrue);
+    expect(preferences.developerToolsUnlocked, isFalse);
+    final unlocked = preferences.copyWith(developerToolsUnlocked: true);
+    expect(AppPreferences.fromJson(unlocked.toJson()), unlocked);
     for (final quality in AppRenderQuality.values) {
       final selected = preferences.copyWith(
         renderQuality: quality,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -82,7 +81,6 @@ class _SettingsList extends ConsumerWidget {
             ),
           ],
         ),
-        const Gap(AppSpacing.xl),
         GlassGroupedSection(
           margin: AppInsets.section,
           quality: AppEffects.qualityOf(context, GlassQuality.standard),

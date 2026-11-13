@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import '../../../../core/error/failure_message.dart';
 import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_radius.dart';
@@ -13,6 +15,7 @@ import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../providers/account_providers.dart';
+import '../providers/app_preferences_controller.dart';
 import '../widgets/settings_back_button.dart';
 
 class AboutPage extends ConsumerWidget {
@@ -31,7 +34,7 @@ class AboutPage extends ConsumerWidget {
         padding: AppPageInsets.of(context),
         children: [
           const Gap(AppSpacing.xl),
-          const Center(child: AppArtwork(BrandArt.reading)),
+          const Center(child: _AboutArtwork()),
           const Gap(AppSpacing.xxl),
           GlassGroupedSection(
             quality: AppEffects.qualityOf(context, GlassQuality.standard),
@@ -68,6 +71,29 @@ class AboutPage extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _AboutArtwork extends HookConsumerWidget {
+  const _AboutArtwork();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final taps = useState(0);
+    return GestureDetector(
+      onTap: () async {
+        taps.value++;
+        if (taps.value < 5) return;
+        taps.value = 0;
+        final result = await ref
+            .read(appPreferencesControllerProvider.notifier)
+            .unlockDeveloperTools();
+        if (context.mounted && result.isLeft()) {
+          showOutcome(context, failure: result.getLeft().toNullable());
+        }
+      },
+      child: const AppArtwork(BrandArt.reading),
     );
   }
 }

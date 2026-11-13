@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
+import 'package:selfbox/core/testing/fake_app_preferences_repository.dart';
 import 'package:selfbox/core/testing/icon_finder.dart';
 import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/app_theme.dart';
@@ -13,10 +14,41 @@ import 'package:selfbox/core/widgets/app_artwork.dart';
 import 'package:selfbox/core/widgets/app_list_tile.dart';
 import 'package:selfbox/features/settings/presentation/pages/about_page.dart';
 import 'package:selfbox/features/settings/presentation/providers/account_providers.dart';
+import 'package:selfbox/features/settings/presentation/providers/app_preferences_controller.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 void main() {
+  testWidgets('developer tools unlock only after five artwork taps', (
+    tester,
+  ) async {
+    final preferences = FakeAppPreferencesRepository();
+    final container = await tester.pumpApp(preferences: preferences);
+    final router = container.read(appRouterProvider);
+    router.go('/me');
+    await tester.pumpAndSettle();
+    expect(find.text(t.me.developer), findsNothing);
+    expect(find.text(t.me.componentLibrary), findsNothing);
+    router.go('/me/about');
+    await tester.pumpAndSettle();
+    for (var index = 0; index < 4; index++) {
+      await tester.tap(find.byType(AppArtwork));
+      await tester.pump();
+    }
+    expect(
+      container.read(appPreferencesControllerProvider).developerToolsUnlocked,
+      isFalse,
+    );
+    await tester.tap(find.byType(AppArtwork));
+    await tester.pumpAndSettle();
+    expect(preferences.current.developerToolsUnlocked, isTrue);
+    router.go('/me');
+    await tester.pumpAndSettle();
+    expect(find.text(t.me.developer), findsOneWidget);
+    expect(find.text(t.me.componentLibrary), findsOneWidget);
+    expect(find.text(t.me.componentLibraryDescription), findsNothing);
+  });
+
   for (final brightness in Brightness.values) {
     for (final locale in AppLocale.values) {
       testWidgets('about information fits 280dp in $brightness/$locale', (

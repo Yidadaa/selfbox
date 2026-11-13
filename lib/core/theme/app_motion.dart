@@ -14,6 +14,7 @@ abstract final class AppMotion {
   static const Curve pressCurve = Curves.easeOutCubic;
 
   static const Duration fast = Duration(milliseconds: 180);
+  static const Duration toastDisplay = Duration(seconds: 3);
   static const Duration medium = Duration(milliseconds: 280);
   static const Duration composerKeyboard = Duration(milliseconds: 280);
   static const Curve composerKeyboardCurve = Curves.easeInOutCubic;

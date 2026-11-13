@@ -144,7 +144,7 @@ class ChatSendButton extends ConsumerWidget {
         ),
         child: AppIcon(
           AppIcons.send,
-          size: AppSizes.iconMd,
+          size: AppSizes.iconSm,
           color: enabled ? glass.onBubbleMine : glass.foregroundMuted,
         ),
       ),

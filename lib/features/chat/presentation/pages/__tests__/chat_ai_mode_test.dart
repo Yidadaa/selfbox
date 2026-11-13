@@ -49,12 +49,26 @@ void main() {
     final summary = t.chat.hiddenAiGroups(count: 2);
 
     expect(find.text(summary), findsOneWidget);
+    final collapsed = find.byKey(const ValueKey('hidden-ai-group'));
+    expect(
+      find.descendant(of: collapsed, matching: findAppIcon(AppIcons.ai)),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: collapsed, matching: findAppIcon(AppIcons.next)),
+      findsOneWidget,
+    );
+    expect(
+      find.ancestor(of: find.text(summary), matching: find.byType(ShaderMask)),
+      findsOneWidget,
+    );
+    expect(summary, isNot(contains('(')));
     expect(find.text('ordinary before'), findsOneWidget);
     expect(find.text('ordinary after'), findsOneWidget);
     expect(find.text('first question'), findsNothing);
     expect(find.text('first answer', findRichText: true), findsNothing);
 
-    final summaryX = tester.getTopLeft(find.text(summary)).dx;
+    final summaryX = tester.getTopLeft(collapsed).dx;
     await tester.tap(find.byKey(const ValueKey('hidden-ai-group')));
     await tester.pump();
     expect(container.read(composerControllerProvider).aiMode, isTrue);

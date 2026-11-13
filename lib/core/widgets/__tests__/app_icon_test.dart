@@ -6,6 +6,17 @@ import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/widgets/app_icon.dart';
 
 void main() {
+  testWidgets('tight button bounds do not enlarge the glyph', (tester) async {
+    await tester.pumpPage(
+      const Center(
+        child: SizedBox.square(
+          dimension: 64,
+          child: AppIcon(AppIcons.addImage, size: 20),
+        ),
+      ),
+    );
+    expect(tester.getSize(find.byType(HugeIcon)), const Size.square(20));
+  });
   for (final brightness in Brightness.values) {
     testWidgets(
       'Hugeicons inherit theme and expose one semantic label in $brightness',

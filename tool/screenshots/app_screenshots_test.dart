@@ -27,6 +27,7 @@ import 'image_viewer_fixtures.dart';
 import 'message_action_fixtures.dart';
 import 'screenshot_fixtures.dart';
 import 'short_term_memory_fixtures.dart';
+import 'ui_polish_fixtures.dart';
 
 class _ScreenshotBinding extends AutomatedTestWidgetsFlutterBinding {
   // Golden review needs the blurred shadows that the normal test binding skips.
@@ -105,6 +106,7 @@ void main() {
     ...generalEffectsFixtures,
     ...imageViewerFixtures,
     ...messageActionFixtures,
+    ...uiPolishFixtures,
   ]) {
     for (final locale in [AppLocale.zhCn]) {
       testWidgets('screenshot ${shot.name}', (tester) async {
@@ -133,6 +135,8 @@ void main() {
           find.byType(MaterialApp),
           matchesGoldenFile('out/${shot.name}.png'),
         );
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pumpAndSettle();
       });
     }
   }

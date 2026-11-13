@@ -162,13 +162,7 @@ void main() {
       expect(find.text('12,800'), findsOneWidget);
       await repository.save(const AiSettings()).run();
       await tester.pumpAndSettle();
-      expect(
-        find.descendant(
-          of: find.byType(BottomSheet),
-          matching: find.text(t.common.notSet),
-        ),
-        findsOneWidget,
-      );
+      expect(tester.widget<Text>(find.byKey(_tokensKey)).data, '20%');
     },
   );
 
@@ -177,16 +171,12 @@ void main() {
   ) async {
     final repository = FakeAiSettingsRepository();
     await _open(tester, repository);
-    expect(
-      find.descendant(
-        of: find.byType(BottomSheet),
-        matching: find.text(t.common.notSet),
-      ),
-      findsOneWidget,
-    );
+    expect(tester.widget<Text>(find.byKey(_tokensKey)).data, '20%');
+    await _dragToMiddle(tester);
+    expect(tester.widget<Text>(find.byKey(_tokensKey)).data, '35%');
     await tester.tap(find.byKey(_saveKey));
     await tester.pumpAndSettle();
-    expect(repository.current.shortTermMemoryPercent, 20);
+    expect(repository.current.shortTermMemoryPercent, 35);
   });
 
   testWidgets('failed save retains the draft and supports retry', (

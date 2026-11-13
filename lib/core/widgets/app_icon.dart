@@ -22,11 +22,15 @@ class AppIcon extends StatelessWidget {
   Widget build(BuildContext context) => Semantics(
     label: semanticLabel,
     excludeSemantics: true,
-    child: HugeIcon(
-      icon: icon,
-      size: size,
-      color: color,
-      strokeWidth: AppIconTokens.strokeWidth,
+    child: Center(
+      widthFactor: 1,
+      heightFactor: 1,
+      child: HugeIcon(
+        icon: icon,
+        size: size,
+        color: color,
+        strokeWidth: AppIconTokens.strokeWidth,
+      ),
     ),
   );
 }

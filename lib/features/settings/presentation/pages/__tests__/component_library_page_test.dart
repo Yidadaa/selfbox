@@ -7,6 +7,7 @@ import 'package:selfbox/core/widgets/app_action_button.dart';
 import 'package:selfbox/core/widgets/app_action_popover.dart';
 import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
 import 'package:selfbox/core/widgets/app_page_button.dart';
+import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
 void main() {
@@ -42,7 +43,9 @@ void main() {
   testWidgets('Me separates developer entries and opens component library', (
     tester,
   ) async {
-    final container = await tester.pumpApp();
+    final container = await tester.pumpApp(
+      initialPreferences: const AppPreferences(developerToolsUnlocked: true),
+    );
     container.read(appRouterProvider).go('/me');
     await tester.pumpAndSettle();
 
