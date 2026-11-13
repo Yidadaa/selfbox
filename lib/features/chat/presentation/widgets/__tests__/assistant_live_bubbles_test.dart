@@ -26,6 +26,13 @@ void main() {
       settle: false,
     );
     await tester.pump(const Duration(milliseconds: 100));
+    expect(find.text('思考中'), findsOneWidget);
+    expect(find.byKey(const ValueKey('thinking-viewport')), findsOneWidget);
+    expect(find.byKey(const ValueKey('pending-dot-0')), findsNothing);
+    expect(
+      find.byKey(const ValueKey('assistant-pending-surface')),
+      findsNothing,
+    );
     expect(
       tester.widget<SmoothMarkdown>(find.byType(SmoothMarkdown)).data,
       contains('旧内容'),
@@ -39,5 +46,26 @@ void main() {
       '## 新步骤\n\n**新内容**',
     );
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('an empty reasoning segment shows pending chrome', (
+    tester,
+  ) async {
+    await tester.pumpPage(
+      const Scaffold(
+        body: Center(
+          child: AssistantThinkingBubble(text: '', fallback: '思考中'),
+        ),
+      ),
+      settle: false,
+    );
+
+    expect(find.text('思考中'), findsOneWidget);
+    expect(find.byKey(const ValueKey('pending-dot-0')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('assistant-pending-surface')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const ValueKey('thinking-viewport')), findsNothing);
   });
 }

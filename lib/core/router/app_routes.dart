@@ -9,6 +9,7 @@ import '../../features/memory/presentation/pages/memory_file_page.dart';
 import '../../features/memory/presentation/pages/memory_page.dart';
 import '../../features/settings/presentation/pages/about_page.dart';
 import '../../features/settings/presentation/pages/ai_providers_page.dart';
+import '../../features/settings/presentation/pages/component_library_page.dart';
 import '../../features/settings/presentation/pages/general_page.dart';
 import '../../features/settings/presentation/pages/me_page.dart';
 import '../../features/settings/presentation/pages/model_page.dart';
@@ -50,6 +51,7 @@ final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
             TypedGoRoute<AiProvidersRoute>(path: 'providers'),
             TypedGoRoute<AboutRoute>(path: 'about'),
             TypedGoRoute<TalkerRoute>(path: 'logs'),
+            TypedGoRoute<ComponentLibraryRoute>(path: 'components'),
             TypedGoRoute<ProviderRoute>(path: 'provider'),
             TypedGoRoute<ModelRoute>(path: 'model'),
           ],
@@ -228,4 +230,13 @@ class TalkerRoute extends GoRouteData with $TalkerRoute {
 
   @override
   Widget build(BuildContext context, GoRouterState state) => const TalkerPage();
+}
+
+class ComponentLibraryRoute extends GoRouteData with $ComponentLibraryRoute {
+  const ComponentLibraryRoute();
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const ComponentLibraryPage();
 }

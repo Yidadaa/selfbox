@@ -12,6 +12,7 @@ import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_action_button.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/ai_settings.dart';
@@ -107,17 +108,14 @@ class ModelSelectionSheet extends HookConsumerWidget {
                 ),
                 child: Row(
                   children: [
-                    IconButton(
+                    AppActionButton(
                       key: const ValueKey('cancel-model-selection'),
+                      expand: false,
                       onPressed: saving.value
                           ? null
                           : () => Navigator.of(context).pop(),
-                      tooltip: context.t.common.cancel,
-                      icon: const Icon(Icons.close_rounded),
-                      constraints: const BoxConstraints.tightFor(
-                        width: AppSizes.minTouchTarget,
-                        height: AppSizes.minTouchTarget,
-                      ),
+                      icon: Icons.close_rounded,
+                      label: context.t.common.cancel,
                     ),
                     Expanded(
                       child: Text(
@@ -127,12 +125,14 @@ class ModelSelectionSheet extends HookConsumerWidget {
                             ?.copyWith(color: context.glass.onBubbleOther),
                       ),
                     ),
-                    TextButton(
+                    AppActionButton(
                       key: const ValueKey('confirm-add-models'),
+                      expand: false,
+                      variant: AppActionButtonVariant.primary,
                       onPressed: saving.value || selected.value.isEmpty
                           ? null
                           : add,
-                      child: Text(context.t.settings.provider.addModel),
+                      label: context.t.settings.provider.addModel,
                     ),
                   ],
                 ),

@@ -89,6 +89,19 @@ void main() {
     );
   });
 
+  testWidgets('page title and app bar share the standard toolbar height', (
+    tester,
+  ) async {
+    await tester.pumpPage(
+      const AppPageScaffold(title: 'Page', body: SizedBox.shrink()),
+    );
+
+    final appBar = tester.widget<GlassAppBar>(find.byType(GlassAppBar));
+    final title = find.byKey(const ValueKey('page-title-capsule'));
+    expect(appBar.toolbarHeight, AppSizes.appBarHeight);
+    expect(tester.getSize(title).height, AppSizes.minTouchTarget);
+  });
+
   group('EmptyState', () {
     testWidgets('shows centered small text without a card or icon', (
       tester,

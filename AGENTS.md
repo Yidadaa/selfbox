@@ -242,11 +242,20 @@ test/
    - **安全边界**：默认保持 `MarkdownConfig(enableHtml: false)`；仅在明确受信任的内容源下按需开启白名单 HTML，杜绝 XSS 或非法 Scheme 注入。
 6. 禁止使用大段的描述性文本去描述某个功能块，仅允许使用简短的 UI 文本或者 icon 去指示功能。
 
+7. 页面顶部契约：所有标准页面的 page button 与 page title 必须使用统一的 toolbar 高度和垂直中心基线，按钮保留最小 48dp 触控热区，标题 capsule 的最小高度与按钮一致。特殊头部（例如 Chat 的头像叠加头部）必须显式声明独立高度，并为其提供布局测试；服务商、模型等子页面不得自行改变 button/title 的高度。
+
 ### 4.3 Dialog 专用规范
 
 - 所有确认弹窗使用 `AppConfirmDialog`，消息等多操作弹窗使用 `AppActionDialog`；业务页面只负责调用 `showDialog` 和传入已确定的文案、回调。Dialog 自身使用不透明主题表面和项目 Token，不启用 Liquid Glass shader 或实时模糊。
 - **禁止使用 `liquid_glass_widgets` 的 Liquid Dialog、`showGlassActionSheet`、`GlassActionSheet`，也禁止业务页面直接构造 `AlertDialog` / `CupertinoAlertDialog` / 裸 `Dialog`。**新增 Dialog 样式先扩展 `lib/core/widgets/` 的自有组件并覆盖明暗主题与交互测试。
+- 所有自定义 Dialog 和 Bottom Sheet 内的保存、取消、确认、删除等操作统一使用 `AppActionButton`；纯图标操作使用 `AppActionIconButton`。按钮采用胶囊圆角、至少 48dp 高触控区和主题派生的实色低对比度描边，按 primary、secondary、destructive 区分语义；禁止渐变描边、高对比度描边以及业务层直接使用 Material 按钮拼出另一套样式。
 - Bottom Sheet + Picker 是选择器，不属于 Dialog；保留其独立交互。弹窗 builder 不得在页面可能卸载后通过外层页面 `BuildContext` 读取主题或翻译，打开弹窗前先取得所需值。
+
+### 4.4 自建组件库规范
+
+- 可复用的应用 UI 原子组件集中在 `lib/core/widgets/`，并在“我的 > 开发工具 > 组件库 UI”提供可运行的组件预览；新增共享组件时同步增加预览和同级 `__tests__` 测试。
+- 组件预览必须使用真实组件和当前主题 Token，至少覆盖明暗主题相关样式、禁用态或危险态等存在的变体；弹窗预览调用自建 Dialog，不在展示页另造一套样式。
+- `AppActionButton` 与 `AppActionIconButton` 是弹层和表单 action 的唯一共享按钮入口；新增 action 语义优先扩展其主题变体，不在业务页面复制按钮装饰参数。
 
 ---
 

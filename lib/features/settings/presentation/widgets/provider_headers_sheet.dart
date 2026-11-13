@@ -10,6 +10,7 @@ import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_action_button.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
 
@@ -117,15 +118,12 @@ class ProviderHeadersSheet extends HookWidget {
                 ),
                 child: Row(
                   children: [
-                    IconButton(
+                    AppActionButton(
                       key: const ValueKey('cancel-provider-headers'),
+                      expand: false,
                       onPressed: () => Navigator.of(context).pop(),
-                      tooltip: context.t.common.cancel,
-                      icon: const Icon(Icons.close_rounded),
-                      constraints: const BoxConstraints.tightFor(
-                        width: AppSizes.minTouchTarget,
-                        height: AppSizes.minTouchTarget,
-                      ),
+                      icon: Icons.close_rounded,
+                      label: context.t.common.cancel,
                     ),
                     Expanded(
                       child: Text(
@@ -135,10 +133,12 @@ class ProviderHeadersSheet extends HookWidget {
                             ?.copyWith(color: context.glass.onBubbleOther),
                       ),
                     ),
-                    TextButton(
+                    AppActionButton(
                       key: const ValueKey('save-provider-headers'),
+                      expand: false,
+                      variant: AppActionButtonVariant.primary,
                       onPressed: canSave ? save : null,
-                      child: Text(context.t.common.save),
+                      label: context.t.common.save,
                     ),
                   ],
                 ),
@@ -179,22 +179,11 @@ class ProviderHeadersSheet extends HookWidget {
                   AppSpacing.md,
                   AppSpacing.md,
                 ),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    key: const ValueKey('add-provider-header'),
-                    onPressed: add,
-                    icon: const Icon(Icons.add_rounded),
-                    label: Text(context.t.settings.provider.addHeader),
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size.fromHeight(
-                        AppSizes.minTouchTarget,
-                      ),
-                      shape: const LiquidRoundedSuperellipse(
-                        borderRadius: AppRadius.pill,
-                      ),
-                    ),
-                  ),
+                child: AppActionButton(
+                  key: const ValueKey('add-provider-header'),
+                  onPressed: add,
+                  icon: Icons.add_rounded,
+                  label: context.t.settings.provider.addHeader,
                 ),
               ),
             ],
@@ -249,15 +238,12 @@ class _HeaderRow extends HookWidget {
             onChanged: onValueChanged,
           ),
         ),
-        IconButton(
+        AppActionIconButton(
           key: ValueKey('remove-provider-header-$index'),
+          variant: AppActionButtonVariant.destructive,
           onPressed: onRemove,
           tooltip: context.t.settings.provider.removeHeader,
-          icon: const Icon(Icons.remove_circle_outline_rounded),
-          constraints: const BoxConstraints.tightFor(
-            width: AppSizes.minTouchTarget,
-            height: AppSizes.minTouchTarget,
-          ),
+          icon: Icons.remove_circle_outline_rounded,
         ),
       ],
     );

@@ -22,7 +22,7 @@ abstract final class AppSizes {
 
   /// GlassAppBar toolbar height. GlassScaffold extends the body behind its
   /// bars, so scrollable bodies must inset by safe area + this value.
-  static const double appBarHeight = 44;
+  static const double appBarHeight = 48;
   static const double chatHeaderHeight = 80;
   static const double iconMd = 24;
   static const double iconHero = 48;

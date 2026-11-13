@@ -7,6 +7,7 @@ import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/ai_mode_chrome.dart';
 import '../../../../core/widgets/pressable.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../data/chat_data_providers.dart';
@@ -23,38 +24,46 @@ class ChatAiToggle extends ConsumerWidget {
     return TextFieldTapRegion(
       child: Semantics(
         toggled: active,
-        child: GlassContainer(
-          quality: GlassQuality.premium,
-          useOwnLayer: true,
-          shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.pill),
-          child: Pressable(
-            onTap: onTap,
-            semanticLabel: context.t.chat.aiMode,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AnimatedSwitcher(
-                    duration: AppMotion.fast,
-                    transitionBuilder: (child, animation) =>
-                        ScaleTransition(scale: animation, child: child),
-                    child: Icon(
-                      active ? Icons.auto_awesome : Icons.auto_awesome_outlined,
-                      key: ValueKey(active),
-                      color: active ? glass.accent : glass.foregroundMuted,
-                    ),
-                  ),
-                  const Gap(AppSpacing.xs),
-                  ExcludeSemantics(
-                    child: Text(
-                      context.t.chat.aiMode,
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: active ? glass.accent : glass.foreground,
+        child: AiModeChrome(
+          active: active,
+          borderRadius: const BorderRadius.all(Radius.circular(AppRadius.pill)),
+          child: GlassContainer(
+            quality: GlassQuality.premium,
+            useOwnLayer: true,
+            shape: const LiquidRoundedSuperellipse(
+              borderRadius: AppRadius.pill,
+            ),
+            child: Pressable(
+              onTap: onTap,
+              semanticLabel: context.t.chat.aiMode,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AnimatedSwitcher(
+                      duration: AppMotion.fast,
+                      transitionBuilder: (child, animation) =>
+                          ScaleTransition(scale: animation, child: child),
+                      child: Icon(
+                        active
+                            ? Icons.auto_awesome
+                            : Icons.auto_awesome_outlined,
+                        key: ValueKey(active),
+                        color: active ? glass.accent : glass.foregroundMuted,
                       ),
                     ),
-                  ),
-                ],
+                    const Gap(AppSpacing.xs),
+                    ExcludeSemantics(
+                      child: Text(
+                        context.t.chat.aiMode,
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: active ? glass.accent : glass.foreground,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

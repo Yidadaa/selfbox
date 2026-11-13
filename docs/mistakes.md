@@ -115,3 +115,4 @@
 - [2026-11-13] [FlutterTest] 并行启动多个 Flutter 测试命令导致共享 `build/test_cache` 的 dill 文件冲突 -> 测试编译器写入同一缓存 -> Flutter 测试命令串行运行。
 - [2026-11-13] [MediaStore] 图片优化接入后旧 Controller 测试仍用随机字节并断言原始扩展名 -> 解码失败会按设计拒绝损坏图片且统一输出 JPEG -> 图片夹具必须使用可解码样本，并断言压缩后的 JPEG 属性。
 - [2026-11-13] [WidgetTest] 新增循环 pending 动效后 `pumpPage` 的 `pumpAndSettle` 超时 -> 夹具默认等待动画静止 -> 无限循环状态测试使用 `settle: false` 并固定推进帧。
+- [2026-11-13] [GlassPerformance] 服务商配置页交互控件继承主题的 premium 质量导致滚动与切换成本叠加 -> 交互式玻璃控件必须显式使用 `GlassQuality.standard`，并以 Widget 测试锁定页面预算。

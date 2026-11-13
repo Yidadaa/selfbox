@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import '../theme/app_dialog_tokens.dart';
 import '../theme/app_glass_theme.dart';
 import '../theme/app_spacing.dart';
+import 'app_action_button.dart';
 
 /// An opaque confirmation dialog using the app's own layout.
 class AppConfirmDialog extends StatelessWidget {
@@ -69,10 +70,11 @@ class AppActionDialog extends StatelessWidget {
     actions: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final action in actions) ...[
+        for (final (index, action) in actions.indexed) ...[
           _DialogActionButton(
             label: action.label,
             destructive: action.destructive,
+            isPrimary: index == 0 && !action.destructive,
             onTap: () {
               Navigator.of(context).pop();
               action.onPressed();
@@ -221,29 +223,14 @@ class _DialogActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = destructive
-        ? context.glass.dialogDestructive
-        : context.glass.onBubbleOther;
-    return TextButton(
+    return AppActionButton(
+      label: label,
       onPressed: onTap,
-      style: TextButton.styleFrom(
-        backgroundColor: context.glass.dialogActionFill,
-        foregroundColor: color,
-        minimumSize: const Size(0, AppSizes.minTouchTarget),
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-        shape: const StadiumBorder(),
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      ),
-      child: Text(
-        label,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          color: color,
-          fontSize: AppDialogTokens.labelSize,
-          fontWeight: isPrimary ? FontWeight.w600 : FontWeight.w500,
-          decoration: TextDecoration.none,
-        ),
-      ),
+      variant: destructive
+          ? AppActionButtonVariant.destructive
+          : isPrimary
+          ? AppActionButtonVariant.primary
+          : AppActionButtonVariant.secondary,
     );
   }
 }

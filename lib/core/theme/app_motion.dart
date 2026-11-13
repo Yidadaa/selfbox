@@ -8,6 +8,9 @@ abstract final class AppMotion {
   static const Duration fast = Duration(milliseconds: 180);
   static const Duration medium = Duration(milliseconds: 280);
   static const Duration slow = Duration(milliseconds: 420);
+  static const Duration statusTransition = Duration(milliseconds: 560);
+  static const Duration aiSweep = Duration(milliseconds: 1400);
+  static const Duration statusPulse = Duration(milliseconds: 1500);
   static const Curve emphasized = Curves.easeOutCubic;
 
   static const Duration messageSend = Duration(milliseconds: 360);

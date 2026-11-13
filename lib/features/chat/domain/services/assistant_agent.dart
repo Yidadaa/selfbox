@@ -16,6 +16,7 @@ import '../repositories/language_model_factory.dart';
 import '../repositories/message_repository.dart';
 import 'agent_prompt.dart';
 import 'agent_tools.dart';
+import 'vercel_gateway_options.dart';
 
 enum AgentToolPhase { started, succeeded, failed }
 
@@ -155,6 +156,10 @@ class AssistantAgent {
         maxSteps: maxSteps,
         maxOutputTokens: model.maxOutputTokens,
         reasoning: _reasoning(model),
+        providerOptions: vercelGatewayProviderOptions(
+          provider: setup.provider,
+          model: model,
+        ),
         abortSignal: cancel,
         timeout: const TimeoutConfiguration(total: timeout),
         prepareStep: (step) => _attachViewedImages(step, tools),

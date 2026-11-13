@@ -1,7 +1,7 @@
 name: selfbox
 description: "Selfbox — a private, mobile-first personal space built with Flutter."
 publish_to: 'none'
-version: 0.1.0+1
+version: 0.2.0+2
 
 environment:
   sdk: ^3.13.7

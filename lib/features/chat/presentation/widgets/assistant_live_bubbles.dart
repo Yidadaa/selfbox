@@ -14,33 +14,105 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/message_tokens.dart';
 import '../../../../core/widgets/app_markdown_builders.dart';
 
-class AssistantStatusSurface extends StatelessWidget {
-  const AssistantStatusSurface({required this.child, super.key});
+class AssistantStatusSurface extends HookWidget {
+  const AssistantStatusSurface({
+    required this.child,
+    this.pending = false,
+    super.key,
+  });
 
   final Widget child;
+  final bool pending;
 
   @override
   Widget build(BuildContext context) {
     const round = Radius.circular(AppRadius.md);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.glass.bubbleOther,
-        borderRadius: const BorderRadius.only(
-          topLeft: round,
-          topRight: round,
-          bottomRight: round,
-          bottomLeft: Radius.circular(AppRadius.xs),
-        ),
+    const borderRadius = BorderRadius.only(
+      topLeft: round,
+      topRight: round,
+      bottomRight: round,
+      bottomLeft: Radius.circular(AppRadius.xs),
+    );
+    final pulse = useAnimationController(duration: AppMotion.statusPulse);
+    useEffect(() {
+      if (pending) pulse.forward(from: 0);
+      return null;
+    }, [pending, pulse]);
+
+    final content = Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm,
+      child: child,
+    );
+    if (!pending) {
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          color: context.glass.bubbleOther,
+          borderRadius: borderRadius,
+        ),
+        child: content,
+      );
+    }
+    return AnimatedBuilder(
+      animation: pulse,
+      builder: (context, child) => CustomPaint(
+        key: const ValueKey('assistant-pending-surface'),
+        painter: _SurfacePulsePainter(
+          progress: pulse.value,
+          color: context.glass.bubbleOther,
+          highlight: context.glass.highlightBorder,
+          borderRadius: borderRadius,
         ),
         child: child,
       ),
+      child: content,
     );
   }
+}
+
+class _SurfacePulsePainter extends CustomPainter {
+  const _SurfacePulsePainter({
+    required this.progress,
+    required this.color,
+    required this.highlight,
+    required this.borderRadius,
+  });
+
+  final double progress;
+  final Color color;
+  final Color highlight;
+  final BorderRadius borderRadius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (size.isEmpty) return;
+    final rect = Offset.zero & size;
+    final rrect = borderRadius.toRRect(rect);
+    canvas.drawRRect(rrect, Paint()..color = color);
+    final sweep = size.width * 0.45;
+    final start = (size.width + sweep) * progress - sweep;
+    final pulseRect = Rect.fromLTWH(start, 0, sweep, size.height);
+    final shader = LinearGradient(
+      colors: [
+        highlight.withValues(alpha: 0),
+        highlight.withValues(alpha: 0.22),
+        highlight.withValues(alpha: 0),
+      ],
+    ).createShader(pulseRect);
+    canvas.save();
+    canvas.clipRRect(rrect);
+    canvas.drawRect(pulseRect, Paint()..shader = shader);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant _SurfacePulsePainter oldDelegate) =>
+      oldDelegate.progress != progress ||
+      oldDelegate.color != color ||
+      oldDelegate.highlight != highlight ||
+      oldDelegate.borderRadius != borderRadius;
 }
 
 class AssistantThinkingBubble extends HookWidget {
@@ -91,31 +163,47 @@ class AssistantThinkingBubble extends HookWidget {
                 MediaQuery.sizeOf(context).width * MessageTokens.widthFactor,
           ),
           child: AssistantStatusSurface(
+            pending: text.isEmpty,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.auto_awesome_rounded,
-                  size: AppSpacing.md,
-                  color: glass.accent,
-                ),
-                const Gap(AppSpacing.xs),
                 Flexible(
-                  child: text.isEmpty
-                      ? Text(
-                          fallback,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: glass.foregroundMuted),
-                        )
-                      : _ReasoningViewport(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.auto_awesome_rounded,
+                            size: AppSpacing.md,
+                            color: glass.accent,
+                          ),
+                          const Gap(AppSpacing.xs),
+                          Text(
+                            fallback,
+                            style: Theme.of(context).textTheme.labelLarge
+                                ?.copyWith(color: glass.foregroundMuted),
+                          ),
+                          if (text.isEmpty) ...[
+                            const Gap(AppSpacing.xs),
+                            AssistantPendingIndicator(color: glass.accent),
+                          ],
+                        ],
+                      ),
+                      if (text.isNotEmpty) ...[
+                        const Gap(AppSpacing.xxs),
+                        _ReasoningViewport(
                           stream: stream.stream,
                           scroll: scroll,
                           sheet: sheet,
                           maxHeight: maxHeight,
                         ),
+                      ],
+                    ],
+                  ),
                 ),
-                const Gap(AppSpacing.xxs),
-                AssistantPendingIndicator(color: glass.accent),
               ],
             ),
           ),
@@ -208,6 +296,7 @@ class AssistantTypingBubble extends HookWidget {
       label: label,
       child: ExcludeSemantics(
         child: AssistantStatusSurface(
+          pending: true,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

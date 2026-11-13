@@ -5,6 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import '../../../../core/theme/app_dialog_tokens.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_action_button.dart';
 import '../../../../gen/i18n/strings.g.dart';
 
 Future<void> showSettingsPicker({
@@ -72,11 +73,12 @@ class SettingsPickerSheet extends HookWidget {
             children: [
               Row(
                 children: [
-                  TextButton(
+                  AppActionButton(
+                    expand: false,
                     onPressed: saving.value
                         ? null
                         : () => Navigator.of(context).pop(),
-                    child: Text(context.t.common.cancel),
+                    label: context.t.common.cancel,
                   ),
                   Expanded(
                     child: Text(
@@ -86,7 +88,9 @@ class SettingsPickerSheet extends HookWidget {
                           ?.copyWith(color: context.glass.onBubbleOther),
                     ),
                   ),
-                  TextButton(
+                  AppActionButton(
+                    expand: false,
+                    variant: AppActionButtonVariant.primary,
                     onPressed: saving.value
                         ? null
                         : () async {
@@ -99,7 +103,7 @@ class SettingsPickerSheet extends HookWidget {
                               saving.value = false;
                             }
                           },
-                    child: Text(context.t.common.save),
+                    label: context.t.common.save,
                   ),
                 ],
               ),

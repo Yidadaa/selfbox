@@ -43,6 +43,10 @@ class ChatTimelineView extends HookConsumerWidget {
         enteringIds.value = Set.unmodifiable({...enteringIds.value, next});
       },
     );
+    ref.listen(assistantReplyEventProvider, (previous, next) {
+      if (next == null || next == previous) return;
+      enteringIds.value = Set.unmodifiable({...enteringIds.value, next});
+    });
 
     final feed = ref.watch(chatFeedProvider);
     return switch (feed) {

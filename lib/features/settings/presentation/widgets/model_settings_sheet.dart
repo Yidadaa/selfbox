@@ -13,6 +13,7 @@ import '../../../../core/theme/app_dialog_tokens.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_action_button.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/ai_settings.dart';
@@ -143,16 +144,12 @@ class ModelSettingsSheet extends HookConsumerWidget {
                   ),
                   child: Row(
                     children: [
-                      IconButton(
+                      AppActionIconButton(
                         tooltip: context.t.common.close,
                         onPressed: saving.value
                             ? null
                             : () => Navigator.of(context).pop(),
-                        icon: const Icon(Icons.close_rounded),
-                        constraints: const BoxConstraints.tightFor(
-                          width: AppSizes.minTouchTarget,
-                          height: AppSizes.minTouchTarget,
-                        ),
+                        icon: Icons.close_rounded,
                       ),
                       Expanded(
                         child: Text(
@@ -204,17 +201,12 @@ class ModelSettingsSheet extends HookConsumerWidget {
                         onTap: save,
                       ),
                       const Gap(AppSpacing.md),
-                      TextButton.icon(
+                      AppActionButton(
                         key: const ValueKey('delete-model-button'),
                         onPressed: saving.value ? null : confirmRemove,
-                        icon: const Icon(Icons.delete_outline_rounded),
-                        label: Text(context.t.settings.model.delete),
-                        style: TextButton.styleFrom(
-                          foregroundColor: context.glass.dialogDestructive,
-                          minimumSize: const Size.fromHeight(
-                            AppSizes.minTouchTarget,
-                          ),
-                        ),
+                        icon: Icons.delete_outline_rounded,
+                        label: context.t.settings.model.delete,
+                        variant: AppActionButtonVariant.destructive,
                       ),
                     ],
                   ),

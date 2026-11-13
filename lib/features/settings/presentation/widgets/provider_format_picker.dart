@@ -39,6 +39,10 @@ class ProviderFormatPicker extends StatelessWidget {
         ReactiveValueListenableBuilder<ApiFormat>(
           formControlName: formatControl,
           builder: (context, control, _) => GlassSegmentedControl(
+            // Provider forms can contain several interactive glass controls.
+            // Keep their transient indicator lens on the lightweight shader
+            // path instead of the ios27 premium default.
+            quality: GlassQuality.standard,
             selectedTextStyle: Theme.of(context).textTheme.labelLarge
                 ?.copyWith(fontWeight: FontWeight.w600),
             unselectedTextStyle: Theme.of(context).textTheme.labelLarge

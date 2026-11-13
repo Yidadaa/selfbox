@@ -47,10 +47,25 @@ class AssistantStatusBubble extends ConsumerWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxs),
         child: AnimatedSize(
-          duration: AppMotion.fast,
+          duration: AppMotion.statusTransition,
           curve: AppMotion.emphasized,
           alignment: Alignment.centerLeft,
-          child: AnimatedSwitcher(duration: AppMotion.fast, child: child),
+          child: AnimatedSwitcher(
+            duration: AppMotion.statusTransition,
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeInCubic,
+            transitionBuilder: (child, animation) => FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 0.08),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              ),
+            ),
+            child: child,
+          ),
         ),
       ),
     );
@@ -74,6 +89,7 @@ class _ActivityLabel extends StatelessWidget {
       AgentToolKind.writeMemory => (Icons.edit_note_rounded, a.remembering),
     };
     return AssistantStatusSurface(
+      pending: true,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

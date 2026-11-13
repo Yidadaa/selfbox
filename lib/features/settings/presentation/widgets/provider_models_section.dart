@@ -7,6 +7,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_action_button.dart';
 import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -81,13 +82,11 @@ class ProviderModelsSection extends HookConsumerWidget {
           ),
         ),
         const Gap(AppSpacing.xs),
-        TextButton.icon(
+        AppActionButton(
           onPressed: fetching.value ? null : fetch,
-          icon: const Icon(Icons.sync_rounded),
-          label: Text(context.t.settings.provider.fetchModels),
-          style: TextButton.styleFrom(
-            minimumSize: const Size.fromHeight(AppSizes.minTouchTarget),
-          ),
+          icon: Icons.sync_rounded,
+          label: context.t.settings.provider.fetchModels,
+          busy: fetching.value,
         ),
       ],
     );

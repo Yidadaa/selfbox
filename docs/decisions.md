@@ -253,3 +253,27 @@
 - **背景**：思考内容与工具调用会持续一段时间，仅靠滚动文本或静态标签不易感知任务仍在运行。
 - **决策**：思考和工具状态统一显示 hook 驱动的错峰跳动点；思考 Markdown 单独使用 14sp、1.4 行高及降低透明度的主题前景色，普通 AI 回复样式不变。
 - **影响**：动画生命周期随 Widget 自动结束，不使用会在测试后遗留 Timer 的循环动画；新增进行中状态沿用共享 pending 指示器。
+
+### [ADR-038] AI 状态卡片与输入区动效契约
+
+- **背景**：AI 思考、工具调用和最终回复的状态切换缺少连续反馈；AI 模式与普通输入状态区分度不足，键盘态附件按钮的材质也与输入框不一致。
+- **决策**：思考卡片固定为“图标 + 状态”与最多三行滚动 Markdown 两行结构；pending 表面使用一次性横向高光脉冲，有思考文本时隐藏右侧跳动点。工具、思考和最终输入状态统一使用 560ms 淡入并轻微上移的切换。AI 回复持久化成功后发布一次性消息 ID，时间线仅为该 ID 播放底部滑入动画。AI 模式通过低开销流彩边框标记输入区、Tab dock 和 AI 开关；键盘态附件按钮复用输入框 blur 与 tint，并由同一 `TextFieldTapRegion` 接管点击。
+- **影响**：历史消息不会重复播放入场动画；固定控件只保留边框动画，不增加列表项玻璃层；标准页面顶部 button/title 统一使用 48dp toolbar 基线并写入 UI 规范。
+
+### [ADR-039] 服务商配置控件的玻璃质量预算
+
+- **背景**：服务商配置页同时包含格式选择、模型能力开关、思考等级和顶部操作按钮；这些交互控件在高版本玻璃主题下若继承 premium，会在表单滚动和状态切换时叠加高成本渲染。
+- **决策**：服务商配置页内的 `GlassSegmentedControl`、`GlassSwitch` 和 `GlassIconButton` 全部显式使用 `GlassQuality.standard`；外层卡片与模型分组继续使用 standard liquid surface，单个模型状态仍由局部 Hook 状态驱动。
+- **影响**：该页面不再依赖主题对交互控件的隐式质量回退；新增服务商页内玻璃控件必须显式选择 standard 或更低质量，并通过 Widget 测试锁定质量预算。
+
+### [ADR-040] Vercel AI Gateway 推理摘要自动配置
+
+- **背景**：Vercel AI Gateway 使用 OpenAI 兼容接口转发多个上游模型；仅设置 SDK 通用 reasoning 等级不足以要求 GPT、Gemini、Claude 或 DeepSeek 返回可展示的 reasoning 摘要，而且不同上游的参数嵌套位置不同。
+- **决策**：当服务商 `baseUrl` 的主机严格为 `ai-gateway.vercel.sh`、模型启用思考能力且接口不是 Anthropic Messages 时，由纯 Dart 配置器按模型 ID 生成 `ProviderOptions`。GPT Responses 使用 `openai.reasoning.{effort,summary:auto}`，Chat Completions 使用 `openai.reasoning_summary`；Gemini 将 `thinkingConfig` 放入 `openai.providerOptions.google` 与 `vertex`；Claude 固定预算或 adaptive thinking、DeepSeek 使用各自的 `openai` reasoning 结构。请求统一通过 `ai_sdk_dart 3.1.0` 的 `streamText(providerOptions:)` 传入，已有 reasoning delta 事件链路负责展示摘要。
+- **影响**：普通 OpenAI URL、未启用思考、未知模型和 Messages 服务商不会注入 Gateway 参数；新增模型供应商映射必须补充配置器单测与 SDK 请求契约测试。Gateway 的真实可用性仍取决于上游模型和密钥，配置器只负责生成协议参数。
+
+### [ADR-041] 弹层操作按钮与自建组件库
+
+- **背景**：自定义 Dialog 和设置 Sheet 中的确认、取消、保存、删除操作使用了多种 Material 按钮，圆角、触控高度与边框对比度不一致；共享组件缺少集中预览入口。
+- **决策**：`AppActionButton` 与 `AppActionIconButton` 统一承载弹层和表单 action，提供 primary、secondary、destructive 主题变体，采用胶囊圆角、48dp 最小触控区和主题派生的低对比度纯色描边。所有共享 UI 原子组件在“我的 > 开发工具 > 组件库 UI”提供真实组件预览。
+- **影响**：Dialog / Sheet 中不再直接构造 Material action button；新增共享组件需要补充预览与同级 Widget 测试，并覆盖适用的明暗主题和语义变体。

@@ -224,6 +224,42 @@ void main() {
     });
 
     test(
+      'passes Vercel Gateway reasoning options to the SDK request',
+      () async {
+        final env = _env(
+          [
+            [scriptedText('ok')],
+          ],
+          settings: AiSettings(
+            providers: [
+              _provider.copyWith(
+                format: ApiFormat.responses,
+                baseUrl: 'https://ai-gateway.vercel.sh/v1',
+              ),
+            ],
+            models: [
+              const ModelConfig(
+                providerId: 'p1',
+                modelId: 'openai/gpt-5',
+                enabled: true,
+                supportsReasoning: true,
+                reasoningEffort: ReasoningEffort.high,
+              ),
+            ],
+          ),
+        );
+
+        await _ask(env);
+
+        expect(env.model.calls.single.providerOptions, {
+          'openai': {
+            'reasoning': {'effort': 'high', 'summary': 'auto'},
+          },
+        });
+      },
+    );
+
+    test(
       'runs a multi-step tool loop and reports only the latest tool',
       () async {
         final env = _env([

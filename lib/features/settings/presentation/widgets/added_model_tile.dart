@@ -83,6 +83,7 @@ class AddedModelTile extends HookConsumerWidget {
             child: GlassSegmentedControl(
               key: ValueKey('model-effort-${model.modelId}'),
               height: AppSizes.smallTabHeight,
+              quality: GlassQuality.standard,
               selectedIndex: ReasoningEffort.values.indexOf(
                 model.reasoningEffort,
               ),
@@ -146,6 +147,7 @@ class _CapabilityToggle extends StatelessWidget {
               absorbing: busy,
               child: GlassSwitch(
                 key: switchKey,
+                quality: GlassQuality.standard,
                 value: value,
                 semanticLabel: label,
                 onChanged: onChanged,

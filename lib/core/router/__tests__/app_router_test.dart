@@ -63,6 +63,7 @@ void main() {
       const AiProvidersRoute().location,
       const AboutRoute().location,
       const TalkerRoute().location,
+      const ComponentLibraryRoute().location,
       const ProviderRoute().location,
       const ModelRoute(provider: 'missing', model: 'missing').location,
       const ImageViewerRoute(path: 'missing.jpg').location,

@@ -3,12 +3,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/error/app_failure.dart';
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_action_button.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../../../model_test_providers.dart';
 import '../../domain/models/ai_settings.dart';
@@ -45,23 +45,14 @@ class ModelTestControl extends HookConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        TextButton.icon(
+        AppActionButton(
           key: const ValueKey('test-model-button'),
           onPressed: state.value.loading ? null : test,
-          icon: state.value.loading
-              ? const SizedBox.square(
-                  dimension: AppSizes.iconMd,
-                  child: GlassProgressIndicator.circular(),
-                )
-              : const Icon(Icons.play_arrow_rounded),
-          label: Text(
-            state.value.loading
-                ? context.t.settings.model.testing
-                : context.t.settings.model.testModel,
-          ),
-          style: TextButton.styleFrom(
-            minimumSize: const Size.fromHeight(AppSizes.minTouchTarget),
-          ),
+          icon: state.value.loading ? null : Icons.play_arrow_rounded,
+          label: state.value.loading
+              ? context.t.settings.model.testing
+              : context.t.settings.model.testModel,
+          busy: state.value.loading,
         ),
         if (result != null) ...[
           const Gap(AppSpacing.xs),

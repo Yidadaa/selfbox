@@ -72,6 +72,7 @@ class _BackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => GlassIconButton(
     icon: const Icon(Icons.arrow_back_ios_new_rounded),
+    quality: GlassQuality.standard,
     semanticLabel: context.t.common.close,
     onPressed: () => Navigator.of(context).maybePop(),
   );
@@ -167,6 +168,7 @@ class _ProviderForm extends HookConsumerWidget {
         if (existing != null)
           GlassIconButton(
             icon: const Icon(Icons.more_horiz_rounded),
+            quality: GlassQuality.standard,
             semanticLabel: t.common.more,
             onPressed: () => _showActions(context, ref, existing),
           ),

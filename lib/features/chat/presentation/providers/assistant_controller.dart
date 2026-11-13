@@ -43,6 +43,16 @@ AssistantAgent assistantAgent(Ref ref) => AssistantAgent(
   languageTag: () => LocaleSettings.currentLocale.languageTag,
 );
 
+/// Publishes the id of a newly persisted AI reply once per completed turn.
+/// The timeline consumes this edge-triggered value so old replies never replay.
+@Riverpod(keepAlive: true)
+class AssistantReplyEvent extends _$AssistantReplyEvent {
+  @override
+  int? build() => null;
+
+  void publish(int messageId) => state = messageId;
+}
+
 /// AI mode: one question at a time. A newer question cancels the running
 /// one, and the reply is stored as an AI message once complete.
 @Riverpod(keepAlive: true)
@@ -100,8 +110,7 @@ class AssistantController extends _$AssistantController {
         .flatMap(
           (text) => ref
               .read(messageRepositoryProvider)
-              .add(MessageDraft(author: MessageAuthor.ai, text: text))
-              .map((_) => unit),
+              .add(MessageDraft(author: MessageAuthor.ai, text: text)),
         )
         .run();
     if (!current()) return;
@@ -110,7 +119,8 @@ class AssistantController extends _$AssistantController {
         talker.error('Agent #$run failed', failure);
         return AssistantState.failed(failure, question);
       },
-      (_) {
+      (message) {
+        ref.read(assistantReplyEventProvider.notifier).publish(message.id);
         talker.info('Agent #$run completed');
         return const AssistantState.idle();
       },

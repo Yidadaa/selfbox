@@ -47,10 +47,24 @@ class MePage extends ConsumerWidget {
               title: context.t.me.about,
               onTap: () => const AboutRoute().push<void>(context),
             ),
+          ],
+        ),
+        GlassGroupedSection(
+          quality: GlassQuality.standard,
+          shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
+          margin: AppInsets.section,
+          header: SectionHeader(context.t.me.developer),
+          children: [
             AppListTile(
               icon: Icons.receipt_long_outlined,
               title: context.t.me.logs,
               onTap: () => const TalkerRoute().push<void>(context),
+            ),
+            AppListTile(
+              icon: Icons.widgets_outlined,
+              title: context.t.me.componentLibrary,
+              subtitle: context.t.me.componentLibraryDescription,
+              onTap: () => const ComponentLibraryRoute().push<void>(context),
             ),
           ],
         ),

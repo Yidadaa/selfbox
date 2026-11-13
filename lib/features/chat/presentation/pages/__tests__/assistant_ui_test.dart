@@ -138,9 +138,16 @@ void main() {
           await tester.pump(const Duration(milliseconds: 100));
           await tester.pump(const Duration(milliseconds: 100));
           expect(find.byType(StreamMarkdown), findsOneWidget);
-          for (var index = 0; index < 3; index++) {
-            expect(find.byKey(ValueKey('pending-dot-$index')), findsOneWidget);
-          }
+          expect(find.text(t.assistant.thinking), findsOneWidget);
+          expect(find.byKey(const ValueKey('pending-dot-0')), findsNothing);
+          expect(
+            find.byKey(const ValueKey('thinking-viewport')),
+            findsOneWidget,
+          );
+          expect(
+            find.byKey(const ValueKey('assistant-pending-surface')),
+            findsNothing,
+          );
           expect(
             tester.widget<SmoothMarkdown>(find.byType(SmoothMarkdown)).data,
             contains('第四行'),
@@ -186,7 +193,7 @@ void main() {
 
           controller.show(const AssistantState.working(AgentActivity.typing()));
           await tester.pump(const Duration(milliseconds: 20));
-          await tester.pump(const Duration(milliseconds: 200));
+          await tester.pump(const Duration(milliseconds: 600));
           expect(find.text(t.assistant.typing), findsOneWidget);
           expect(find.byType(StreamMarkdown), findsNothing);
           expect(find.byType(SmoothMarkdown), findsNothing);

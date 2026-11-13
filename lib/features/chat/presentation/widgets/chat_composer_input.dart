@@ -31,30 +31,37 @@ class ChatComposerInput extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final notifier = ref.read(composerControllerProvider.notifier);
-    return Row(
-      children: [
-        if (keyboardOpen) ...[
-          GlassContainer(
-            quality: GlassQuality.standard,
-            useOwnLayer: true,
-            shape: const LiquidRoundedSuperellipse(
-              borderRadius: AppRadius.pill,
+    final glass = context.glass;
+    return TextFieldTapRegion(
+      child: Row(
+        children: [
+          if (keyboardOpen) ...[
+            GlassContainer(
+              quality: GlassQuality.standard,
+              useOwnLayer: true,
+              settings: LiquidGlassSettings(
+                blur: glass.chromeBlur,
+                glassColor: glass.chromeTint,
+              ),
+              shape: const LiquidRoundedSuperellipse(
+                borderRadius: AppRadius.pill,
+              ),
+              child: ChatAttachButton(onTap: notifier.pickImage),
             ),
-            child: ChatAttachButton(onTap: notifier.pickImage),
+            const Gap(AppSpacing.xs),
+          ],
+          Expanded(
+            key: const ValueKey('chat-input'),
+            child: _InputSurface(
+              controller: controller,
+              focusNode: focusNode,
+              keyboardOpen: keyboardOpen,
+              maxHeight: maxHeight,
+              navigation: navigation,
+            ),
           ),
-          const Gap(AppSpacing.xs),
         ],
-        Expanded(
-          key: const ValueKey('chat-input'),
-          child: _InputSurface(
-            controller: controller,
-            focusNode: focusNode,
-            keyboardOpen: keyboardOpen,
-            maxHeight: maxHeight,
-            navigation: navigation,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -94,13 +101,11 @@ class _InputSurface extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextFieldTapRegion(
-            child: _InputRow(
-              controller: controller,
-              focusNode: focusNode,
-              keyboardOpen: keyboardOpen,
-              maxEditorHeight: editorMaxHeight,
-            ),
+          _InputRow(
+            controller: controller,
+            focusNode: focusNode,
+            keyboardOpen: keyboardOpen,
+            maxEditorHeight: editorMaxHeight,
           ),
           AnimatedSize(
             duration: AppMotion.fast,

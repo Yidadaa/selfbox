@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/router/app_dock_tabs.dart';
@@ -9,6 +10,7 @@ import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
+import 'package:selfbox/core/widgets/ai_mode_chrome.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer.dart';
@@ -20,6 +22,22 @@ class _AttachedDraft extends ComposerController {
   @override
   ComposerState build() =>
       const ComposerState(attachments: ['../unavailable.png']);
+}
+
+class _CountingPicker extends Fake implements ImagePicker {
+  var calls = 0;
+
+  @override
+  Future<List<XFile>> pickMultiImage({
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
+    int? limit,
+    bool requestFullMetadata = true,
+  }) async {
+    calls++;
+    return const [];
+  }
 }
 
 void main() {
@@ -172,6 +190,7 @@ void main() {
               .quality,
           GlassQuality.premium,
         );
+        expect(find.byType(AiModeChrome), findsAtLeastNWidgets(2));
         expect(
           find.descendant(
             of: find.byKey(const ValueKey('chat-input')),
@@ -197,18 +216,25 @@ void main() {
     );
     final attach = tester.getRect(find.byType(ChatAttachButton));
     final send = tester.getRect(find.byType(ChatSendButton));
-    expect(
-      tester
-          .widget<GlassContainer>(
-            find
-                .ancestor(
-                  of: find.byType(ChatAttachButton),
-                  matching: find.byType(GlassContainer),
-                )
-                .first,
+    final attachSurface = tester.widget<GlassContainer>(
+      find
+          .ancestor(
+            of: find.byType(ChatAttachButton),
+            matching: find.byType(GlassContainer),
           )
-          .quality,
-      GlassQuality.standard,
+          .first,
+    );
+    expect(attachSurface.quality, GlassQuality.standard);
+    final inputSurface = tester.widget<GlassContainer>(
+      find.descendant(
+        of: find.byKey(const ValueKey('chat-input')),
+        matching: find.byType(GlassContainer),
+      ),
+    );
+    expect(attachSurface.settings?.blur, inputSurface.settings?.blur);
+    expect(
+      attachSurface.settings?.glassColor,
+      inputSurface.settings?.glassColor,
     );
     expect(attach.center.dy, closeTo(input.center.dy, 1));
     expect(send.center.dy, closeTo(input.center.dy, 1));
@@ -225,6 +251,25 @@ void main() {
     expect(attach.left, AppSpacing.md);
     expect(send.right, kPhoneViewport.width - AppSpacing.md);
   });
+
+  testWidgets(
+    'keyboard attach opens the picker without first dismissing focus',
+    (tester) async {
+      final picker = _CountingPicker();
+      await tester.pumpApp(
+        overrides: [imagePickerProvider.overrideWithValue(picker)],
+      );
+      final editable = find.byType(EditableText);
+      await tester.enterText(editable, 'draft');
+      tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.bySemanticsLabel(t.chat.attachImage));
+      await tester.pump();
+      expect(picker.calls, 1);
+      expect(tester.widget<EditableText>(editable).focusNode.hasFocus, isTrue);
+    },
+  );
 
   testWidgets('keyboard hides tabs and preserves focus, selection and draft', (
     tester,

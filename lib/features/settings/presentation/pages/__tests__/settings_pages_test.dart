@@ -101,7 +101,7 @@ void main() {
       ),
     );
     final router = container.read(appRouterProvider);
-    _expectLiquidSections(tester, 1);
+    _expectLiquidSections(tester, 2);
 
     for (final (location, count) in [
       ('/me/general', 1),
@@ -363,6 +363,58 @@ void main() {
   });
 
   group('ProviderPage', () {
+    testWidgets(
+      'provider controls use standard glass quality for a lower render cost',
+      (tester) async {
+        await _open(
+          tester,
+          '/me/provider?id=p1',
+          settings: FakeAiSettingsRepository(
+            settings: const AiSettings(
+              providers: [_provider],
+              models: [
+                ModelConfig(
+                  providerId: 'p1',
+                  modelId: 'reasoning-model',
+                  enabled: true,
+                  supportsReasoning: true,
+                ),
+              ],
+            ),
+          ),
+        );
+
+        final controls = tester
+            .widgetList<GlassSegmentedControl>(
+              find.byType(GlassSegmentedControl),
+            )
+            .toList(growable: false);
+        expect(controls, hasLength(2));
+        expect(
+          controls.every((control) => control.quality == GlassQuality.standard),
+          isTrue,
+        );
+        final switches = tester
+            .widgetList<GlassSwitch>(find.byType(GlassSwitch))
+            .toList(growable: false);
+        expect(switches, hasLength(2));
+        expect(
+          switches.every((control) => control.quality == GlassQuality.standard),
+          isTrue,
+        );
+        final iconButtons = tester
+            .widgetList<GlassIconButton>(find.byType(GlassIconButton))
+            .toList(growable: false);
+        expect(iconButtons, hasLength(2));
+        expect(
+          iconButtons.every(
+            (button) => button.quality == GlassQuality.standard,
+          ),
+          isTrue,
+        );
+      },
+    );
+
     testWidgets('no models shows only unframed small text', (tester) async {
       await _open(
         tester,

@@ -110,15 +110,21 @@ class _TitleCapsule extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassContainer(
+      key: const ValueKey('page-title-capsule'),
       shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.pill),
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
         vertical: AppSpacing.xs,
       ),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleMedium
-            ?.copyWith(fontWeight: FontWeight.w600),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: AppSizes.minTouchTarget),
+        child: Center(
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+        ),
       ),
     );
   }
