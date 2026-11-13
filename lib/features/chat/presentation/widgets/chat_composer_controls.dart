@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
@@ -24,7 +25,7 @@ class ChatAiToggle extends ConsumerWidget {
       child: Semantics(
         toggled: active,
         child: GlassContainer(
-          quality: GlassQuality.premium,
+          quality: AppEffects.qualityOf(context, GlassQuality.premium),
           useOwnLayer: true,
           shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.pill),
           child: Pressable(
@@ -36,7 +37,7 @@ class ChatAiToggle extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   AnimatedSwitcher(
-                    duration: AppMotion.fast,
+                    duration: AppMotion.duration(context, AppMotion.fast),
                     transitionBuilder: (child, animation) =>
                         ScaleTransition(scale: animation, child: child),
                     child: Icon(
@@ -137,7 +138,7 @@ class ChatSendButton extends ConsumerWidget {
       haptic: HapticKind.light,
       semanticLabel: context.t.chat.send,
       child: AnimatedContainer(
-        duration: AppMotion.fast,
+        duration: AppMotion.duration(context, AppMotion.fast),
         curve: AppMotion.emphasized,
         width: _diameter,
         height: _diameter,

@@ -10,6 +10,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/forms/glass_reactive_text_field.dart';
 import '../../../../core/forms/luthor_validator.dart';
+import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
@@ -148,7 +149,7 @@ class _ProfileFields extends StatelessWidget {
       const Gap(AppSpacing.md),
       Center(
         child: GlassButton.custom(
-          quality: GlassQuality.standard,
+          quality: AppEffects.qualityOf(context, GlassQuality.standard),
           height: AppSizes.minTouchTarget,
           width: AppSizes.profileActionWidth,
           shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.pill),

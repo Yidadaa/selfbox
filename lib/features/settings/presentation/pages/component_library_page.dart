@@ -5,7 +5,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/theme/app_artwork_tokens.dart';
+import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/ai_composer_glow.dart';
@@ -37,7 +39,7 @@ class ComponentLibraryPage extends StatelessWidget {
         const Gap(AppSpacing.md),
         const _ButtonsPreview(),
         GlassGroupedSection(
-          quality: GlassQuality.standard,
+          quality: AppEffects.qualityOf(context, GlassQuality.standard),
           shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
           margin: AppInsets.section,
           children: [
@@ -76,6 +78,7 @@ class ComponentLibraryPage extends StatelessWidget {
   static Future<void> _showDialogPreview(BuildContext context) =>
       showDialog<void>(
         context: context,
+        animationStyle: AppMotion.style(context),
         builder: (_) => AppActionDialog(
           title: context.t.me.componentLibraryDialog,
           cancelLabel: context.t.common.cancel,
@@ -93,6 +96,7 @@ class ComponentLibraryPage extends StatelessWidget {
   static Future<void> _showConfirmDialog(BuildContext context) =>
       showDialog<void>(
         context: context,
+        animationStyle: AppMotion.style(context),
         builder: (_) => AppConfirmDialog(
           title: context.t.me.componentLibraryConfirmDialog,
           secondaryLabel: context.t.common.cancel,
@@ -146,7 +150,7 @@ class _ComposerGlowPreview extends HookConsumerWidget {
           active: active.value,
           shape: shape,
           child: GlassContainer(
-            quality: GlassQuality.standard,
+            quality: AppEffects.qualityOf(context, GlassQuality.standard),
             useOwnLayer: true,
             shape: shape,
             settings: LiquidGlassSettings(
@@ -170,7 +174,7 @@ class _ButtonsPreview extends StatelessWidget {
   const _ButtonsPreview();
   @override
   Widget build(BuildContext context) => GlassGroupedSection(
-    quality: GlassQuality.standard,
+    quality: AppEffects.qualityOf(context, GlassQuality.standard),
     shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
     margin: AppInsets.section,
     header: SectionHeader(context.t.me.componentLibraryButtons),

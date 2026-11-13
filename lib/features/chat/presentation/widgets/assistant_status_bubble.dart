@@ -43,33 +43,35 @@ class AssistantStatusBubble extends ConsumerWidget {
       alignment: Alignment.centerLeft,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxs),
-        child: AnimatedSize(
-          duration: AppMotion.statusTransition,
-          curve: AppMotion.emphasized,
-          alignment: Alignment.bottomLeft,
-          child: AnimatedSwitcher(
-            duration: AppMotion.statusTransition,
-            switchInCurve: Curves.easeOutCubic,
-            switchOutCurve: Curves.easeInCubic,
-            // Each stage has a different width. Centering the overlap would
-            // move the next card when the wider outgoing stage disappears.
-            layoutBuilder: (current, previous) => Stack(
-              alignment: Alignment.bottomLeft,
-              children: [...previous, ?current],
-            ),
-            transitionBuilder: (child, animation) => FadeTransition(
-              opacity: animation,
-              child: SlideTransition(
-                position: Tween<Offset>(
-                  begin: AppMotion.assistantStageOffset,
-                  end: Offset.zero,
-                ).animate(animation),
-                child: child,
+        child: MediaQuery.disableAnimationsOf(context)
+            ? child
+            : AnimatedSize(
+                duration: AppMotion.statusTransition,
+                curve: AppMotion.emphasized,
+                alignment: Alignment.bottomLeft,
+                child: AnimatedSwitcher(
+                  duration: AppMotion.statusTransition,
+                  switchInCurve: Curves.easeOutCubic,
+                  switchOutCurve: Curves.easeInCubic,
+                  // Each stage has a different width. Centering the overlap would
+                  // move the next card when the wider outgoing stage disappears.
+                  layoutBuilder: (current, previous) => Stack(
+                    alignment: Alignment.bottomLeft,
+                    children: [...previous, ?current],
+                  ),
+                  transitionBuilder: (child, animation) => FadeTransition(
+                    opacity: animation,
+                    child: SlideTransition(
+                      position: Tween<Offset>(
+                        begin: AppMotion.assistantStageOffset,
+                        end: Offset.zero,
+                      ).animate(animation),
+                      child: child,
+                    ),
+                  ),
+                  child: child,
+                ),
               ),
-            ),
-            child: child,
-          ),
-        ),
       ),
     );
   }

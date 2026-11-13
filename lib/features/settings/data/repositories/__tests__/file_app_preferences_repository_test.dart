@@ -21,6 +21,8 @@ void main() {
       const selected = AppPreferences(
         theme: AppThemeChoice.light,
         language: AppLanguageChoice.en,
+        renderQuality: AppRenderQuality.minimal,
+        animationsEnabled: false,
       );
       expect((await repo.save(selected).run()).isRight(), isTrue);
       final reopened = FileAppPreferencesRepository(paths);

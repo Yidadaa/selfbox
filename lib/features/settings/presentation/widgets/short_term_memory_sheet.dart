@@ -10,7 +10,9 @@ import 'package:reactive_forms/reactive_forms.dart';
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/forms/luthor_validator.dart';
 import '../../../../core/theme/app_dialog_tokens.dart';
+import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_action_button.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -22,6 +24,7 @@ Future<void> showShortTermMemorySheet({
   required int initialPercent,
 }) => showModalBottomSheet<void>(
   context: context,
+  sheetAnimationStyle: AppMotion.style(context),
   isScrollControlled: true,
   backgroundColor: context.glass.bubbleOther,
   shape: const RoundedRectangleBorder(
@@ -243,7 +246,7 @@ class _MemoryPercentSlider extends StatelessWidget {
                 divisions:
                     AiSettings.maxShortTermMemoryPercent -
                     AiSettings.minShortTermMemoryPercent,
-                quality: GlassQuality.standard,
+                quality: AppEffects.qualityOf(context, GlassQuality.standard),
                 activeColor: glass.accent,
                 inactiveColor: glass.dialogActionFill,
                 onChanged: change == null

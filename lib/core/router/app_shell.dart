@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../features/chat/presentation/widgets/chat_composer.dart';
+import '../theme/app_effects.dart';
 import '../theme/app_glass_theme.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_radius.dart';
@@ -69,7 +70,7 @@ class AppShell extends HookConsumerWidget {
           ],
         ),
         AnimatedPositioned(
-          duration: AppMotion.fast,
+          duration: AppMotion.duration(context, AppMotion.fast),
           curve: AppMotion.emphasized,
           left: AppInsets.pageHorizontal,
           right: AppInsets.pageHorizontal,
@@ -88,7 +89,10 @@ class AppShell extends HookConsumerWidget {
                     navigation: navigation,
                   )
                 : GlassContainer(
-                    quality: GlassQuality.standard,
+                    quality: AppEffects.qualityOf(
+                      context,
+                      GlassQuality.standard,
+                    ),
                     useOwnLayer: true,
                     settings: LiquidGlassSettings(
                       blur: glass.chromeBlur,

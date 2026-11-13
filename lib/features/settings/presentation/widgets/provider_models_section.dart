@@ -6,6 +6,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/theme/app_artwork_tokens.dart';
+import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_action_button.dart';
@@ -68,7 +69,7 @@ class ProviderModelsSection extends HookConsumerWidget {
         else
           GlassGroupedSection(
             margin: AppInsets.section,
-            quality: GlassQuality.standard,
+            quality: AppEffects.qualityOf(context, GlassQuality.standard),
             shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
             header: SectionHeader(context.t.settings.provider.models),
             children: [

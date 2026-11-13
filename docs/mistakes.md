@@ -2,6 +2,15 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-14] [SwitchLayout] 增大最小热区后开关偏离文字中线 -> 直接约束 GlassSwitch 高度使其内部绘制贴上沿 -> 外层热区内使用 Center 保持控件自然尺寸，并用截图与中心坐标验证。
+
+- [2026-11-14] [SettingsTest] 通用页新增效果分组后旧布局契约仍断言一个分组 -> 公共页面测试保存了旧结构 -> 增加设置分组时同步更新跨页面布局断言，保留各组材质验证。
+
+- [2026-11-14] [Motion] 键盘过渡中关闭动画仍保留插画中间尺寸 -> 只更新隐式动画 duration 不会终止正在运行的 simulation -> 共享进度由 hook controller 驱动，关闭时赋最终值并停止 ticker，测试保留输入焦点。
+- [2026-11-14] [Python] Windows 脚本读取含中文 Dart 文件报解码错误 -> locale 默认 GBK -> 文件脚本显式使用 UTF-8 读写。
+
+- [2026-11-14] [Skeletonizer] 全局效果包装器调用 SkeletonizerConfig.of 断言失败 -> MaterialApp 未提供默认配置祖先 -> 全局入口使用 maybeOf 并显式回退默认配置。
+
 - [2026-11-13] [ScreenshotFixture] 独立截图夹具找不到 addTearDown -> 测试工具不通过其他夹具文件隐式导出 -> 使用测试生命周期 API 的文件显式导入 flutter_test。
 - [2026-11-13] [InlineAction] 大字行内按钮重复放大、纯按钮行多出行距 -> WidgetSpan 自动缩放且占位行使用独立字体指标 -> 内部 Text 禁用重复缩放，段落固定正文 StrutStyle，以真实高度和字母基线测试。
 - [2026-11-13] [Lint] FontFeature、RenderBox 新增独立导入后触发冗余导入 -> material.dart 已导出这些符号 -> 直接使用现有 Flutter 导入，并保持静态分析零问题。

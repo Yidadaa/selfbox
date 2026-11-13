@@ -172,7 +172,7 @@ void main() {
       expect(
         tester
             .widgetList<GlassIconButton>(find.byType(GlassIconButton))
-            .every((button) => button.quality == GlassQuality.premium),
+            .every((button) => button.quality == GlassQuality.standard),
         isTrue,
       );
       expect(

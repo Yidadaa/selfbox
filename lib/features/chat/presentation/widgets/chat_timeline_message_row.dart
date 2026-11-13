@@ -56,6 +56,7 @@ class ChatTimelineMessageRow extends ConsumerWidget {
     final t = context.t;
     return showDialog<void>(
       context: context,
+      animationStyle: AppMotion.style(context),
       builder: (_) => AppActionDialog(
         cancelLabel: t.common.cancel,
         actions: [

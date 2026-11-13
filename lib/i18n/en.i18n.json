@@ -179,6 +179,11 @@
     }
   },
   "general": {
+    "rendering": "Rendering quality",
+    "minimal": "Lightweight",
+    "standard": "Standard",
+    "premium": "Advanced",
+    "animations": "Animations",
     "theme": "Theme",
     "language": "Language",
     "system": "Automatic",

@@ -21,6 +21,7 @@ import 'assistant_failure_fixtures.dart';
 import 'assistant_transition_fixtures.dart';
 import 'brand_fixtures.dart';
 import 'composer_keyboard_fixtures.dart';
+import 'general_effects_fixtures.dart';
 import 'screenshot_fixtures.dart';
 import 'short_term_memory_fixtures.dart';
 
@@ -82,6 +83,7 @@ void main() {
     ...brandFixtures,
     ...agentProfileFixtures,
     ...composerKeyboardFixtures,
+    ...generalEffectsFixtures,
   ]) {
     for (final locale in [AppLocale.zhCn]) {
       testWidgets('screenshot ${shot.name}', (tester) async {

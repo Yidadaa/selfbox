@@ -80,7 +80,7 @@ class _DockTab extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               AnimatedContainer(
-                duration: AppMotion.fast,
+                duration: AppMotion.duration(context, AppMotion.fast),
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.xl,
                   vertical: AppSpacing.xxs,

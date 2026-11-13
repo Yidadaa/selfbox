@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -45,7 +46,10 @@ class ChatComposerAttachment extends ConsumerWidget {
                 children: [
                   if (external)
                     GlassContainer(
-                      quality: GlassQuality.standard,
+                      quality: AppEffects.qualityOf(
+                        context,
+                        GlassQuality.standard,
+                      ),
                       useOwnLayer: true,
                       settings: LiquidGlassSettings(
                         blur: glass.chromeBlur,

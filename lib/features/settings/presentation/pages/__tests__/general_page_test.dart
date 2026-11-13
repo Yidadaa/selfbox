@@ -231,7 +231,7 @@ void main() {
     expect(find.byKey(const ValueKey('theme-picker')), findsOneWidget);
     expect(
       tester
-          .widget<GlassGroupedSection>(find.byType(GlassGroupedSection))
+          .widget<GlassGroupedSection>(find.byType(GlassGroupedSection).first)
           .quality,
       GlassQuality.standard,
     );

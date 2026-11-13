@@ -22,6 +22,12 @@ class AppPreferencesController extends _$AppPreferencesController {
   Future<Either<AppFailure, Unit>> setLanguage(AppLanguageChoice language) =>
       _save(state.copyWith(language: language));
 
+  Future<Either<AppFailure, Unit>> setRenderQuality(AppRenderQuality quality) =>
+      _save(state.copyWith(renderQuality: quality));
+
+  Future<Either<AppFailure, Unit>> setAnimationsEnabled(bool enabled) =>
+      _save(state.copyWith(animationsEnabled: enabled));
+
   Future<Either<AppFailure, Unit>> _save(AppPreferences next) async {
     if (next == state) return const Right(unit);
     final previousLanguage = state.language;

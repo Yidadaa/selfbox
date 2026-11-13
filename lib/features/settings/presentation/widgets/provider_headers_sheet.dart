@@ -21,6 +21,7 @@ Future<Map<String, String>?> showProviderHeadersSheet({
   required Map<String, String> headers,
 }) => showModalBottomSheet<Map<String, String>>(
   context: context,
+  sheetAnimationStyle: AppMotion.style(context),
   isScrollControlled: true,
   backgroundColor: context.glass.bubbleOther,
   shape: const RoundedRectangleBorder(
@@ -101,7 +102,7 @@ class ProviderHeadersSheet extends HookWidget {
     }
 
     return AnimatedPadding(
-      duration: AppMotion.fast,
+      duration: AppMotion.duration(context, AppMotion.fast),
       curve: AppMotion.emphasized,
       padding: EdgeInsets.only(bottom: keyboard),
       child: SizedBox(

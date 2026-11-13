@@ -121,6 +121,7 @@ class _Timeline extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final scrollController = useScrollController();
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
     final newest = feed.items.whereType<TimelineMessage>().firstOrNull?.message;
     final scrollTo = newest != null && enteringIds.contains(newest.id)
         ? newest.id
@@ -132,6 +133,10 @@ class _Timeline extends HookWidget {
         if (!scrollController.hasClients || scrollController.offset <= 0) {
           return;
         }
+        if (reduceMotion) {
+          scrollController.jumpTo(0);
+          return;
+        }
         unawaited(
           scrollController.animateTo(
             0,
@@ -141,7 +146,7 @@ class _Timeline extends HookWidget {
         );
       });
       return null;
-    }, [scrollTo, scrollController]);
+    }, [scrollTo, scrollController, reduceMotion]);
 
     return _TimelineList(
       feed: feed,

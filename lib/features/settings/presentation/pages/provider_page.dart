@@ -11,6 +11,8 @@ import '../../../../core/error/failure_message.dart';
 import '../../../../core/forms/glass_reactive_text_field.dart';
 import '../../../../core/forms/luthor_validator.dart';
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/theme/app_effects.dart';
+import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_artwork.dart';
@@ -80,7 +82,7 @@ class _BackButton extends StatelessWidget {
   Widget build(BuildContext context) => GlassIconButton(
     size: AppSizes.minTouchTarget,
     icon: const Icon(Icons.arrow_back_ios_new_rounded),
-    quality: GlassQuality.standard,
+    quality: AppEffects.qualityOf(context, GlassQuality.standard),
     semanticLabel: context.t.common.close,
     onPressed: () => Navigator.of(context).maybePop(),
   );
@@ -177,7 +179,7 @@ class _ProviderForm extends HookConsumerWidget {
           GlassIconButton(
             size: AppSizes.minTouchTarget,
             icon: const Icon(Icons.more_horiz_rounded),
-            quality: GlassQuality.standard,
+            quality: AppEffects.qualityOf(context, GlassQuality.standard),
             semanticLabel: t.common.more,
             onPressed: () => _showActions(context, ref, existing),
           ),
@@ -189,7 +191,7 @@ class _ProviderForm extends HookConsumerWidget {
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           children: [
             GlassContainer.card(
-              quality: GlassQuality.standard,
+              quality: AppEffects.qualityOf(context, GlassQuality.standard),
               shape: const LiquidRoundedSuperellipse(
                 borderRadius: AppRadius.lg,
               ),
@@ -266,6 +268,7 @@ class _ProviderForm extends HookConsumerWidget {
     final navigator = Navigator.of(context);
     return showDialog<void>(
       context: context,
+      animationStyle: AppMotion.style(context),
       builder: (_) => AppConfirmDialog(
         title: provider.name,
         secondaryLabel: t.common.cancel,

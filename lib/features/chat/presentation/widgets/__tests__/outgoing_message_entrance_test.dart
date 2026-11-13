@@ -4,6 +4,42 @@ import 'package:selfbox/core/theme/app_motion.dart';
 import 'package:selfbox/features/chat/presentation/widgets/outgoing_message_entrance.dart';
 
 void main() {
+  testWidgets('disabling during entrance immediately completes once', (
+    tester,
+  ) async {
+    final disabled = ValueNotifier(false);
+    addTearDown(disabled.dispose);
+    var completed = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ValueListenableBuilder(
+          valueListenable: disabled,
+          builder: (_, value, child) => MediaQuery(
+            data: MediaQueryData(disableAnimations: value),
+            child: child!,
+          ),
+          child: OutgoingMessageEntrance(
+            onComplete: () => completed++,
+            child: const SizedBox(width: 200, height: 80),
+          ),
+        ),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(completed, 0);
+    disabled.value = true;
+    await tester.pump();
+    expect(
+      tester
+          .widget<SizeTransition>(find.byType(SizeTransition))
+          .sizeFactor
+          .value,
+      1,
+    );
+    expect(completed, 1);
+    await tester.pumpAndSettle();
+    expect(completed, 1);
+  });
   testWidgets('entry expands, slides, fades and finishes once', (tester) async {
     var completed = 0;
     await tester.pumpWidget(

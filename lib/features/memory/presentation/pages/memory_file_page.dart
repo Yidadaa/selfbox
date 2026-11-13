@@ -10,6 +10,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_markdown_theme.dart';
+import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_artwork.dart';
@@ -88,6 +89,7 @@ class MemoryFilePage extends ConsumerWidget {
     final navigator = Navigator.of(context);
     return showDialog<void>(
       context: context,
+      animationStyle: AppMotion.style(context),
       builder: (_) => AppConfirmDialog(
         title: memoryPath.value,
         secondaryLabel: t.common.cancel,

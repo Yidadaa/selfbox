@@ -66,8 +66,10 @@ class Pressable extends HookWidget {
         child: ConstrainedBox(
           constraints: BoxConstraints(minWidth: minSize, minHeight: minSize),
           child: AnimatedScale(
-            scale: pressed.value ? AppMotion.pressScale : 1,
-            duration: AppMotion.press,
+            scale: pressed.value && !MediaQuery.disableAnimationsOf(context)
+                ? AppMotion.pressScale
+                : 1,
+            duration: AppMotion.duration(context, AppMotion.press),
             curve: AppMotion.pressCurve,
             child: Center(widthFactor: 1, heightFactor: 1, child: child),
           ),

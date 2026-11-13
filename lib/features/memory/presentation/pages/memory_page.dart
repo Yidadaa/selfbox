@@ -7,6 +7,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/router/shell_scope.dart';
+import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/time/clock.dart';
@@ -59,7 +60,7 @@ class MemoryPage extends ConsumerWidget {
               shape: const LiquidRoundedSuperellipse(
                 borderRadius: AppRadius.pill,
               ),
-              quality: GlassQuality.premium,
+              quality: AppEffects.qualityOf(context, GlassQuality.premium),
               height: AppSizes.minTouchTarget,
               onTap: () => const MemoryEditorRoute().push<void>(context),
               child: Padding(

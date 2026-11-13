@@ -343,3 +343,9 @@
 - **背景**：插画尺寸直接切换；Tab 的 AnimatedSize 在收拢开始时就移除内容，无法看到退出动画。
 - **决策**：键盘可见且输入聚焦共同驱动 280ms easeInOutCubic 的可打断进度；同一进度同步控制欢迎插画的尺寸、横向位置和顶部占位，以及 Tab 的高度裁切/透明度、附件入口宽度和输入内边距。Tab 退场完成后再移除，过渡期间不接受点击和读屏焦点。插画按完整尺寸固定解码缓存，避免逐帧重新解码。
 - **影响**：保留双手露在输入框上方的 30% 叠放关系，预留最大插画高度用于小屏多行上界；失焦即恢复 Tab，快速反向从当前进度继续。减少动态效果时直接使用最终布局，AI 文本也跳过零时长 AnimatedSize，避免布局阶段自触发。
+
+### [ADR-053] 全局渲染档位与主要动画偏好
+
+- **背景**：通用设置需要统一切换玻璃渲染等级和动画效果；用户补充不必强行消除每个第三方控件的细节动画。
+- **决策**：AppPreferences 保存纯 Dart 的 AppRenderQuality（minimal / standard / premium）及 animationsEnabled，默认标准与开启，旧 JSON 自动补默认值。MaterialApp.builder 内的 AppEffects 向 Navigator、Sheet、Overlay 提供统一 GlassTheme、固定范围的 GlassAdaptiveScope、MediaQuery.disableAnimations 与 GlassAccessibilityScope。原显式档位通过 AppEffects.qualityOf 获取用户值，避免 Scope 仅作上限、无法把 standard 控件升级到 premium 的问题。
+- **影响**：覆盖此前局部固定档位预算；默认所有控件使用标准，用户可统一升降档。关闭动画使应用自己的页面/弹层过渡、键盘插画与 Tab、消息入场、思考点、输入光效和骨架闪烁静止或直接完成；系统减少动态效果优先，不使用全局 TickerMode 冻结应用状态。第三方 Switch、Toast 等保留库自身减少动画后的细节反馈，不复制或修改依赖源码。键盘过渡采用 hook controller，中途关闭立即落到终值且不重建编辑器。

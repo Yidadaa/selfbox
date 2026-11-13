@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/router/app_dock_tabs.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/widgets/app_artwork.dart';
+import 'package:selfbox/features/settings/presentation/providers/app_preferences_controller.dart';
 
 Finder get _dog => find.byWidgetPredicate(
   (w) => w is AppArtwork && w.artwork == BrandArt.welcome,
@@ -10,6 +11,32 @@ Finder get _dog => find.byWidgetPredicate(
 Finder get _tabs => find.byKey(const ValueKey('composer-tabs-reveal'));
 
 void main() {
+  testWidgets(
+    'disabling animations mid keyboard transition preserves focus and final layout',
+    (tester) async {
+      final container = await tester.pumpApp();
+      await tester.tap(find.byType(EditableText));
+      tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tester.getSize(_dog).width, inExclusiveRange(96, 144));
+      final editor = tester.widget<EditableText>(find.byType(EditableText));
+      await container
+          .read(appPreferencesControllerProvider.notifier)
+          .setAnimationsEnabled(false);
+      await tester.pump();
+      await tester.pump();
+      expect(tester.getSize(_dog).width, 96);
+      expect(find.byType(AppDockTabs), findsNothing);
+      expect(editor.focusNode.hasFocus, isTrue);
+      editor.focusNode.unfocus();
+      await tester.pump();
+      await tester.pump();
+      expect(tester.getSize(_dog).width, 144);
+      expect(find.byType(AppDockTabs), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
   for (final brightness in Brightness.values) {
     for (final width in [280.0, 390.0]) {
       testWidgets(

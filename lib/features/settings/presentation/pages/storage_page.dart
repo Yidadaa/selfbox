@@ -6,7 +6,9 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/storage/data_reset_controller.dart';
+import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
@@ -68,6 +70,7 @@ class StoragePage extends ConsumerWidget {
     final t = context.t;
     return showDialog<void>(
       context: context,
+      animationStyle: AppMotion.style(context),
       builder: (_) => AppConfirmDialog(
         title: t.me.clearWarning,
         secondaryLabel: t.common.cancel,
@@ -113,7 +116,7 @@ class _UsageCard extends StatelessWidget {
       ),
       const Gap(AppSpacing.xl),
       GlassGroupedSection(
-        quality: GlassQuality.standard,
+        quality: AppEffects.qualityOf(context, GlassQuality.standard),
         shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
         margin: AppInsets.section,
         children: [

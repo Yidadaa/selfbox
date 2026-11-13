@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/error/failure_message.dart';
+import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_list_tile.dart';
@@ -10,6 +11,7 @@ import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/app_preferences.dart';
 import '../providers/app_preferences_controller.dart';
+import '../widgets/general_effects_section.dart';
 import '../widgets/settings_back_button.dart';
 import '../widgets/settings_picker_sheet.dart';
 
@@ -35,7 +37,7 @@ class GeneralPage extends ConsumerWidget {
         children: [
           GlassGroupedSection(
             margin: AppInsets.section,
-            quality: GlassQuality.standard,
+            quality: AppEffects.qualityOf(context, GlassQuality.standard),
             shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
             children: [
               AppListTile(
@@ -59,6 +61,7 @@ class GeneralPage extends ConsumerWidget {
               ),
             ],
           ),
+          const GeneralEffectsSection(),
         ],
       ),
     );

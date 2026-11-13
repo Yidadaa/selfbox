@@ -23,10 +23,25 @@ class OutgoingMessageEntrance extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final controller = useAnimationController(duration: AppMotion.messageSend);
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    final completed = useRef(false);
     useEffect(() {
-      unawaited(controller.forward().then((_) => onComplete()));
+      void complete() {
+        if (completed.value) return;
+        completed.value = true;
+        onComplete();
+      }
+
+      if (reduceMotion) {
+        controller.value = 1;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (context.mounted) complete();
+        });
+      } else if (!completed.value) {
+        unawaited(controller.forward().then((_) => complete()));
+      }
       return null;
-    }, [controller]);
+    }, [controller, reduceMotion]);
 
     final progress = controller.drive(
       CurveTween(curve: AppMotion.messageSendCurve),

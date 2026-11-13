@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../../../core/theme/app_motion.dart';
 
 /// One interruptible transition keeps the mascot and input chrome in step.
-class ChatComposerKeyboardTransition extends StatelessWidget {
+class ChatComposerKeyboardTransition extends HookWidget {
   const ChatComposerKeyboardTransition({
     required this.editing,
     required this.child,
@@ -18,18 +19,27 @@ class ChatComposerKeyboardTransition extends StatelessWidget {
       0;
 
   @override
-  Widget build(BuildContext context) => TweenAnimationBuilder<double>(
-    tween: Tween(begin: editing ? 1 : 0, end: editing ? 1 : 0),
-    duration: MediaQuery.disableAnimationsOf(context)
-        ? Duration.zero
-        : AppMotion.composerKeyboard,
-    curve: AppMotion.composerKeyboardCurve,
-    builder: (context, value, child) => _KeyboardProgress(
-      value: value,
-      child: child ?? const SizedBox.shrink(),
-    ),
-    child: child,
-  );
+  Widget build(BuildContext context) {
+    final disabled = MediaQuery.disableAnimationsOf(context);
+    final progress = useAnimationController(
+      initialValue: editing ? 1 : 0,
+      duration: AppMotion.composerKeyboard,
+    );
+    useEffect(() {
+      final target = editing ? 1.0 : 0.0;
+      if (disabled) {
+        progress.value = target;
+      } else {
+        progress.animateTo(
+          target,
+          duration: AppMotion.composerKeyboard,
+          curve: AppMotion.composerKeyboardCurve,
+        );
+      }
+      return null;
+    }, [editing, disabled, progress]);
+    return _KeyboardProgress(value: useAnimation(progress), child: child);
+  }
 }
 
 class _KeyboardProgress extends InheritedWidget {

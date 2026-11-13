@@ -188,7 +188,7 @@ void main() {
                 ),
               )
               .quality,
-          GlassQuality.premium,
+          GlassQuality.standard,
         );
         expect(find.byType(AiComposerGlow), findsOneWidget);
         expect(

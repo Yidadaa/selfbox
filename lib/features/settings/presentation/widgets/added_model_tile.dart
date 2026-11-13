@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/error/failure_message.dart';
+import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_list_tile.dart';
@@ -83,7 +84,7 @@ class AddedModelTile extends HookConsumerWidget {
             child: GlassSegmentedControl(
               key: ValueKey('model-effort-${model.modelId}'),
               height: AppSizes.smallTabHeight,
-              quality: GlassQuality.standard,
+              quality: AppEffects.qualityOf(context, GlassQuality.standard),
               selectedIndex: ReasoningEffort.values.indexOf(
                 model.reasoningEffort,
               ),
@@ -147,7 +148,7 @@ class _CapabilityToggle extends StatelessWidget {
               absorbing: busy,
               child: GlassSwitch(
                 key: switchKey,
-                quality: GlassQuality.standard,
+                quality: AppEffects.qualityOf(context, GlassQuality.standard),
                 value: value,
                 semanticLabel: label,
                 onChanged: onChanged,

@@ -26,6 +26,7 @@ Future<void> showModelSettingsSheet({
   required ModelConfig model,
 }) => showModalBottomSheet<void>(
   context: context,
+  sheetAnimationStyle: AppMotion.style(context),
   isScrollControlled: true,
   backgroundColor: context.glass.bubbleOther,
   shape: const RoundedRectangleBorder(
@@ -112,6 +113,7 @@ class ModelSettingsSheet extends HookConsumerWidget {
       final delete = context.t.settings.model.delete;
       showDialog<void>(
         context: context,
+        animationStyle: AppMotion.style(context),
         builder: (_) => AppConfirmDialog(
           title: title,
           secondaryLabel: cancel,
@@ -123,7 +125,7 @@ class ModelSettingsSheet extends HookConsumerWidget {
     }
 
     return AnimatedPadding(
-      duration: AppMotion.fast,
+      duration: AppMotion.duration(context, AppMotion.fast),
       curve: AppMotion.emphasized,
       padding: EdgeInsets.only(bottom: keyboard),
       child: SizedBox(

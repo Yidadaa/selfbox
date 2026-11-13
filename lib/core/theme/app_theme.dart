@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import 'app_glass_theme.dart';
+import 'app_page_transitions.dart';
 
 abstract final class AppTheme {
   static ThemeData dark() => _build(AppGlassTheme.dark, Brightness.dark);
@@ -30,7 +30,7 @@ abstract final class AppTheme {
       pageTransitionsTheme: PageTransitionsTheme(
         builders: {
           for (final platform in TargetPlatform.values)
-            platform: const GlassPageTransitionsBuilder(),
+            platform: const AppPageTransitions(),
         },
       ),
       extensions: [glass],

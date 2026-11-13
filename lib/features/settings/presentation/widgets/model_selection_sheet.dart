@@ -26,6 +26,7 @@ Future<void> showModelSelectionSheet({
   required List<ModelConfig> models,
 }) => showModalBottomSheet<void>(
   context: context,
+  sheetAnimationStyle: AppMotion.style(context),
   isScrollControlled: true,
   backgroundColor: context.glass.bubbleOther,
   shape: const RoundedRectangleBorder(
@@ -91,7 +92,7 @@ class ModelSelectionSheet extends HookConsumerWidget {
     }
 
     return AnimatedPadding(
-      duration: AppMotion.fast,
+      duration: AppMotion.duration(context, AppMotion.fast),
       curve: AppMotion.emphasized,
       padding: EdgeInsets.only(bottom: keyboard),
       child: SizedBox(

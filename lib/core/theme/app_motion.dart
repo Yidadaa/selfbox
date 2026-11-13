@@ -1,6 +1,14 @@
-import 'package:flutter/animation.dart';
+import 'package:flutter/widgets.dart';
 
 abstract final class AppMotion {
+  static Duration duration(BuildContext context, Duration value) =>
+      MediaQuery.disableAnimationsOf(context) ? Duration.zero : value;
+
+  static AnimationStyle? style(BuildContext context) =>
+      MediaQuery.disableAnimationsOf(context)
+      ? AnimationStyle.noAnimation
+      : null;
+
   static const double pressScale = 0.97;
   static const Duration press = Duration(milliseconds: 120);
   static const Curve pressCurve = Curves.easeOutCubic;

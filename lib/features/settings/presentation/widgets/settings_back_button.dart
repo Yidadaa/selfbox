@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../gen/i18n/strings.g.dart';
 
@@ -10,7 +11,7 @@ class SettingsBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => GlassIconButton(
     size: AppSizes.minTouchTarget,
-    quality: GlassQuality.premium,
+    quality: AppEffects.qualityOf(context, GlassQuality.premium),
     icon: const Icon(Icons.arrow_back_ios_new_rounded),
     semanticLabel: context.t.common.close,
     onPressed: () => context.pop(),

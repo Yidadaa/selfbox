@@ -10,6 +10,33 @@ import 'package:selfbox/gen/i18n/strings.g.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  test(
+    'effect preferences persist and failed changes retain saved state',
+    () async {
+      final repository = FakeAppPreferencesRepository();
+      final container = ProviderContainer(
+        overrides: testAppOverrides(preferences: repository),
+      );
+      addTearDown(container.dispose);
+      final controller = container.read(
+        appPreferencesControllerProvider.notifier,
+      );
+      await controller.setRenderQuality(AppRenderQuality.premium);
+      await controller.setAnimationsEnabled(false);
+      final selected = container.read(appPreferencesControllerProvider);
+      expect(selected.renderQuality, AppRenderQuality.premium);
+      expect(selected.animationsEnabled, isFalse);
+      expect(repository.current, selected);
+      repository.failure = const AppFailure.database(message: 'full');
+      expect(
+        (await controller.setRenderQuality(AppRenderQuality.minimal)).isLeft(),
+        isTrue,
+      );
+      expect((await controller.setAnimationsEnabled(true)).isLeft(), isTrue);
+      expect(container.read(appPreferencesControllerProvider), selected);
+    },
+  );
+
   test('saves theme and language before exposing either change', () async {
     LocaleSettings.setLocaleSync(AppLocale.en);
     final repository = FakeAppPreferencesRepository();

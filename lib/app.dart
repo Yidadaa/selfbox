@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import 'core/router/app_router.dart';
+import 'core/theme/app_effects.dart';
 import 'core/theme/app_scroll_behavior.dart';
 import 'core/theme/app_theme.dart';
 import 'features/settings/domain/models/app_preferences.dart';
@@ -14,17 +16,18 @@ class SelfboxApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = ref.watch(
-      appPreferencesControllerProvider.select(
-        (preferences) => preferences.theme,
-      ),
-    );
+    final preferences = ref.watch(appPreferencesControllerProvider);
     return MaterialApp.router(
       onGenerateTitle: (context) => context.t.app.name,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
-      themeMode: switch (theme) {
+      themeAnimationDuration:
+          preferences.animationsEnabled &&
+              !MediaQuery.disableAnimationsOf(context)
+          ? kThemeAnimationDuration
+          : Duration.zero,
+      themeMode: switch (preferences.theme) {
         AppThemeChoice.system => ThemeMode.system,
         AppThemeChoice.light => ThemeMode.light,
         AppThemeChoice.dark => ThemeMode.dark,
@@ -34,10 +37,18 @@ class SelfboxApp extends ConsumerWidget {
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       scrollBehavior: const AppScrollBehavior(),
       // Overlay entries sit outside page Materials and need their own baseline.
-      builder: (context, child) => DefaultTextStyle(
-        style: (Theme.of(context).textTheme.bodyMedium ?? const TextStyle())
-            .copyWith(decoration: TextDecoration.none),
-        child: child ?? const SizedBox.shrink(),
+      builder: (context, child) => AppEffects(
+        quality: switch (preferences.renderQuality) {
+          AppRenderQuality.minimal => GlassQuality.minimal,
+          AppRenderQuality.standard => GlassQuality.standard,
+          AppRenderQuality.premium => GlassQuality.premium,
+        },
+        animationsEnabled: preferences.animationsEnabled,
+        child: DefaultTextStyle(
+          style: (Theme.of(context).textTheme.bodyMedium ?? const TextStyle())
+              .copyWith(decoration: TextDecoration.none),
+          child: child ?? const SizedBox.shrink(),
+        ),
       ),
       routerConfig: ref.watch(appRouterProvider),
     );

@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/theme/app_dialog_tokens.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_action_button.dart';
 import '../../../../core/widgets/pressable.dart';
@@ -20,6 +21,7 @@ Future<String?> showAgentAvatarSheet(
   String? selected,
 }) => showModalBottomSheet<String>(
   context: context,
+  sheetAnimationStyle: AppMotion.style(context),
   isScrollControlled: true,
   backgroundColor: context.glass.bubbleOther,
   shape: const RoundedRectangleBorder(

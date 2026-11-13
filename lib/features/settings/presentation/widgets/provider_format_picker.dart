@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
+import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -39,10 +40,7 @@ class ProviderFormatPicker extends StatelessWidget {
         ReactiveValueListenableBuilder<ApiFormat>(
           formControlName: formatControl,
           builder: (context, control, _) => GlassSegmentedControl(
-            // Provider forms can contain several interactive glass controls.
-            // Keep their transient indicator lens on the lightweight shader
-            // path instead of the ios27 premium default.
-            quality: GlassQuality.standard,
+            quality: AppEffects.qualityOf(context, GlassQuality.standard),
             selectedTextStyle: Theme.of(context).textTheme.labelLarge
                 ?.copyWith(fontWeight: FontWeight.w600),
             unselectedTextStyle: Theme.of(context).textTheme.labelLarge

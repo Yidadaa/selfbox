@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
@@ -120,7 +121,7 @@ class _ComposerGlassSurface extends ConsumerWidget {
           : AppMotion.composerGlowExit,
       curve: Curves.easeInOutCubic,
       builder: (context, tint, child) => GlassContainer(
-        quality: GlassQuality.standard,
+        quality: AppEffects.qualityOf(context, GlassQuality.standard),
         useOwnLayer: true,
         settings: LiquidGlassSettings(
           blur: glass.chromeBlur,

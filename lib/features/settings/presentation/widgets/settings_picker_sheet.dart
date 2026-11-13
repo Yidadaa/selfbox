@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../../../core/theme/app_dialog_tokens.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_action_button.dart';
 import '../../../../gen/i18n/strings.g.dart';
@@ -17,6 +18,7 @@ Future<void> showSettingsPicker({
   required Future<bool> Function(int index) onSave,
 }) => showModalBottomSheet<void>(
   context: context,
+  sheetAnimationStyle: AppMotion.style(context),
   backgroundColor: context.glass.bubbleOther,
   shape: const RoundedRectangleBorder(
     borderRadius: BorderRadius.vertical(

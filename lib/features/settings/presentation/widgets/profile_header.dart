@@ -5,6 +5,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -36,7 +37,7 @@ class ProfileHeader extends ConsumerWidget {
             shape: const LiquidRoundedSuperellipse(
               borderRadius: AppRadius.pill,
             ),
-            quality: GlassQuality.standard,
+            quality: AppEffects.qualityOf(context, GlassQuality.standard),
             onTap: profile.hasError
                 ? () => ref.invalidate(userProfileProvider)
                 : () => const ProfileRoute().push<void>(context),

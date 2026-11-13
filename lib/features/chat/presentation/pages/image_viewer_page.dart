@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_artwork.dart';
@@ -68,7 +69,7 @@ class ImageViewerPage extends HookConsumerWidget {
             left: AppInsets.pageHorizontal,
             child: GlassIconButton(
               key: const ValueKey('image-viewer-close'),
-              quality: GlassQuality.premium,
+              quality: AppEffects.qualityOf(context, GlassQuality.premium),
               icon: const Icon(Icons.close_rounded),
               semanticLabel: context.t.common.close,
               size: AppSizes.minTouchTarget,
@@ -93,6 +94,10 @@ class ImageViewerPage extends HookConsumerWidget {
                     selected: page.value,
                     onSelected: (index) {
                       page.value = index;
+                      if (MediaQuery.disableAnimationsOf(context)) {
+                        controller.jumpToPage(index);
+                        return;
+                      }
                       controller.animateToPage(
                         index,
                         duration: const Duration(milliseconds: 240),
@@ -130,6 +135,7 @@ class _ThumbnailStrip extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final media = ref.watch(mediaStoreProvider);
     final controller = useScrollController();
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!controller.hasClients) return;
@@ -140,6 +146,10 @@ class _ThumbnailStrip extends HookConsumerWidget {
                             AppSizes.attachmentThumbnail) /
                         2)
                 .clamp(0.0, position.maxScrollExtent);
+        if (reduceMotion) {
+          controller.jumpTo(target);
+          return;
+        }
         controller.animateTo(
           target,
           duration: const Duration(milliseconds: 220),
@@ -147,9 +157,9 @@ class _ThumbnailStrip extends HookConsumerWidget {
         );
       });
       return null;
-    }, [controller, selected, paths.length]);
+    }, [controller, selected, paths.length, reduceMotion]);
     return GlassContainer(
-      quality: GlassQuality.standard,
+      quality: AppEffects.qualityOf(context, GlassQuality.standard),
       padding: const EdgeInsets.all(AppSpacing.xs),
       child: ConstrainedBox(
         constraints: const BoxConstraints.tightFor(

@@ -179,6 +179,11 @@
     }
   },
   "general": {
+    "rendering": "渲染效果",
+    "minimal": "轻量",
+    "standard": "标准",
+    "premium": "高级",
+    "animations": "动画效果",
     "theme": "主题",
     "language": "语言",
     "system": "自动",
