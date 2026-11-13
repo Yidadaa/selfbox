@@ -42,7 +42,7 @@ void main() {
   }
   _write(
     'windows/runner/resources/app_icon.ico',
-    img.encodeIco(_resize(logo, 256)),
+    img.encodeIco(_icon(logo, 256)),
   );
   stdout.writeln(
     'Prepared 19 runtime illustrations and Android/iOS/macOS/Windows branding.',
@@ -80,12 +80,25 @@ img.Image _icon(
     height: size,
     numChannels: transparent ? 4 : 3,
   );
-  if (!transparent) img.fill(canvas, color: img.ColorRgb8(242, 246, 252));
+  if (!transparent) _fillIconBackground(canvas);
   return img.compositeImage(
     canvas,
     _resize(logo, (size * fraction).round()),
     center: true,
   );
+}
+
+// A soft version of the dog's blue ear keeps the white face readable.
+void _fillIconBackground(img.Image canvas) {
+  for (var y = 0; y < canvas.height; y++) {
+    final progress = y / (canvas.height - 1);
+    final red = (140 + (255 - 140) * progress).round();
+    final green = (185 + (255 - 185) * progress).round();
+    final blue = (238 + (255 - 238) * progress).round();
+    for (var x = 0; x < canvas.width; x++) {
+      canvas.setPixelRgb(x, y, red, green, blue);
+    }
+  }
 }
 
 void _android(img.Image logo) {
@@ -100,6 +113,9 @@ void _android(img.Image logo) {
     _png('$res/mipmap-$density/ic_launcher.png', _icon(logo, size));
   }
   _png('$res/drawable-nodpi/brand_logo.png', _resize(logo, 512));
+  final background = img.Image(width: 432, height: 432);
+  _fillIconBackground(background);
+  _png('$res/drawable-nodpi/ic_launcher_background.png', background);
   _png(
     '$res/drawable-nodpi/ic_launcher_foreground.png',
     _icon(logo, 432, transparent: true, fraction: 0.62),

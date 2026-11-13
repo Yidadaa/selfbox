@@ -18,6 +18,44 @@ Finder artwork(String name) => find.byWidgetPredicate((widget) {
 });
 
 void main() {
+  test('app uses 小懒 in both locales and native launch labels', () async {
+    for (final locale in AppLocale.values) {
+      expect((await locale.build()).app.name, '小懒');
+    }
+    expect(
+      File('android/app/src/main/AndroidManifest.xml').readAsStringSync(),
+      contains('android:label="小懒"'),
+    );
+    expect(
+      File('ios/Runner/Info.plist').readAsStringSync(),
+      contains('<string>小懒</string>'),
+    );
+  });
+
+  test('launcher backgrounds fade vertically from coordinated blue to white', () {
+    for (final path in [
+      'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png',
+      'android/app/src/main/res/drawable-nodpi/ic_launcher_background.png',
+      'ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png',
+      'macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_512.png',
+    ]) {
+      final image = img.decodePng(File(path).readAsBytesSync());
+      expect(image, isNotNull);
+      if (image == null) continue;
+      final top = image.getPixel(0, 0);
+      final middle = image.getPixel(0, image.height ~/ 2);
+      final bottom = image.getPixel(0, image.height - 1);
+      expect([top.r, top.g, top.b, top.a], [140, 185, 238, 255]);
+      expect(middle.r, greaterThan(top.r));
+      expect(middle.r, lessThan(bottom.r));
+      expect([bottom.r, bottom.g, bottom.b, bottom.a], [255, 255, 255, 255]);
+    }
+    expect(
+      File('android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml')
+          .readAsStringSync(),
+      contains('@drawable/ic_launcher_background'),
+    );
+  });
   test('runtime brand assets and native launcher icons are prepared', () {
     for (final (name, size) in [
       ('logo', 512),
@@ -81,7 +119,7 @@ void main() {
       ('/chat', 'empty-welcome', ''),
       ('/memory', 'empty-files', ''),
       ('/chat/search', 'empty-search', ''),
-      ('/me/about', 'logo', 'Selfbox'),
+      ('/me/about', 'logo', '小懒'),
       ('/missing-brand-page', 'state-resting', ''),
     ]) {
       testWidgets('$route uses $image in ${brightness.name}', (tester) async {

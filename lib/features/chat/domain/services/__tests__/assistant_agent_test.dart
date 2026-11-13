@@ -131,7 +131,7 @@ void main() {
 
       final call = env.model.calls.single;
       expect(call.maxOutputTokens, 1000);
-      expect(call.prompt.system, contains('Selfbox'));
+      expect(call.prompt.system, contains('小懒'));
       final userText = call.prompt.messages
           .where((m) => m.role == LanguageModelV4Role.user)
           .expand((m) => m.content)

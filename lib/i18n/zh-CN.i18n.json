@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Selfbox"
+    "name": "小懒"
   },
   "tabs": {
     "chat": "聊天",
@@ -56,7 +56,7 @@
     "logs": "Talker 日志",
     "developer": "开发工具",
     "componentLibrary": "组件库 UI",
-    "componentLibraryDescription": "查看和验收 Selfbox 的公共组件",
+    "componentLibraryDescription": "查看和验收小懒的公共组件",
     "componentLibraryArtwork": "品牌素材",
     "componentLibraryButtons": "统一 Action Button",
     "componentLibraryDialog": "查看 Dialog 按钮规范",

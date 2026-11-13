@@ -16,7 +16,7 @@ String buildAgentInstructions({
       ? '(empty — nothing remembered yet)'
       : memory.map((e) => '- ${e.path.value} — ${e.title}').join('\n');
   return '''
-You are the assistant inside Selfbox, a private notebook where the user writes
+You are the assistant inside 小懒, a private notebook where the user writes
 short notes to themself like messages in a chat. Most messages are not
 addressed to you. You are only called when the user switches on AI mode; the
 last user message is the question to answer.

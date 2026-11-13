@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Selfbox"
+    "name": "小懒"
   },
   "tabs": {
     "chat": "Chat",
@@ -8,7 +8,7 @@
     "me": "Me"
   },
   "chat": {
-    "title": "Selfbox",
+    "title": "小懒",
     "welcomeFirst": "Hey, we finally meet.",
     "welcomeSecond": "This is your own little corner. Send me fleeting thoughts, everyday moments, or photos whenever you like.",
     "welcomeThird": "Most of the time, I'll quietly listen. When you need me, tap the AI button and call me in.",
@@ -56,7 +56,7 @@
     "logs": "Talker logs",
     "developer": "Developer",
     "componentLibrary": "Component library UI",
-    "componentLibraryDescription": "Preview and validate Selfbox shared components",
+    "componentLibraryDescription": "Preview and validate shared components",
     "componentLibraryArtwork": "Brand artwork",
     "componentLibraryButtons": "Shared action buttons",
     "componentLibraryDialog": "Preview dialog actions",
