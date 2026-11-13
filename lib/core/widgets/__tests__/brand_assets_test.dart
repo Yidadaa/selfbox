@@ -6,6 +6,7 @@ import 'package:image/image.dart' as img;
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_memory_repository.dart';
+import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/features/settings/presentation/widgets/profile_avatar.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
@@ -59,6 +60,16 @@ void main() {
       (tester) async {
         await tester.pumpPage(const ProfileAvatar(), brightness: brightness);
         expect(artwork('avatar-default'), findsOneWidget);
+        final background =
+            tester
+                    .widget<DecoratedBox>(
+                      find.byKey(const ValueKey('default-avatar-surface')),
+                    )
+                    .decoration
+                as BoxDecoration;
+        expect(background.shape, BoxShape.circle);
+        expect(background.color, AppGlassTheme.of(brightness).bubbleOther);
+        expect(background.color?.a, 1);
         expect(
           tester.widget<Image>(artwork('avatar-default')).fit,
           BoxFit.contain,

@@ -319,3 +319,9 @@
 - **背景**：GlassToast.show 创建独立 OverlayEntry，只捕获玻璃及 Cupertino 主题；文本局部样式继承 MaterialApp 的黄色双下划线回退值。
 - **决策**：在 MaterialApp.builder 中给 Navigator 及其 Overlay 提供主题 bodyMedium DefaultTextStyle，明确 decoration:none；保留 Liquid Glass Toast 的位置、交互、动画与自动关闭。
 - **影响**：所有现有 Toast 调用直接获修复，无需修改依赖缓存；真实应用测试覆盖全部 Toast 类型和明暗主题的最终 RichText 样式及退场。
+
+### [ADR-049] 欢迎小狗锚定输入框
+
+- **背景**：聊天顶部已有用户头像，再叠欢迎插画会重复视觉焦点；默认头像缺少可读的实心背景。
+- **决策**：默认头像以当前 bubbleOther 不透明主题色绘制圆形底板，图像保持 contain。欢迎插画移入 Composer 的 Stack，在输入玻璃之前绘制，底部 30% 与输入框重叠，双手位于上沿之外；居于输入区偏左，避开右侧 AI 开关。键盘聚焦态缩小，按输入实际左右边界定位；附件和已有消息时隐藏。
+- **影响**：Shell 对整个 Composer 实测高度，消息底部自动避让；失焦时插画与 Tab 同步恢复，避免键盘 inset 归零后的第二次尺寸变化。测试覆盖明暗、280/390dp、键盘及首次发送，截图检查手部与玻璃遮挡关系。

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 
-import '../../../../core/theme/app_artwork_tokens.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/message.dart';
@@ -27,10 +24,6 @@ class WelcomeTimeline extends StatelessWidget {
         bottomPadding,
       ),
       children: [
-        const Center(
-          child: AppArtwork(BrandArt.welcome, size: AppArtworkTokens.welcome),
-        ),
-        const Gap(AppSpacing.lg),
         for (final (index, greeting) in greetings.indexed)
           MessageBubble(
             message: Message(

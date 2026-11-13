@@ -20,6 +20,33 @@ Future<void> _decodeArtwork(WidgetTester tester) async {
 
 final brandFixtures = [
   for (final theme in Brightness.values)
+    for (final (width, keyboard) in [
+      (280.0, false),
+      (390.0, true),
+      (280.0, true),
+    ])
+      ScreenshotFixture(
+        name:
+            'brand-welcome-${theme.name}-${width.toInt()}-${keyboard ? 'keyboard' : 'closed'}',
+        location: '/chat',
+        setUp: (tester, _) async {
+          tester.platformDispatcher.platformBrightnessTestValue = theme;
+          addTearDown(
+            tester.platformDispatcher.clearPlatformBrightnessTestValue,
+          );
+          tester.view.physicalSize = Size(width * 3, 844 * 3);
+        },
+        afterOpen: (tester) async {
+          if (keyboard) {
+            await tester.tap(find.byType(EditableText));
+            tester.view.viewInsets = const FakeViewPadding(bottom: 300 * 3);
+          }
+          await tester.pumpAndSettle();
+          await _decodeArtwork(tester);
+          expect(tester.takeException(), isNull);
+        },
+      ),
+  for (final theme in Brightness.values)
     for (final (name, route) in [
       ('welcome', '/chat'),
       ('memory', '/memory'),

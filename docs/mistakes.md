@@ -145,3 +145,4 @@
 - [2026-11-13] [DartFix] dart fix 把同级测试的 flutter_test 移成 hosted any，导致求解失败 -> 自动 dependency 修复不适配本项目 lib 内测试约定 -> 审查 pubspec diff，flutter_test 必须保留 dev_dependencies 的 sdk:flutter。
 - [2026-11-13] [IllustratedState] Chat 错误态触发布局异常 -> SliverFillRemaining 无滚动体会查询 LayoutBuilder 的 intrinsic 尺寸 -> 可自适应滚动的错误态直接在约束后的 Padding 内布局，避免 intrinsic 依赖；无界列表内不嵌套 ScrollView。
 - [2026-11-13] [ScreenshotTheme] 截图夹具报 Provider 重复覆盖 -> pumpApp 已注入初始偏好 -> 明暗截图通过测试平台亮度切换，不重复覆盖 initialAppPreferencesProvider。
+- [2026-11-14] [WelcomeMascot] 键盘完全收起时输入 Dock 再次变高 -> 插画尺寸仅依赖 inset，晚于输入框失焦恢复 -> 插画与输入框共同依据 keyboardOpen && focusNode.hasFocus 切换布局。

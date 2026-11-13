@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path/path.dart' as p;
 
 import '../../../../core/storage/app_paths.dart';
+import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_artwork.dart';
 
@@ -48,6 +49,12 @@ class _Placeholder extends StatelessWidget {
   final double dimension;
 
   @override
-  Widget build(BuildContext context) =>
-      AppArtwork(BrandArt.avatar, size: dimension);
+  Widget build(BuildContext context) => DecoratedBox(
+    key: const ValueKey('default-avatar-surface'),
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: context.glass.bubbleOther,
+    ),
+    child: AppArtwork(BrandArt.avatar, size: dimension),
+  );
 }
