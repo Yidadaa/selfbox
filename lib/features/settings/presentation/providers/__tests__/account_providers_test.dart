@@ -23,7 +23,13 @@ void main() {
     expect(
       (await container
               .read(profileControllerProvider.notifier)
-              .save(const UserProfile(nickname: 'Flynn')))
+              .save(
+                const UserProfile(
+                  nickname: 'Flynn',
+                  agentName: 'Dozy',
+                  agentAvatar: 'preset:reading',
+                ),
+              ))
           .isRight(),
       true,
     );
@@ -33,6 +39,11 @@ void main() {
     );
     expect(container.read(profileControllerProvider), false);
     expect(memory.contentOf('user.md'), contains('用户已经设置了名字'));
+    expect(memory.contentOf('user.md'), isNot(contains('Dozy')));
+    expect(
+      (await container.read(userProfileProvider.future)).agentName,
+      'Dozy',
+    );
   });
 
   for (final denied in [false, true]) {

@@ -5,8 +5,12 @@ part '../../../../gen/features/settings/domain/models/user_profile.freezed.dart'
 
 @freezed
 abstract class UserProfile with _$UserProfile {
-  const factory UserProfile({@Default('') String nickname, String? avatar}) =
-      _UserProfile;
+  const factory UserProfile({
+    @Default('') String nickname,
+    String? avatar,
+    @Default('') String agentName,
+    String? agentAvatar,
+  }) = _UserProfile;
 }
 
 @freezed
@@ -23,5 +27,6 @@ abstract class StorageUsage with _$StorageUsage {
 }
 
 abstract final class ProfileSchema {
-  static final nickname = l.string().min(1).max(40).required();
+  static final nickname = l.string().max(40);
+  static final agentName = l.string().min(1).max(40).required();
 }

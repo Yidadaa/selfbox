@@ -16,6 +16,7 @@ import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
+import 'agent_profile_fixtures.dart';
 import 'assistant_failure_fixtures.dart';
 import 'assistant_transition_fixtures.dart';
 import 'brand_fixtures.dart';
@@ -78,6 +79,7 @@ void main() {
     ...assistantFailureFixtures,
     ...shortTermMemoryFixtures,
     ...brandFixtures,
+    ...agentProfileFixtures,
   ]) {
     for (final locale in [AppLocale.zhCn]) {
       testWidgets('screenshot ${shot.name}', (tester) async {

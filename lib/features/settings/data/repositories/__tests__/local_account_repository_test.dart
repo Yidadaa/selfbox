@@ -7,36 +7,33 @@ import 'package:selfbox/features/settings/data/repositories/local_account_reposi
 import 'package:selfbox/features/settings/domain/models/user_profile.dart';
 
 void main() {
-  test(
-    'profile persists, trims nickname and rejects empty/long names',
-    () async {
-      final paths = createTempAppPaths();
-      final store = await openTempStore(paths);
-      final repo = LocalAccountRepository(store, paths);
+  test('profile persists, trims nickname and rejects long names', () async {
+    final paths = createTempAppPaths();
+    final store = await openTempStore(paths);
+    final repo = LocalAccountRepository(store, paths);
+    expect(
+      (await repo.load().run()).getOrElse((e) => throw e),
+      const UserProfile(),
+    );
+    expect(
+      (await repo.save(const UserProfile(nickname: '  Flynn  ')).run())
+          .isRight(),
+      true,
+    );
+    expect(
+      (await LocalAccountRepository(
+        store,
+        paths,
+      ).load().run()).getOrElse((e) => throw e).nickname,
+      'Flynn',
+    );
+    for (final name in ['a' * 41]) {
       expect(
-        (await repo.load().run()).getOrElse((e) => throw e),
-        const UserProfile(),
-      );
-      expect(
-        (await repo.save(const UserProfile(nickname: '  Flynn  ')).run())
-            .isRight(),
+        (await repo.save(UserProfile(nickname: name)).run()).isLeft(),
         true,
       );
-      expect(
-        (await LocalAccountRepository(
-          store,
-          paths,
-        ).load().run()).getOrElse((e) => throw e).nickname,
-        'Flynn',
-      );
-      for (final name in ['', '   ', 'a' * 41]) {
-        expect(
-          (await repo.save(UserProfile(nickname: name)).run()).isLeft(),
-          true,
-        );
-      }
-    },
-  );
+    }
+  });
 
   test(
     'avatar, usage and idempotent cleanup preserve the open database',

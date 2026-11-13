@@ -46,9 +46,9 @@
   "me": {
     "title": "Me",
     "defaultName": "My space",
-    "editProfile": "Edit profile",
+    "editProfile": "Edit Agent",
     "nickname": "Nickname",
-    "changeAvatar": "Change photo",
+    "changeAvatar": "Choose avatar",
     "general": "General",
     "storage": "Storage",
     "providers": "AI providers",
@@ -74,7 +74,20 @@
     "configuration": "Settings",
     "databaseNote": "The database keeps a small allocation after clearing.",
     "version": "Version",
-    "tagline": "A private space for your thoughts."
+    "tagline": "A private space for your thoughts.",
+    "agentDefaultName": "Dozy",
+    "agentName": "Agent name",
+    "callMe": "What AI calls me",
+    "avatarGallery": "Photos",
+    "avatarPresets": {
+      "defaultAvatar": "Classic",
+      "working": "Working",
+      "playing": "Playing",
+      "sleeping": "Sleeping",
+      "resting": "Resting",
+      "reading": "Reading",
+      "awake": "Awake"
+    }
   },
   "notFound": {
     "title": "Page not found",

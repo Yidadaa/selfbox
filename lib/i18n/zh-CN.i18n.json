@@ -46,7 +46,7 @@
   "me": {
     "title": "我的",
     "defaultName": "我的空间",
-    "editProfile": "编辑资料",
+    "editProfile": "编辑 Agent",
     "nickname": "昵称",
     "changeAvatar": "更换头像",
     "general": "通用",
@@ -74,7 +74,20 @@
     "configuration": "设置",
     "databaseNote": "清除后数据库仍会保留少量预分配空间。",
     "version": "版本",
-    "tagline": "留给自己的思考空间。"
+    "tagline": "留给自己的思考空间。",
+    "agentDefaultName": "小懒",
+    "agentName": "Agent 名字",
+    "callMe": "AI 如何称呼我",
+    "avatarGallery": "从相册选取",
+    "avatarPresets": {
+      "defaultAvatar": "经典",
+      "working": "工作",
+      "playing": "娱乐",
+      "sleeping": "睡觉",
+      "resting": "休息",
+      "reading": "阅读",
+      "awake": "清醒"
+    }
   },
   "notFound": {
     "title": "页面不存在",

@@ -63,7 +63,7 @@ void main() {
     expect(find.text('0 B'), findsNWidgets(5));
     expect(find.text(t.me.clearAll), findsOneWidget);
   });
-  testWidgets('Me opens profile and saves a nickname', (tester) async {
+  testWidgets('Me opens Agent profile and saves both names', (tester) async {
     final account = FakeAccountRepository();
     final container = await tester.pumpApp(account: account);
     container.read(appRouterProvider).go('/me');
@@ -73,10 +73,12 @@ void main() {
     expect(find.text(t.me.about), findsOneWidget);
     await tester.tap(find.text(t.me.editProfile));
     await tester.pumpAndSettle();
+    await tester.enterText(find.byType(EditableText).first, '');
     await tester.tap(find.text(t.common.save));
     await tester.pumpAndSettle();
     expect(find.text(t.forms.required), findsOneWidget);
-    await tester.enterText(find.byType(EditableText), 'Flynn');
+    await tester.enterText(find.byType(EditableText).first, 'Momo');
+    await tester.enterText(find.byType(EditableText).last, 'Flynn');
     await tester.tap(find.text(t.common.save));
     await tester.pumpAndSettle();
     expect(account.profile.nickname, 'Flynn');
@@ -84,7 +86,8 @@ void main() {
       container.read(appRouterProvider).routeInformationProvider.value.uri.path,
       '/me',
     );
-    expect(find.text('Flynn'), findsOneWidget);
+    expect(find.text('Momo'), findsOneWidget);
+    expect(find.text('Flynn'), findsNothing);
   });
 
   testWidgets('storage requires confirmation; cancel preserves data', (

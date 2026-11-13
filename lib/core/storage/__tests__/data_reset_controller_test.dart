@@ -69,7 +69,10 @@ void main() {
 
     expect(result.isRight(), isTrue);
     expect(memory.contentOf('topic/old.md'), isNull);
-    expect(memory.contentOf('user.md'), '用户尚未设置名字，可以引导用户点击头像设置名字和头像。\n');
+    expect(
+      memory.contentOf('user.md'),
+      '用户尚未设置称呼，可以引导用户点击 Agent 头像，在“AI 如何称呼我”中设置自己的名字。\n',
+    );
   });
 
   test('reset clears theme and language preferences', () async {

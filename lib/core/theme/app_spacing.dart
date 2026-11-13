@@ -29,6 +29,8 @@ abstract final class AppSizes {
   static const double sendIcon = 36;
   static const double attachmentThumbnail = 64;
   static const double profileAvatar = 80;
+  static const double avatarPickerPreview = 64;
+  static const double avatarPickerTile = 88;
   static const double profileActionWidth = 160;
   static const double smallTabHeight = 36;
 }

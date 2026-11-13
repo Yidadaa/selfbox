@@ -9,6 +9,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/error/app_failure.dart';
 import '../../../../core/storage/app_paths.dart';
 import '../../../../gen/database/objectbox.g.dart';
+import '../../domain/models/agent_avatar.dart';
 import '../../domain/models/user_profile.dart';
 import '../../domain/repositories/account_repository.dart';
 import '../datasources/profile_entity.dart';
@@ -33,15 +34,30 @@ class LocalAccountRepository implements AccountRepository {
   @override
   TaskEither<AppFailure, Unit> save(UserProfile profile) {
     if (ProfileSchema.nickname.validate(profile.nickname.trim())
-        is lu.ValidationFailure) {
+            is lu.ValidationFailure ||
+        profile.agentName.trim().length > 40) {
       return TaskEither.left(
         const AppFailure.validation(message: 'invalid nickname'),
+      );
+    }
+    final avatar = profile.agentAvatar;
+    if (avatar != null &&
+        AgentAvatarPreset.fromReference(avatar) == null &&
+        !(p.posix.dirname(avatar) == 'media' &&
+            p.posix.basename(avatar).startsWith('avatar-'))) {
+      return TaskEither.left(
+        const AppFailure.validation(message: 'invalid Agent avatar'),
       );
     }
     return _run(() async {
       final previous = await _box.getAsync(1);
       await _box.putAsync(profile.toEntity());
-      if (previous?.avatar case final old? when old != profile.avatar) {
+      for (final old in [previous?.avatar, previous?.agentAvatar]) {
+        if (old == null ||
+            old == profile.avatar ||
+            old == profile.agentAvatar) {
+          continue;
+        }
         // Only files created by this repository may be removed on replacement.
         if (p.posix.dirname(old) == 'media' &&
             p.posix.basename(old).startsWith('avatar-')) {

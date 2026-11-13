@@ -46,7 +46,7 @@ class _ChatHeaderProfile extends ConsumerWidget {
       AsyncData(:final value) => value,
       AsyncLoading() || AsyncError() => null,
     };
-    final name = profile?.nickname.trim();
+    final name = profile?.agentName.trim();
     return Pressable(
       key: const ValueKey('chat-header-profile'),
       semanticLabel: context.t.me.editProfile,
@@ -76,7 +76,7 @@ class _ChatHeaderProfile extends ConsumerWidget {
                 child: Center(
                   child: Text(
                     name == null || name.isEmpty
-                        ? context.t.me.defaultName
+                        ? context.t.me.agentDefaultName
                         : name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -90,7 +90,7 @@ class _ChatHeaderProfile extends ConsumerWidget {
               top: 10,
               child: ProfileAvatar(
                 key: const ValueKey('chat-header-avatar'),
-                path: profile?.avatar,
+                path: profile?.agentAvatar,
                 dimension: 56,
               ),
             ),

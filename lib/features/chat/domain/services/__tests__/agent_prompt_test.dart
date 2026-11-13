@@ -72,6 +72,7 @@ void main() {
         memory: [entry],
         canViewImages: true,
         userName: 'Flynn',
+        agentName: 'Dozy',
         languageTag: 'zh-CN',
       );
       expect(text, contains('2026-11-12 10:05'));
@@ -79,6 +80,7 @@ void main() {
       expect(text, contains('memory_patch'));
       expect(text, contains('view_image'));
       expect(text, contains('Flynn'));
+      expect(text, contains('Dozy'));
       expect(text, contains('zh-CN'));
       expect(text, contains('time zone'));
       expect(text, contains('short, natural chat messages'));
@@ -90,6 +92,7 @@ void main() {
         memory: const [],
         canViewImages: false,
         userName: '',
+        agentName: 'Little Lazy',
         languageTag: 'en',
       );
       expect(text, contains('nothing remembered yet'));

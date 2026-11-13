@@ -12,6 +12,7 @@ import 'package:selfbox/features/chat/domain/models/agent_activity.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/domain/services/assistant_agent.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
+import 'package:selfbox/features/settings/domain/models/user_profile.dart';
 
 const agentTestProvider = ProviderConfig(
   id: 'p1',
@@ -54,6 +55,7 @@ AgentTestEnv createAgentTestEnv(
   AiSettings? settings,
   Map<String, String> keys = const {'p1': 'sk'},
   Object? error,
+  UserProfile profile = const UserProfile(),
 }) {
   final model = ScriptedLanguageModel(steps, error: error);
   final factory = FakeLanguageModelFactory(model);
@@ -63,7 +65,7 @@ AgentTestEnv createAgentTestEnv(
       settings: settings ?? agentTestSettings(),
       apiKeys: keys,
     ),
-    account: FakeAccountRepository(),
+    account: FakeAccountRepository()..profile = profile,
     messages: FakeMessageRepository(
       seed: [
         Message(
@@ -87,6 +89,7 @@ AgentTestEnv createAgentTestEnv(
     models: factory,
     clock: () => DateTime(2026, 11, 12, 9, 1),
     languageTag: () => 'zh-CN',
+    defaultAgentName: () => '小懒',
   );
   return (
     agent: agent,

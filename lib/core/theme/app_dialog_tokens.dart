@@ -10,6 +10,7 @@ abstract final class AppDialogTokens {
   static const double pickerHeight = 332;
   static const double pickerItemExtent = 44;
   static const double modelSheetFraction = 0.58;
+  static const double avatarSheetFraction = 0.64;
 
   static const EdgeInsets headerInsets = EdgeInsets.fromLTRB(
     AppSpacing.xxl,

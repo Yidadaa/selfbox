@@ -10,7 +10,8 @@ class UserMemoryService {
 
   final MemoryRepository memory;
 
-  static const _unnamed = '用户尚未设置名字，可以引导用户点击头像设置名字和头像。';
+  static const _legacyUnnamed = '用户尚未设置名字，可以引导用户点击头像设置名字和头像。';
+  static const _unnamed = '用户尚未设置称呼，可以引导用户点击 Agent 头像，在“AI 如何称呼我”中设置自己的名字。';
   static const _named = '用户已经设置了名字，请优先用用户的名字称呼他。';
   static final path = MemoryPath.parse('user.md')
       .getOrElse((failure) => throw failure);
@@ -27,7 +28,9 @@ class UserMemoryService {
   TaskEither<AppFailure, Unit> _update(MemoryFile file, String nickname) {
     final lines = file.content.split('\n');
     final previous = lines.first;
-    if (previous != _unnamed && previous != _named) {
+    if (previous != _unnamed &&
+        previous != _legacyUnnamed &&
+        previous != _named) {
       return TaskEither.right(unit);
     }
     final next = _line(nickname);

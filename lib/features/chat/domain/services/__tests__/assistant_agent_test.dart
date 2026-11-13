@@ -5,11 +5,26 @@ import 'package:selfbox/core/testing/scripted_language_model.dart';
 import 'package:selfbox/features/chat/domain/models/agent_activity.dart';
 import 'package:selfbox/features/chat/domain/services/assistant_agent.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
+import 'package:selfbox/features/settings/domain/models/user_profile.dart';
 
 import 'assistant_agent_test_support.dart';
 
 void main() {
   group('AssistantAgent', () {
+    test(
+      'uses separate Agent and user names in the actual model request',
+      () async {
+        for (final name in ['', 'Momo']) {
+          final env = createAgentTestEnv([
+            [scriptedText('hello')],
+          ], profile: UserProfile(nickname: 'Flynn', agentName: name));
+          await askTestAgent(env);
+          final text = env.model.calls.single.prompt.system;
+          expect(text, contains('Your name is ${name.isEmpty ? '小懒' : name}.'));
+          expect(text, contains("User's current name: Flynn."));
+        }
+      },
+    );
     test(
       'streams cumulative reasoning Markdown but no answer preview',
       () async {

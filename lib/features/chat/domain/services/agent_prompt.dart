@@ -9,6 +9,7 @@ String buildAgentInstructions({
   required List<MemoryEntry> memory,
   required bool canViewImages,
   required String userName,
+  required String agentName,
   required String languageTag,
 }) {
   final index = memory.isEmpty
@@ -19,6 +20,7 @@ You are the assistant inside Selfbox, a private notebook where the user writes
 short notes to themself like messages in a chat. Most messages are not
 addressed to you. You are only called when the user switches on AI mode; the
 last user message is the question to answer.
+Your name is $agentName.
 
 Current local time: ${_stamp(now)}.
 Current time zone: ${now.timeZoneName} (UTC${_offset(now.timeZoneOffset)}).

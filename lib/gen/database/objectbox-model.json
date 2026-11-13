@@ -46,7 +46,7 @@
     },
     {
       "id": "2:8258008151641627220",
-      "lastPropertyId": "3:3415804352196608880",
+      "lastPropertyId": "5:7887836833727433573",
       "name": "ProfileEntity",
       "properties": [
         {
@@ -63,6 +63,16 @@
         {
           "id": "3:3415804352196608880",
           "name": "avatar",
+          "type": 9
+        },
+        {
+          "id": "4:5199734644003910588",
+          "name": "agentName",
+          "type": 9
+        },
+        {
+          "id": "5:7887836833727433573",
+          "name": "agentAvatar",
           "type": 9
         }
       ],

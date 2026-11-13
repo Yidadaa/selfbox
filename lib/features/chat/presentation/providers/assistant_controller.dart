@@ -41,6 +41,7 @@ AssistantAgent assistantAgent(Ref ref) => AssistantAgent(
   models: ref.watch(languageModelFactoryProvider),
   clock: ref.watch(clockProvider),
   languageTag: () => LocaleSettings.currentLocale.languageTag,
+  defaultAgentName: () => t.me.agentDefaultName,
 );
 
 /// Publishes the id of a newly persisted AI reply once per completed turn.

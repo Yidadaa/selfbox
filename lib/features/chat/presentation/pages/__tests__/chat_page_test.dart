@@ -194,7 +194,7 @@ void main() {
       expect(name.top, lessThan(avatar.bottom));
       expect(name.center.dy, greaterThan(avatar.center.dy));
       expect(
-        tester.widget<Text>(find.text(t.me.defaultName)).style?.fontSize,
+        tester.widget<Text>(find.text(t.me.agentDefaultName)).style?.fontSize,
         lessThan(18),
       );
       final profileStack = tester.widget<Stack>(

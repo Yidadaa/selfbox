@@ -12,7 +12,10 @@ void main() {
         const UserProfile(nickname: 'Flynn', avatar: 'media/a.jpg'),
       );
       expect(profile.copyWith(avatar: null).nickname, 'Flynn');
-      for (final value in [null, '', 'a' * 41]) {
+      expect(const UserProfile().agentName, isEmpty);
+      expect(const UserProfile().agentAvatar, isNull);
+      expect(profile.copyWith(agentName: 'Dozy').nickname, 'Flynn');
+      for (final value in ['a' * 41]) {
         expect(
           ProfileSchema.nickname.validate(value),
           isA<ValidationFailure<Object?>>(),
@@ -21,6 +24,14 @@ void main() {
       expect(
         ProfileSchema.nickname.validate('a' * 40),
         isA<ValidationSuccess<Object?>>(),
+      );
+      expect(
+        ProfileSchema.nickname.validate(''),
+        isA<ValidationSuccess<Object?>>(),
+      );
+      expect(
+        ProfileSchema.agentName.validate('a' * 41),
+        isA<ValidationFailure<Object?>>(),
       );
       expect(
         const StorageUsage(

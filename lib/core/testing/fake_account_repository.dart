@@ -9,12 +9,17 @@ import '../error/app_failure.dart';
 class FakeAccountRepository implements AccountRepository {
   UserProfile profile = const UserProfile();
   AppFailure? failure;
+  AppFailure? saveFailure;
   int clears = 0;
   @override
   TaskEither<AppFailure, UserProfile> load() => TaskEither.right(profile);
   @override
   TaskEither<AppFailure, Unit> save(UserProfile value) {
-    profile = value.copyWith(nickname: value.nickname.trim());
+    if (saveFailure case final error?) return TaskEither.left(error);
+    profile = value.copyWith(
+      nickname: value.nickname.trim(),
+      agentName: value.agentName.trim(),
+    );
     return TaskEither.right(unit);
   }
 
@@ -22,7 +27,7 @@ class FakeAccountRepository implements AccountRepository {
   TaskEither<AppFailure, String> importAvatar(
     Uint8List bytes,
     String extension,
-  ) => TaskEither.right('media/avatar.png');
+  ) => TaskEither.right('media/avatar-test.png');
   @override
   TaskEither<AppFailure, StorageUsage> usage() =>
       TaskEither.right(const StorageUsage(mediaBytes: 1024));

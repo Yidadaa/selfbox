@@ -17,15 +17,15 @@ class ProfileHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(userProfileProvider);
-    final nickname = profile.value?.nickname ?? '';
+    final nickname = profile.value?.agentName ?? '';
     return Skeletonizer(
       enabled: profile.isLoading,
       child: Column(
         children: [
-          ProfileAvatar(path: profile.value?.avatar),
+          ProfileAvatar(path: profile.value?.agentAvatar),
           const Gap(AppSpacing.md),
           Text(
-            nickname.isEmpty ? context.t.me.defaultName : nickname,
+            nickname.isEmpty ? context.t.me.agentDefaultName : nickname,
             style: Theme.of(context).textTheme.headlineSmall,
             textAlign: TextAlign.center,
           ),

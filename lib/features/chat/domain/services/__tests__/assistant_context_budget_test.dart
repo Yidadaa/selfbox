@@ -46,6 +46,7 @@ Future<String> _prompt({
     models: FakeLanguageModelFactory(model),
     clock: () => question.createdAt,
     languageTag: () => 'en',
+    defaultAgentName: () => 'Dozy',
   );
   expect(
     (await agent.answer(question, onActivity: (_) {}).run()).isRight(),

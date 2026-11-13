@@ -7,8 +7,13 @@ void main() {
     const profile = UserProfile(
       nickname: ' Flynn ',
       avatar: 'media/avatar.png',
+      agentName: ' Dozy ',
+      agentAvatar: 'preset:working',
     );
-    expect(profile.toEntity().toDomain(), profile.copyWith(nickname: 'Flynn'));
+    expect(
+      profile.toEntity().toDomain(),
+      profile.copyWith(nickname: 'Flynn', agentName: 'Dozy'),
+    );
     expect(profile.toEntity().id, 1);
     expect(const UserProfile().toEntity().toDomain(), const UserProfile());
   });

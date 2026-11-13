@@ -8,6 +8,8 @@ import '../../../../core/storage/app_paths.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_artwork.dart';
+import '../../domain/models/agent_avatar.dart';
+import 'agent_avatar_preset.dart';
 
 class ProfileAvatar extends ConsumerWidget {
   const ProfileAvatar({
@@ -38,15 +40,24 @@ class ProfileAvatar extends ConsumerWidget {
               errorBuilder: (_, error, stack) =>
                   _Placeholder(dimension: dimension),
             )
-          : _Placeholder(dimension: dimension),
+          : _Placeholder(
+              dimension: dimension,
+              preset:
+                  AgentAvatarPreset.fromReference(relative) ??
+                  AgentAvatarPreset.avatar,
+            ),
     );
   }
 }
 
 class _Placeholder extends StatelessWidget {
-  const _Placeholder({required this.dimension});
+  const _Placeholder({
+    required this.dimension,
+    this.preset = AgentAvatarPreset.avatar,
+  });
 
   final double dimension;
+  final AgentAvatarPreset preset;
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
@@ -55,6 +66,6 @@ class _Placeholder extends StatelessWidget {
       shape: BoxShape.circle,
       color: context.glass.bubbleOther,
     ),
-    child: AppArtwork(BrandArt.avatar, size: dimension),
+    child: AppArtwork(preset.artwork, size: dimension),
   );
 }

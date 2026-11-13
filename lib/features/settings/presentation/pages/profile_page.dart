@@ -16,6 +16,7 @@ import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/user_profile.dart';
 import '../providers/account_providers.dart';
+import '../widgets/agent_avatar_sheet.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/profile_avatar.dart';
 import '../widgets/settings_back_button.dart';
@@ -49,9 +50,14 @@ class _ProfileForm extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final busy = ref.watch(profileControllerProvider);
-    final avatar = useState(profile.avatar);
+    final avatar = useState(profile.agentAvatar);
+    final defaultName = context.t.me.agentDefaultName;
     final form = useMemoized(
       () => FormGroup({
+        'agentName': FormControl<String>(
+          value: profile.agentName.isEmpty ? defaultName : profile.agentName,
+          validators: [luthorValidator(ProfileSchema.agentName)],
+        ),
         'nickname': FormControl<String>(
           value: profile.nickname,
           validators: [luthorValidator(ProfileSchema.nickname)],
@@ -65,39 +71,11 @@ class _ProfileForm extends HookConsumerWidget {
         absorbing: busy,
         child: ReactiveForm(
           formGroup: form,
-          child: ListView(
-            padding: AppPageInsets.of(context),
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            children: [
-              Center(child: ProfileAvatar(path: avatar.value)),
-              const Gap(AppSpacing.md),
-              Center(
-                child: GlassButton.custom(
-                  quality: GlassQuality.standard,
-                  height: AppSizes.minTouchTarget,
-                  width: AppSizes.profileActionWidth,
-                  shape: const LiquidRoundedSuperellipse(
-                    borderRadius: AppRadius.pill,
-                  ),
-                  onTap: () => _pick(context, ref, avatar),
-                  child: Text(
-                    context.t.me.changeAvatar,
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
-                ),
-              ),
-              const Gap(AppSpacing.xxl),
-              GlassReactiveTextField<String>(
-                formControlName: 'nickname',
-                label: context.t.me.nickname,
-              ),
-              const Gap(AppSpacing.xl),
-              PrimaryButton(
-                label: context.t.common.save,
-                busy: busy,
-                onTap: () => _save(context, ref, form, avatar.value),
-              ),
-            ],
+          child: _ProfileFields(
+            avatar: avatar.value,
+            busy: busy,
+            onPick: () => _pick(context, avatar),
+            onSave: () => _save(context, ref, form, avatar.value),
           ),
         ),
       ),
@@ -106,16 +84,12 @@ class _ProfileForm extends HookConsumerWidget {
 
   Future<void> _pick(
     BuildContext context,
-    WidgetRef ref,
     ValueNotifier<String?> avatar,
   ) async {
-    final result = await ref
-        .read(profileControllerProvider.notifier)
-        .pickAvatar();
+    FocusScope.of(context).unfocus();
+    final result = await showAgentAvatarSheet(context, selected: avatar.value);
     if (!context.mounted) return;
-    result.match((error) => showOutcome(context, failure: error), (path) {
-      if (path != null) avatar.value = path;
-    });
+    if (result != null) avatar.value = result;
   }
 
   Future<void> _save(
@@ -129,9 +103,13 @@ class _ProfileForm extends HookConsumerWidget {
     final result = await ref
         .read(profileControllerProvider.notifier)
         .save(
-          UserProfile(
+          profile.copyWith(
             nickname: form.control('nickname').value as String,
-            avatar: avatar,
+            agentName: _agentName(
+              form.control('agentName').value as String,
+              context.t.me.agentDefaultName,
+            ),
+            agentAvatar: avatar,
           ),
         );
     if (!context.mounted) return;
@@ -143,4 +121,56 @@ class _ProfileForm extends HookConsumerWidget {
     await WidgetsBinding.instance.endOfFrame;
     if (context.mounted) context.pop();
   }
+
+  String _agentName(String entered, String fallback) =>
+      profile.agentName.isEmpty && entered.trim() == fallback
+      ? ''
+      : entered.trim();
+}
+
+class _ProfileFields extends StatelessWidget {
+  const _ProfileFields({
+    required this.avatar,
+    required this.busy,
+    required this.onPick,
+    required this.onSave,
+  });
+  final String? avatar;
+  final bool busy;
+  final VoidCallback onPick;
+  final VoidCallback onSave;
+  @override
+  Widget build(BuildContext context) => ListView(
+    padding: AppPageInsets.of(context),
+    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+    children: [
+      Center(child: ProfileAvatar(path: avatar)),
+      const Gap(AppSpacing.md),
+      Center(
+        child: GlassButton.custom(
+          quality: GlassQuality.standard,
+          height: AppSizes.minTouchTarget,
+          width: AppSizes.profileActionWidth,
+          shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.pill),
+          onTap: onPick,
+          child: Text(
+            context.t.me.changeAvatar,
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+        ),
+      ),
+      const Gap(AppSpacing.xxl),
+      GlassReactiveTextField<String>(
+        formControlName: 'agentName',
+        label: context.t.me.agentName,
+      ),
+      const Gap(AppSpacing.lg),
+      GlassReactiveTextField<String>(
+        formControlName: 'nickname',
+        label: context.t.me.callMe,
+      ),
+      const Gap(AppSpacing.xl),
+      PrimaryButton(label: context.t.common.save, busy: busy, onTap: onSave),
+    ],
+  );
 }

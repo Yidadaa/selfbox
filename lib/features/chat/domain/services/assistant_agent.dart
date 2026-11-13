@@ -35,6 +35,7 @@ class AssistantAgent {
     required this.models,
     required this.clock,
     required this.languageTag,
+    required this.defaultAgentName,
   });
 
   final AiSettingsRepository settings;
@@ -45,6 +46,7 @@ class AssistantAgent {
   final LanguageModelFactory models;
   final DateTime Function() clock;
   final String Function() languageTag;
+  final String Function() defaultAgentName;
 
   /// Upper bound on model round-trips per question.
   static const maxSteps = 16;
@@ -68,6 +70,9 @@ class AssistantAgent {
               question: question,
               index: index,
               userName: profile.nickname.trim(),
+              agentName: profile.agentName.trim().isEmpty
+                  ? defaultAgentName()
+                  : profile.agentName.trim(),
               onActivity: onActivity,
               onToolEvent: onToolEvent,
               cancel: cancel,
@@ -106,6 +111,7 @@ class AssistantAgent {
     required Message question,
     required List<MemoryEntry> index,
     required String userName,
+    required String agentName,
     required void Function(AgentActivity) onActivity,
     required AgentToolTrace? onToolEvent,
     required CancellationToken? cancel,
@@ -116,6 +122,7 @@ class AssistantAgent {
       memory: index,
       canViewImages: model.supportsImages,
       userName: userName,
+      agentName: agentName,
       languageTag: languageTag(),
     );
     final budget = math.min(
