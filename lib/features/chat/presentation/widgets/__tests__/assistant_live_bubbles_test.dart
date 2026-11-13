@@ -68,4 +68,37 @@ void main() {
     );
     expect(find.byKey(const ValueKey('thinking-viewport')), findsNothing);
   });
+  testWidgets(
+    'pending dots stop without a ticker and resume when motion is enabled',
+    (tester) async {
+      final disabled = ValueNotifier(false);
+      addTearDown(disabled.dispose);
+      await tester.pumpPage(
+        ValueListenableBuilder(
+          valueListenable: disabled,
+          builder: (_, value, child) => MediaQuery(
+            data: MediaQueryData(disableAnimations: value),
+            child: child!,
+          ),
+          child: const AssistantTypingBubble(label: 'Typing'),
+        ),
+        settle: false,
+      );
+      expect(tester.binding.hasScheduledFrame, isTrue);
+      disabled.value = true;
+      await tester.pumpAndSettle();
+      expect(tester.binding.hasScheduledFrame, isFalse);
+      for (var i = 0; i < 3; i++) {
+        final transform = tester.widget<Transform>(
+          find.byKey(ValueKey('typing-dot-$i')),
+        );
+        expect(transform.transform.getTranslation().y, 0);
+      }
+      disabled.value = false;
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 180));
+      expect(tester.binding.hasScheduledFrame, isTrue);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
 }

@@ -15,34 +15,6 @@ import 'package:selfbox/features/chat/presentation/widgets/message_image_stack.d
 
 void main() {
   setUpAll(initializeDateFormatting);
-  for (final author in MessageAuthor.values) {
-    testWidgets('$author keeps the timestamp below the bubble', (tester) async {
-      await tester.pumpPage(
-        MessageBubble(
-          message: Message(
-            id: 1,
-            createdAt: DateTime(2026, 11, 12, 9, 30),
-            author: author,
-            text: 'Hello',
-          ),
-          resolveImage: (_) => null,
-        ),
-      );
-      final surface = tester.getRect(
-        find.byKey(const ValueKey('message-surface')),
-      );
-      final time = tester.getRect(find.text('09:30'));
-      expect(findAppIcon(AppIcons.ai), findsNothing);
-      expect(time.top, greaterThan(surface.bottom));
-      expect(surface.contains(time.topLeft), isFalse);
-      expect(
-        time.top,
-        greaterThan(
-          tester.getBottomLeft(find.text('Hello', findRichText: true)).dy,
-        ),
-      );
-    });
-  }
   for (final brightness in Brightness.values) {
     for (final author in MessageAuthor.values) {
       for (final content in ['text', 'photo', 'caption']) {
@@ -50,19 +22,24 @@ void main() {
           tester,
         ) async {
           var longPressed = false;
+          final askedAi = ValueNotifier(true);
+          addTearDown(askedAi.dispose);
           await tester.pumpPage(
             Center(
-              child: MessageBubble(
-                message: Message(
-                  id: 1,
-                  createdAt: DateTime(2026, 11, 12, 9, 30),
-                  author: author,
-                  text: content == 'photo' ? '' : 'Hello',
-                  images: content == 'text' ? [] : ['media/missing.png'],
-                  askedAi: true,
+              child: ValueListenableBuilder(
+                valueListenable: askedAi,
+                builder: (_, flagged, _) => MessageBubble(
+                  message: Message(
+                    id: 1,
+                    createdAt: DateTime(2026, 11, 12, 9, 30),
+                    author: author,
+                    text: content == 'photo' ? '' : 'Hello',
+                    images: content == 'text' ? [] : ['media/missing.png'],
+                    askedAi: flagged,
+                  ),
+                  resolveImage: (_) => null,
+                  onLongPress: () => longPressed = true,
                 ),
-                resolveImage: (_) => null,
-                onLongPress: () => longPressed = true,
               ),
             ),
             brightness: brightness,
@@ -114,6 +91,7 @@ void main() {
             }
           }
           expect(time.top, greaterThan(surface.bottom));
+          expect(surface.contains(time.topLeft), isFalse);
           expect(status.top, greaterThan(surface.bottom));
           expect(status.center.dy, closeTo(time.center.dy, 0.01));
           expect(
@@ -164,6 +142,21 @@ void main() {
           }
           await tester.longPress(contentFinder);
           expect(longPressed, isTrue);
+          if (content == 'text') {
+            askedAi.value = false;
+            await tester.pump();
+            final unflaggedTime = tester.getRect(find.text('09:30'));
+            final unflaggedSurface = tester.getRect(contentFinder);
+            expect(findAppIcon(AppIcons.ai), findsNothing);
+            expect(unflaggedTime.top, greaterThan(unflaggedSurface.bottom));
+            expect(unflaggedSurface.contains(unflaggedTime.topLeft), isFalse);
+            expect(
+              unflaggedTime.top,
+              greaterThan(
+                tester.getBottomLeft(find.text('Hello', findRichText: true)).dy,
+              ),
+            );
+          }
           expect(tester.takeException(), isNull);
         });
       }

@@ -24,7 +24,13 @@ void main() {
   });
 
   test('percentage edits clamp to 10 through 60', () {
-    for (final (value, expected) in [(-3, 10), (10, 10), (37, 37), (500, 60)]) {
+    for (final (value, expected) in [
+      (-3, 10),
+      (10, 10),
+      (12, 12),
+      (37, 37),
+      (500, 60),
+    ]) {
       expect(
         const AiSettings()
             .withShortTermMemoryPercent(value)

@@ -9,23 +9,13 @@ import 'package:selfbox/features/chat/presentation/widgets/chat_composer_control
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
 void main() {
-  testWidgets('AI toggle keeps the selected sparkle glyph in both states', (
-    tester,
-  ) async {
-    expect(AppIcons.aiIdle, HugeIcons.strokeRoundedAiSparkles);
-    expect(AppIcons.ai, HugeIcons.strokeRoundedAiSparkles);
-    await tester.pumpApp();
-    expect(findAppIcon(AppIcons.ai), findsOneWidget);
-    await tester.tap(find.byType(ChatAiToggle));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 500));
-    expect(findAppIcon(AppIcons.ai), findsOneWidget);
-  });
   for (final locale in AppLocale.values) {
     testWidgets('AI label crossfades and resizes smoothly in ${locale.name}', (
       tester,
     ) async {
       final active = ValueNotifier(false);
+      expect(AppIcons.aiIdle, HugeIcons.strokeRoundedAiSparkles);
+      expect(AppIcons.ai, HugeIcons.strokeRoundedAiSparkles);
       addTearDown(active.dispose);
       await tester.pumpPage(
         Align(
@@ -43,12 +33,14 @@ void main() {
       final toggle = find.byType(ChatAiToggle);
       final before = tester.getRect(toggle);
       expect(find.text(t.chat.aiMode), findsOneWidget);
+      expect(findAppIcon(AppIcons.ai), findsOneWidget);
       await tester.tap(find.bySemanticsLabel(t.chat.aiMode));
       await tester.pump();
       await tester.pump(AppMotion.aiLabelTransition ~/ 2);
       final middle = tester.getRect(toggle);
       expect(find.text(t.chat.aiMode), findsOneWidget);
       expect(find.text(t.chat.aiStandby), findsOneWidget);
+      expect(findAppIcon(AppIcons.ai), findsOneWidget);
       expect(middle.height, before.height);
       expect(middle.right, before.right);
       final fades = find.descendant(

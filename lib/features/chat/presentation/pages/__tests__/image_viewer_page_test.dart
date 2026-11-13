@@ -2,12 +2,29 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/router/app_routes.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
+import 'package:selfbox/core/testing/icon_finder.dart';
+import 'package:selfbox/core/theme/app_glass_theme.dart';
+import 'package:selfbox/core/theme/app_icons.dart';
+import 'package:selfbox/core/widgets/pressable.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/pages/image_viewer_page.dart';
+import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
+import 'package:selfbox/gen/i18n/strings.g.dart';
+
+import 'chat_page_test_support.dart';
+
+Message _message(int id, List<String> images) => Message(
+  id: id,
+  createdAt: DateTime(2026, 11, 12, id),
+  author: MessageAuthor.me,
+  text: '',
+  images: images,
+);
 
 void main() {
   final history = FakeMessageRepository(
@@ -98,12 +115,47 @@ void main() {
 
     expect(router.state.matchedLocation, '/chat');
   });
-}
+  testWidgets('tapping an image opens the full-screen viewer', (tester) async {
+    final container = await tester.pumpApp(
+      messages: FakeMessageRepository(
+        seed: [
+          testMessage(1, '', images: ['media/missing.jpg']),
+        ],
+      ),
+    );
 
-Message _message(int id, List<String> images) => Message(
-  id: id,
-  createdAt: DateTime(2026, 11, 12, id),
-  author: MessageAuthor.me,
-  text: '',
-  images: images,
-);
+    await tester.tap(
+      find.descendant(
+        of: find.byType(MessageBubble),
+        matching: find.byType(Pressable),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ImageViewerPage), findsOneWidget);
+    expect(
+      container.read(appRouterProvider).state.uri.toString(),
+      '/image?path=media%2Fmissing.jpg',
+    );
+
+    await tester.tap(find.byType(GlassIconButton));
+    await tester.pumpAndSettle();
+    expect(find.byType(ImageViewerPage), findsNothing);
+  });
+
+  testWidgets('unavailable image uses readable text on the dark viewer', (
+    tester,
+  ) async {
+    final container = await tester.pumpApp();
+    container.read(appRouterProvider).go('/image?path=outside.jpg');
+    await tester.pumpAndSettle();
+
+    final label = find.text(t.chat.imageFailed);
+    expect(label, findsOneWidget);
+    expect(
+      tester.widget<Text>(label).style?.color,
+      AppGlassTheme.dark.foregroundMuted,
+    );
+    expect(findAppIcon(AppIcons.imageUnavailable), findsNothing);
+  });
+}

@@ -176,3 +176,4 @@
 - [2026-11-14] [AiModeTest] AI 模式切换后 pumpAndSettle 超时 -> 输入光效无限循环 -> 模式动画测试按固定帧时长推进，不等待全局动画静止。
 - [2026-11-14] [VersionFixture] 版本错误态测试重复覆盖 Provider -> pumpApp 已固定覆盖 appVersionProvider -> 版本状态测试使用单页 ProviderScope，避免在通用夹具中重复注入。
 - [2026-11-14] [ArtifactCleanup] 旧 APK 清理的批量与明确路径删除均被自动审批拒绝 -> 工具仅返回 blocked by policy -> 停止删除尝试，继续独立构建并明确报告清理未完成。
+- [2026-11-14] [TestConsolidation] 拆分图片预览测试漏带文件末尾的消息夹具，存储页移除样式断言后误删仍需的模型导入 -> 只搬运 main 内测试不能覆盖文件级依赖 -> 按 AST 确认完整声明边界，静态分析无错误后再运行回归。

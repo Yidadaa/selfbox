@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
-import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/core/testing/icon_finder.dart';
@@ -11,80 +10,32 @@ import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
-const _provider = ProviderConfig(
-  id: 'p1',
-  name: 'Gateway',
-  format: ApiFormat.chatCompletions,
-  baseUrl: 'https://gw.example.com/v1',
-);
-
-Future<void> _open(
-  WidgetTester tester,
-  String location, {
-  required FakeAiSettingsRepository settings,
-  FakeModelCatalog? catalog,
-}) async {
-  final container = await tester.pumpApp(settings: settings, catalog: catalog);
-  container.read(appRouterProvider).go(location);
-  await tester.pumpAndSettle();
-}
+import '../../pages/__tests__/settings_test_support.dart';
 
 Finder _formField(Key key) =>
     find.descendant(of: find.byKey(key), matching: find.byType(EditableText));
 
-Finder _providerField(String label) => find.descendant(
-  of: find.ancestor(of: find.text(label), matching: find.byType(Column)).first,
-  matching: find.byType(EditableText),
-);
+FakeAiSettingsRepository _withModels(List<ModelConfig> models) =>
+    FakeAiSettingsRepository(
+      settings: AiSettings(providers: const [testProvider], models: models),
+    );
 
 void main() {
-  testWidgets('format picker keeps a custom endpoint when format changes', (
-    tester,
-  ) async {
-    await _open(tester, '/me/provider', settings: FakeAiSettingsRepository());
-    final endpoint = _providerField(t.settings.provider.baseUrl);
-    await tester.enterText(endpoint, 'https://gateway.example.com/v1');
-    await tester.tap(find.text(t.settings.format.messages));
-    await tester.pumpAndSettle();
-
-    expect(
-      tester.widget<EditableText>(endpoint).controller.text,
-      'https://gateway.example.com/v1',
-    );
-  });
-
-  testWidgets('new provider fetches catalog but starts with no added rows', (
-    tester,
-  ) async {
-    final settings = FakeAiSettingsRepository();
-    final catalog = FakeModelCatalog();
-    await _open(tester, '/me/provider', settings: settings, catalog: catalog);
-
-    await tester.enterText(_providerField(t.settings.provider.name), 'Gateway');
-    await tester.enterText(
-      _providerField(t.settings.provider.apiKey),
-      'sk-test',
-    );
-    await tester.tap(find.text(t.common.save));
-    await tester.pumpAndSettle();
-
-    expect(catalog.calls, hasLength(1));
-    expect(settings.current.models, hasLength(2));
-    expect(settings.current.enabledModels, isEmpty);
-    expect(find.text('model-a'), findsNothing);
-    expect(find.byKey(const ValueKey('add-model-button')), findsOneWidget);
-  });
-
   testWidgets('new provider saves custom headers and uses them for fetching', (
     tester,
   ) async {
     final settings = FakeAiSettingsRepository();
     final catalog = FakeModelCatalog();
-    await _open(tester, '/me/provider', settings: settings, catalog: catalog);
+    await openSettingsPage(
+      tester,
+      '/me/provider',
+      settings: settings,
+      catalog: catalog,
+    );
 
-    await tester.enterText(_providerField(t.settings.provider.name), 'Gateway');
+    await tester.enterText(settingsField(t.settings.provider.name), 'Gateway');
     await tester.enterText(
-      _providerField(t.settings.provider.apiKey),
+      settingsField(t.settings.provider.apiKey),
       'sk-test',
     );
     await tester.tap(find.byKey(const ValueKey('edit-provider-headers')));
@@ -124,7 +75,7 @@ void main() {
         ],
       ),
     );
-    await _open(tester, '/me/provider?id=p1', settings: settings);
+    await openSettingsPage(tester, '/me/provider?id=p1', settings: settings);
 
     await tester.tap(find.byKey(const ValueKey('edit-provider-headers')));
     await tester.pumpAndSettle();
@@ -158,16 +109,11 @@ void main() {
   ) async {
     tester.platformDispatcher.platformBrightnessTestValue = Brightness.light;
     addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
-    final settings = FakeAiSettingsRepository(
-      settings: const AiSettings(
-        providers: [_provider],
-        models: [
-          ModelConfig(providerId: 'p1', modelId: 'model-a'),
-          ModelConfig(providerId: 'p1', modelId: 'model-b'),
-        ],
-      ),
-    );
-    await _open(tester, '/me/provider?id=p1', settings: settings);
+    final settings = _withModels(const [
+      ModelConfig(providerId: 'p1', modelId: 'model-a'),
+      ModelConfig(providerId: 'p1', modelId: 'model-b'),
+    ]);
+    await openSettingsPage(tester, '/me/provider?id=p1', settings: settings);
 
     await tester.tap(find.byKey(const ValueKey('add-model-button')));
     await tester.pumpAndSettle();
@@ -198,16 +144,11 @@ void main() {
   testWidgets('large catalog builds visible rows only and cancel keeps state', (
     tester,
   ) async {
-    final settings = FakeAiSettingsRepository(
-      settings: AiSettings(
-        providers: const [_provider],
-        models: [
-          for (var i = 0; i < 1000; i++)
-            ModelConfig(providerId: 'p1', modelId: 'model-$i'),
-        ],
-      ),
-    );
-    await _open(tester, '/me/provider?id=p1', settings: settings);
+    final settings = _withModels([
+      for (var i = 0; i < 1000; i++)
+        ModelConfig(providerId: 'p1', modelId: 'model-$i'),
+    ]);
+    await openSettingsPage(tester, '/me/provider?id=p1', settings: settings);
     await tester.tap(find.byKey(const ValueKey('add-model-button')));
     await tester.pumpAndSettle();
 
@@ -236,13 +177,10 @@ void main() {
   testWidgets('chooser stays inside a small viewport with the keyboard open', (
     tester,
   ) async {
-    final settings = FakeAiSettingsRepository(
-      settings: const AiSettings(
-        providers: [_provider],
-        models: [ModelConfig(providerId: 'p1', modelId: 'gpt-x')],
-      ),
-    );
-    await _open(tester, '/me/provider?id=p1', settings: settings);
+    final settings = _withModels(const [
+      ModelConfig(providerId: 'p1', modelId: 'gpt-x'),
+    ]);
+    await openSettingsPage(tester, '/me/provider?id=p1', settings: settings);
     await tester.tap(find.byKey(const ValueKey('add-model-button')));
     await tester.pumpAndSettle();
 
@@ -269,16 +207,11 @@ void main() {
   ) async {
     tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
     addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
-    final settings = FakeAiSettingsRepository(
-      settings: const AiSettings(
-        providers: [_provider],
-        models: [
-          ModelConfig(providerId: 'p1', modelId: 'gpt-x', enabled: true),
-          ModelConfig(providerId: 'p1', modelId: 'gpt-y'),
-        ],
-      ),
-    );
-    await _open(tester, '/me/provider?id=p1', settings: settings);
+    final settings = _withModels(const [
+      ModelConfig(providerId: 'p1', modelId: 'gpt-x', enabled: true),
+      ModelConfig(providerId: 'p1', modelId: 'gpt-y'),
+    ]);
+    await openSettingsPage(tester, '/me/provider?id=p1', settings: settings);
 
     await tester.tap(find.byKey(const ValueKey('add-model-button')));
     await tester.pumpAndSettle();
@@ -299,15 +232,10 @@ void main() {
   testWidgets('added row saves capabilities and thinking effort immediately', (
     tester,
   ) async {
-    final settings = FakeAiSettingsRepository(
-      settings: const AiSettings(
-        providers: [_provider],
-        models: [
-          ModelConfig(providerId: 'p1', modelId: 'gpt-x', enabled: true),
-        ],
-      ),
-    );
-    await _open(tester, '/me/provider?id=p1', settings: settings);
+    final settings = _withModels(const [
+      ModelConfig(providerId: 'p1', modelId: 'gpt-x', enabled: true),
+    ]);
+    await openSettingsPage(tester, '/me/provider?id=p1', settings: settings);
 
     await tester.tap(find.byKey(const ValueKey('model-images-gpt-x')));
     await tester.pumpAndSettle();
@@ -330,15 +258,10 @@ void main() {
   testWidgets('model name opens half sheet to save budgets or remove model', (
     tester,
   ) async {
-    final settings = FakeAiSettingsRepository(
-      settings: const AiSettings(
-        providers: [_provider],
-        models: [
-          ModelConfig(providerId: 'p1', modelId: 'gpt-x', enabled: true),
-        ],
-      ),
-    );
-    await _open(tester, '/me/provider?id=p1', settings: settings);
+    final settings = _withModels(const [
+      ModelConfig(providerId: 'p1', modelId: 'gpt-x', enabled: true),
+    ]);
+    await openSettingsPage(tester, '/me/provider?id=p1', settings: settings);
 
     await tester.tap(find.byKey(const ValueKey('model-open-gpt-x')));
     await tester.pumpAndSettle();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/logger/talker_provider.dart';
 import 'package:selfbox/core/router/app_dock_tabs.dart';
@@ -8,7 +9,9 @@ import 'package:selfbox/core/router/app_routes.dart';
 import 'package:selfbox/core/router/not_found_page.dart';
 import 'package:selfbox/core/router/shell_scope.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
+import 'package:selfbox/core/testing/icon_finder.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
+import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/features/chat/presentation/pages/chat_page.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer.dart';
@@ -33,6 +36,12 @@ void main() {
       expect(find.byType(ChatPage), findsOneWidget);
       expect(find.byType(GlassScaffold), findsOneWidget);
       expect(find.byType(AppDockTabs), findsOneWidget);
+      expect(AppIcons.chat, HugeIcons.strokeRoundedMessage02);
+      expect(AppIcons.memory, HugeIcons.strokeRoundedCards02);
+      expect(AppIcons.profile, HugeIcons.strokeRoundedBlackHole01);
+      expect(findAppIcon(AppIcons.chat), findsOneWidget);
+      expect(findAppIcon(AppIcons.memory), findsOneWidget);
+      expect(findAppIcon(AppIcons.profile), findsOneWidget);
       expect(container.read(appRouterProvider).state.matchedLocation, '/chat');
     });
 
@@ -112,6 +121,10 @@ void main() {
             final container = await tester.pumpApp();
             container.read(appRouterProvider).go(location);
             await tester.pumpAndSettle();
+            expect(
+              container.read(appRouterProvider).state.matchedLocation,
+              location,
+            );
             final tabs = tester.getRect(find.byType(AppDockTabs));
             final dock = tester.widget<GlassContainer>(
               find
@@ -131,19 +144,6 @@ void main() {
           },
         );
       }
-    }
-
-    for (final location in ['/memory', '/me']) {
-      testWidgets('deep links straight into $location', (tester) async {
-        final container = await tester.pumpApp();
-        container.read(appRouterProvider).go(location);
-        await tester.pumpAndSettle();
-
-        expect(
-          container.read(appRouterProvider).state.matchedLocation,
-          location,
-        );
-      });
     }
 
     testWidgets('redirects the bare root to chat', (tester) async {

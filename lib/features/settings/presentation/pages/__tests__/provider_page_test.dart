@@ -108,29 +108,37 @@ void main() {
       expect(find.text(t.forms.url), findsOneWidget);
     });
 
-    testWidgets('switching format swaps an untouched default URL', (
-      tester,
-    ) async {
-      await openSettingsPage(tester, '/me/provider');
+    for (final customUrl in [null, 'https://gateway.example.com/v1']) {
+      testWidgets('switching format respects custom URL=$customUrl', (
+        tester,
+      ) async {
+        await openSettingsPage(tester, '/me/provider');
+        if (customUrl != null) {
+          await tester.enterText(
+            settingsField(t.settings.provider.baseUrl),
+            customUrl,
+          );
+        }
 
-      await tester.tap(
-        find
-            .descendant(
-              of: find.byType(GlassSegmentedControl),
-              matching: find.text(t.settings.format.messages),
-            )
-            .first,
-      );
-      await tester.pumpAndSettle();
+        await tester.tap(
+          find
+              .descendant(
+                of: find.byType(GlassSegmentedControl),
+                matching: find.text(t.settings.format.messages),
+              )
+              .first,
+        );
+        await tester.pumpAndSettle();
 
-      expect(
-        tester
-            .widget<EditableText>(settingsField(t.settings.provider.baseUrl))
-            .controller
-            .text,
-        ApiFormat.messages.defaultBaseUrl,
-      );
-    });
+        expect(
+          tester
+              .widget<EditableText>(settingsField(t.settings.provider.baseUrl))
+              .controller
+              .text,
+          customUrl ?? ApiFormat.messages.defaultBaseUrl,
+        );
+      });
+    }
 
     testWidgets(
       'saving a new provider stores it, its key, and fetches models',
@@ -161,7 +169,9 @@ void main() {
         expect(settings.keys[saved.id], 'sk-test');
         expect(catalog.calls.single.apiKey, 'sk-test');
         expect(settings.current.models, hasLength(2));
+        expect(settings.current.enabledModels, isEmpty);
         expect(find.text('model-a'), findsNothing);
+        expect(find.byKey(const ValueKey('add-model-button')), findsOneWidget);
         expect(find.byType(ProviderPage), findsOneWidget);
         await settleSettingsToasts(tester);
       },

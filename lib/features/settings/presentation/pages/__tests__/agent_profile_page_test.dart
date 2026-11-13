@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/error/app_failure.dart';
@@ -7,7 +9,9 @@ import 'package:selfbox/core/testing/fake_account_repository.dart';
 import 'package:selfbox/core/widgets/app_artwork.dart';
 import 'package:selfbox/features/settings/domain/models/user_profile.dart';
 import 'package:selfbox/features/settings/presentation/pages/profile_page.dart';
+import 'package:selfbox/features/settings/presentation/providers/account_providers.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 void main() {
   testWidgets('failed save retains both drafts and selected avatar for retry', (
@@ -69,13 +73,26 @@ void main() {
         );
         expect(find.text(t.me.agentDefaultName), findsOneWidget);
         expect(find.text('Flynn'), findsNothing);
-        await tester.tap(find.byKey(const ValueKey('chat-header-profile')));
+        if (locale == AppLocale.en) {
+          await tester.tap(find.byKey(const ValueKey('chat-header-profile')));
+        } else {
+          container.read(appRouterProvider).go('/me');
+          await tester.pumpAndSettle();
+          expect(find.text(t.me.storage), findsOneWidget);
+          expect(find.text(t.me.providers), findsOneWidget);
+          expect(find.text(t.me.about), findsOneWidget);
+          await tester.tap(find.text(t.me.editProfile));
+        }
         await tester.pumpAndSettle();
         expect(find.byType(ProfilePage), findsOneWidget);
         expect(find.text(t.me.agentName), findsOneWidget);
         expect(find.text(t.me.callMe), findsOneWidget);
         final fields = find.byType(EditableText);
         expect(fields, findsNWidgets(2));
+        await tester.enterText(fields.first, '');
+        await tester.tap(find.text(t.common.save));
+        await tester.pumpAndSettle();
+        expect(find.text(t.forms.required), findsOneWidget);
         await tester.enterText(fields.first, 'Momo');
         await tester.enterText(fields.last, 'Casey');
         await tester.tap(find.text(t.common.save));
@@ -83,6 +100,17 @@ void main() {
         expect(account.profile.agentName, 'Momo');
         expect(account.profile.nickname, 'Casey');
         expect(account.profile.avatar, 'media/old.jpg');
+        if (locale == AppLocale.zhCn) {
+          expect(
+            container
+                .read(appRouterProvider)
+                .routeInformationProvider
+                .value
+                .uri
+                .path,
+            '/me',
+          );
+        }
         expect(find.text('Momo'), findsOneWidget);
         container.read(appRouterProvider).go('/me');
         await tester.pumpAndSettle();
@@ -116,4 +144,36 @@ void main() {
     await tester.pumpAndSettle();
     expect(account.profile.agentAvatar, 'preset:working');
   });
+  testWidgets(
+    'profile loading keeps its form skeleton and recovers from error',
+    (tester) async {
+      final pending = Completer<UserProfile>();
+      var attempts = 0;
+      final container = await tester.pumpApp(
+        settle: false,
+        overrides: [
+          userProfileProvider.overrideWith((ref) {
+            attempts++;
+            return attempts == 1
+                ? pending.future
+                : Future.value(const UserProfile(nickname: 'Recovered'));
+          }),
+        ],
+      );
+      container.read(appRouterProvider).go('/me/profile');
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is Skeletonizer && widget.enabled,
+        ),
+        findsWidgets,
+      );
+      pending.completeError(StateError('disk'));
+      await tester.pumpAndSettle();
+      expect(find.text(t.common.retry), findsOneWidget);
+      await tester.tap(find.text(t.common.retry));
+      await tester.pumpAndSettle();
+      expect(find.text('Recovered'), findsOneWidget);
+    },
+  );
 }

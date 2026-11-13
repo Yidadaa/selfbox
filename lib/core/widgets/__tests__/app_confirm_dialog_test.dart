@@ -94,39 +94,44 @@ void main() {
     });
   }
 
-  testWidgets('large labels stack without clipping on a narrow screen', (
-    tester,
-  ) async {
-    await tester.pumpPage(
-      AppConfirmDialog(
-        title: 'Delete all messages, photos and settings?',
-        secondaryLabel: 'Cancel',
-        primaryLabel: 'Delete all data',
-        onPrimary: () {},
-      ),
-    );
-    tester.view.physicalSize = const Size(280 * 3, 844 * 3);
-    tester.platformDispatcher.textScaleFactorTestValue = 2;
-    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
-    await tester.pumpAndSettle();
+  for (final scale in [1.0, 2.0]) {
+    testWidgets('long labels stack at 280dp and text scale $scale', (
+      tester,
+    ) async {
+      await tester.pumpPage(
+        AppConfirmDialog(
+          title: 'Delete all messages, photos and settings?',
+          secondaryLabel: 'Cancel',
+          primaryLabel: 'Delete all data',
+          onPrimary: () {},
+        ),
+      );
+      tester.view.physicalSize = const Size(280 * 3, 844 * 3);
+      tester.platformDispatcher.textScaleFactorTestValue = scale;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await tester.pumpAndSettle();
 
-    final secondary = tester.getRect(
-      find.ancestor(of: find.text('Cancel'), matching: find.byType(TextButton)),
-    );
-    final primary = tester.getRect(
-      find.ancestor(
-        of: find.text('Delete all data'),
-        matching: find.byType(TextButton),
-      ),
-    );
-    final label = tester.getRect(find.text('Delete all data'));
-    expect(primary.top - secondary.bottom, 8);
-    expect(primary.width, secondary.width);
-    expect(label.left, greaterThanOrEqualTo(primary.left));
-    expect(label.right, lessThanOrEqualTo(primary.right));
-    expect(label.bottom, lessThanOrEqualTo(primary.bottom));
-    expect(tester.takeException(), isNull);
-  });
+      final secondary = tester.getRect(
+        find.ancestor(
+          of: find.text('Cancel'),
+          matching: find.byType(TextButton),
+        ),
+      );
+      final primary = tester.getRect(
+        find.ancestor(
+          of: find.text('Delete all data'),
+          matching: find.byType(TextButton),
+        ),
+      );
+      final label = tester.getRect(find.text('Delete all data'));
+      expect(primary.top - secondary.bottom, 8);
+      expect(primary.width, secondary.width);
+      expect(label.left, greaterThanOrEqualTo(primary.left));
+      expect(label.right, lessThanOrEqualTo(primary.right));
+      expect(label.bottom, lessThanOrEqualTo(primary.bottom));
+      expect(tester.takeException(), isNull);
+    });
+  }
 
   for (final brightness in Brightness.values) {
     testWidgets('$brightness action dialog uses the owned opaque surface', (

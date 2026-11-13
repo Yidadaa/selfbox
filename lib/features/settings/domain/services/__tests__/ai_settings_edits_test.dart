@@ -149,27 +149,6 @@ void main() {
       const b = ModelRef(providerId: 'p1', modelId: 'b');
       expect(settings.selectModel(b).activeModel?.modelId, 'a');
     });
-
-    test('withShortTermMemoryPercent clamps to the allowed range', () {
-      expect(
-        const AiSettings()
-            .withShortTermMemoryPercent(-3)
-            .shortTermMemoryPercent,
-        10,
-      );
-      expect(
-        const AiSettings()
-            .withShortTermMemoryPercent(500)
-            .shortTermMemoryPercent,
-        60,
-      );
-      expect(
-        const AiSettings()
-            .withShortTermMemoryPercent(12)
-            .shortTermMemoryPercent,
-        12,
-      );
-    });
   });
 
   group('AiSettings', () {

@@ -349,6 +349,12 @@ TaskEither<AppFailure, Unit> syncSnapshot() {
 
 ---
 
+### 测试归属与去重
+
+- 遵循 [docs/testing.md](docs/testing.md) 的测试归属：共享组件样式由同级组件测试负责，页面测试负责业务接线和结果；不要在多个页面重复断言同一公共控件的内部装饰。
+- 删除冗余测试前必须迁移独有断言，并在任务文档记录保留位置。相同操作可参数化，但权限、并发、网络安全、失败恢复、明暗/语言/窄屏及动画中途切换等不同边界必须保留。
+- 增删或重命名测试文件后运行 `dart run tool/gen_all_tests.dart`，唯一默认聚合入口是 `test/all_tests_test.dart`，禁止手工编辑该生成文件。
+
 ## 8. Agent 启动与闭环执行清单 (Bootstrap & TDD Loop)
 
 当你读取本文件开始工作时，请严格按以下闭环执行：
