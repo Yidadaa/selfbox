@@ -127,22 +127,36 @@ void main() {
       );
     }
 
-    testWidgets('creates a memory from a file name and Markdown content', (
-      tester,
-    ) async {
-      final memory = FakeMemoryRepository();
-      await _openMemoryTab(tester, memory);
-      await tester.tap(find.byKey(const ValueKey('add-memory')));
-      await tester.pumpAndSettle();
-      expect(find.byType(MemoryEditorPage), findsOneWidget);
-      await tester.enterText(find.byType(EditableText).first, 'travel.md');
-      await tester.enterText(find.byType(EditableText).last, '# Travel\nIdeas');
-      await tester.ensureVisible(find.text(t.common.save));
-      await tester.tap(find.text(t.common.save));
-      await tester.pumpAndSettle();
-      expect(memory.contentOf('travel.md'), '# Travel\nIdeas\n');
-      expect(find.text('Travel'), findsOneWidget);
-    });
+    for (final locale in AppLocale.values) {
+      testWidgets('creates a memory with localized hints in $locale', (
+        tester,
+      ) async {
+        final memory = FakeMemoryRepository();
+        final container = await tester.pumpApp(memory: memory, locale: locale);
+        container.read(appRouterProvider).go('/memory');
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const ValueKey('add-memory')));
+        await tester.pumpAndSettle();
+        expect(find.byType(MemoryEditorPage), findsOneWidget);
+        expect(find.text(t.memory.fileNameHint), findsOneWidget);
+        expect(
+          tester
+              .widget<SmoothMarkdownEditor>(find.byType(SmoothMarkdownEditor))
+              .placeholder,
+          t.memory.contentHint,
+        );
+        await tester.enterText(find.byType(EditableText).first, 'travel.md');
+        await tester.enterText(
+          find.byType(EditableText).last,
+          '# Travel\nIdeas',
+        );
+        await tester.ensureVisible(find.text(t.common.save));
+        await tester.tap(find.text(t.common.save));
+        await tester.pumpAndSettle();
+        expect(memory.contentOf('travel.md'), '# Travel\nIdeas\n');
+        expect(find.text('Travel'), findsOneWidget);
+      });
+    }
 
     testWidgets('lists files under folder headers with their titles', (
       tester,
@@ -205,6 +219,12 @@ void main() {
       await tester.tap(find.bySemanticsLabel(t.memory.edit));
       await tester.pumpAndSettle();
       expect(find.byType(MemoryEditorPage), findsOneWidget);
+      expect(
+        tester
+            .widget<SmoothMarkdownEditor>(find.byType(SmoothMarkdownEditor))
+            .placeholder,
+        isNull,
+      );
       await tester.enterText(find.byType(EditableText).last, '# Updated\n');
       await tester.ensureVisible(find.text(t.common.save));
       await tester.tap(find.text(t.common.save));

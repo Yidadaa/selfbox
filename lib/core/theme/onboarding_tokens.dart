@@ -1,6 +1,9 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 abstract final class OnboardingTokens {
+  static const double inactiveProgressAlpha = 0.3;
+  static Color progressForeground(ThemeData theme) =>
+      theme.colorScheme.onSurface;
   static const double maxWidth = 480;
   static const double artwork = 240;
   static const double compactArtwork = 96;

@@ -1,3 +1,5 @@
+import 'dart:ui' show CheckedState;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
@@ -6,7 +8,9 @@ import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/core/testing/icon_finder.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_icons.dart';
+import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
+import 'package:selfbox/core/widgets/app_icon.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
@@ -21,89 +25,6 @@ FakeAiSettingsRepository _withModels(List<ModelConfig> models) =>
     );
 
 void main() {
-  testWidgets('new provider saves custom headers and uses them for fetching', (
-    tester,
-  ) async {
-    final settings = FakeAiSettingsRepository();
-    final catalog = FakeModelCatalog();
-    await openSettingsPage(
-      tester,
-      '/me/provider',
-      settings: settings,
-      catalog: catalog,
-    );
-
-    await tester.enterText(settingsField(t.settings.provider.name), 'Gateway');
-    await tester.enterText(
-      settingsField(t.settings.provider.apiKey),
-      'sk-test',
-    );
-    await tester.tap(find.byKey(const ValueKey('edit-provider-headers')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('add-provider-header')));
-    await tester.pumpAndSettle();
-    final fields = find.descendant(
-      of: find.byKey(const ValueKey('provider-headers-sheet')),
-      matching: find.byType(EditableText),
-    );
-    await tester.enterText(fields.at(0), 'X-Gateway');
-    await tester.enterText(fields.at(1), 'mobile');
-    await tester.tap(find.byKey(const ValueKey('save-provider-headers')));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text(t.common.save));
-    await tester.pumpAndSettle();
-
-    expect(settings.current.providers.single.headers, {'X-Gateway': 'mobile'});
-    expect(catalog.calls.single.provider.headers, {'X-Gateway': 'mobile'});
-  });
-
-  testWidgets('editing provider can remove headers and preserves the rest', (
-    tester,
-  ) async {
-    final settings = FakeAiSettingsRepository(
-      apiKeys: const {'p1': 'sk-test'},
-      settings: const AiSettings(
-        providers: [
-          ProviderConfig(
-            id: 'p1',
-            name: 'Gateway',
-            format: ApiFormat.chatCompletions,
-            baseUrl: 'https://gw.example.com/v1',
-            headers: {'X-Trace': 'old', 'X-Remove': 'remove'},
-          ),
-        ],
-      ),
-    );
-    await openSettingsPage(tester, '/me/provider?id=p1', settings: settings);
-
-    await tester.tap(find.byKey(const ValueKey('edit-provider-headers')));
-    await tester.pumpAndSettle();
-    final sheet = find.byKey(const ValueKey('provider-headers-sheet'));
-    expect(
-      tester.widget<BottomSheet>(find.byType(BottomSheet)).backgroundColor,
-      AppGlassTheme.light.bubbleOther,
-    );
-    await tester.tap(find.byKey(const ValueKey('remove-provider-header-1')));
-    await tester.pumpAndSettle();
-    expect(
-      find.byKey(const ValueKey('remove-provider-header-1')),
-      findsNothing,
-    );
-    final fields = find.descendant(
-      of: sheet,
-      matching: find.byType(EditableText),
-    );
-    expect(fields, findsNWidgets(2));
-    await tester.enterText(fields.at(1), 'updated');
-    await tester.tap(find.byKey(const ValueKey('save-provider-headers')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(t.common.save));
-    await tester.pumpAndSettle();
-
-    expect(settings.current.providers.single.headers, {'X-Trace': 'updated'});
-  });
-
   testWidgets('model chooser searches, checks and batch-adds in a half sheet', (
     tester,
   ) async {
@@ -115,6 +36,16 @@ void main() {
     ]);
     await openSettingsPage(tester, '/me/provider?id=p1', settings: settings);
 
+    for (final key in ['add-model-button', 'fetch-models-button']) {
+      final icon = tester.widget<AppIcon>(
+        find.descendant(
+          of: find.byKey(ValueKey(key)),
+          matching: find.byType(AppIcon),
+        ),
+      );
+      expect(icon.size, AppSizes.iconSm);
+    }
+
     await tester.tap(find.byKey(const ValueKey('add-model-button')));
     await tester.pumpAndSettle();
     final sheet = tester.widget<BottomSheet>(find.byType(BottomSheet));
@@ -122,6 +53,18 @@ void main() {
     final height = tester
         .getSize(find.byKey(const ValueKey('model-chooser')))
         .height;
+    final sheetRect = tester.getRect(
+      find.byKey(const ValueKey('model-chooser')),
+    );
+    final headerRect = tester.getRect(
+      find.byKey(const ValueKey('model-selection-header')),
+    );
+    expect(headerRect.left, sheetRect.left);
+    expect(headerRect.right, sheetRect.right);
+    expect(
+      tester.getRect(find.byKey(const ValueKey('confirm-add-models'))).right,
+      sheetRect.right - AppSpacing.md,
+    );
     expect(height, greaterThan(kPhoneViewport.height * 0.45));
     expect(height, lessThan(kPhoneViewport.height * 0.7));
 
@@ -237,12 +180,32 @@ void main() {
     ]);
     await openSettingsPage(tester, '/me/provider?id=p1', settings: settings);
 
+    expect(find.byType(GlassSwitch), findsNothing);
+    expect(findAppIcon(AppIcons.unchecked), findsNWidgets(2));
+    expect(
+      tester
+          .getSemantics(find.byKey(const ValueKey('model-images-gpt-x')))
+          .getSemanticsData()
+          .flagsCollection
+          .isChecked,
+      CheckedState.isFalse,
+    );
+
     await tester.tap(find.byKey(const ValueKey('model-images-gpt-x')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('model-reasoning-gpt-x')));
     await tester.pumpAndSettle();
     expect(settings.current.models.single.supportsImages, isTrue);
     expect(settings.current.models.single.supportsReasoning, isTrue);
+    expect(findAppIcon(AppIcons.checked), findsNWidgets(2));
+    expect(
+      tester
+          .getSemantics(find.byKey(const ValueKey('model-images-gpt-x')))
+          .getSemanticsData()
+          .flagsCollection
+          .isChecked,
+      CheckedState.isTrue,
+    );
     final effort = tester.widget<GlassSegmentedControl>(
       find.byKey(const ValueKey('model-effort-gpt-x')),
     );

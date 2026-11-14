@@ -2,6 +2,12 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-14] [OnboardingIntent] 分页柱改深色却额外加黑底、箭头置于文案后却离文字过远 -> 把局部颜色与排列要求扩展为容器改版，通用 8dp 间距不适合紧凑箭头 -> 仅修改明确对象；分页只保留短柱，onboarding 箭头与文字保持 4dp 相邻并整组居中，测试锁定无底板与间距。
+
+- [2026-11-14] [ModelCheckboxTest] Semantics widget 没有可读 checked 属性，测试编译失败 -> 当前 Flutter 语义状态位只在 SemanticsData / SemanticsFlags 上公开 -> 用 WidgetTester.getSemantics(...).getSemanticsData().flagsCollection 断言选中态。
+- [2026-11-14] [ShaderAnimation] 激活态外包 ShaderMask 后切换文字淡入中途旧标签消失 -> 外层 Widget 类型变化重建 AnimatedSwitcher -> 渐变放进激活文字子项，保留切换器状态与旧/新标签交叉淡入。
+- [2026-11-14] [ModelSwitchTest] 模型能力改为 checkbox 后完整回归仍要求 GlassSwitch 数量和档位 -> 页面契约仍锁定已移除的控件 -> 同步验证选中/未选中 Hugeicons 与无 Switch。
+
 - [2026-11-14] [ComposerTest] Cupertino 字段几何断言编译失败、冗余 Material 导入告警、单行扩高且边缘点不到 -> 测试未显式导入 Cupertino，纵向留白放在整行并只由 EditableText 接收命中 -> 测试直接导入 Cupertino，输入留白仅按真实换行放入字段，单行固定 48dp，输入行命中区用 Pointer Listener 聚焦。
 
 - [2026-11-14] [ComposerLayoutTest] 键盘关闭时整个输入玻璃高度包含导航 Tab，不能直接等同文本行高度 -> 测试比较了不同层级的 bounds -> 单行等高断言比较 CupertinoTextField 与 ChatComposerInputRow，外层 glass 另测包含 Tab 的高度。

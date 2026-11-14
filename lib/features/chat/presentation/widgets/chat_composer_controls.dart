@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+import '../../../../core/theme/app_ai_tokens.dart';
 import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_icons.dart';
@@ -70,7 +71,16 @@ class _AiToggleLabel extends StatelessWidget {
         color: active ? context.glass.accent : context.glass.foreground,
       ),
     );
-    if (MediaQuery.disableAnimationsOf(context)) return text;
+    final labelWidget = active
+        ? ShaderMask(
+            blendMode: BlendMode.srcIn,
+            shaderCallback: (bounds) =>
+                AppAiTokens.contentGradient(Theme.of(context).brightness)
+                    .createShader(bounds),
+            child: text,
+          )
+        : text;
+    if (MediaQuery.disableAnimationsOf(context)) return labelWidget;
     const duration = AppMotion.aiLabelTransition;
     return AnimatedSize(
       duration: duration,
@@ -100,7 +110,7 @@ class _AiToggleLabel extends StatelessWidget {
             child: child,
           ),
         ),
-        child: text,
+        child: labelWidget,
       ),
     );
   }

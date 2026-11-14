@@ -115,11 +115,9 @@ class _HiddenAiGroup extends StatelessWidget {
                 ),
                 child: ShaderMask(
                   blendMode: BlendMode.srcIn,
-                  shaderCallback: (bounds) => LinearGradient(
-                    colors: AppAiTokens.contentColors(
-                      Theme.of(context).brightness,
-                    ),
-                  ).createShader(bounds),
+                  shaderCallback: (bounds) =>
+                      AppAiTokens.contentGradient(Theme.of(context).brightness)
+                          .createShader(bounds),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
+import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_motion.dart';
@@ -54,7 +55,7 @@ class OnboardingLayout extends StatelessWidget {
             ),
             child: Column(
               children: [
-                _Progress(step: step, busy: busy, onBack: onBack),
+                _Progress(step: step),
                 Expanded(
                   child: LayoutBuilder(
                     builder: (context, constraints) => SingleChildScrollView(
@@ -73,6 +74,7 @@ class OnboardingLayout extends StatelessWidget {
                   ),
                 ),
                 _Actions(
+                  onBack: step > 0 ? onBack : null,
                   busy: busy,
                   onNext: onNext,
                   label: nextLabel,
@@ -115,14 +117,8 @@ class OnboardingLayout extends StatelessWidget {
 }
 
 class _Progress extends StatelessWidget {
-  const _Progress({
-    required this.step,
-    required this.busy,
-    required this.onBack,
-  });
+  const _Progress({required this.step});
   final int step;
-  final bool busy;
-  final VoidCallback onBack;
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -130,50 +126,52 @@ class _Progress extends StatelessWidget {
       horizontal: AppSpacing.md,
       vertical: AppSpacing.xs,
     ),
-    child: Row(
-      children: [
-        if (step > 0)
-          Pressable(
-            key: const ValueKey('onboarding-back'),
-            onTap: busy ? null : onBack,
-            semanticLabel: context.t.onboarding.back,
-            child: const AppIcon(AppIcons.back, size: AppSizes.iconSm),
-          )
-        else
-          const SizedBox.square(dimension: AppSizes.minTouchTarget),
-        Expanded(
-          child: Semantics(
-            label: context.t.onboarding.progress(current: step + 1, total: 4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (var index = 0; index < 4; index++)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.xxs,
-                    ),
-                    child: AnimatedContainer(
-                      duration: AppMotion.duration(context, AppMotion.medium),
-                      width: index == step
-                          ? OnboardingTokens.activeProgressWidth
-                          : OnboardingTokens.progressWidth,
-                      height: OnboardingTokens.progressHeight,
-                      decoration: BoxDecoration(
-                        color: index == step
-                            ? context.glass.accent
-                            : context.glass.shadowBorder,
-                        borderRadius: BorderRadius.circular(
-                          OnboardingTokens.progressHeight,
+    child: Center(
+      child: Padding(
+        key: const ValueKey('onboarding-progress'),
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Semantics(
+              label: context.t.onboarding.progress(current: step + 1, total: 4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (var index = 0; index < 4; index++)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.xxs,
+                      ),
+                      child: AnimatedContainer(
+                        key: ValueKey('onboarding-progress-$index'),
+                        duration: AppMotion.duration(context, AppMotion.medium),
+                        width: index == step
+                            ? OnboardingTokens.activeProgressWidth
+                            : OnboardingTokens.progressWidth,
+                        height: OnboardingTokens.progressHeight,
+                        decoration: BoxDecoration(
+                          color: index == step
+                              ? OnboardingTokens.progressForeground(
+                                  Theme.of(context),
+                                )
+                              : OnboardingTokens.progressForeground(
+                                  Theme.of(context),
+                                ).withValues(
+                                  alpha: OnboardingTokens.inactiveProgressAlpha,
+                                ),
+                          borderRadius: BorderRadius.circular(
+                            OnboardingTokens.progressHeight,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
-          ),
+          ],
         ),
-        const SizedBox.square(dimension: AppSizes.minTouchTarget),
-      ],
+      ),
     ),
   );
 }
@@ -185,12 +183,14 @@ class _Actions extends StatelessWidget {
     required this.label,
     required this.onSkip,
     required this.error,
+    required this.onBack,
   });
   final bool busy;
   final VoidCallback onNext;
   final String label;
   final VoidCallback? onSkip;
   final String? error;
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -212,12 +212,33 @@ class _Actions extends StatelessWidget {
           ),
           const Gap(AppSpacing.xs),
         ],
-        AppPageButton(
-          key: const ValueKey('onboarding-next'),
-          label: label,
-          icon: AppIcons.next,
-          busy: busy,
-          onPressed: onNext,
+        Row(
+          children: [
+            if (onBack case final onBack?) ...[
+              GlassIconButton(
+                key: const ValueKey('onboarding-back'),
+                size: AppSizes.minTouchTarget,
+                quality: AppEffects.qualityOf(context, GlassQuality.standard),
+                icon: const AppIcon(AppIcons.back, size: AppSizes.iconSm),
+                semanticLabel: context.t.onboarding.back,
+                onPressed: busy ? null : onBack,
+              ),
+              const Gap(AppSpacing.md),
+            ],
+            Expanded(
+              child: AppPageButton(
+                key: const ValueKey('onboarding-next'),
+                label: label,
+                icon: AppIcons.next,
+                iconSize: AppSizes.iconSm,
+                trailingIconGap: AppSpacing.xxs,
+                trailingIcon: true,
+                height: AppSizes.minTouchTarget,
+                busy: busy,
+                onPressed: onNext,
+              ),
+            ),
+          ],
         ),
         if (onSkip case final onSkip?) ...[
           const Gap(AppSpacing.xxs),

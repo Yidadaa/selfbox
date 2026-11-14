@@ -168,12 +168,6 @@ class _Avatar extends StatelessWidget {
             ),
           ],
         ),
-        const Gap(AppSpacing.sm),
-        Text(
-          context.t.me.changeAvatar,
-          style: Theme.of(context).textTheme.labelLarge
-              ?.copyWith(color: context.glass.accent),
-        ),
       ],
     ),
   );

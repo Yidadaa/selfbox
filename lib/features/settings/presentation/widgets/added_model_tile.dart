@@ -7,7 +7,9 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/ai_settings.dart';
@@ -54,7 +56,7 @@ class AddedModelTile extends HookConsumerWidget {
                   label: context.t.settings.model.images,
                   value: model.supportsImages,
                   busy: busy.value,
-                  switchKey: ValueKey('model-images-${model.modelId}'),
+                  controlKey: ValueKey('model-images-${model.modelId}'),
                   onChanged: (value) =>
                       update(model.copyWith(supportsImages: value)),
                 ),
@@ -65,7 +67,7 @@ class AddedModelTile extends HookConsumerWidget {
                   label: context.t.settings.model.reasoning,
                   value: model.supportsReasoning,
                   busy: busy.value,
-                  switchKey: ValueKey('model-reasoning-${model.modelId}'),
+                  controlKey: ValueKey('model-reasoning-${model.modelId}'),
                   onChanged: (value) =>
                       update(model.copyWith(supportsReasoning: value)),
                 ),
@@ -116,45 +118,48 @@ class _CapabilityToggle extends StatelessWidget {
     required this.label,
     required this.value,
     required this.busy,
-    required this.switchKey,
+    required this.controlKey,
     required this.onChanged,
   });
 
   final String label;
   final bool value;
   final bool busy;
-  final Key switchKey;
+  final Key controlKey;
   final ValueChanged<bool> onChanged;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: busy ? null : () => onChanged(!value),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: AppSizes.minTouchTarget),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelMedium
-                    ?.copyWith(color: context.glass.foregroundMuted),
+    return Semantics(
+      key: controlKey,
+      checked: value,
+      enabled: !busy,
+      label: label,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: busy ? null : () => onChanged(!value),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: AppSizes.minTouchTarget),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelMedium
+                      ?.copyWith(color: context.glass.foregroundMuted),
+                ),
               ),
-            ),
-            AbsorbPointer(
-              absorbing: busy,
-              child: GlassSwitch(
-                key: switchKey,
-                quality: AppEffects.qualityOf(context, GlassQuality.standard),
-                value: value,
-                semanticLabel: label,
-                onChanged: onChanged,
+              AppIcon(
+                value ? AppIcons.checked : AppIcons.unchecked,
+                size: AppSizes.iconMd,
+                color: value
+                    ? context.glass.accent
+                    : context.glass.foregroundMuted,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

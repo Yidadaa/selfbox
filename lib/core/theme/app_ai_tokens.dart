@@ -1,6 +1,9 @@
 import 'package:flutter/widgets.dart';
 
 abstract final class AppAiTokens {
+  static LinearGradient contentGradient(Brightness brightness) =>
+      LinearGradient(colors: contentColors(brightness));
+
   static List<Color> contentColors(Brightness brightness) =>
       switch (brightness) {
         Brightness.light => const [

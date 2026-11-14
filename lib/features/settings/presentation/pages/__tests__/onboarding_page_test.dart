@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/forms/glass_reactive_text_field.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_account_repository.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/core/testing/fake_app_preferences_repository.dart';
+import 'package:selfbox/core/testing/icon_finder.dart';
+import 'package:selfbox/core/theme/app_icons.dart';
+import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/core/widgets/app_page_button.dart';
 import 'package:selfbox/features/chat/presentation/pages/chat_page.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
@@ -21,6 +25,104 @@ Future<void> _next(WidgetTester tester) async {
 }
 
 void main() {
+  for (final brightness in Brightness.values) {
+    for (final locale in AppLocale.values) {
+      testWidgets(
+        'inline arrow, unframed progress bars and clean copy in $brightness/$locale',
+        (tester) async {
+          tester.platformDispatcher.platformBrightnessTestValue = brightness;
+          addTearDown(
+            tester.platformDispatcher.clearPlatformBrightnessTestValue,
+          );
+          await tester.pumpApp(firstRun: true, locale: locale);
+
+          final copy = [
+            t.onboarding.welcomeTitle,
+            t.onboarding.welcomeSubtitle,
+            t.onboarding.identityTitle,
+            t.onboarding.identitySubtitle,
+            t.onboarding.nicknameTitle,
+            t.onboarding.nicknameSubtitle,
+            t.onboarding.connectTitle,
+            t.onboarding.connectSubtitle,
+            t.onboarding.begin,
+            t.onboarding.next,
+            t.onboarding.configure,
+            t.onboarding.start,
+            t.onboarding.skip,
+            t.onboarding.back,
+            t.onboarding.progress(current: 1, total: 4),
+          ];
+          for (final text in copy) {
+            expect(RegExp(r'[.!?。！？；，:;]$').hasMatch(text), isFalse);
+          }
+          expect(find.text(t.onboarding.welcomeSubtitle), findsOneWidget);
+          expect(
+            t.onboarding.welcomeSubtitle,
+            locale == AppLocale.zhCn
+                ? '有时我在睡觉，有时我陪你'
+                : 'Sometimes I nap, sometimes I keep you company',
+          );
+          expect(
+            t.onboarding.nicknameSubtitle,
+            locale == AppLocale.zhCn ? '这样我们就是朋友了' : 'Now we’re friends',
+          );
+          final progress = find.byKey(const ValueKey('onboarding-progress'));
+          final bars = find.descendant(
+            of: progress,
+            matching: find.byType(DecoratedBox),
+          );
+          expect(bars, findsNWidgets(4));
+          for (final bar in bars.evaluate()) {
+            expect(tester.getSize(find.byWidget(bar.widget)).height, 4);
+          }
+          final activeBar = tester.widget<AnimatedContainer>(
+            find.byKey(const ValueKey('onboarding-progress-0')),
+          );
+          expect(
+            (activeBar.decoration as BoxDecoration).color,
+            Theme.of(tester.element(progress)).colorScheme.onSurface,
+          );
+
+          await _next(tester);
+          expect(find.text(t.me.changeAvatar), findsNothing);
+          await _next(tester);
+          expect(find.text(t.onboarding.nicknameSubtitle), findsOneWidget);
+          expect(find.text(t.me.changeAvatar), findsNothing);
+          final back = tester.getRect(
+            find.byKey(const ValueKey('onboarding-back')),
+          );
+          expect(
+            tester
+                .widget<GlassIconButton>(
+                  find.byKey(const ValueKey('onboarding-back')),
+                )
+                .shape,
+            GlassIconButtonShape.circle,
+          );
+          final next = tester.getRect(
+            find.byKey(const ValueKey('onboarding-next')),
+          );
+          expect(back.height, AppSizes.minTouchTarget);
+          expect(back.width, back.height);
+          expect(next.height, AppSizes.minTouchTarget);
+          expect(back.center.dy, closeTo(next.center.dy, 0.01));
+          expect(next.left - back.right, AppSpacing.md);
+          expect(
+            tester.getRect(findAppIcon(AppIcons.next)).left -
+                tester.getRect(find.text(t.onboarding.next)).right,
+            closeTo(AppSpacing.xxs, 0.01),
+          );
+          final content = tester
+              .getRect(findAppIcon(AppIcons.next))
+              .expandToInclude(tester.getRect(find.text(t.onboarding.next)));
+          expect(content.center.dx, closeTo(next.center.dx, 0.01));
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
+
   for (final theme in Brightness.values) {
     for (final locale in AppLocale.values) {
       testWidgets('first run personalizes and skips AI in $theme/$locale', (

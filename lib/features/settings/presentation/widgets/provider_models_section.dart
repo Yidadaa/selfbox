@@ -82,6 +82,7 @@ class ProviderModelsSection extends HookConsumerWidget {
           key: const ValueKey('add-model-button'),
           label: context.t.settings.provider.addModel,
           icon: AppIcons.add,
+          iconSize: AppSizes.iconSm,
           onPressed: () => showModelSelectionSheet(
             context: context,
             providerId: providerId,
@@ -90,8 +91,10 @@ class ProviderModelsSection extends HookConsumerWidget {
         ),
         const Gap(AppSpacing.xs),
         AppPageButton(
+          key: const ValueKey('fetch-models-button'),
           onPressed: fetching.value ? null : fetch,
           icon: AppIcons.refresh,
+          iconSize: AppSizes.iconSm,
           label: context.t.settings.provider.fetchModels,
           busy: fetching.value,
         ),

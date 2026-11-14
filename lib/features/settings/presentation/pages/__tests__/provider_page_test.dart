@@ -4,6 +4,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
+import 'package:selfbox/core/testing/icon_finder.dart';
+import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
 import 'package:selfbox/core/widgets/app_list_tile.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
@@ -70,14 +72,9 @@ void main() {
           controls.every((control) => control.quality == GlassQuality.standard),
           isTrue,
         );
-        final switches = tester
-            .widgetList<GlassSwitch>(find.byType(GlassSwitch))
-            .toList(growable: false);
-        expect(switches, hasLength(2));
-        expect(
-          switches.every((control) => control.quality == GlassQuality.standard),
-          isTrue,
-        );
+        expect(find.byType(GlassSwitch), findsNothing);
+        expect(findAppIcon(AppIcons.unchecked), findsOneWidget);
+        expect(findAppIcon(AppIcons.checked), findsOneWidget);
         final iconButtons = tester
             .widgetList<GlassIconButton>(find.byType(GlassIconButton))
             .toList(growable: false);

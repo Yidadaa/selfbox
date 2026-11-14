@@ -78,3 +78,7 @@ UI 打磨覆盖补充见 [任务 66](tasks/66-ui-polish-and-settings-discoverabi
 消息时间覆盖见 [任务 70](tasks/70-message-timestamps.md)：`message_timestamps_test.dart` 负责本地分钟邻接、日期边界和 AI 折叠规则；`date_labels_test.dart` 负责中英文秒级格式与 UTC 转本地；`chat_timestamps_test.dart` 验证真实聊天页双击、等待、新消息、删除、AI 标记以及保留分支的 Tab / push 往返重置。精确时间是页面会话状态，不写入偏好。
 
 Composer 输入几何覆盖见 [任务 71](tasks/71-composer-hit-area.md)：键盘单行输入框/加号等高及输入边缘聚焦由 `chat_composer_keyboard_test.dart` 验证；显式多行、窄屏软换行和内边距归属也在同文件覆盖；`chat_composer_placeholder_test.dart` 覆盖中英文、明暗及键盘态占位符和发送控件布局。
+
+本次 UI 打磨覆盖见 [任务 72](tasks/72-ui-polish-round-two.md)：`chat_ai_toggle_test.dart` 验证待命态渐变复用与切换动画；`memory_page_test.dart` 覆盖创建占位文案、编辑态不显示占位和中英生成文案；`provider_model_flow_test.dart` 覆盖模型 Checkbox 语义/保存、半屏全宽标题及两个模型按钮图标尺寸。
+
+Onboarding 导航与文案覆盖见 [任务 73](tasks/73-onboarding-navigation-polish.md)：`onboarding_page_test.dart` 检查无末尾标点、指定副标题、头像入口无文案、底部按钮同高对齐、尾置箭头 4dp 紧贴及无分页底板；截图套件覆盖明暗主题和键盘态。

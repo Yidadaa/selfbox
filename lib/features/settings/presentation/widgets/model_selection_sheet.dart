@@ -100,12 +100,15 @@ class ModelSelectionSheet extends HookConsumerWidget {
       padding: EdgeInsets.only(bottom: keyboard),
       child: SizedBox(
         key: const ValueKey('model-chooser'),
+        width: double.infinity,
         height: height,
         child: SafeArea(
           top: false,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
+                key: const ValueKey('model-selection-header'),
                 padding: const EdgeInsets.fromLTRB(
                   AppSpacing.md,
                   AppSpacing.sm,
@@ -132,16 +135,19 @@ class ModelSelectionSheet extends HookConsumerWidget {
                             ?.copyWith(color: context.glass.onBubbleOther),
                       ),
                     ),
-                    Flexible(
+                    Expanded(
                       flex: 2,
-                      child: AppActionButton(
-                        key: const ValueKey('confirm-add-models'),
-                        expand: false,
-                        variant: AppActionButtonVariant.primary,
-                        onPressed: saving.value || selected.value.isEmpty
-                            ? null
-                            : add,
-                        label: context.t.settings.provider.addModel,
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: AppActionButton(
+                          key: const ValueKey('confirm-add-models'),
+                          expand: false,
+                          variant: AppActionButtonVariant.primary,
+                          onPressed: saving.value || selected.value.isEmpty
+                              ? null
+                              : add,
+                          label: context.t.settings.provider.addModel,
+                        ),
                       ),
                     ),
                   ],

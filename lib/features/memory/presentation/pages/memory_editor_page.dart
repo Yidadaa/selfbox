@@ -144,6 +144,7 @@ class _MemoryEditor extends HookConsumerWidget {
             GlassReactiveTextField<String>(
               formControlName: 'name',
               label: context.t.memory.fileName,
+              placeholder: context.t.memory.fileNameHint,
             )
           else
             Text(
@@ -164,6 +165,7 @@ class _MemoryEditor extends HookConsumerWidget {
               initialMode: MarkdownEditorMode.source,
               showToolbar: false,
               enableSlashCommands: false,
+              placeholder: source == null ? context.t.memory.contentHint : null,
               height: MediaQuery.sizeOf(context).height * 0.5,
               textStyle: Theme.of(context).textTheme.bodyLarge
                   ?.copyWith(height: 1.5),

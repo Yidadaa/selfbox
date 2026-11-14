@@ -16,6 +16,10 @@ class AppPageButton extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.icon,
+    this.iconSize = AppSizes.iconMd,
+    this.trailingIconGap = AppSpacing.xs,
+    this.trailingIcon = false,
+    this.height,
     this.busy = false,
     this.destructive = false,
     super.key,
@@ -23,6 +27,10 @@ class AppPageButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final AppIconData? icon;
+  final double iconSize;
+  final double trailingIconGap;
+  final bool trailingIcon;
+  final double? height;
   final bool busy;
   final bool destructive;
 
@@ -36,6 +44,7 @@ class AppPageButton extends StatelessWidget {
       quality: AppEffects.qualityOf(context, GlassQuality.standard),
       shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.pill),
       width: double.infinity,
+      height: height,
       enabled: enabled,
       label: label,
       onTap: () {
@@ -46,17 +55,17 @@ class AppPageButton extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: AppSizes.minTouchTarget),
         child: Padding(
-          padding: const EdgeInsets.symmetric(
+          padding: EdgeInsets.symmetric(
             horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
+            vertical: height == null ? AppSpacing.sm : 0,
           ),
           child: Skeletonizer(
             enabled: busy,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (icon case final icon?) ...[
-                  AppIcon(icon, color: color),
+                if ((trailingIcon, icon) case (false, final icon?)) ...[
+                  AppIcon(icon, size: iconSize, color: color),
                   const Gap(AppSpacing.xs),
                 ],
                 Flexible(
@@ -67,6 +76,10 @@ class AppPageButton extends StatelessWidget {
                         ?.copyWith(color: color),
                   ),
                 ),
+                if ((trailingIcon, icon) case (true, final icon?)) ...[
+                  Gap(trailingIconGap),
+                  AppIcon(icon, size: iconSize, color: color),
+                ],
               ],
             ),
           ),

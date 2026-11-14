@@ -205,10 +205,12 @@ import 'package:selfbox/features/settings/presentation/widgets/__tests__/model_t
     as t105;
 import 'package:selfbox/features/settings/presentation/widgets/__tests__/profile_introduction_test.dart'
     as t106;
-import 'package:selfbox/features/settings/presentation/widgets/__tests__/provider_model_flow_test.dart'
+import 'package:selfbox/features/settings/presentation/widgets/__tests__/provider_headers_flow_test.dart'
     as t107;
-import 'package:selfbox/features/settings/presentation/widgets/__tests__/short_term_memory_sheet_test.dart'
+import 'package:selfbox/features/settings/presentation/widgets/__tests__/provider_model_flow_test.dart'
     as t108;
+import 'package:selfbox/features/settings/presentation/widgets/__tests__/short_term_memory_sheet_test.dart'
+    as t109;
 
 const _registered = <String>[
   'lib/core/database/__tests__/app_store_test.dart',
@@ -318,6 +320,7 @@ const _registered = <String>[
   'lib/features/settings/presentation/widgets/__tests__/agent_avatar_sheet_test.dart',
   'lib/features/settings/presentation/widgets/__tests__/model_test_control_test.dart',
   'lib/features/settings/presentation/widgets/__tests__/profile_introduction_test.dart',
+  'lib/features/settings/presentation/widgets/__tests__/provider_headers_flow_test.dart',
   'lib/features/settings/presentation/widgets/__tests__/provider_model_flow_test.dart',
   'lib/features/settings/presentation/widgets/__tests__/short_term_memory_sheet_test.dart',
 ];
@@ -686,12 +689,16 @@ void main() {
     t106.main,
   );
   group(
-    'lib/features/settings/presentation/widgets/__tests__/provider_model_flow_test.dart',
+    'lib/features/settings/presentation/widgets/__tests__/provider_headers_flow_test.dart',
     t107.main,
   );
   group(
-    'lib/features/settings/presentation/widgets/__tests__/short_term_memory_sheet_test.dart',
+    'lib/features/settings/presentation/widgets/__tests__/provider_model_flow_test.dart',
     t108.main,
+  );
+  group(
+    'lib/features/settings/presentation/widgets/__tests__/short_term_memory_sheet_test.dart',
+    t109.main,
   );
 
   test('registers every lib/**/__tests__/*_test.dart', () {
