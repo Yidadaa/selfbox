@@ -13,3 +13,10 @@
 报告的「一次模糊与两次模糊像素级一致」不作为验收前提；记录视觉差异与缺少真机 GPU profiling 的限制。
 
 截图位于忽略目录 tool/screenshots/out/composer_glow_*.png 与 composer-keyboard-*.png；删除独立模糊及附件参数过渡可能产生细微视觉差异，未宣称像素相同。软换行仍需精确字体测量；不使用字符数猜测。尚未采集 Android/iOS 真机的 UI/raster 帧耗时，不能给出 FPS 或百分比提升。
+
+## 真机实测 APK
+
+- [x] 构建 release arm64 拆分包，沿用 0.6.0+6 与正式签名。
+- [x] 核验 APK 架构、版本和签名，提供带性能提交标识的 APK 与 SHA-256 文件。
+
+产物：`build/app/outputs/flutter-apk/xiaolan-0.6.0-perf-507eb14-arm64-v8a-release.apk`，同目录附 `.apk.sha256`。aapt 与 ZIP 均确认仅含 arm64-v8a，包含 libflutter.so；versionName 0.6.0 / versionCode 2006，签名校验成功且证书 SHA-256 与任务 78 一致。构建耗时 88.1 秒，保留旧命名版本包。
