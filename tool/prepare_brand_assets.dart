@@ -28,15 +28,16 @@ void main() {
     );
   }
   final logo = _read(p.join(_kit, 'logo/logo-full.png'));
+  final splash = _read(p.join(_kit, 'logo/logo-clean.webp'));
   _png('assets/brand/logo.png', _resize(logo, 512));
-  _android(logo);
+  _android(logo, splash);
   _appleIcons('ios/Runner/Assets.xcassets/AppIcon.appiconset', logo);
   _appleIcons('macos/Runner/Assets.xcassets/AppIcon.appiconset', logo);
   for (final scale in [1, 2, 3]) {
     final suffix = scale == 1 ? '' : '@${scale}x';
     _png(
       'ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage$suffix.png',
-      _resize(logo, 168 * scale),
+      _resize(splash, 168 * scale),
     );
   }
   _write(
@@ -100,7 +101,7 @@ void _fillIconBackground(img.Image canvas) {
   }
 }
 
-void _android(img.Image logo) {
+void _android(img.Image logo, img.Image splash) {
   const res = 'android/app/src/main/res';
   for (final (density, size) in [
     ('mdpi', 48),
@@ -111,7 +112,11 @@ void _android(img.Image logo) {
   ]) {
     _png('$res/mipmap-$density/ic_launcher.png', _icon(logo, size));
   }
-  _png('$res/drawable-nodpi/brand_logo.png', _resize(logo, 512));
+  _png('$res/drawable-nodpi/brand_logo.png', _resize(splash, 512));
+  _png(
+    '$res/drawable-nodpi/brand_splash.png',
+    _icon(splash, 432, transparent: true, fraction: 2 / 3),
+  );
   final background = img.Image(width: 432, height: 432);
   _fillIconBackground(background);
   _png('$res/drawable-nodpi/ic_launcher_background.png', background);

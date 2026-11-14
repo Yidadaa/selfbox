@@ -32,7 +32,7 @@ void main() {
     );
   });
 
-  test('full logo fills runtime, launch and native icon resources', () {
+  test('full logo fills runtime and native icon resources', () {
     final source = img.decodePng(
       File('docs/design/asset-kit/logo/logo-full.png').readAsBytesSync(),
     );
@@ -40,7 +40,6 @@ void main() {
     if (source == null) return;
     for (final (path, size) in [
       ('assets/brand/logo.png', 512),
-      ('android/app/src/main/res/drawable-nodpi/brand_logo.png', 512),
       ('android/app/src/main/res/mipmap-mdpi/ic_launcher.png', 48),
       ('android/app/src/main/res/mipmap-hdpi/ic_launcher.png', 72),
       ('android/app/src/main/res/mipmap-xhdpi/ic_launcher.png', 96),
@@ -51,7 +50,6 @@ void main() {
         1024,
       ),
       ('macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_512.png', 512),
-      ('ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png', 168),
     ]) {
       final actual = img.decodePng(File(path).readAsBytesSync());
       expect(actual, isNotNull, reason: path);
