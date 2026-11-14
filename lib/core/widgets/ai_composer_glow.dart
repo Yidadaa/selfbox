@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -38,15 +37,9 @@ class AiComposerGlow extends ConsumerWidget {
                 child: Transform.scale(
                   scale: AppMotion.composerGlowRestScale,
                   child: RepaintBoundary(
-                    child: ImageFiltered(
-                      imageFilter: ui.ImageFilter.blur(
-                        sigmaX: glass.chromeBlur,
-                        sigmaY: glass.chromeBlur,
-                      ),
-                      child: CustomPaint(
-                        painter: _ComposerGlowPainter(
-                          colors: glass.composerGlowColors,
-                        ),
+                    child: CustomPaint(
+                      painter: _ComposerGlowPainter(
+                        colors: glass.composerGlowColors,
                       ),
                     ),
                   ),

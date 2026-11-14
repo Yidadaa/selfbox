@@ -39,32 +39,31 @@ class ChatComposerAttachment extends ConsumerWidget {
           child: Align(
             widthFactor: visible,
             alignment: Alignment.centerLeft,
-            child: Opacity(
-              opacity: visible,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (external)
-                    GlassContainer(
-                      quality: AppEffects.qualityOf(
-                        context,
-                        GlassQuality.premium,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (external)
+                  GlassContainer(
+                    quality: AppEffects.qualityOf(
+                      context,
+                      GlassQuality.standard,
+                    ),
+                    useOwnLayer: true,
+                    settings: LiquidGlassSettings(
+                      blur: glass.chromeBlur * visible,
+                      glassColor: glass.chromeTint.withValues(
+                        alpha: glass.chromeTint.a * visible,
                       ),
-                      useOwnLayer: true,
-                      settings: LiquidGlassSettings(
-                        blur: glass.chromeBlur,
-                        glassColor: glass.chromeTint,
-                      ),
-                      shape: const LiquidRoundedSuperellipse(
-                        borderRadius: AppRadius.pill,
-                      ),
-                      child: button,
-                    )
-                  else
-                    button,
-                  const Gap(AppSpacing.xs),
-                ],
-              ),
+                    ),
+                    shape: const LiquidRoundedSuperellipse(
+                      borderRadius: AppRadius.pill,
+                    ),
+                    child: Opacity(opacity: visible, child: button),
+                  )
+                else
+                  Opacity(opacity: visible, child: button),
+                const Gap(AppSpacing.xs),
+              ],
             ),
           ),
         ),

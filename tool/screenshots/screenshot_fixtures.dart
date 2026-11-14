@@ -248,6 +248,13 @@ final screenshotFixtures = <ScreenshotFixture>[
           }
         },
         afterOpen: (tester) async {
+          final context = tester.element(find.byType(MaterialApp));
+          final images = tester.widgetList<Image>(find.byType(Image)).toList();
+          await tester.runAsync(() async {
+            for (final image in images) {
+              await precacheImage(image.image, context);
+            }
+          });
           await tester.tap(find.bySemanticsLabel(t.chat.aiMode));
           await tester.pump();
           await tester.pump(const Duration(milliseconds: 900));

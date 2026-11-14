@@ -238,3 +238,6 @@
 - [2026-11-14] [ReliefContrast] 提亮主按钮与暗色危险按钮后对比度跌破 4.5 -> 高光直接混白抬高背景亮度 -> 主色与暗色高光分别限幅，逐个渐变色阶验证正常和按压态对比度。
 - [2026-11-14] [ButtonStates] Hook 监听整个 WidgetStatesController 导致禁用按钮构建期 setState -> Material 初始化/更新会同步发送 disabled、pressed -> 按压只驱动有限 AnimationController，禁用/减少动画时取消监听并归位；覆盖按住时禁用。
 - [2026-11-14] [ModalScreenshot] 截图测试通过却未打开 Dialog -> scrollUntilVisible 的滚动尚未稳定就取点击位置 -> 滚动后 settle 并居中 ensureVisible，截图前必须断言实际浮层存在。
+- [2026-11-14] [ComposerRebuild] 下沉键盘进度后玻璃仍逐帧重建 -> MeasureSize 回传高度使 Shell 重建并重新创建 Dock -> 同时稳定 Dock 子树引用，使用逐帧 Widget identity 回归验证整条更新链。
+- [2026-11-14] [ComposerTestLint] 新测试同时导入 Cupertino 与 Material 触发 unnecessary_import -> Cupertino 已导出本测试所需全部类型 -> 按实际使用保留单一导入并复跑静态分析。
+- [2026-11-14] [ComposerScreenshot] 首张 AI 光晕截图缺少头像和欢迎插画 -> 截图夹具未等待磁盘图片解码 -> 光晕夹具显式 precacheImage 后再截取，与键盘夹具保持一致。

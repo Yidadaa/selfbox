@@ -46,12 +46,14 @@ class ChatComposerInput extends ConsumerWidget {
             child: AiComposerGlow(
               active: aiMode,
               shape: _inputShape,
-              child: _InputSurface(
-                controller: controller,
-                focusNode: focusNode,
-                keyboardOpen: keyboardOpen,
-                maxHeight: maxHeight,
-                navigation: navigation,
+              child: _ComposerGlassSurface(
+                child: _InputSurface(
+                  controller: controller,
+                  focusNode: focusNode,
+                  keyboardOpen: keyboardOpen,
+                  maxHeight: maxHeight,
+                  navigation: navigation,
+                ),
               ),
             ),
           ),
@@ -86,19 +88,17 @@ class _InputSurface extends StatelessWidget {
       AppSizes.minTouchTarget,
       double.infinity,
     );
-    return _ComposerGlassSurface(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ChatComposerInputRow(
-            controller: controller,
-            focusNode: focusNode,
-            keyboardOpen: keyboardOpen,
-            maxEditorHeight: editorMaxHeight,
-          ),
-          ChatComposerTabs(keyboardOpen: keyboardOpen, navigation: navigation),
-        ],
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ChatComposerInputRow(
+          controller: controller,
+          focusNode: focusNode,
+          keyboardOpen: keyboardOpen,
+          maxEditorHeight: editorMaxHeight,
+        ),
+        ChatComposerTabs(keyboardOpen: keyboardOpen, navigation: navigation),
+      ],
     );
   }
 }

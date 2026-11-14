@@ -1,5 +1,7 @@
 # 测试维护指南
 
+Composer 性能覆盖见 [任务 81](tasks/81-composer-performance.md)：`composer_performance_test.dart` 验证光晕无额外 ImageFiltered、键盘连续帧输入玻璃 identity、附件玻璃无 Opacity 祖先、连续输入不重建发送控件和单行字段，以及三档画质下跨 Tab 的背景预算与 Dock 重绘边界。`chat_composer_editor_test.dart` 比较精确排版结果，覆盖中英文/Emoji、显式及软换行、删除/清空、宽度/文字缩放、选区与输入法 composing 更新。既有键盘测试继续负责反向动画、减少动态效果、焦点和几何。
+
 ## 运行入口
 
 使用项目本地 SDK，在仓库根目录运行：
