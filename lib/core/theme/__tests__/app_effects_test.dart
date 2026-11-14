@@ -60,13 +60,10 @@ void main() {
     enabled.value = false;
     await tester.pumpAndSettle();
     expect(tester.binding.hasScheduledFrame, isFalse);
-    final fade = find
-        .descendant(
-          of: find.byType(AiComposerGlow),
-          matching: find.byType(FadeTransition),
-        )
-        .first;
-    expect(tester.widget<FadeTransition>(fade).opacity.value, 1);
+    expect(
+      tester.widget<AiComposerGlow>(find.byType(AiComposerGlow)).active,
+      isTrue,
+    );
     enabled.value = true;
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));

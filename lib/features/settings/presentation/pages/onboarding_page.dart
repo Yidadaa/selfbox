@@ -128,6 +128,7 @@ class _OnboardingScreen extends ConsumerWidget {
               child: OnboardingStepContent(
                 key: ValueKey('onboarding-step-${step.value.index}'),
                 step: step.value,
+                nickname: (form.control('nickname').value as String).trim(),
                 avatar: avatar.value,
                 onAvatar: () => _pick(context, avatar),
               ),

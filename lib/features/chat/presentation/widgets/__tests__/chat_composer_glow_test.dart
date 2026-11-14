@@ -8,6 +8,8 @@ import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/core/widgets/ai_composer_glow.dart';
 import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer_controls.dart';
+import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
+import 'package:selfbox/features/settings/presentation/providers/app_preferences_controller.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
 class _AttachedDraft extends ComposerController {
@@ -17,6 +19,37 @@ class _AttachedDraft extends ComposerController {
 }
 
 void main() {
+  for (final quality in AppRenderQuality.values) {
+    testWidgets('composer background caps $quality at ordinary blur', (
+      tester,
+    ) async {
+      final container = await tester.pumpApp();
+      await container
+          .read(appPreferencesControllerProvider.notifier)
+          .setRenderQuality(quality);
+      await tester.pumpAndSettle();
+      for (final aiMode in [false, true]) {
+        if (aiMode) {
+          container.read(composerControllerProvider.notifier).toggleAiMode();
+          await tester.pump();
+          await tester.pump(const Duration(seconds: 1));
+        }
+        final surface = tester.widget<GlassContainer>(
+          find.descendant(
+            of: find.byKey(const ValueKey('chat-input')),
+            matching: find.byType(GlassContainer),
+          ),
+        );
+        expect(
+          surface.quality,
+          quality == AppRenderQuality.minimal
+              ? GlassQuality.minimal
+              : GlassQuality.standard,
+        );
+      }
+    });
+  }
+
   for (final brightness in Brightness.values) {
     testWidgets('AI glow covers only input and tabs across keyboard states '
         'in ${brightness.name}', (tester) async {

@@ -5,9 +5,9 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
-import 'package:selfbox/core/theme/app_motion.dart';
 import 'package:selfbox/core/widgets/ai_composer_glow.dart';
 
+const _observationPeriod = Duration(seconds: 12);
 const _capture = ValueKey('glow-capture');
 const _shape = LiquidRoundedSuperellipse(borderRadius: 36);
 
@@ -47,7 +47,7 @@ Future<Uint8List> _pixels(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets('AI light animates in and out without moving the input', (
+  testWidgets('AI light switches instantly without moving the input', (
     tester,
   ) async {
     final enabled = ValueNotifier(false);
@@ -62,35 +62,10 @@ void main() {
     final before = await _pixels(tester);
     enabled.value = true;
     await tester.pump();
-    await tester.pump(AppMotion.composerGlowEnter ~/ 2);
-    final fade = find
-        .descendant(
-          of: find.byType(AiComposerGlow),
-          matching: find.byType(FadeTransition),
-        )
-        .first;
-    expect(
-      tester.widget<FadeTransition>(fade).opacity.value,
-      inExclusiveRange(0, 1),
-    );
     expect(await _pixels(tester), isNot(orderedEquals(before)));
-    await tester.pump(AppMotion.composerGlowEnter);
-    expect(tester.widget<FadeTransition>(fade).opacity.value, 1);
-
+    expect(tester.binding.hasScheduledFrame, isFalse);
     enabled.value = false;
     await tester.pump();
-    await tester.pump(AppMotion.composerGlowExit ~/ 2);
-    expect(
-      tester.widget<FadeTransition>(fade).opacity.value,
-      inExclusiveRange(0, 1),
-    );
-    expect(await _pixels(tester), isNot(orderedEquals(before)));
-    enabled.value = true;
-    await tester.pump();
-    await tester.pump(AppMotion.composerGlowEnter ~/ 2);
-    expect(tester.widget<FadeTransition>(fade).opacity.value, greaterThan(0));
-    enabled.value = false;
-    await tester.pumpAndSettle();
     expect(await _pixels(tester), orderedEquals(before));
     expect(tester.getRect(find.byType(AiComposerGlow)), bounds);
     expect(tester.binding.hasScheduledFrame, isFalse);
@@ -129,19 +104,26 @@ void main() {
     expect(changedInside, greaterThan(1000));
   });
 
-  testWidgets('glow keeps moving across multiple cycles without resizing', (
+  testWidgets('glow stays static across time and background transitions', (
     tester,
   ) async {
     await tester.pumpPage(_fixture(active: true), settle: false);
     final bounds = tester.getRect(find.byType(AiComposerGlow));
     final first = await _pixels(tester);
-    await tester.pump(AppMotion.composerGlowLoop ~/ 4);
+    await tester.pump(_observationPeriod ~/ 4);
     final second = await _pixels(tester);
-    expect(second, isNot(orderedEquals(first)));
-    await tester.pump(AppMotion.composerGlowLoop * 2);
-    await tester.pump(AppMotion.composerGlowLoop ~/ 4);
+    expect(second, orderedEquals(first));
+    await tester.pump(_observationPeriod * 2);
+    await tester.pump(_observationPeriod ~/ 4);
     final third = await _pixels(tester);
-    expect(third, isNot(orderedEquals(second)));
+    expect(third, orderedEquals(second));
+    expect(tester.binding.hasScheduledFrame, isFalse);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump(const Duration(seconds: 30));
+    expect(tester.binding.hasScheduledFrame, isFalse);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
+    expect(await _pixels(tester), orderedEquals(first));
     expect(tester.getRect(find.byType(AiComposerGlow)), bounds);
 
     await tester.pumpPage(_fixture(active: false));
@@ -153,7 +135,7 @@ void main() {
   ) async {
     await tester.pumpPage(_fixture(active: true, reduceMotion: true));
     final first = await _pixels(tester);
-    await tester.pump(AppMotion.composerGlowLoop);
+    await tester.pump(_observationPeriod);
     expect(await _pixels(tester), orderedEquals(first));
     expect(tester.binding.hasScheduledFrame, isFalse);
   });
@@ -196,7 +178,7 @@ void main() {
           greaterThan(120),
           reason: 'Missing coral at phase $phase',
         );
-        await tester.pump(AppMotion.composerGlowLoop ~/ 16);
+        await tester.pump(_observationPeriod ~/ 16);
       }
     });
   }

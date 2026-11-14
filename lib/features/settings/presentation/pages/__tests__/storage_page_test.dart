@@ -27,6 +27,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('0 B'), findsNWidgets(5));
     expect(find.text(t.me.clearAll), findsOneWidget);
+    expect(find.text(t.me.databaseNote), findsNothing);
     expect(
       find.byWidgetPredicate(
         (widget) => widget is AppArtwork && widget.artwork == BrandArt.files,

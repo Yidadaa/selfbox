@@ -43,7 +43,7 @@ void main() {
             t.onboarding.identitySubtitle,
             t.onboarding.nicknameTitle,
             t.onboarding.nicknameSubtitle,
-            t.onboarding.connectTitle,
+            t.onboarding.connectTitle(name: 'Flynn'),
             t.onboarding.connectSubtitle,
             t.onboarding.begin,
             t.onboarding.next,
@@ -171,6 +171,18 @@ void main() {
           'Flynn',
         );
         await _next(tester);
+        expect(
+          find.text(t.onboarding.connectTitle(name: 'Flynn')),
+          findsOneWidget,
+        );
+        expect(find.text(t.onboarding.connectSubtitle), findsOneWidget);
+        expect(find.text(t.me.providers), findsNothing);
+        expect(find.text(t.onboarding.configure), findsOneWidget);
+        expect(t.onboarding.skip, locale == AppLocale.zhCn ? '跳过' : 'Skip');
+        if (locale == AppLocale.zhCn) {
+          expect(find.text('Flynn，我准备好了'), findsOneWidget);
+          expect(find.text('头好痒，好像要长脑子了'), findsOneWidget);
+        }
         await tester.tap(find.byKey(const ValueKey('onboarding-skip')));
         await tester.pumpAndSettle();
         expect(find.byType(ChatPage), findsOneWidget);
@@ -223,7 +235,8 @@ void main() {
         .run();
     await tester.tap(find.bySemanticsLabel(t.common.close).first);
     await tester.pumpAndSettle();
-    expect(find.text('model-a'), findsOneWidget);
+    expect(find.text(t.me.providers), findsNothing);
+    expect(find.text(t.onboarding.connectTitleUnnamed), findsOneWidget);
     expect(find.text(t.onboarding.start), findsOneWidget);
     await _next(tester);
     expect(find.byType(ChatPage), findsOneWidget);

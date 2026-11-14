@@ -245,13 +245,14 @@
     "identitySubtitle": "选个喜欢的样子，给我起个名字",
     "nicknameTitle": "我该怎么称呼你",
     "nicknameSubtitle": "这样我们就是朋友了",
-    "connectTitle": "准备好，一起出发",
-    "connectSubtitle": "连接你的模型，开启 AI 对话",
+    "connectTitle": "{name}，我准备好了",
+    "connectTitleUnnamed": "我准备好了",
+    "connectSubtitle": "头好痒，好像要长脑子了",
     "begin": "认识一下",
     "next": "下一步",
     "configure": "配置 AI",
     "start": "开始使用",
-    "skip": "稍后配置，先开始",
+    "skip": "跳过",
     "back": "上一步",
     "progress": "第 {current} 步，共 {total} 步"
   }

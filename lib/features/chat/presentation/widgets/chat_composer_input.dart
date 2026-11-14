@@ -123,7 +123,7 @@ class _ComposerGlassSurface extends ConsumerWidget {
           : AppMotion.composerGlowExit,
       curve: Curves.easeInOutCubic,
       builder: (context, tint, child) => GlassContainer(
-        quality: AppEffects.qualityOf(context, GlassQuality.premium),
+        quality: AppEffects.qualityOf(context, GlassQuality.standard),
         useOwnLayer: true,
         settings: LiquidGlassSettings(
           blur: glass.chromeBlur,

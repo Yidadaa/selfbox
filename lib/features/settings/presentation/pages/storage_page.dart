@@ -7,7 +7,6 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/storage/data_reset_controller.dart';
 import '../../../../core/theme/app_effects.dart';
-import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
@@ -49,12 +48,6 @@ class StoragePage extends ConsumerWidget {
                   child: _UsageCard(usage: usage.value ?? const StorageUsage()),
                 ),
               const Gap(AppSpacing.xl),
-              Text(
-                context.t.me.databaseNote,
-                style: Theme.of(context).textTheme.bodySmall
-                    ?.copyWith(color: context.glass.foregroundMuted),
-              ),
-              const Gap(AppSpacing.xxl),
               AppPageButton(
                 label: busy ? context.t.me.clearing : context.t.me.clearAll,
                 icon: AppIcons.delete,

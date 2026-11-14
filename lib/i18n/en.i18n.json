@@ -245,13 +245,14 @@
     "identitySubtitle": "Pick a look and give me a name",
     "nicknameTitle": "What should I call you",
     "nicknameSubtitle": "Now we’re friends",
-    "connectTitle": "Ready when you are",
-    "connectSubtitle": "Connect a model to start chatting with AI",
+    "connectTitle": "{name}, I’m ready",
+    "connectTitleUnnamed": "I’m ready",
+    "connectSubtitle": "My head’s tingling, I think I’m growing a brain",
     "begin": "Let’s meet",
     "next": "Next",
     "configure": "Set up AI",
     "start": "Let’s begin",
-    "skip": "Set up later, start now",
+    "skip": "Skip",
     "back": "Previous step",
     "progress": "Step {current} of {total}"
   }

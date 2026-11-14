@@ -214,7 +214,7 @@ test/
    - **Surface Glass Layer（内容承载层）**：使用 `liquid_glass_widgets` 卡片/容器承载列表项与信息模块。具备微妙的高光折射描边（1px 半透明渐变亮边，模拟光源从左上方 45° 入射）与柔和背景模糊。
    - **Floating Chrome Layer（悬浮控制层）**：顶部导航栏（Glass AppBar）、底部悬浮胶囊导航栏（Floating Glass Pill Navigation Bar）、悬浮操作按钮（FAB）与底部抽屉（Glass Bottom Sheet）。拥有更高的模糊度与折射率，内容滚动至其下方时必须呈现真实的实时透射模糊效果（要求页面主体采用 `extendBody: true` 与 `extendBodyBehindAppBar: true`）。
 2. **克制使用模糊，保障 120Hz 帧率（GPU Budget Discipline）**：
-   - **高级档只作用于浮动控件**：顶部 chrome、输入栏、悬浮导航和 Toast 显式请求 `AppEffects.qualityOf(context, GlassQuality.premium)`；页面内卡片、表单、列表及全宽按钮最高 standard。全局主题默认不得设为 premium，未显式指定档位的普通元素也不得继承高级效果；轻量档仍对所有控件统一降级。
+   - **高级档只作用于浮动控件**：顶部 chrome、独立悬浮导航和 Toast 显式请求 `AppEffects.qualityOf(context, GlassQuality.premium)`；输入框与 Tab 共用背景固定最高 standard，AI 渐变保持静态；页面内卡片、表单、列表及全宽按钮最高 standard。全局主题默认不得设为 premium，未显式指定档位的普通元素也不得继承高级效果；轻量档仍对所有控件统一降级。
    - 同一视口内同时叠加的实时高斯模糊（`BackdropFilter`）层级**不得超过 3 层**。
    - 严禁在高频滚动的长列表（`ListView` / `SliverList`）每一个细小子项中滥用高开销实时全屏级 Shader/Blur；列表项优先使用 `liquid_glass_widgets` 针对滚动优化的轻量半透明玻璃样式或 `RepaintBoundary` 隔离重绘区域。
 3. **8pt 空间网格与流体圆角（Grid & Concentric Curvature）**：

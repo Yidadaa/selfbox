@@ -3,7 +3,6 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../core/forms/glass_reactive_text_field.dart';
-import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_motion.dart';
@@ -11,7 +10,6 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/onboarding_tokens.dart';
 import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_icon.dart';
-import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/pressable.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../providers/settings_providers.dart';
@@ -24,8 +22,10 @@ class OnboardingStepContent extends ConsumerWidget {
     required this.step,
     required this.avatar,
     required this.onAvatar,
+    required this.nickname,
     super.key,
   });
+  final String nickname;
   final OnboardingStep step;
   final String? avatar;
   final VoidCallback onAvatar;
@@ -37,8 +37,9 @@ class OnboardingStepContent extends ConsumerWidget {
       children: [
         _Illustration(step: step, avatar: avatar, onAvatar: onAvatar),
         const Gap(AppSpacing.xl),
-        _Heading(step: step),
-        if (step != OnboardingStep.welcome) ...[
+        _Heading(step: step, nickname: nickname),
+        if (step == OnboardingStep.identity ||
+            step == OnboardingStep.nickname) ...[
           const Gap(AppSpacing.xxl),
           switch (step) {
             OnboardingStep.identity => GlassReactiveTextField<String>(
@@ -49,7 +50,7 @@ class OnboardingStepContent extends ConsumerWidget {
               formControlName: 'nickname',
               label: context.t.me.callMe,
             ),
-            OnboardingStep.connect => const OnboardingConnection(),
+            OnboardingStep.connect => const SizedBox.shrink(),
             OnboardingStep.welcome => const SizedBox.shrink(),
           },
         ],
@@ -97,7 +98,8 @@ class _Illustration extends ConsumerWidget {
 }
 
 class _Heading extends StatelessWidget {
-  const _Heading({required this.step});
+  const _Heading({required this.step, required this.nickname});
+  final String nickname;
   final OnboardingStep step;
   @override
   Widget build(BuildContext context) {
@@ -106,7 +108,10 @@ class _Heading extends StatelessWidget {
       OnboardingStep.welcome => t.welcomeTitle,
       OnboardingStep.identity => t.identityTitle,
       OnboardingStep.nickname => t.nicknameTitle,
-      OnboardingStep.connect => t.connectTitle,
+      OnboardingStep.connect =>
+        nickname.isEmpty
+            ? t.connectTitleUnnamed
+            : t.connectTitle(name: nickname),
     };
     final subtitle = switch (step) {
       OnboardingStep.welcome => t.welcomeSubtitle,
@@ -171,18 +176,4 @@ class _Avatar extends StatelessWidget {
       ],
     ),
   );
-}
-
-class OnboardingConnection extends ConsumerWidget {
-  const OnboardingConnection({super.key});
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final model = ref.watch(aiSettingsProvider).value?.resolvedModel;
-    return AppListTile(
-      icon: AppIcons.ai,
-      title: context.t.me.providers,
-      value: model?.modelId ?? context.t.common.notSet,
-      onTap: () => const OnboardingAiRoute().push<void>(context),
-    );
-  }
 }
