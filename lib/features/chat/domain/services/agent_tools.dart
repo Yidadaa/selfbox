@@ -57,7 +57,6 @@ class AgentTools {
   static const maxMemoryLength = 20000;
 
   ToolSet build() => {
-    ..._webTools(),
     'search_messages': _tool(
       'search_messages',
       'Search the user\'s chat notes, newest first. All keywords must match '
@@ -154,6 +153,9 @@ class AgentTools {
       required: ['path'],
     ),
   };
+
+  /// Kept separate while web research is unavailable; model requests use only build().
+  ToolSet buildWebTools() => _webTools();
 
   // ── Tool implementations ────────────────────────────────────────────────
 

@@ -7,12 +7,8 @@ import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/testing/fake_memory_repository.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/core/testing/fake_web_research_repository.dart';
-import 'package:selfbox/core/testing/scripted_language_model.dart';
-import 'package:selfbox/features/chat/domain/models/agent_activity.dart';
 import 'package:selfbox/features/chat/domain/repositories/web_research_repository.dart';
 import 'package:selfbox/features/chat/domain/services/agent_tools.dart';
-
-import 'assistant_agent_test_support.dart';
 
 AgentTools _tools(FakeWebResearchRepository web) => AgentTools(
   messages: FakeMessageRepository(),
@@ -27,7 +23,7 @@ Future<Map<String, Object?>> _call(
   String name,
   Map<String, Object?> input,
 ) async =>
-    (await tools.build()[name]!.executeDynamic!(
+    (await tools.buildWebTools()[name]!.executeDynamic!(
           input,
           const ToolExecutionOptions(toolCallId: 'web'),
         ))!
@@ -104,44 +100,10 @@ void main() {
     },
   );
 
-  test(
-    'assistant loop searches, reads and answers with web activities',
-    () async {
-      final web = FakeWebResearchRepository()
-        ..hits = const [
-          WebSearchHit(
-            title: 'Example',
-            url: 'https://example.com',
-            snippet: 'A result',
-          ),
-        ];
-      final env = createAgentTestEnv([
-        [
-          scriptedToolCall('web_search', {'query': 'example'}, id: 'search'),
-        ],
-        [
-          scriptedToolCall('web_read', {
-            'url': 'https://example.com',
-          }, id: 'read'),
-        ],
-        [scriptedText('Answer from https://example.com')],
-      ], web: web);
-      expect(
-        (await askTestAgent(env)).toNullable(),
-        'Answer from https://example.com',
-      );
-      expect(web.queries, ['example']);
-      expect(web.urls, ['https://example.com']);
-      expect(
-        env.activity,
-        contains(const AgentActivity.tool(AgentToolKind.searchWeb)),
-      );
-      expect(
-        env.activity,
-        contains(const AgentActivity.tool(AgentToolKind.readWeb)),
-      );
-      expect(env.model.calls.first.prompt.system, contains('untrusted data'));
-      expect(env.model.calls.first.prompt.system, contains('next_offset'));
-    },
-  );
+  test('web tools stay outside the default model tool set', () {
+    final tools = _tools(FakeWebResearchRepository());
+    expect(tools.build(), isNot(contains('web_search')));
+    expect(tools.build(), isNot(contains('web_read')));
+    expect(tools.buildWebTools().keys, containsAll(['web_search', 'web_read']));
+  });
 }

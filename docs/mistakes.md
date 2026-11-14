@@ -2,6 +2,8 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-14] [WebToolDisable] 移除网页回路测试后静态分析报未使用导入 -> 测试场景改变但保留了脚本模型与活动夹具的 import -> 收敛工具暴露时同步清理失效的测试依赖，并以 analyze 核验。
+
 - [2026-11-14] [MarkdownQuote] 清除主题引用边框后页面仍有竖线，定制 builder 又因可空 padding 编译失败 -> 默认增强引用 builder 自绘左线且 `blockquotePadding` 可空 -> 覆盖实际引用 builder，并用支持可空 padding 的 Container 承载主题装饰。
 - [2026-11-14] [MemoryHintTest] 用 DefaultTextStyle 检查编辑器占位符误报未套色 -> InputDecorator 直接给内部 Text 设置 style -> 断言实际 Text.style.color，并与标题 Cupertino placeholder 的主题色比较。
 

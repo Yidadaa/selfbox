@@ -84,6 +84,9 @@ void main() {
       expect(text, contains('zh-CN'));
       expect(text, contains('time zone'));
       expect(text, contains('short, natural chat messages'));
+      expect(text, isNot(contains('web_search')));
+      expect(text, isNot(contains('web_read')));
+      expect(text, contains('cannot verify current information online'));
     });
 
     test('says when memory is empty and hides vision without support', () {

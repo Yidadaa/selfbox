@@ -62,8 +62,6 @@ void main() {
   group('AgentTools', () {
     test('exposes the documented tool names', () {
       expect(_env().tools.build().keys, [
-        'web_search',
-        'web_read',
         'search_messages',
         'read_messages',
         'view_image',
@@ -74,6 +72,8 @@ void main() {
         'memory_patch',
         'memory_delete',
       ]);
+      expect(_env().tools.build(), isNot(contains('web_search')));
+      expect(_env().tools.build(), isNot(contains('web_read')));
     });
 
     test('omits view_image for models without vision', () {
