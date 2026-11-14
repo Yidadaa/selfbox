@@ -14,3 +14,7 @@
 运行环境：项目 .tools/flutter；PUB_CACHE 使用验证副本 .pub-cache；TEMP/TMP 使用 .dart_tool/tmp。
 
 最终结果：analyze 0 issues；745 项完整测试通过；12 张真实组件截图通过。未提交、未暂存。审查图为 image-chat-review.png 与 search-review.png；全部 PNG 位于 tool/screenshots/out/。
+
+2026-11-15：用户审查通过并授权提交、合并 main 及清理 worktree。主线更新仅与追加文档冲突，保留双方记录；继续使用验证工作副本运行合并回归。
+
+合并验收：完整格式化 389 个 Dart 文件（0 改动），analyze 0 issues，全量测试 755 项通过。审查截图保留在主目录 tool/screenshots/out/image-viewer-review/，验证日志保留在 .dart_tool/image-viewer-review/。

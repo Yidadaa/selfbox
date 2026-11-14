@@ -27,6 +27,7 @@
     "noSearchResults": "No messages found",
     "today": "Today",
     "yesterday": "Yesterday",
+    "confirmDelete": "Delete this message?",
     "imageFailed": "Image unavailable"
   },
   "memory": {
@@ -57,6 +58,7 @@
     "providers": "AI settings",
     "about": "About us",
     "logs": "Talker logs",
+    "developerEnabled": "Developer mode enabled",
     "developer": "Developer",
     "componentLibrary": "Component library UI",
     "componentLibraryDescription": "Preview and validate shared components",
@@ -106,6 +108,7 @@
     "backHome": "Home"
   },
   "common": {
+    "copied": "Copied",
     "copy": "Copy",
     "selectText": "Select text",
     "selectAll": "Select all",

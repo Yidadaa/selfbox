@@ -5,8 +5,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../theme/app_motion.dart';
+import '../theme/app_popover_tokens.dart';
 import '../theme/app_spacing.dart';
-import '../theme/message_tokens.dart';
 import 'app_popover_surface.dart';
 
 export 'app_popover_surface.dart' show AppPopoverAction;
@@ -15,7 +15,7 @@ class AppPopoverRegion extends HookWidget {
   const AppPopoverRegion({
     required this.actions,
     required this.builder,
-    this.radius = MessageTokens.radius,
+    this.radius = AppPopoverTokens.radius,
     super.key,
   });
   final List<AppPopoverAction> actions;
@@ -111,7 +111,7 @@ class AppActionPopover extends HookWidget {
   const AppActionPopover({
     required this.anchor,
     required this.actions,
-    this.radius = MessageTokens.radius,
+    this.radius = AppPopoverTokens.radius,
     this.itemKeys,
     this.highlightedIndex,
     super.key,
@@ -139,6 +139,35 @@ class AppActionPopover extends HookWidget {
       reduceMotion ? animation.value = 1 : animation.forward();
       return null;
     }, [reduceMotion]);
+    final surface = Listener(
+      behavior: HitTestBehavior.opaque,
+      onPointerDown: (event) {
+        fingerDown.value = true;
+        hovered.value = popoverActionAt(actionKeys, event.position);
+      },
+      onPointerMove: (event) {
+        if (fingerDown.value) {
+          hovered.value = popoverActionAt(actionKeys, event.position);
+        }
+      },
+      onPointerUp: (event) {
+        if (!fingerDown.value) return;
+        fingerDown.value = false;
+        final index = popoverActionAt(actionKeys, event.position);
+        hovered.value = null;
+        if (index != null) actions[index].onPressed();
+      },
+      onPointerCancel: (_) {
+        fingerDown.value = false;
+        hovered.value = null;
+      },
+      child: AppPopoverSurface(
+        actions: actions,
+        radius: radius,
+        itemKeys: actionKeys,
+        highlightedIndex: highlightedIndex ?? hovered.value,
+      ),
+    );
     return CustomSingleChildLayout(
       delegate: _PopoverLayout(
         anchor,
@@ -149,43 +178,16 @@ class AppActionPopover extends HookWidget {
           math.max(safe.bottom, keyboard.bottom) + AppSpacing.md,
         ),
       ),
-      child:
-          Listener(
-                behavior: HitTestBehavior.opaque,
-                onPointerDown: (event) {
-                  fingerDown.value = true;
-                  hovered.value = popoverActionAt(actionKeys, event.position);
-                },
-                onPointerMove: (event) {
-                  if (fingerDown.value) {
-                    hovered.value = popoverActionAt(actionKeys, event.position);
-                  }
-                },
-                onPointerUp: (event) {
-                  if (!fingerDown.value) return;
-                  fingerDown.value = false;
-                  final index = popoverActionAt(actionKeys, event.position);
-                  hovered.value = null;
-                  if (index != null) actions[index].onPressed();
-                },
-                onPointerCancel: (_) {
-                  fingerDown.value = false;
-                  hovered.value = null;
-                },
-                child: AppPopoverSurface(
-                  actions: actions,
-                  radius: radius,
-                  itemKeys: actionKeys,
-                  highlightedIndex: highlightedIndex ?? hovered.value,
+      child: reduceMotion
+          ? surface
+          : surface
+                .animate(controller: animation, autoPlay: false)
+                .fadeIn(duration: AppMotion.duration(context, AppMotion.fast))
+                .scaleXY(
+                  begin: AppMotion.pressScale,
+                  duration: AppMotion.duration(context, AppMotion.fast),
+                  curve: AppMotion.emphasized,
                 ),
-              )
-              .animate(controller: animation, autoPlay: false)
-              .fadeIn(duration: AppMotion.duration(context, AppMotion.fast))
-              .scaleXY(
-                begin: AppMotion.pressScale,
-                duration: AppMotion.duration(context, AppMotion.fast),
-                curve: AppMotion.emphasized,
-              ),
     );
   }
 }

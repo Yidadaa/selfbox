@@ -27,6 +27,7 @@
     "noSearchResults": "没有搜索到消息",
     "today": "今天",
     "yesterday": "昨天",
+    "confirmDelete": "删除这条消息？",
     "imageFailed": "图片不可用"
   },
   "memory": {
@@ -57,6 +58,7 @@
     "providers": "AI 配置",
     "about": "关于我们",
     "logs": "Talker 日志",
+    "developerEnabled": "已开启开发者模式",
     "developer": "开发工具",
     "componentLibrary": "组件库 UI",
     "componentLibraryDescription": "查看和验收小懒的公共组件",
@@ -106,6 +108,7 @@
     "backHome": "首页"
   },
   "common": {
+    "copied": "已复制",
     "copy": "复制",
     "selectText": "选中文本",
     "selectAll": "全选",

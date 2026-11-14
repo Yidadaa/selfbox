@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+import '../theme/app_effects.dart';
+import '../theme/app_glass_theme.dart';
 import '../theme/app_icons.dart';
-import '../theme/app_motion.dart';
 import '../theme/app_popover_tokens.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
@@ -36,27 +38,36 @@ class AppPopoverSurface extends StatelessWidget {
   final int? highlightedIndex;
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
+  Widget build(BuildContext context) => GlassContainer(
     key: const ValueKey('app-popover-surface'),
-    decoration: BoxDecoration(
-      color: AppPopoverTokens.background,
-      borderRadius: BorderRadius.circular(radius),
-      boxShadow: const [AppPopoverTokens.shadow],
+    quality: AppEffects.qualityOf(context, GlassQuality.standard),
+    useOwnLayer: true,
+    settings: LiquidGlassSettings(
+      blur: context.glass.chromeBlur,
+      glassColor: context.glass.chromeTint,
     ),
-    child: SizedBox(
-      width: AppPopoverTokens.width,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.xs),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final (index, action) in actions.indexed)
-              _PopoverItem(
-                action: action,
-                itemKey: itemKeys[index],
-                highlighted: highlightedIndex == index,
-              ),
-          ],
+    shape: LiquidRoundedSuperellipse(borderRadius: radius),
+    child: FittedBox(
+      fit: BoxFit.scaleDown,
+      child: SizedBox(
+        width: AppPopoverTokens.width,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xxs),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final (index, action) in actions.indexed)
+                _PopoverItem(
+                  action: action,
+                  itemKey: itemKeys[index],
+                  highlighted: highlightedIndex == index,
+                  radius: AppRadius.concentric(
+                    outer: radius,
+                    padding: AppSpacing.xxs,
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     ),
@@ -68,16 +79,18 @@ class _PopoverItem extends StatelessWidget {
     required this.action,
     required this.itemKey,
     required this.highlighted,
+    required this.radius,
   });
   final AppPopoverAction action;
   final GlobalKey itemKey;
   final bool highlighted;
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
     final color = action.destructive
-        ? AppPopoverTokens.destructive
-        : AppPopoverTokens.foreground;
+        ? context.glass.dialogDestructive
+        : context.glass.foreground;
     return GestureDetector(
       // Claim a drag so a semantics tap cannot fire the action pressed first.
       onPanStart: (_) {},
@@ -86,25 +99,28 @@ class _PopoverItem extends StatelessWidget {
         button: true,
         label: action.label,
         onTap: action.onPressed,
-        child: AnimatedContainer(
+        child: Container(
           key: itemKey,
-          duration: AppMotion.duration(context, AppMotion.press),
-          decoration: BoxDecoration(
+          decoration: ShapeDecoration(
             color: highlighted
-                ? AppPopoverTokens.highlight
+                ? AppPopoverTokens.highlight(Theme.of(context).brightness)
                 : Colors.transparent,
-            borderRadius: BorderRadius.circular(AppRadius.sm),
+            shape: RoundedSuperellipseBorder(
+              borderRadius: BorderRadius.circular(radius),
+            ),
           ),
-          constraints: const BoxConstraints(minHeight: AppSizes.minTouchTarget),
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+          constraints: const BoxConstraints(
+            minHeight: AppPopoverTokens.itemHeight,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Row(
             children: [
-              AppIcon(action.icon, color: color),
-              const Gap(AppSpacing.sm),
+              AppIcon(action.icon, size: AppSizes.iconSm, color: color),
+              const Gap(AppSpacing.xs),
               Expanded(
                 child: Text(
                   action.label,
-                  style: Theme.of(context).textTheme.bodyMedium
+                  style: Theme.of(context).textTheme.bodySmall
                       ?.copyWith(color: color),
                 ),
               ),
@@ -120,7 +136,11 @@ int? popoverActionAt(List<GlobalKey> keys, Offset position) {
   for (final (index, key) in keys.indexed) {
     final box = key.currentContext?.findRenderObject();
     if (box is! RenderBox) continue;
-    if ((box.localToGlobal(Offset.zero) & box.size).contains(position)) {
+    final bounds = MatrixUtils.transformRect(
+      box.getTransformTo(null),
+      Offset.zero & box.size,
+    );
+    if (bounds.contains(position)) {
       return index;
     }
   }

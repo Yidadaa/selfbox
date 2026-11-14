@@ -1,9 +1,14 @@
-import 'package:flutter/painting.dart';
+import 'package:flutter/widgets.dart';
 
 import 'app_radius.dart';
 import 'app_spacing.dart';
 
 abstract final class MessageTokens {
+  static Color selectionColor(Brightness brightness) => switch (brightness) {
+    Brightness.light => const Color(0x40787880),
+    Brightness.dark => const Color(0x50787880),
+  };
+
   static const widthFactor = 0.82;
   static const radius = 20.0;
   static const tail = 6.0;

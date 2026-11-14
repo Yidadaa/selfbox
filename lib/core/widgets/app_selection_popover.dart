@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../gen/i18n/strings.g.dart';
 import '../theme/app_icons.dart';
-import '../theme/message_tokens.dart';
+import '../theme/app_popover_tokens.dart';
 import 'app_action_popover.dart';
 
 class AppSelectionPopover extends StatelessWidget {
@@ -11,7 +11,7 @@ class AppSelectionPopover extends StatelessWidget {
     required this.items,
     this.onDelete,
     this.onCopy,
-    this.radius = MessageTokens.radius,
+    this.radius = AppPopoverTokens.radius,
     super.key,
   });
   final TextSelectionToolbarAnchors anchors;

@@ -246,3 +246,15 @@
 - [2026-11-15] [ImageActions] 长按面板测试未弹出、截图等待超时 -> await 触觉反馈阻塞浮层；骨架期间真实文件 I/O 尚未推进 -> 触觉反馈不阻塞 UI，截图先固定推进过渡再 runAsync 完成元信息读取。
 - [2026-11-15] [WorktreeTools] 新 worktree 的 Dart/插件缓存写入失败 -> 外部目录没有宿主工具写入权限；移动目录保留旧 ACL -> 在已授权项目下新建独立 worktree，使用本地 PUB_CACHE 与 TEMP；不调整系统权限。
 - [2026-11-15] [PhotoPermissions] plist 批量字符串替换把相册键写进嵌套 dict -> 未限定根节点 -> 仅修改根字典，解析 plist 并检查差异；analyze 的冗余参数/导入、组件库新增高度后的点击位置均在回归中修正。
+- [2026-11-15] [NativeTestTemp] 原生依赖编译 C1083 无法写系统 Temp -> MSVC 中间文件目录无写权限 -> 测试进程 TEMP/TMP 指向项目 .tools/task-temp，不改依赖或跳过原生构建。
+- [2026-11-15] [ThemeImport] 按明暗分支的 Token 无法识别 Brightness -> painting.dart 不导出 Brightness -> 此类 Token 使用 widgets.dart 并以 analyze 检查。
+
+- [2026-11-15] [ConfirmProvider] 确认删除时控制器已释放 -> 预先 read 的 autoDispose Notifier 在弹窗等待期间失去订阅 -> 确认回调检查页面 mounted 后再读取 Notifier。
+- [2026-11-15] [ReducedPopover] 关闭动画仍残留零时长 Timer -> flutter_animate 即使 duration 为零也调度 restart -> 减少动画时直接返回菜单事件表面，不创建 Animate。
+
+- [2026-11-15] [ClipboardTest] 整条复制测试等待不到成功 Toast -> 未替换 Clipboard 平台通道，异步写入未完成 -> 显式 mock Clipboard.setData 并同时断言正文及完成后的提示。
+- [2026-11-15] [FailureFixture] 解锁失败夹具编译缺 error 参数 -> 未按现有 AppFailure.unexpected 契约构造 -> 失败夹具显式提供必需 error 并运行静态分析。
+
+- [2026-11-15] [GradleHome] APK 构建无法创建 ~/.gradle 的 wrapper 锁 -> 默认 Gradle 目录无写权限，项目已有独立缓存 -> 构建进程显式设置 GRADLE_USER_HOME=.tools/gradle，并沿用项目 TEMP/TMP。
+
+- [2026-11-15] [PopoverTint] 实机轻量档菜单透底过重 -> 默认 GlassContainer 底色沿用内容玻璃，缺少浮动 chrome 的显式 tint -> 菜单与 Tab 背景共用 chromeTint/chromeBlur，覆盖明暗 × 三档测试及轻量截图。

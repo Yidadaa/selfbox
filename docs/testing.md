@@ -94,3 +94,9 @@ AI 渐变与引用块见 [任务 75](tasks/75-ai-gradient-quote-placeholder.md)�
 AI 图标与模型数量见 [任务 77](tasks/77-ai-icon-and-model-count-polish.md)：AppIcons 契约检查指定 Hugeicons，页面测试检查实际入口接线；服务商数量覆盖中英文 0/1/5，模型流程覆盖添加后可用数减少、刷新目录后更新和 16dp 能力项间距。
 
 图片手势与聊天提示覆盖见 [任务 84](tasks/84-image-viewer-actions.md)：手势测试验证双指及先拖动后加第二指、双击复位、放大平移和长按无 Bottom Sheet。聊天测试覆盖两种作者总数、Agent 改名、默认名字、新增/删除后的计数、展开操作；搜索图标验证明暗主题中性灰。截图包括主图、缩放、搜索和六条讨论折叠摘要。
+
+消息菜单反馈见 [任务 83](tasks/83-message-menu-feedback.md)：共享 Popover 测试覆盖 136dp/12sp/44dp、连续圆角、无滚动、三档渲染、明暗按压/滑动即时统一高亮和长按滑入。`message_selection_test.dart` 覆盖两端消息在明暗主题中的实际 RichText 灰色选区、选区复制 Toast 和选区删除取消；`chat_page_test.dart` 验证整条复制到 Clipboard 后 Toast，以及文字/图片消息删除确认与取消。`about_page_test.dart` 覆盖五次解锁提示、失败重试与已解锁不重复提示。`chat_ai_toggle_test.dart` 断言图标和文字祖先是同一个 ShaderMask，保留中英明暗切换动画。Windows 原生测试 TEMP/TMP 指向 `.tools/task-temp`。
+
+菜单紧凑微调：`app_action_popover_test.dart` 检查图标左留白 20dp、行高 44dp；`message_actions_highlight_{dark,light}` 截图通过真实 pointer-down 保持“选中文本”高亮，并断言 highlightedIndex，正常及高亮共四张截图验收。
+
+菜单实机透底修正：共享菜单测试覆盖明暗 × 三档画质的 chromeTint/chromeBlur 显式接线；`message_actions_{card,highlight,selection}_minimal_{dark,light}` 用真实设置切换轻量档并断言实际菜单质量，配合普通档截图检查气泡遮挡、按压高亮及主题材质。

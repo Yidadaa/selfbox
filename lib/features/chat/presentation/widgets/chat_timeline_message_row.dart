@@ -4,11 +4,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../../core/error/failure_message.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_motion.dart';
-import '../../../../core/theme/message_tokens.dart';
 import '../../../../core/widgets/app_action_popover.dart';
+import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../data/chat_data_providers.dart';
 import '../../domain/models/message.dart';
@@ -38,20 +39,37 @@ class ChatTimelineMessageRow extends HookConsumerWidget {
     final pressPosition = useRef(Offset.zero);
     void remove() {
       HapticFeedback.heavyImpact();
-      ref.read(messageActionsProvider.notifier).delete(message);
+      selection.clearSelection();
+      selectionMode.value = false;
+      final labels = context.t;
+      showDialog<void>(
+        context: context,
+        builder: (_) => AppConfirmDialog(
+          title: labels.chat.confirmDelete,
+          secondaryLabel: labels.common.cancel,
+          primaryLabel: labels.common.delete,
+          destructive: true,
+          onPrimary: () {
+            if (context.mounted) {
+              ref.read(messageActionsProvider.notifier).delete(message);
+            }
+          },
+        ),
+      );
     }
 
     final bubble = AppPopoverRegion(
-      radius: message.text.isEmpty
-          ? MessageTokens.imageFrameRadius
-          : MessageTokens.radius,
       actions: [
         if (message.text.isNotEmpty)
           AppPopoverAction(
             label: context.t.common.copy,
             icon: AppIcons.copy,
-            onPressed: () =>
-                Clipboard.setData(ClipboardData(text: message.text)),
+            onPressed: () async {
+              await Clipboard.setData(ClipboardData(text: message.text));
+              if (context.mounted) {
+                showOutcome(context, success: context.t.common.copied);
+              }
+            },
           ),
         if (message.text.isNotEmpty)
           AppPopoverAction(
@@ -96,7 +114,10 @@ class ChatTimelineMessageRow extends HookConsumerWidget {
                 open(position);
               },
         onDelete: remove,
-        onSelectionCopy: () => selectionMode.value = false,
+        onSelectionCopy: () {
+          selectionMode.value = false;
+          showOutcome(context, success: context.t.common.copied);
+        },
       ),
     );
     return entering
