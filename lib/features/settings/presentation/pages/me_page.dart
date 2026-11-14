@@ -41,12 +41,12 @@ class MePage extends ConsumerWidget {
               onTap: () => const StorageRoute().push<void>(context),
             ),
             AppListTile(
-              icon: AppIcons.aiIdle,
+              icon: AppIcons.aiConfig,
               title: context.t.me.providers,
               onTap: () => const AiProvidersRoute().push<void>(context),
             ),
             AppListTile(
-              icon: AppIcons.info,
+              icon: AppIcons.about,
               title: context.t.me.about,
               onTap: () => const AboutRoute().push<void>(context),
             ),

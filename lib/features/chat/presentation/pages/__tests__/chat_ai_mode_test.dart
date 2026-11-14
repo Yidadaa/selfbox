@@ -51,7 +51,7 @@ void main() {
     expect(find.text(summary), findsOneWidget);
     final collapsed = find.byKey(const ValueKey('hidden-ai-group'));
     expect(
-      find.descendant(of: collapsed, matching: findAppIcon(AppIcons.ai)),
+      find.descendant(of: collapsed, matching: findAppIcon(AppIcons.aiHidden)),
       findsOneWidget,
     );
     expect(

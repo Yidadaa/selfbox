@@ -15,7 +15,7 @@ void main() {
         'AI label crossfades and resizes smoothly in $brightness/${locale.name}',
         (tester) async {
           final active = ValueNotifier(false);
-          expect(AppIcons.aiIdle, HugeIcons.strokeRoundedAiSparkles);
+          expect(AppIcons.aiMode, HugeIcons.strokeRoundedPawPrint);
           expect(AppIcons.ai, HugeIcons.strokeRoundedAiSparkles);
           addTearDown(active.dispose);
           await tester.pumpPage(
@@ -39,14 +39,14 @@ void main() {
             findsNothing,
           );
           expect(find.text(t.chat.aiMode), findsOneWidget);
-          expect(findAppIcon(AppIcons.ai), findsOneWidget);
+          expect(findAppIcon(AppIcons.aiMode), findsOneWidget);
           await tester.tap(find.bySemanticsLabel(t.chat.aiMode));
           await tester.pump();
           await tester.pump(AppMotion.aiLabelTransition ~/ 2);
           final middle = tester.getRect(toggle);
           expect(find.text(t.chat.aiMode), findsOneWidget);
           expect(find.text(t.chat.aiStandby), findsOneWidget);
-          expect(findAppIcon(AppIcons.ai), findsOneWidget);
+          expect(findAppIcon(AppIcons.aiMode), findsOneWidget);
           expect(middle.height, before.height);
           expect(middle.right, before.right);
           final fades = find.descendant(
@@ -73,7 +73,7 @@ void main() {
             find.ancestor(
               of: find.descendant(
                 of: toggle,
-                matching: findAppIcon(AppIcons.ai),
+                matching: findAppIcon(AppIcons.aiMode),
               ),
               matching: find.byType(ShaderMask),
             ),

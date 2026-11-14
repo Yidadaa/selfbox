@@ -11,6 +11,7 @@ import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
 import 'package:selfbox/core/widgets/app_icon.dart';
+import 'package:selfbox/core/widgets/app_page_button.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
@@ -45,7 +46,22 @@ void main() {
       );
       expect(icon.size, AppSizes.iconSm);
     }
+    expect(
+      tester
+          .widget<AppPageButton>(find.byKey(const ValueKey('add-model-button')))
+          .label,
+      t.settings.provider.addModelAvailable(count: 2),
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('fetch-models-button')),
+        matching: findAppIcon(AppIcons.download),
+      ),
+      findsOneWidget,
+    );
 
+    await tester.ensureVisible(find.byKey(const ValueKey('add-model-button')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('add-model-button')));
     await tester.pumpAndSettle();
     final sheet = tester.widget<BottomSheet>(find.byType(BottomSheet));
@@ -82,6 +98,12 @@ void main() {
     expect(settings.current.enabledModels.map((m) => m.modelId), ['model-b']);
     expect(settings.current.resolvedModel?.modelId, 'model-b');
     expect(find.byKey(const ValueKey('model-open-model-b')), findsOneWidget);
+    expect(
+      tester
+          .widget<AppPageButton>(find.byKey(const ValueKey('add-model-button')))
+          .label,
+      t.settings.provider.addModelAvailable(count: 1),
+    );
   });
 
   testWidgets('large catalog builds visible rows only and cancel keeps state', (
@@ -92,6 +114,8 @@ void main() {
         ModelConfig(providerId: 'p1', modelId: 'model-$i'),
     ]);
     await openSettingsPage(tester, '/me/provider?id=p1', settings: settings);
+    await tester.ensureVisible(find.byKey(const ValueKey('add-model-button')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('add-model-button')));
     await tester.pumpAndSettle();
 
@@ -124,6 +148,8 @@ void main() {
       ModelConfig(providerId: 'p1', modelId: 'gpt-x'),
     ]);
     await openSettingsPage(tester, '/me/provider?id=p1', settings: settings);
+    await tester.ensureVisible(find.byKey(const ValueKey('add-model-button')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('add-model-button')));
     await tester.pumpAndSettle();
 
@@ -156,6 +182,8 @@ void main() {
     ]);
     await openSettingsPage(tester, '/me/provider?id=p1', settings: settings);
 
+    await tester.ensureVisible(find.byKey(const ValueKey('add-model-button')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('add-model-button')));
     await tester.pumpAndSettle();
     expect(
@@ -182,6 +210,13 @@ void main() {
 
     expect(find.byType(GlassSwitch), findsNothing);
     expect(findAppIcon(AppIcons.unchecked), findsNWidgets(2));
+    final images = tester.getRect(
+      find.byKey(const ValueKey('model-images-gpt-x')),
+    );
+    final reasoning = tester.getRect(
+      find.byKey(const ValueKey('model-reasoning-gpt-x')),
+    );
+    expect(reasoning.left - images.right, AppSpacing.md);
     expect(
       tester
           .getSemantics(find.byKey(const ValueKey('model-images-gpt-x')))

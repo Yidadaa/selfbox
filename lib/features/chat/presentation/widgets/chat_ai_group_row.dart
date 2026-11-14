@@ -121,7 +121,7 @@ class _HiddenAiGroup extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const AppIcon(AppIcons.ai, size: AppSizes.iconSm),
+                      const AppIcon(AppIcons.aiHidden, size: AppSizes.iconSm),
                       const Gap(AppSpacing.xs),
                       Flexible(
                         child: Text(

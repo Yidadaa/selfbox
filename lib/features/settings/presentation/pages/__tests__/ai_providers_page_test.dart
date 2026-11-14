@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:selfbox/core/router/app_router.dart';
+import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
+import 'package:selfbox/core/testing/icon_finder.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
+import 'package:selfbox/core/theme/app_icons.dart';
+import 'package:selfbox/core/widgets/app_list_tile.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
@@ -24,23 +29,77 @@ void main() {
       expect(find.text(t.settings.addProvider), findsOneWidget);
     });
 
-    testWidgets('lists providers with enabled-model counts', (tester) async {
-      await openSettingsPage(
+    for (final locale in AppLocale.values) {
+      testWidgets('provider count and model icons in ${locale.name}', (
         tester,
-        '/me/providers',
-        settings: FakeAiSettingsRepository(
+      ) async {
+        final settings = FakeAiSettingsRepository(
           settings: const AiSettings(
-            providers: [testProvider],
+            providers: [testProvider, otherTestProvider],
             models: [
-              ModelConfig(providerId: 'p1', modelId: 'm', enabled: true),
+              ModelConfig(providerId: 'p2', modelId: 'a', enabled: true),
+              ModelConfig(providerId: 'p2', modelId: 'b', enabled: true),
+              ModelConfig(providerId: 'p2', modelId: 'c', enabled: true),
+              ModelConfig(providerId: 'p2', modelId: 'd', enabled: true),
+              ModelConfig(providerId: 'p2', modelId: 'e', enabled: true),
+              ModelConfig(providerId: 'p2', modelId: 'f'),
             ],
           ),
-        ),
-      );
+        );
+        final container = await tester.pumpApp(
+          settings: settings,
+          locale: locale,
+        );
+        container.read(appRouterProvider).go('/me/providers');
+        await tester.pumpAndSettle();
 
-      expect(find.text('My Gateway'), findsOneWidget);
-      expect(find.text('m'), findsOneWidget);
-    });
+        final modelTile = find.widgetWithText(
+          AppListTile,
+          t.settings.activeModel,
+        );
+        expect(
+          find.descendant(
+            of: modelTile,
+            matching: findAppIcon(AppIcons.modelSelection),
+          ),
+          findsOneWidget,
+        );
+        final providerTile = find.widgetWithText(AppListTile, 'Other Gateway');
+        expect(
+          find.descendant(
+            of: providerTile,
+            matching: findAppIcon(AppIcons.provider),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          tester.widget<AppListTile>(providerTile).subtitle,
+          locale == AppLocale.en ? 'Responses (5 models)' : 'Responses (5 个模型)',
+        );
+        expect(
+          tester
+              .widget<AppListTile>(
+                find.widgetWithText(AppListTile, 'My Gateway'),
+              )
+              .subtitle,
+          '${t.settings.format.chatCompletions} (${locale == AppLocale.en ? '0 models' : '0 个模型'})',
+        );
+        await settings
+            .save(
+              settings.current.copyWith(
+                models: const [
+                  ModelConfig(providerId: 'p2', modelId: 'a', enabled: true),
+                ],
+              ),
+            )
+            .run();
+        await tester.pumpAndSettle();
+        expect(
+          tester.widget<AppListTile>(providerTile).subtitle,
+          locale == AppLocale.en ? 'Responses (1 model)' : 'Responses (1 个模型)',
+        );
+      });
+    }
 
     testWidgets('model picker starts on the current model and saves a change', (
       tester,

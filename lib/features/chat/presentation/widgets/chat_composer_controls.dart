@@ -45,10 +45,10 @@ class ChatAiToggle extends ConsumerWidget {
                       shaderCallback: (bounds) => AppAiTokens.contentGradient(
                         Theme.of(context).brightness,
                       ).createShader(bounds),
-                      child: AppIcon(AppIcons.ai, color: glass.foreground),
+                      child: AppIcon(AppIcons.aiMode, color: glass.foreground),
                     )
                   else
-                    AppIcon(AppIcons.ai, color: glass.foregroundMuted),
+                    AppIcon(AppIcons.aiMode, color: glass.foregroundMuted),
                   const Gap(AppSpacing.xs),
                   ExcludeSemantics(child: _AiToggleLabel(active: active)),
                 ],

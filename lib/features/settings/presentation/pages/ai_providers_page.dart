@@ -61,7 +61,7 @@ class _SettingsList extends ConsumerWidget {
           header: SectionHeader(t.settings.aiSection),
           children: [
             AppListTile(
-              icon: AppIcons.aiIdle,
+              icon: AppIcons.modelSelection,
               title: t.settings.activeModel,
               value: active?.modelId ?? t.common.notSet,
               onTap: settings.enabledModels.isEmpty
@@ -89,11 +89,9 @@ class _SettingsList extends ConsumerWidget {
           children: [
             for (final provider in settings.providers)
               AppListTile(
-                icon: AppIcons.server,
+                icon: AppIcons.provider,
                 title: provider.name,
-                subtitle:
-                    '${provider.format.label(context)} · '
-                    '${settings.modelsOf(provider.id).where((m) => m.enabled).length}',
+                subtitle: _providerSubtitle(context, settings, provider),
                 onTap: () => ProviderRoute(id: provider.id).push<void>(context),
               ),
             AppListTile(
@@ -134,4 +132,19 @@ class _SettingsList extends ConsumerWidget {
       },
     );
   }
+}
+
+String _providerSubtitle(
+  BuildContext context,
+  AiSettings settings,
+  ProviderConfig provider,
+) {
+  final count = settings
+      .modelsOf(provider.id)
+      .where((model) => model.enabled)
+      .length;
+  final countLabel = count == 1
+      ? context.t.settings.provider.modelCountOne
+      : context.t.settings.provider.modelCount(count: count);
+  return '${provider.format.label(context)} ($countLabel)';
 }

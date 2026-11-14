@@ -37,6 +37,7 @@ class ProviderModelsSection extends HookConsumerWidget {
     final added = models
         .where((model) => model.enabled)
         .toList(growable: false);
+    final availableCount = models.length - added.length;
 
     Future<void> fetch() async {
       if (fetching.value) return;
@@ -80,7 +81,9 @@ class ProviderModelsSection extends HookConsumerWidget {
         const Gap(AppSpacing.md),
         AppPageButton(
           key: const ValueKey('add-model-button'),
-          label: context.t.settings.provider.addModel,
+          label: context.t.settings.provider.addModelAvailable(
+            count: availableCount,
+          ),
           icon: AppIcons.add,
           iconSize: AppSizes.iconSm,
           onPressed: () => showModelSelectionSheet(
@@ -93,7 +96,7 @@ class ProviderModelsSection extends HookConsumerWidget {
         AppPageButton(
           key: const ValueKey('fetch-models-button'),
           onPressed: fetching.value ? null : fetch,
-          icon: AppIcons.refresh,
+          icon: AppIcons.download,
           iconSize: AppSizes.iconSm,
           label: context.t.settings.provider.fetchModels,
           busy: fetching.value,

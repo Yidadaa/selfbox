@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
+import 'package:selfbox/core/testing/icon_finder.dart';
+import 'package:selfbox/core/theme/app_icons.dart';
+import 'package:selfbox/core/widgets/app_list_tile.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
@@ -28,6 +31,20 @@ void main() {
         );
         final router = container.read(appRouterProvider);
         expectLiquidSections(tester, 1);
+        expect(
+          find.descendant(
+            of: find.widgetWithText(AppListTile, t.me.providers),
+            matching: findAppIcon(AppIcons.aiConfig),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(
+            of: find.widgetWithText(AppListTile, t.me.about),
+            matching: findAppIcon(AppIcons.about),
+          ),
+          findsOneWidget,
+        );
 
         for (final (location, count, field) in [
           ('/me/general', 2, null),

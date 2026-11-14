@@ -101,6 +101,7 @@ void main() {
 
       final empty = find.text(t.settings.provider.noAddedModels);
       expect(empty, findsOneWidget);
+      expect(find.text('Add model (0 available)'), findsOneWidget);
       expect(
         find.ancestor(of: empty, matching: find.byType(GlassGroupedSection)),
         findsNothing,
@@ -196,6 +197,15 @@ void main() {
         expect(find.text('model-a'), findsNothing);
         expect(find.byKey(const ValueKey('add-model-button')), findsOneWidget);
         expect(find.byType(ProviderPage), findsOneWidget);
+        expect(find.text('Add model (2 available)'), findsOneWidget);
+        await settleSettingsToasts(tester);
+        catalog.result = const Right(['model-a', 'model-b', 'model-c']);
+        final fetch = find.byKey(const ValueKey('fetch-models-button'));
+        await tester.ensureVisible(fetch);
+        await tester.pumpAndSettle();
+        await tester.tap(fetch);
+        await tester.pumpAndSettle();
+        expect(find.text('Add model (3 available)'), findsOneWidget);
         await settleSettingsToasts(tester);
       },
     );

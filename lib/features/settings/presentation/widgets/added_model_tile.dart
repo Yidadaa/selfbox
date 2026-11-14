@@ -61,7 +61,7 @@ class AddedModelTile extends HookConsumerWidget {
                       update(model.copyWith(supportsImages: value)),
                 ),
               ),
-              const Gap(AppSpacing.xs),
+              const Gap(AppSpacing.md),
               Expanded(
                 child: _CapabilityToggle(
                   label: context.t.settings.model.reasoning,

@@ -34,7 +34,12 @@ abstract final class AppIcons {
   static const AppIconData rendering = HugeIcons.strokeRoundedBlur;
   static const AppIconData animation = HugeIcons.strokeRoundedPlay;
   static const AppIconData ai = HugeIcons.strokeRoundedAiSparkles;
-  static const AppIconData aiIdle = HugeIcons.strokeRoundedAiSparkles;
+  static const AppIconData aiHidden = HugeIcons.strokeRoundedMagicWand02;
+  static const AppIconData aiMode = HugeIcons.strokeRoundedPawPrint;
+  static const AppIconData aiConfig = HugeIcons.strokeRoundedAlien01;
+  static const AppIconData modelSelection = HugeIcons.strokeRoundedAlien02;
+  static const AppIconData provider = HugeIcons.strokeRoundedSpaceship;
+  static const AppIconData about = HugeIcons.strokeRoundedLookLeft;
   static const AppIconData memory = HugeIcons.strokeRoundedCards02;
   static const AppIconData chat = HugeIcons.strokeRoundedMessage02;
   static const AppIconData profile = HugeIcons.strokeRoundedBlackHole01;
@@ -58,9 +63,9 @@ abstract final class AppIcons {
   static const AppIconData addImage = HugeIcons.strokeRoundedImageAdd01;
   static const AppIconData album = HugeIcons.strokeRoundedAlbum02;
   static const AppIconData play = HugeIcons.strokeRoundedPlay;
+  static const AppIconData download = HugeIcons.strokeRoundedDownload02;
   static const AppIconData refresh = HugeIcons.strokeRoundedRefresh;
   static const AppIconData history = HugeIcons.strokeRoundedTimeQuarterPass;
-  static const AppIconData server = HugeIcons.strokeRoundedServerStack01;
   static const AppIconData api = HugeIcons.strokeRoundedApi;
   static const AppIconData components = HugeIcons.strokeRoundedGridView;
   static const AppIconData logs = HugeIcons.strokeRoundedSourceCode;

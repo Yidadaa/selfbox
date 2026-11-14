@@ -360,7 +360,7 @@
 - **决策**：使用 Hugeicons 免费 stroke-rounded 包；应用图标通过 `AppIcons` 语义表和 `AppIcon` 统一线宽、颜色及语义。共享按钮、列表项使用 `AppIconData`。Toast 显式注入图标，Markdown 图片错误态由自有 builder 呈现。第三方 TalkerScreen 不提供完整图标覆盖入口，日志页改为自有页面，保留搜索、过滤、排序、复制、导出、清除和日志开关。资料入口改为“编辑资料”，头像下方以小头像与气泡说明“我的名字”和“你的称呼”，气泡随表单草稿更新。
 - **影响**：`AGENTS.md` 禁止新增 Material/Cupertino 图标，并由 `icon_source_test.dart` 守卫；品牌图像与头像不属于图标库。新增图标需在组件库预览并覆盖明暗主题。
 
-- **补充**：用户指定四枚图标：消息 `strokeRoundedMessage02`，记忆 `strokeRoundedCards02`，我的 `strokeRoundedBlackHole01`，AI 模式 `strokeRoundedAiSparkles`。AI 按钮两种状态保持同一图形，以颜色和文字切换表达状态，避免重复图形的无意义入退场。
+- **补充**：消息 `strokeRoundedMessage02`、记忆 `strokeRoundedCards02`、我的 `strokeRoundedBlackHole01`；AI 模式更新为 `strokeRoundedPawPrint`，隐藏 AI 消息为 `strokeRoundedMagicWand02`，AI 配置为 `strokeRoundedAlien01`，模型选择为 `strokeRoundedAlien02`，服务商为 `strokeRoundedSpaceship`，关于我们为 `strokeRoundedLookLeft`，拉取模型为 `strokeRoundedDownload02`。AI 按钮两种状态保持同一图形，以颜色和文字切换表达状态；其他 AI 活动仍用原有语义图标，Toast 保留信息图标。
 
 ### [ADR-055] Bing RSS 网页搜索与分段阅读
 
@@ -453,3 +453,8 @@
 - **背景**：当前无需 Key 的 Bing RSS 网页搜索能力尚不可用，向模型提供 `web_search` / `web_read` 会诱导它承诺实时检索。
 - **决策**：Agent 默认 `build()` 工具集合不再包含两个网页工具，`AssistantAgent` 的每次模型请求只传默认集合；网页工具实现留在独立 `buildWebTools()` 集合供隔离验证，生产请求不引用。系统提示词删除搜索、阅读和引用网页的指引，明确当前无法在线核验，不得声称已搜索或引用未经核验的来源。
 - **影响**：消息检索、图片查看及记忆工具继续可用；现有网页 HTTP/解析和工具实现测试保留，待服务可用时再单独决定是否恢复暴露。网页工具不再产生新的 Agent 活动事件。
+
+### [ADR-070] 模型目录数量随配置状态派生
+
+- **决策**：服务商副标题展示接口格式与已添加模型数量，例如 Responses (5 个模型)；添加模型按钮显示目录中尚未添加的数量，例如 添加模型 (15 可用)。两者直接消费现有设置流，无独立计数状态；英文区分 model / models。图片与思考能力项之间统一使用 16dp 间距。
+- **影响**：刷新目录、添加及移除模型后自动重算，未加载目录显示 0 可用；数量表示目录可选项，不代表已通过网络可用性探测。
