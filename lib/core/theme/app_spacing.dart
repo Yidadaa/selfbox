@@ -13,6 +13,7 @@ abstract final class AppSpacing {
   static const double huge = 48;
   static const double cardGroup = xl;
   static const double toastTop = huge;
+  static const double composerVertical = sm;
 
   static const List<double> scale = [xxs, xs, sm, md, lg, xl, xxl, xxxl, huge];
 }
@@ -35,6 +36,7 @@ abstract final class AppSizes {
   static const double avatarPickerPreview = 64;
   static const double avatarPickerTile = 88;
   static const double profileActionWidth = 160;
+  static const double listValueMaxWidth = 160;
   static const double smallTabHeight = 36;
 }
 

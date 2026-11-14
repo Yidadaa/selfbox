@@ -8,6 +8,7 @@ import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer_controls.dart';
+import 'package:selfbox/features/chat/presentation/widgets/chat_composer_input_row.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
 class _CountingPicker extends Fake implements ImagePicker {
@@ -27,6 +28,26 @@ class _CountingPicker extends Fake implements ImagePicker {
 }
 
 void main() {
+  testWidgets(
+    'multiline editing keeps vertical breathing room with either keyboard state',
+    (tester) async {
+      await tester.pumpApp();
+      await tester.enterText(
+        find.byType(EditableText),
+        'one\ntwo\nthree\nfour\nfive\nsix',
+      );
+      for (final keyboard in [0.0, 900.0]) {
+        tester.view.viewInsets = FakeViewPadding(bottom: keyboard);
+        await tester.pumpAndSettle();
+        final input = tester.getRect(find.byKey(const ValueKey('chat-input')));
+        final editor = tester.getRect(find.byType(EditableText));
+        expect(editor.top - input.top, greaterThanOrEqualTo(AppSpacing.sm));
+        final row = tester.getRect(find.byType(ChatComposerInputRow));
+        expect(row.bottom - editor.bottom, greaterThanOrEqualTo(AppSpacing.sm));
+        expect(tester.takeException(), isNull);
+      }
+    },
+  );
   testWidgets('keyboard input controls stay centered and aligned to edges', (
     tester,
   ) async {
@@ -74,7 +95,9 @@ void main() {
       AppGlassTheme.of(Brightness.dark).bubbleMine,
     );
     expect(attach.left, AppSpacing.md);
-    expect(send.right, kPhoneViewport.width - AppSpacing.md);
+    final surface = tester.getRect(find.byKey(const ValueKey('chat-input')));
+    expect(surface.right, kPhoneViewport.width - AppSpacing.md);
+    expect(surface.right - send.right, AppSpacing.composerVertical);
   });
 
   testWidgets(

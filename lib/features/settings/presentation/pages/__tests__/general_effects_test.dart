@@ -5,6 +5,8 @@ import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_app_preferences_repository.dart';
+import 'package:selfbox/core/theme/app_spacing.dart';
+import 'package:selfbox/core/widgets/app_list_tile.dart';
 import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 import 'package:selfbox/features/settings/presentation/pages/general_page.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
@@ -63,6 +65,36 @@ void main() {
           locale: locale,
         );
         container.read(appRouterProvider).go('/me/general');
+        await tester.pumpAndSettle();
+        for (final scale in [1.0, 1.5]) {
+          tester.platformDispatcher.textScaleFactorTestValue = scale;
+          await tester.pumpAndSettle();
+          final normal = tester.getRect(
+            find.widgetWithText(AppListTile, t.general.rendering),
+          );
+          final toggle = tester.getRect(
+            find.widgetWithText(AppListTile, t.general.animations),
+          );
+          expect(toggle.height, closeTo(normal.height, 0.01));
+          final switchTarget = find
+              .ancestor(
+                of: find.byKey(const ValueKey('animations-switch')),
+                matching: find.byType(ConstrainedBox),
+              )
+              .first;
+          expect(
+            tester.getSize(switchTarget).height,
+            greaterThanOrEqualTo(AppSizes.minTouchTarget),
+          );
+          expect(
+            tester
+                .getCenter(find.byKey(const ValueKey('animations-switch')))
+                .dy,
+            closeTo(toggle.center.dy, 0.5),
+          );
+        }
+        tester.platformDispatcher.clearTextScaleFactorTestValue();
+        addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
         await tester.pumpAndSettle();
         for (final (index, quality) in AppRenderQuality.values.indexed) {
           await tester.tap(find.text(t.general.rendering));

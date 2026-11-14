@@ -2,6 +2,10 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-14] [ChatLayout] 短回复撑满、编辑区贴边、开关行额外增高 -> Markdown block Column stretch、键盘进度将留白归零、48dp 热区叠加整行 padding -> 纯文本块按内容测宽，输入上下固定 12dp，列表垂直留白由文本承担。
+- [2026-11-14] [BubbleTest] 长消息宽度测试报纵向溢出 -> 夹具用 Center 限制整条长消息高度，与聊天滚动列表约束不同 -> 消息布局夹具放滚动容器，分别验证横向边界与真实页面避让。
+- [2026-11-14] [ComposerTest] 增加编辑留白后旧边缘对齐断言失败 -> 发送按钮原热区贴齐输入面边缘 -> 分别锁定输入面的页面边距与按钮的内部留白，同时验证圆形按钮光学边距相等。
+
 - [2026-11-14] [SectionKey] Headers 拆组后 find.byKey 命中两项 -> GlassGroupedSection 将子项 LocalKey 复制给内部行包装 -> 页面操作标识放在独立 section，避免 wrapper 与 tile 共享定位 key。
 
 - [2026-11-14] [GlassQuality] 轻量档被错误提升到标准档 -> 依赖枚举声明顺序为 standard/premium/minimal，与成本顺序不同 -> 渲染预算使用穷尽 switch，禁止以 enum.index 比较等级。

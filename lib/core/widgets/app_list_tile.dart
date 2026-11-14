@@ -41,40 +41,38 @@ class AppListTile extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final icon = this.icon;
     final subtitle = this.subtitle;
-    final value = this.value;
     final chevron = showChevron ?? onTap != null;
-    return GlassListTile(
-      leading: icon == null
-          ? null
-          : AppIcon(icon, color: glass.foregroundMuted),
-      title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
-      titleStyle: text.bodyLarge?.copyWith(color: glass.foreground),
-      subtitle: subtitle == null
-          ? null
-          : Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),
-      subtitleStyle: text.bodySmall?.copyWith(color: glass.foregroundMuted),
-      trailing:
-          trailing ??
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (value != null)
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 160),
-                  child: Text(
-                    value,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: text.bodyMedium?.copyWith(
-                      color: glass.foregroundMuted,
-                    ),
-                  ),
-                ),
-              if (value != null && chevron) const Gap(AppSpacing.xxs),
-              if (chevron) AppIcon(AppIcons.next, color: glass.foregroundMuted),
-            ],
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: AppSizes.minTouchTarget),
+      child: GlassListTile(
+        // Padding belongs to the labels so a 48dp switch target does not add
+        // another pair of vertical insets to an otherwise single-line row.
+        contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+        leading: icon == null
+            ? null
+            : AppIcon(icon, color: glass.foregroundMuted),
+        title: Padding(
+          padding: EdgeInsets.only(
+            top: AppSpacing.sm,
+            bottom: subtitle == null ? AppSpacing.sm : 0,
           ),
-      onTap: onTap,
+          child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
+        ),
+        titleStyle: text.bodyLarge?.copyWith(color: glass.foreground),
+        subtitle: subtitle == null
+            ? null
+            : Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: Text(
+                  subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+        subtitleStyle: text.bodySmall?.copyWith(color: glass.foregroundMuted),
+        trailing: trailing ?? _TileValue(value: value, chevron: chevron),
+        onTap: onTap,
+      ),
     );
   }
 }
@@ -91,4 +89,36 @@ class SectionHeader extends StatelessWidget {
     style: Theme.of(context).textTheme.labelLarge
         ?.copyWith(color: context.glass.foregroundMuted),
   );
+}
+
+class _TileValue extends StatelessWidget {
+  const _TileValue({required this.value, required this.chevron});
+  final String? value;
+  final bool chevron;
+
+  @override
+  Widget build(BuildContext context) {
+    final value = this.value;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (value != null)
+          ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: AppSizes.listValueMaxWidth,
+            ),
+            child: Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: context.glass.foregroundMuted),
+            ),
+          ),
+        if (value != null && chevron) const Gap(AppSpacing.xxs),
+        if (chevron)
+          AppIcon(AppIcons.next, color: context.glass.foregroundMuted),
+      ],
+    );
+  }
 }

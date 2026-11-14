@@ -40,9 +40,10 @@ class ChatComposerInputRow extends ConsumerWidget {
     return Padding(
       padding: EdgeInsets.fromLTRB(
         AppSpacing.xs + AppSpacing.xs * progress,
-        AppSpacing.xs * (1 - progress),
-        AppSpacing.xs * (1 - progress),
-        AppSpacing.xs * (1 - progress),
+        AppSpacing.composerVertical,
+        AppSpacing.xs +
+            (AppSpacing.composerVertical - AppSpacing.xs) * progress,
+        AppSpacing.composerVertical,
       ),
       child: Row(
         children: [

@@ -81,7 +81,7 @@ class _InputSurface extends StatelessWidget {
     final progress = ChatComposerKeyboardTransition.progressOf(context);
     final navigationHeight =
         (AppSizes.minTouchTarget + AppSpacing.sm) * (1 - progress);
-    final verticalPadding = AppSpacing.md * (1 - progress);
+    const verticalPadding = AppSpacing.composerVertical * 2;
     final editorMaxHeight = (maxHeight - navigationHeight - verticalPadding)
         .clamp(AppSizes.iconMd, double.infinity);
     return _ComposerGlassSurface(

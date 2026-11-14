@@ -35,9 +35,11 @@ void main() {
                 find.byKey(const ValueKey('chat-input')),
               );
               final attach = tester.getRect(find.byType(ChatAttachButton));
-              expect(surface.height, AppSizes.minTouchTarget);
-              expect(surface.top, closeTo(attach.top, 0.01));
-              expect(surface.bottom, closeTo(attach.bottom, 0.01));
+              expect(
+                surface.height,
+                AppSizes.minTouchTarget + 2 * AppSpacing.composerVertical,
+              );
+              expect(surface.center.dy, closeTo(attach.center.dy, 0.01));
             }
 
             await tester.enterText(editable, hint);
@@ -48,7 +50,7 @@ void main() {
               expectSendInsets(tester);
               expect(
                 tester.getSize(find.byKey(const ValueKey('chat-input'))).height,
-                AppSizes.minTouchTarget,
+                AppSizes.minTouchTarget + 2 * AppSpacing.composerVertical,
               );
             }
             expect(tester.widget<EditableText>(editable).controller.text, hint);
