@@ -26,6 +26,8 @@ class MessageBubble extends ConsumerWidget {
     this.onLongPress,
     this.onDelete,
     this.showFooter = true,
+    this.showTime = true,
+    this.showSeconds = false,
     super.key,
   });
   final Message message;
@@ -34,6 +36,8 @@ class MessageBubble extends ConsumerWidget {
   final ValueChanged<Offset>? onLongPress;
   final VoidCallback? onDelete;
   final bool showFooter;
+  final bool showTime;
+  final bool showSeconds;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -67,9 +71,13 @@ class MessageBubble extends ConsumerWidget {
                   const Gap(AppSpacing.xs),
                 if (message.text.isNotEmpty)
                   _TextBubble(message: message, onDelete: onDelete),
-                if (showFooter) ...[
+                if (showFooter && (showTime || message.askedAi)) ...[
                   const Gap(AppSpacing.xxs),
-                  _MessageFooter(message: message),
+                  _MessageFooter(
+                    message: message,
+                    showTime: showTime,
+                    showSeconds: showSeconds,
+                  ),
                 ],
               ],
             ),
@@ -120,8 +128,14 @@ class _TextBubble extends ConsumerWidget {
 }
 
 class _MessageFooter extends ConsumerWidget {
-  const _MessageFooter({required this.message});
+  const _MessageFooter({
+    required this.message,
+    required this.showTime,
+    required this.showSeconds,
+  });
   final Message message;
+  final bool showTime;
+  final bool showSeconds;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -138,16 +152,18 @@ class _MessageFooter extends ConsumerWidget {
               color: foreground,
               semanticLabel: context.t.chat.aiMode,
             ),
-            const Gap(AppSpacing.xxs),
+            if (showTime) const Gap(AppSpacing.xxs),
           ],
-          Text(
-            formatClock(
-              message.createdAt,
-              locale: LocaleSettings.currentLocale.languageTag,
+          if (showTime)
+            Text(
+              formatClock(
+                message.createdAt,
+                locale: LocaleSettings.currentLocale.languageTag,
+                showSeconds: showSeconds,
+              ),
+              style: Theme.of(context).textTheme.labelSmall
+                  ?.copyWith(color: foreground),
             ),
-            style: Theme.of(context).textTheme.labelSmall
-                ?.copyWith(color: foreground),
-          ),
         ],
       ),
     );

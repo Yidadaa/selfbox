@@ -2,6 +2,12 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-14] [PointerTest] pump 80ms 后原始事件仍无法识别双击 -> tester.tapAt 的 PointerEvent.timeStamp 默认恒为零 -> 依赖事件时戳的测试用 createGesture 显式传入测试时钟时间，长按/拖动也使用同一时间源。
+
+- [2026-11-14] [TimestampGesture] 列表双击使图片与按钮单击延迟、测试残留 Timer；404 路由触发 No element -> 父级双击 recognizer 等待手势裁决，错误路由匹配表可为空 -> 列表全域双击用无计时器 Pointer 观察并排除拖动/长按，最顶路由读取 lastOrNull。
+
+- [2026-11-14] [TimestampTest] 新消息夹具缺少 author 导致编译失败，冗余 Material 导入触发分析告警 -> 未核对构造契约与测试库导出 -> 新夹具显式填写必需字段，提交前以 analyzer 核验导入。
+
 - [2026-11-14] [Onboarding] 新文案参数未生成方法、持久化测试未写入 -> slang 配置使用 braces，TaskEither 仅 await 不会执行 -> 参数遵循 `{name}`，测试持久化必须调用 `.run()`；Provider.select 需导入 Riverpod 的扩展入口。
 - [2026-11-14] [OnboardingTest] 记忆同步断言与返回操作测试失败 -> 用户名来自资料，user.md 只保存称呼提示；pageBack 不识别自有玻璃按钮 -> 按各层真实契约断言，返回点击应用按钮语义。
 - [2026-11-14] [LoadingTest] 失败态夹具直接恢复成功、Skeletonizer 精确类型找不到 -> Provider 会自动重试非 Error 失败，骨架工厂返回子类 -> 页面失败分支用可控 Future/StateError 固定重试边界，骨架使用 `is Skeletonizer` 断言。

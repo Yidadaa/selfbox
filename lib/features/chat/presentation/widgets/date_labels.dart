@@ -19,5 +19,10 @@ String formatDayLabel(
   return format.format(d);
 }
 
-String formatClock(DateTime time, {required String locale}) =>
-    DateFormat.Hm(locale).format(time.toLocal());
+String formatClock(
+  DateTime time, {
+  required String locale,
+  bool showSeconds = false,
+}) => (showSeconds ? DateFormat.Hms(locale) : DateFormat.Hm(locale)).format(
+  time.toLocal(),
+);

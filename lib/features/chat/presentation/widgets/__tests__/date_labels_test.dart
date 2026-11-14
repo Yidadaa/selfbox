@@ -40,6 +40,21 @@ void main() {
   });
 
   group('formatClock', () {
+    test('seconds are opt-in and use the same local clock', () {
+      final time = DateTime(2026, 1, 1, 8, 5, 7);
+      for (final locale in ['en', 'zh_CN']) {
+        expect(formatClock(time, locale: locale), '08:05');
+        expect(
+          formatClock(time, locale: locale, showSeconds: true),
+          '08:05:07',
+        );
+        expect(
+          formatClock(time.toUtc(), locale: locale, showSeconds: true),
+          '08:05:07',
+        );
+      }
+    });
+
     test('is 24-hour with leading zeros', () {
       expect(formatClock(DateTime(2026, 1, 1, 8, 5), locale: 'en'), '08:05');
       expect(formatClock(DateTime(2026, 1, 1, 21, 30), locale: 'en'), '21:30');

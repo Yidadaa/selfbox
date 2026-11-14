@@ -11,6 +11,7 @@ import '../../../../gen/i18n/strings.g.dart';
 import '../../data/chat_data_providers.dart';
 import '../../domain/models/message.dart';
 import '../providers/message_actions.dart';
+import 'chat_timestamp_session.dart';
 import 'message_bubble.dart';
 import 'outgoing_message_entrance.dart';
 
@@ -29,6 +30,7 @@ class ChatTimelineMessageRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final media = ref.watch(mediaStoreProvider);
+    final timestamps = ChatTimestampScope.maybeOf(context);
     void remove() {
       HapticFeedback.heavyImpact();
       ref.read(messageActionsProvider.notifier).delete(message);
@@ -55,6 +57,11 @@ class ChatTimelineMessageRow extends ConsumerWidget {
       ],
       builder: (_, open) => MessageBubble(
         message: message,
+        showTime:
+            timestamps == null ||
+            timestamps.showSeconds ||
+            timestamps.timestampIds.contains(message.id),
+        showSeconds: timestamps?.showSeconds ?? false,
         resolveImage: (path) => media.resolve(path).toNullable(),
         onImageTap: (path) => ImageViewerRoute(
           path: path,
