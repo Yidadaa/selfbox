@@ -13,6 +13,7 @@ import '../../../../core/error/app_failure.dart';
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/forms/glass_reactive_text_field.dart';
 import '../../../../core/forms/luthor_validator.dart';
+import '../../../../core/theme/app_input_tokens.dart';
 import '../../../../core/theme/app_markdown_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_artwork.dart';
@@ -159,18 +160,32 @@ class _MemoryEditor extends HookConsumerWidget {
           const Gap(AppSpacing.xs),
           Material(
             type: MaterialType.transparency,
-            child: SmoothMarkdownEditor(
-              builderRegistry: appMarkdownBuilders(),
-              controller: editor,
-              initialMode: MarkdownEditorMode.source,
-              showToolbar: false,
-              enableSlashCommands: false,
-              placeholder: source == null ? context.t.memory.contentHint : null,
-              height: MediaQuery.sizeOf(context).height * 0.5,
-              textStyle: Theme.of(context).textTheme.bodyLarge
-                  ?.copyWith(height: 1.5),
-              styleSheet: AppMarkdownTheme.of(context),
-              onChanged: (value) => form.control('content').value = value,
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                inputDecorationTheme: Theme.of(context).inputDecorationTheme
+                    .copyWith(
+                      hintStyle: TextStyle(
+                        color: AppInputTokens.placeholderColor(
+                          Theme.of(context).brightness,
+                        ),
+                      ),
+                    ),
+              ),
+              child: SmoothMarkdownEditor(
+                builderRegistry: appMarkdownBuilders(),
+                controller: editor,
+                initialMode: MarkdownEditorMode.source,
+                showToolbar: false,
+                enableSlashCommands: false,
+                placeholder: source == null
+                    ? context.t.memory.contentHint
+                    : null,
+                height: MediaQuery.sizeOf(context).height * 0.5,
+                textStyle: Theme.of(context).textTheme.bodyLarge
+                    ?.copyWith(height: 1.5),
+                styleSheet: AppMarkdownTheme.of(context),
+                onChanged: (value) => form.control('content').value = value,
+              ),
             ),
           ),
           ReactiveValueListenableBuilder<String>(

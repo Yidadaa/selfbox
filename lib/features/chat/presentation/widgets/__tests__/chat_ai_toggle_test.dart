@@ -63,10 +63,23 @@ void main() {
           );
           await tester.pumpAndSettle();
           final after = tester.getRect(toggle);
-          final gradient = tester.widget<ShaderMask>(
-            find.descendant(of: toggle, matching: find.byType(ShaderMask)),
+          final labelGradient = tester.widget<ShaderMask>(
+            find.ancestor(
+              of: find.text(t.chat.aiStandby),
+              matching: find.byType(ShaderMask),
+            ),
           );
-          expect(gradient.blendMode, BlendMode.srcIn);
+          final iconGradient = tester.widget<ShaderMask>(
+            find.ancestor(
+              of: find.descendant(
+                of: toggle,
+                matching: findAppIcon(AppIcons.ai),
+              ),
+              matching: find.byType(ShaderMask),
+            ),
+          );
+          expect(labelGradient.blendMode, BlendMode.srcIn);
+          expect(iconGradient.blendMode, BlendMode.srcIn);
           expect(after.width, greaterThan(middle.width));
           expect(middle.width, greaterThan(before.width));
           expect(find.text(t.chat.aiMode), findsNothing);

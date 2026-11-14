@@ -84,3 +84,5 @@ Composer 输入几何覆盖见 [任务 71](tasks/71-composer-hit-area.md)：键�
 Onboarding 导航与文案覆盖见 [任务 73](tasks/73-onboarding-navigation-polish.md)：`onboarding_page_test.dart` 检查无末尾标点、指定副标题、头像入口无文案、底部按钮同高对齐、尾置箭头 4dp 紧贴及无分页底板；截图套件覆盖明暗主题和键盘态。
 
 Composer 与消息菜单修正见 [任务 74](tasks/74-composer-spacing-and-message-actions.md)：`chat_composer_keyboard_test.dart` / `chat_composer_placeholder_test.dart` 对比发送圆钮到上、右玻璃边界的真实几何距离；`message_selection_test.dart` 检查长按菜单先行、原触点选词与复制；`app_action_popover_test.dart` 覆盖选项之间滑动高亮、滑出清除和松手执行一次。`message_actions_*` 与 `composer-keyboard-*` 截图覆盖明暗主题及键盘终态。
+
+AI 渐变与引用块见 [任务 75](tasks/75-ai-gradient-quote-placeholder.md)：`app_ai_tokens_test.dart` 锁定红紫蓝色相及饱和度/明度；`chat_ai_toggle_test.dart` 验证按钮激活态图标与文字同用渐变；`app_markdown_theme_test.dart` 和 `app_markdown_builders_test.dart` 分别检查主题与静态/流式实际引用无左线；`memory_page_test.dart` 对比标题与正文占位符的实际绘制颜色。

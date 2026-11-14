@@ -12,8 +12,31 @@ import 'app_icon.dart';
 import 'app_markdown_image.dart';
 
 BuilderRegistry appMarkdownBuilders() => BuilderRegistry()
+  ..register('blockquote', const _QuoteBuilder())
   ..register('list', const _ListBuilder())
   ..register('image', const AppMarkdownImageBuilder());
+
+class _QuoteBuilder extends MarkdownWidgetBuilder {
+  const _QuoteBuilder();
+
+  @override
+  bool canBuild(MarkdownNode node) => node is BlockquoteNode;
+
+  @override
+  Widget build(
+    MarkdownNode node,
+    MarkdownStyleSheet styleSheet,
+    MarkdownRenderContext context,
+  ) {
+    final quote = node as BlockquoteNode;
+    final content = context.blockRenderer?.call(quote.children);
+    return Container(
+      decoration: styleSheet.blockquoteDecoration ?? const BoxDecoration(),
+      padding: styleSheet.blockquotePadding,
+      child: content ?? const SizedBox.shrink(),
+    );
+  }
+}
 
 class _ListBuilder extends MarkdownWidgetBuilder {
   const _ListBuilder();

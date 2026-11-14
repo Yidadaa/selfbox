@@ -2,6 +2,9 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-14] [MarkdownQuote] 清除主题引用边框后页面仍有竖线，定制 builder 又因可空 padding 编译失败 -> 默认增强引用 builder 自绘左线且 `blockquotePadding` 可空 -> 覆盖实际引用 builder，并用支持可空 padding 的 Container 承载主题装饰。
+- [2026-11-14] [MemoryHintTest] 用 DefaultTextStyle 检查编辑器占位符误报未套色 -> InputDecorator 直接给内部 Text 设置 style -> 断言实际 Text.style.color，并与标题 Cupertino placeholder 的主题色比较。
+
 - [2026-11-14] [ComposerOpticalInsets] 键盘态发送圆钮右侧比顶部多 8dp -> 右侧 Row padding 与 48dp 触控框内部 6dp 光学留白叠加 -> 展开态右侧外 padding 归零，测试直接比较圆钮到上、右玻璃边界。
 - [2026-11-14] [PopoverDrag] 指尖滑过新选项却执行起始项 -> Semantics tap 先于父级 pointer-up 触发 -> 菜单项参与 pan 手势竞争，滑动由父级按当前命中项执行；测试覆盖按住滑动和长按直接滑入。
 

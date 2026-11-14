@@ -50,9 +50,7 @@ abstract final class AppMarkdownTheme {
       paragraphStyle: base,
       listBulletStyle: base,
       codeBlockDecoration: inset,
-      blockquoteDecoration: inset.copyWith(
-        border: Border(left: BorderSide(color: glass.accent, width: 3)),
-      ),
+      blockquoteDecoration: inset,
       linkStyle: base.copyWith(color: glass.accent),
       blockSpacing: thinking ? AppSpacing.xxs : AppSpacing.sm,
     );

@@ -18,6 +18,44 @@ void main() {
   for (final brightness in Brightness.values) {
     for (final streaming in [false, true]) {
       testWidgets(
+        '$brightness streaming=$streaming renders quotes without a rail',
+        (tester) async {
+          await tester.pumpPage(
+            _MarkdownFixture(data: '> A quiet quote', streaming: streaming),
+            brightness: brightness,
+          );
+          await tester.pump(const Duration(milliseconds: 100));
+          expect(
+            find.text('A quiet quote', findRichText: true),
+            findsOneWidget,
+          );
+          final markdown = streaming
+              ? find.byType(StreamMarkdown)
+              : find.byType(SmoothMarkdown);
+          final boxes = tester.widgetList<DecoratedBox>(
+            find.descendant(of: markdown, matching: find.byType(DecoratedBox)),
+          );
+          final decorations = boxes
+              .map((box) => box.decoration)
+              .whereType<BoxDecoration>()
+              .toList();
+          expect(decorations, isNotEmpty);
+          expect(
+            decorations.any((decoration) => decoration.color != null),
+            isTrue,
+          );
+          expect(
+            decorations.any((decoration) => decoration.border != null),
+            isFalse,
+          );
+        },
+      );
+    }
+  }
+
+  for (final brightness in Brightness.values) {
+    for (final streaming in [false, true]) {
+      testWidgets(
         '$brightness streaming=$streaming nests markers at the parent text start',
         (tester) async {
           await tester.pumpPage(

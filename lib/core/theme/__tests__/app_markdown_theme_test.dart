@@ -21,6 +21,14 @@ void main() {
             builder: (context) {
               final normal = AppMarkdownTheme.of(context);
               final thinking = AppMarkdownTheme.of(context, thinking: true);
+              expect(
+                (normal.blockquoteDecoration as BoxDecoration).border,
+                isNull,
+              );
+              expect(
+                (thinking.blockquoteDecoration as BoxDecoration).border,
+                isNull,
+              );
               paragraph = normal.paragraphStyle;
               thinkingParagraph = thinking.paragraphStyle;
               headings = [

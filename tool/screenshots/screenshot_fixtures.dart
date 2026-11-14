@@ -430,6 +430,16 @@ final screenshotFixtures = <ScreenshotFixture>[
     location: '/memory/edit?path=user.md',
     env: _newUserMemory,
   ),
+  const ScreenshotFixture(name: 'memory_editor_new', location: '/memory/edit'),
+  ScreenshotFixture(
+    name: 'memory_editor_new_dark',
+    location: '/memory/edit',
+    setUp: (tester, _) async {
+      tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+      addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+      await tester.pumpAndSettle();
+    },
+  ),
   ScreenshotFixture(
     name: 'memory_editor_dark',
     location: '/memory/edit?path=user.md',

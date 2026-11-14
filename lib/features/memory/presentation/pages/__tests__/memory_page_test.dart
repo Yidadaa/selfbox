@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -75,6 +76,36 @@ void main() {
     });
 
     for (final brightness in Brightness.values) {
+      testWidgets('new memory hints match in $brightness', (tester) async {
+        tester.platformDispatcher.platformBrightnessTestValue = brightness;
+        addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+        final container = await tester.pumpApp(memory: FakeMemoryRepository());
+        container.read(appRouterProvider).go('/memory/edit');
+        await tester.pumpAndSettle();
+
+        final titleInput = tester.widget<CupertinoTextField>(
+          find.descendant(
+            of: find.byType(GlassTextField),
+            matching: find.byType(CupertinoTextField),
+          ),
+        );
+        final bodyInput = find.descendant(
+          of: find.byType(SmoothMarkdownEditor),
+          matching: find.byType(TextField),
+        );
+        final titleColor = titleInput.placeholderStyle?.color;
+        final bodyColor = Theme.of(tester.element(bodyInput))
+            .inputDecorationTheme
+            .hintStyle
+            ?.color;
+        expect(titleColor, isNotNull);
+        expect(bodyColor, titleColor);
+        expect(bodyColor?.a, titleColor?.a);
+        final bodyHint = find.text(t.memory.contentHint);
+        expect(bodyHint, findsOneWidget);
+        expect(tester.widget<Text>(bodyHint).style?.color, titleColor);
+      });
+
       testWidgets(
         'editor uses readable text and stays usable with a keyboard in $brightness',
         (tester) async {
