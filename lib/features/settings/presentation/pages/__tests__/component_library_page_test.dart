@@ -6,6 +6,7 @@ import 'package:selfbox/core/widgets/ai_composer_glow.dart';
 import 'package:selfbox/core/widgets/app_action_button.dart';
 import 'package:selfbox/core/widgets/app_action_popover.dart';
 import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
+import 'package:selfbox/core/widgets/app_modal_surface.dart';
 import 'package:selfbox/core/widgets/app_page_button.dart';
 import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
@@ -83,6 +84,21 @@ void main() {
         matching: find.byType(AppActionButton),
       ),
       findsNWidgets(3),
+    );
+    await tester.tap(
+      find.descendant(
+        of: find.byType(Dialog),
+        matching: find.text(t.common.cancel),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.text(t.me.componentLibrarySheet), 100);
+    await tester.tap(find.text(t.me.componentLibrarySheet));
+    await tester.pumpAndSettle();
+    expect(find.byType(AppModalSurface), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('component-sheet-picker')),
+      findsOneWidget,
     );
   });
 }

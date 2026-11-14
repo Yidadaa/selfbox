@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'app_glass_theme.dart';
 import 'app_page_transitions.dart';
+import 'app_relief_theme.dart';
 
 abstract final class AppTheme {
   static ThemeData dark() => _build(AppGlassTheme.dark, Brightness.dark);
@@ -33,7 +34,7 @@ abstract final class AppTheme {
             platform: const AppPageTransitions(),
         },
       ),
-      extensions: [glass],
+      extensions: [glass, AppReliefTheme.fromGlass(glass, brightness)],
     );
   }
 }

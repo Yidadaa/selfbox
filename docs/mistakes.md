@@ -234,3 +234,7 @@
 - [2026-11-14] [ModelCountTest] 添加模型按钮附加计数后测试点击落在视口外 -> 测试字体下长文案换行且页面可滚动 -> 页面操作先 ensureVisible，再点击；真实字体截图另核验按钮排版。
 
 - [2026-11-14] [PowerShellSearch] rg 收到带通配符的路径时报非法文件名 -> PowerShell 不替 rg 展开文件参数 -> 搜索传目录并使用 rg -g 筛选文件。
+
+- [2026-11-14] [ReliefContrast] 提亮主按钮与暗色危险按钮后对比度跌破 4.5 -> 高光直接混白抬高背景亮度 -> 主色与暗色高光分别限幅，逐个渐变色阶验证正常和按压态对比度。
+- [2026-11-14] [ButtonStates] Hook 监听整个 WidgetStatesController 导致禁用按钮构建期 setState -> Material 初始化/更新会同步发送 disabled、pressed -> 按压只驱动有限 AnimationController，禁用/减少动画时取消监听并归位；覆盖按住时禁用。
+- [2026-11-14] [ModalScreenshot] 截图测试通过却未打开 Dialog -> scrollUntilVisible 的滚动尚未稳定就取点击位置 -> 滚动后 settle 并居中 ensureVisible，截图前必须断言实际浮层存在。

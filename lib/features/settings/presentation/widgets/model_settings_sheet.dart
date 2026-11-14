@@ -16,6 +16,7 @@ import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_action_button.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
+import '../../../../core/widgets/app_modal_surface.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/ai_settings.dart';
 import '../providers/settings_providers.dart';
@@ -24,17 +25,9 @@ import 'model_test_control.dart';
 Future<void> showModelSettingsSheet({
   required BuildContext context,
   required ModelConfig model,
-}) => showModalBottomSheet<void>(
+}) => showAppBottomSheet<void>(
   context: context,
-  sheetAnimationStyle: AppMotion.style(context),
   isScrollControlled: true,
-  backgroundColor: context.glass.bubbleOther,
-  shape: const RoundedRectangleBorder(
-    borderRadius: BorderRadius.vertical(
-      top: Radius.circular(AppDialogTokens.radius),
-    ),
-  ),
-  clipBehavior: Clip.antiAlias,
   builder: (_) => ModelSettingsSheet(model: model),
 );
 

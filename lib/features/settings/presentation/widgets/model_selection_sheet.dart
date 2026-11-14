@@ -18,6 +18,7 @@ import '../../../../core/widgets/app_action_button.dart';
 import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/app_list_tile.dart';
+import '../../../../core/widgets/app_modal_surface.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/ai_settings.dart';
@@ -27,17 +28,9 @@ Future<void> showModelSelectionSheet({
   required BuildContext context,
   required String providerId,
   required List<ModelConfig> models,
-}) => showModalBottomSheet<void>(
+}) => showAppBottomSheet<void>(
   context: context,
-  sheetAnimationStyle: AppMotion.style(context),
   isScrollControlled: true,
-  backgroundColor: context.glass.bubbleOther,
-  shape: const RoundedRectangleBorder(
-    borderRadius: BorderRadius.vertical(
-      top: Radius.circular(AppDialogTokens.radius),
-    ),
-  ),
-  clipBehavior: Clip.antiAlias,
   builder: (_) => ModelSelectionSheet(providerId: providerId, models: models),
 );
 

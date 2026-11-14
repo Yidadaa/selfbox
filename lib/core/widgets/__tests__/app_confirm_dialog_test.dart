@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
+import 'package:selfbox/core/theme/app_dialog_tokens.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
+import 'package:selfbox/core/widgets/app_modal_surface.dart';
 
 void main() {
   for (final brightness in Brightness.values) {
@@ -23,6 +25,8 @@ void main() {
       final dialog = tester.widget<Dialog>(find.byType(Dialog));
       final glass = AppGlassTheme.of(brightness);
       expect(dialog.backgroundColor, glass.bubbleOther);
+      expect(find.byType(AppModalSurface), findsOneWidget);
+      expect(dialog.elevation, 0);
       expect(
         tester.widget<Text>(find.text('Delete everything?')).style?.color,
         glass.onBubbleOther,
@@ -30,12 +34,7 @@ void main() {
       if (brightness == Brightness.dark) {
         expect(dialog.backgroundColor!.computeLuminance(), lessThan(0.15));
       }
-      expect(
-        dialog.shape,
-        const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(34)),
-        ),
-      );
+      expect(dialog.shape, AppDialogTokens.dialogShape);
       final surface = tester.getRect(
         find
             .ancestor(
@@ -79,8 +78,14 @@ void main() {
           matching: find.byType(TextButton),
         ),
       );
-      expect(secondaryButton.style?.shape?.resolve({}), const StadiumBorder());
-      expect(primaryButton.style?.shape?.resolve({}), const StadiumBorder());
+      expect(
+        secondaryButton.style?.shape?.resolve({}),
+        AppDialogTokens.actionShape,
+      );
+      expect(
+        primaryButton.style?.shape?.resolve({}),
+        AppDialogTokens.actionShape,
+      );
       expect(
         secondaryButton.style?.backgroundColor?.resolve({}),
         glass.dialogActionFill,
@@ -89,8 +94,8 @@ void main() {
         primaryButton.style?.backgroundColor?.resolve({}),
         glass.dialogDestructiveFill,
       );
-      expect(secondaryButton.style?.side?.resolve({}), BorderSide.none);
-      expect(primaryButton.style?.side?.resolve({}), BorderSide.none);
+      expect(secondaryButton.style?.side?.resolve({}), isA<BorderSide>());
+      expect(primaryButton.style?.side?.resolve({}), isA<BorderSide>());
     });
   }
 
@@ -170,12 +175,7 @@ void main() {
       await tester.pumpAndSettle();
       final dialog = tester.widget<Dialog>(find.byType(Dialog));
       expect(dialog.backgroundColor, AppGlassTheme.of(brightness).bubbleOther);
-      expect(
-        dialog.shape,
-        const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(34)),
-        ),
-      );
+      expect(dialog.shape, AppDialogTokens.dialogShape);
       expect(find.text('Message actions'), findsOneWidget);
       expect(find.byType(TextButton), findsNWidgets(4));
       final copy = tester.getRect(

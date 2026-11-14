@@ -7,10 +7,10 @@ import '../../../../core/error/failure_message.dart';
 import '../../../../core/theme/app_dialog_tokens.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_icons.dart';
-import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_action_button.dart';
 import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/widgets/app_modal_surface.dart';
 import '../../../../core/widgets/pressable.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/agent_avatar.dart';
@@ -21,17 +21,9 @@ import 'profile_avatar.dart';
 Future<String?> showAgentAvatarSheet(
   BuildContext context, {
   String? selected,
-}) => showModalBottomSheet<String>(
+}) => showAppBottomSheet<String>(
   context: context,
-  sheetAnimationStyle: AppMotion.style(context),
   isScrollControlled: true,
-  backgroundColor: context.glass.bubbleOther,
-  shape: const RoundedRectangleBorder(
-    borderRadius: BorderRadius.vertical(
-      top: Radius.circular(AppDialogTokens.radius),
-    ),
-  ),
-  clipBehavior: Clip.antiAlias,
   builder: (_) => AgentAvatarSheet(selected: selected),
 );
 

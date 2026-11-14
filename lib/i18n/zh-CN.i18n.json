@@ -66,6 +66,7 @@
     "componentLibraryPopover": "消息菜单",
     "componentLibraryDialog": "查看 Dialog 按钮规范",
     "componentLibraryConfirmDialog": "查看确认 Dialog",
+    "componentLibrarySheet": "查看 Bottom Sheet",
     "componentLibraryTile": "列表项",
     "componentLibraryEmptyState": "空状态",
     "clearAll": "清除所有数据",

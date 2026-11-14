@@ -3,19 +3,16 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
-import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_icons.dart';
-import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_action_button.dart';
 import '../../../../core/widgets/app_list_tile.dart';
+import '../../../../core/widgets/app_modal_surface.dart';
 import '../../../../gen/i18n/strings.g.dart';
 
 Future<void> showLogSettings(BuildContext context, Talker talker) =>
-    showModalBottomSheet<void>(
+    showAppBottomSheet<void>(
       context: context,
-      sheetAnimationStyle: AppMotion.style(context),
-      backgroundColor: context.glass.bubbleOther,
       isScrollControlled: true,
       builder: (_) => _LogSettings(talker: talker),
     );

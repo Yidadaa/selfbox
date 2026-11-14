@@ -5,6 +5,7 @@ import '../theme/app_dialog_tokens.dart';
 import '../theme/app_glass_theme.dart';
 import '../theme/app_spacing.dart';
 import 'app_action_button.dart';
+import 'app_modal_surface.dart';
 
 /// An opaque confirmation dialog using the app's own layout.
 class AppConfirmDialog extends StatelessWidget {
@@ -101,36 +102,38 @@ class _AppDialogSurface extends StatelessWidget {
   Widget build(BuildContext context) => Dialog(
     backgroundColor: context.glass.bubbleOther,
     surfaceTintColor: context.glass.bubbleOther,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(AppDialogTokens.radius)),
-    ),
+    shape: AppDialogTokens.dialogShape,
+    elevation: 0,
     insetPadding: const EdgeInsets.symmetric(
       horizontal: AppSpacing.md,
       vertical: AppSpacing.xl,
     ),
-    clipBehavior: Clip.antiAlias,
-    child: SizedBox(
-      width: AppDialogTokens.width,
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (title case final title?)
-              Padding(
-                padding: AppDialogTokens.headerInsets,
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    color: context.glass.onBubbleOther,
-                    fontSize: AppDialogTokens.labelSize,
-                    fontWeight: FontWeight.w600,
-                    decoration: TextDecoration.none,
+    clipBehavior: Clip.none,
+    child: AppModalSurface(
+      shape: AppDialogTokens.dialogShape,
+      child: SizedBox(
+        width: AppDialogTokens.width,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (title case final title?)
+                Padding(
+                  padding: AppDialogTokens.headerInsets,
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      color: context.glass.onBubbleOther,
+                      fontSize: AppDialogTokens.labelSize,
+                      fontWeight: FontWeight.w600,
+                      decoration: TextDecoration.none,
+                    ),
                   ),
                 ),
-              ),
-            Padding(padding: AppDialogTokens.actionInsets, child: actions),
-          ],
+              Padding(padding: AppDialogTokens.actionInsets, child: actions),
+            ],
+          ),
         ),
       ),
     ),

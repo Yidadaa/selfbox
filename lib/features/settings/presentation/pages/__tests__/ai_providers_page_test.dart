@@ -5,6 +5,7 @@ import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/core/testing/icon_finder.dart';
+import 'package:selfbox/core/theme/app_dialog_tokens.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/widgets/app_list_tile.dart';
@@ -122,12 +123,7 @@ void main() {
 
       final sheet = tester.widget<BottomSheet>(find.byType(BottomSheet));
       expect(sheet.backgroundColor, Colors.white);
-      expect(
-        sheet.shape,
-        const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(34)),
-        ),
-      );
+      expect(sheet.shape, AppDialogTokens.sheetShape);
       final picker = tester.widget<CupertinoPicker>(
         find.byKey(const ValueKey('model-picker')),
       );

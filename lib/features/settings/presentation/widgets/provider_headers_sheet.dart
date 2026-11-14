@@ -6,7 +6,6 @@ import 'package:gap/gap.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/theme/app_artwork_tokens.dart';
-import '../../../../core/theme/app_dialog_tokens.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_motion.dart';
@@ -14,23 +13,16 @@ import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_action_button.dart';
 import '../../../../core/widgets/app_artwork.dart';
+import '../../../../core/widgets/app_modal_surface.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
 
 Future<Map<String, String>?> showProviderHeadersSheet({
   required BuildContext context,
   required Map<String, String> headers,
-}) => showModalBottomSheet<Map<String, String>>(
+}) => showAppBottomSheet<Map<String, String>>(
   context: context,
-  sheetAnimationStyle: AppMotion.style(context),
   isScrollControlled: true,
-  backgroundColor: context.glass.bubbleOther,
-  shape: const RoundedRectangleBorder(
-    borderRadius: BorderRadius.vertical(
-      top: Radius.circular(AppDialogTokens.radius),
-    ),
-  ),
-  clipBehavior: Clip.antiAlias,
   builder: (_) => ProviderHeadersSheet(headers: headers),
 );
 

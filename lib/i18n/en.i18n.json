@@ -66,6 +66,7 @@
     "componentLibraryPopover": "Message menu",
     "componentLibraryDialog": "Preview dialog actions",
     "componentLibraryConfirmDialog": "Preview confirmation dialog",
+    "componentLibrarySheet": "Preview Bottom Sheet",
     "componentLibraryTile": "List tile",
     "componentLibraryEmptyState": "Empty state",
     "clearAll": "Clear all data",

@@ -9,12 +9,11 @@ import 'package:reactive_forms/reactive_forms.dart';
 
 import '../../../../core/error/failure_message.dart';
 import '../../../../core/forms/luthor_validator.dart';
-import '../../../../core/theme/app_dialog_tokens.dart';
 import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
-import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_action_button.dart';
+import '../../../../core/widgets/app_modal_surface.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/ai_settings.dart';
 import '../providers/settings_providers.dart';
@@ -22,17 +21,9 @@ import '../providers/settings_providers.dart';
 Future<void> showShortTermMemorySheet({
   required BuildContext context,
   required int initialPercent,
-}) => showModalBottomSheet<void>(
+}) => showAppBottomSheet<void>(
   context: context,
-  sheetAnimationStyle: AppMotion.style(context),
   isScrollControlled: true,
-  backgroundColor: context.glass.bubbleOther,
-  shape: const RoundedRectangleBorder(
-    borderRadius: BorderRadius.vertical(
-      top: Radius.circular(AppDialogTokens.radius),
-    ),
-  ),
-  clipBehavior: Clip.antiAlias,
   builder: (_) => ShortTermMemorySheet(initialPercent: initialPercent),
 );
 

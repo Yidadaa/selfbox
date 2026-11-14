@@ -464,3 +464,9 @@
 - **背景**：AI 输入光效持续循环增加后台负担；高级渲染不应改变输入与 Tab 共用背景。
 - **决策**：AiComposerGlow 移除循环和入退场动画，固定原静止相位及渐变配色，保留裁切与编辑器挂载位置；输入背景预算最高 standard，minimal 继续降级。替代 ADR-042 的动画和 ADR-061 对该背景的 premium 约定。
 - **影响**：测试验证静态像素、无持续动画帧、后台恢复及键盘布局。引导末页仅保留底部配置入口，标题使用尚未保存的用户称呼，空称呼显示“我准备好了”；配置完成后仍可开始使用。
+
+### [ADR-072] 自有浮层使用连续圆角与静态轻拟物材质
+
+- **背景**：Dialog、Sheet 与内部按钮的普通圆弧和纯平填色，与项目 Liquid Glass 轮廓不统一。
+- **决策**：Dialog 直接使用 LiquidRoundedSuperellipse；Sheet 使用该库委托的同一 RoundedSuperellipseBorder，仅保留顶部圆角；按钮按外层 34dp 减 16dp 内边距得到 18dp 同心连续圆角。AppReliefTheme 集中不透明渐变、0.75dp 低对比度边框及扩散/接触阴影；AppModalSurface 和 showAppBottomSheet 统一两个 Dialog 与七类 Sheet。文字/图标按钮复用材质，保留 Material 语义、键盘焦点与状态，按压减弱凸起并缩放。
+- **影响**：替代 ADR-042 的无描边动作面和 ADR-060 的实色按钮外观。浮层无新增实时 blur / shader / 循环 ticker；背景保持不透明。主色高光单独限幅，明暗主题的正文与按钮所有渐变停止点均满足 4.5:1 对比度。组件库增加真实 Sheet 预览，页面主按钮与消息 Popover 继续各自既有视觉契约。用户确认截图效果后同意提交。

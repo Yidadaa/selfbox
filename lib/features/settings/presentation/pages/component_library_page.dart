@@ -22,6 +22,7 @@ import '../../../../core/widgets/pressable.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../widgets/component_actions_preview.dart';
 import '../widgets/settings_back_button.dart';
+import '../widgets/settings_picker_sheet.dart';
 
 class ComponentLibraryPage extends StatelessWidget {
   const ComponentLibraryPage({super.key});
@@ -84,6 +85,22 @@ class ComponentLibraryPage extends StatelessWidget {
               icon: AppIcons.warning,
               title: context.t.me.componentLibraryConfirmDialog,
               onTap: () => _showConfirmDialog(context),
+            ),
+            AppListTile(
+              icon: AppIcons.preferences,
+              title: context.t.me.componentLibrarySheet,
+              onTap: () => showSettingsPicker(
+                context: context,
+                title: context.t.general.theme,
+                pickerKey: const ValueKey('component-sheet-picker'),
+                labels: [
+                  context.t.general.system,
+                  context.t.general.light,
+                  context.t.general.dark,
+                ],
+                initialIndex: 0,
+                onSave: (_) async => true,
+              ),
             ),
             AppListTile(
               icon: AppIcons.checklist,
