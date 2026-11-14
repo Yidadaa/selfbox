@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as p;
@@ -28,7 +27,7 @@ void main() {
       _resize(_read(p.join(_kit, asset['src']! as String)), size),
     );
   }
-  final logo = _removeSpecks(_read(p.join(_kit, 'logo/logo-clean.webp')));
+  final logo = _read(p.join(_kit, 'logo/logo-full.png'));
   _png('assets/brand/logo.png', _resize(logo, 512));
   _android(logo);
   _appleIcons('ios/Runner/Assets.xcassets/AppIcon.appiconset', logo);
@@ -73,14 +72,14 @@ img.Image _icon(
   img.Image logo,
   int size, {
   bool transparent = false,
-  double fraction = 0.8,
+  double fraction = 1,
 }) {
   final canvas = img.Image(
     width: size,
     height: size,
     numChannels: transparent ? 4 : 3,
   );
-  if (!transparent) _fillIconBackground(canvas);
+  if (!transparent) return _resize(logo, size).convert(numChannels: 3);
   return img.compositeImage(
     canvas,
     _resize(logo, (size * fraction).round()),
@@ -118,7 +117,7 @@ void _android(img.Image logo) {
   _png('$res/drawable-nodpi/ic_launcher_background.png', background);
   _png(
     '$res/drawable-nodpi/ic_launcher_foreground.png',
-    _icon(logo, 432, transparent: true, fraction: 0.62),
+    _icon(logo, 432, transparent: true, fraction: 2 / 3),
   );
 }
 
@@ -135,42 +134,4 @@ void _appleIcons(String relative, img.Image logo) {
     final scale = double.parse((entry['scale']! as String).replaceAll('x', ''));
     _png('$relative/$name', _icon(logo, (size * scale).round()));
   }
-}
-
-// The supplied WebP contains disconnected edge flecks. Keep the dog and star,
-// removing only tiny alpha islands before downsampling the native brand mark.
-img.Image _removeSpecks(img.Image image) {
-  final visited = Uint8List(image.width * image.height);
-  final queue = Int32List(visited.length);
-  for (var start = 0; start < visited.length; start++) {
-    if (visited[start] != 0) continue;
-    visited[start] = 1;
-    if (image.getPixel(start % image.width, start ~/ image.width).a < 20) {
-      continue;
-    }
-    var count = 1;
-    queue[0] = start;
-    for (var head = 0; head < count; head++) {
-      final index = queue[head];
-      final x = index % image.width;
-      final y = index ~/ image.width;
-      for (final next in [
-        if (x > 0) index - 1,
-        if (x + 1 < image.width) index + 1,
-        if (y > 0) index - image.width,
-        if (y + 1 < image.height) index + image.width,
-      ]) {
-        if (visited[next] != 0) continue;
-        visited[next] = 1;
-        if (image.getPixel(next % image.width, next ~/ image.width).a >= 20) {
-          queue[count++] = next;
-        }
-      }
-    }
-    if (count >= 160) continue;
-    for (var i = 0; i < count; i++) {
-      image.getPixel(queue[i] % image.width, queue[i] ~/ image.width).a = 0;
-    }
-  }
-  return image;
 }

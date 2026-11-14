@@ -1,5 +1,11 @@
 # 架构决策记录 (ADR)
 
+### [ADR-074] 完整方形 Logo 作为品牌源图
+
+- **背景**：用户指定 `docs/design/asset-kit/logo/logo-full.png` 作为 App Logo，替换原透明 WebP。
+- **决策**：品牌生成器直接缩放完整 PNG，不再执行透明素材去噪。常规 Android、Apple 和 Windows 图标铺满方形画布；Android 自适应前景将整图放入 432px 画布中央的 288px 区域，沿用背景和系统形状遮罩。运行时与双端启动 Logo 同源。
+- **影响**：重跑 `dart run tool/prepare_brand_assets.dart` 即可复现全部品牌资源；系统圆形等遮罩仍会裁切方形四角。未调整权限、版本或发布签名。
+
 ### [ADR-073] Composer 重建与合成预算
 
 - **背景**：静态 AI 光晕仍有额外 ImageFiltered；键盘进度和 Shell 高度回传重建玻璃；输入全文订阅导致整行逐字测量；非聊天 Dock 升为 premium。

@@ -32,28 +32,65 @@ void main() {
     );
   });
 
-  test('launcher backgrounds fade vertically from coordinated blue to white', () {
-    for (final path in [
-      'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png',
-      'android/app/src/main/res/drawable-nodpi/ic_launcher_background.png',
-      'ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png',
-      'macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_512.png',
+  test('full logo fills runtime, launch and native icon resources', () {
+    final source = img.decodePng(
+      File('docs/design/asset-kit/logo/logo-full.png').readAsBytesSync(),
+    );
+    expect(source, isNotNull);
+    if (source == null) return;
+    for (final (path, size) in [
+      ('assets/brand/logo.png', 512),
+      ('android/app/src/main/res/drawable-nodpi/brand_logo.png', 512),
+      ('android/app/src/main/res/mipmap-mdpi/ic_launcher.png', 48),
+      ('android/app/src/main/res/mipmap-hdpi/ic_launcher.png', 72),
+      ('android/app/src/main/res/mipmap-xhdpi/ic_launcher.png', 96),
+      ('android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png', 144),
+      ('android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png', 192),
+      (
+        'ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png',
+        1024,
+      ),
+      ('macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_512.png', 512),
+      ('ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png', 168),
     ]) {
-      final image = img.decodePng(File(path).readAsBytesSync());
-      expect(image, isNotNull);
-      if (image == null) continue;
-      final top = image.getPixel(0, 0);
-      final middle = image.getPixel(0, image.height ~/ 2);
-      final bottom = image.getPixel(0, image.height - 1);
-      expect([top.r, top.g, top.b, top.a], [140, 185, 238, 255]);
-      expect(middle.r, greaterThan(top.r));
-      expect(middle.r, lessThan(bottom.r));
-      expect([bottom.r, bottom.g, bottom.b, bottom.a], [255, 255, 255, 255]);
+      final actual = img.decodePng(File(path).readAsBytesSync());
+      expect(actual, isNotNull, reason: path);
+      if (actual == null) continue;
+      final expected = img.copyResize(
+        source,
+        width: size,
+        height: size,
+        interpolation: img.Interpolation.cubic,
+      );
+      expect(actual.width, size, reason: path);
+      expect(actual.height, size, reason: path);
+      expect(
+        actual.convert(numChannels: 3).getBytes(),
+        expected.convert(numChannels: 3).getBytes(),
+        reason: path,
+      );
     }
+    final foreground = img.decodePng(
+      File('android/app/src/main/res/drawable-nodpi/ic_launcher_foreground.png')
+          .readAsBytesSync(),
+    );
+    expect(foreground, isNotNull);
+    if (foreground == null) return;
+    expect(foreground.width, 432);
+    expect(foreground.height, 432);
+    expect(foreground.getPixel(0, 0).a, 0);
+    final expectedForeground = img.copyResize(
+      source,
+      width: 288,
+      height: 288,
+      interpolation: img.Interpolation.cubic,
+    );
     expect(
-      File('android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml')
-          .readAsStringSync(),
-      contains('@drawable/ic_launcher_background'),
+      img
+          .copyCrop(foreground, x: 72, y: 72, width: 288, height: 288)
+          .convert(numChannels: 3)
+          .getBytes(),
+      expectedForeground.convert(numChannels: 3).getBytes(),
     );
   });
   test('runtime brand assets and native launcher icons are prepared', () {
