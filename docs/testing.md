@@ -97,3 +97,5 @@ AI 图标与模型数量见 [任务 77](tasks/77-ai-icon-and-model-count-polish.
 消息菜单反馈见 [任务 83](tasks/83-message-menu-feedback.md)：共享 Popover 测试覆盖 136dp/12sp/44dp、连续圆角、无滚动、三档渲染、明暗按压/滑动即时统一高亮和长按滑入。`message_selection_test.dart` 覆盖两端消息在明暗主题中的实际 RichText 灰色选区、选区复制 Toast 和选区删除取消；`chat_page_test.dart` 验证整条复制到 Clipboard 后 Toast，以及文字/图片消息删除确认与取消。`about_page_test.dart` 覆盖五次解锁提示、失败重试与已解锁不重复提示。`chat_ai_toggle_test.dart` 断言图标和文字祖先是同一个 ShaderMask，保留中英明暗切换动画。Windows 原生测试 TEMP/TMP 指向 `.tools/task-temp`。
 
 菜单紧凑微调：`app_action_popover_test.dart` 检查图标左留白 20dp、行高 44dp；`message_actions_highlight_{dark,light}` 截图通过真实 pointer-down 保持“选中文本”高亮，并断言 highlightedIndex，正常及高亮共四张截图验收。
+
+菜单实机透底修正：共享菜单测试覆盖明暗 × 三档画质的 chromeTint/chromeBlur 显式接线；`message_actions_{card,highlight,selection}_minimal_{dark,light}` 用真实设置切换轻量档并断言实际菜单质量，配合普通档截图检查气泡遮挡、按压高亮及主题材质。

@@ -252,3 +252,5 @@
 - [2026-11-15] [FailureFixture] 解锁失败夹具编译缺 error 参数 -> 未按现有 AppFailure.unexpected 契约构造 -> 失败夹具显式提供必需 error 并运行静态分析。
 
 - [2026-11-15] [GradleHome] APK 构建无法创建 ~/.gradle 的 wrapper 锁 -> 默认 Gradle 目录无写权限，项目已有独立缓存 -> 构建进程显式设置 GRADLE_USER_HOME=.tools/gradle，并沿用项目 TEMP/TMP。
+
+- [2026-11-15] [PopoverTint] 实机轻量档菜单透底过重 -> 默认 GlassContainer 底色沿用内容玻璃，缺少浮动 chrome 的显式 tint -> 菜单与 Tab 背景共用 chromeTint/chromeBlur，覆盖明暗 × 三档测试及轻量截图。

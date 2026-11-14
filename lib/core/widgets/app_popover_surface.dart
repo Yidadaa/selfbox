@@ -42,6 +42,10 @@ class AppPopoverSurface extends StatelessWidget {
     key: const ValueKey('app-popover-surface'),
     quality: AppEffects.qualityOf(context, GlassQuality.standard),
     useOwnLayer: true,
+    settings: LiquidGlassSettings(
+      blur: context.glass.chromeBlur,
+      glassColor: context.glass.chromeTint,
+    ),
     shape: LiquidRoundedSuperellipse(borderRadius: radius),
     child: FittedBox(
       fit: BoxFit.scaleDown,

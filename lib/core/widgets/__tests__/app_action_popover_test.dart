@@ -4,6 +4,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/icon_finder.dart';
 import 'package:selfbox/core/theme/app_effects.dart';
+import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/app_popover_tokens.dart';
 import 'package:selfbox/core/widgets/app_action_popover.dart';
@@ -97,40 +98,53 @@ void main() {
       },
     );
   }
-  for (final quality in GlassQuality.values) {
-    testWidgets('popover follows global $quality rendering', (tester) async {
-      await tester.pumpPage(
-        AppEffects(
-          quality: quality,
-          animationsEnabled: false,
-          child: AppPopoverRegion(
-            actions: [
-              AppPopoverAction(
-                label: t.common.copy,
-                icon: AppIcons.copy,
-                onPressed: () {},
+  for (final brightness in Brightness.values) {
+    for (final quality in GlassQuality.values) {
+      testWidgets(
+        'popover uses chrome tint with $quality rendering in $brightness',
+        (tester) async {
+          await tester.pumpPage(
+            AppEffects(
+              quality: quality,
+              animationsEnabled: false,
+              child: AppPopoverRegion(
+                actions: [
+                  AppPopoverAction(
+                    label: t.common.copy,
+                    icon: AppIcons.copy,
+                    onPressed: () {},
+                  ),
+                ],
+                builder: (_, open) => GestureDetector(
+                  onLongPressStart: (details) => open(details.globalPosition),
+                  child: const ColoredBox(color: Colors.blue),
+                ),
               ),
-            ],
-            builder: (_, open) => GestureDetector(
-              onLongPressStart: (details) => open(details.globalPosition),
-              child: const ColoredBox(color: Colors.blue),
             ),
-          ),
-        ),
+            brightness: brightness,
+          );
+          await tester.longPressAt(const Offset(195, 420));
+          await tester.pumpAndSettle();
+          final surface = tester.widget<GlassContainer>(
+            find.byKey(const ValueKey('app-popover-surface')),
+          );
+          final theme = AppGlassTheme.of(brightness);
+          expect(surface.settings?.glassColor, theme.chromeTint);
+          expect(surface.settings?.blur, theme.chromeBlur);
+          expect(surface.useOwnLayer, isTrue);
+          expect(
+            tester
+                .widget<GlassContainer>(
+                  find.byKey(const ValueKey('app-popover-surface')),
+                )
+                .quality,
+            quality == GlassQuality.minimal
+                ? GlassQuality.minimal
+                : GlassQuality.standard,
+          );
+        },
       );
-      await tester.longPressAt(const Offset(195, 420));
-      await tester.pumpAndSettle();
-      expect(
-        tester
-            .widget<GlassContainer>(
-              find.byKey(const ValueKey('app-popover-surface')),
-            )
-            .quality,
-        quality == GlassQuality.minimal
-            ? GlassQuality.minimal
-            : GlassQuality.standard,
-      );
-    });
+    }
   }
   for (final brightness in Brightness.values) {
     testWidgets(
