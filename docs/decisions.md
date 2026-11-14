@@ -482,3 +482,10 @@
 - **背景**：Dialog、Sheet 与内部按钮的普通圆弧和纯平填色，与项目 Liquid Glass 轮廓不统一。
 - **决策**：Dialog 直接使用 LiquidRoundedSuperellipse；Sheet 使用该库委托的同一 RoundedSuperellipseBorder，仅保留顶部圆角；按钮按外层 34dp 减 16dp 内边距得到 18dp 同心连续圆角。AppReliefTheme 集中不透明渐变、0.75dp 低对比度边框及扩散/接触阴影；AppModalSurface 和 showAppBottomSheet 统一两个 Dialog 与七类 Sheet。文字/图标按钮复用材质，保留 Material 语义、键盘焦点与状态，按压减弱凸起并缩放。
 - **影响**：替代 ADR-042 的无描边动作面和 ADR-060 的实色按钮外观。浮层无新增实时 blur / shader / 循环 ticker；背景保持不透明。主色高光单独限幅，明暗主题的正文与按钮所有渐变停止点均满足 4.5:1 对比度。组件库增加真实 Sheet 预览，页面主按钮与消息 Popover 继续各自既有视觉契约。用户确认截图效果后同意提交。
+
+
+### [ADR-073] 紧凑玻璃消息菜单与操作反馈
+
+- **背景**：消息菜单固定白底且尺寸偏大，滑动时渐变高亮残留；复制和开发模式开启缺少反馈，删除缺少确认。
+- **决策**：消息/选区菜单共用 136dp、12sp 文字、20dp 图标和按用户要求收窄的 44dp 菜单行热区；使用独立层 standard GlassContainer，遵从 minimal 全局降级。外层复用弹层按钮的 18dp 连续超椭圆，内部按 4dp padding 派生同心轮廓，行内横向 padding 为 16dp（图标距外边界 20dp）；无 Scrollable，极短视口整体缩放适配，命中使用实际变换后的 bounds。按压/滑动共用主题派生的低透明度灰色并即时更新，选区另用灰色透明 Token。
+- **影响**：替代 ADR-060/067 的固定白底、卡片圆角契约。所有消息删除入口复用 AppConfirmDialog，仅确认后读取控制器执行删除。开发模式首次成功开启及整条/选区复制统一 Toast。AI 模式图标和标签行使用单一稳定 ShaderMask，停用以 dst 保留原色，切换标签仍交叉淡入，替代 ADR-068 的分别遮罩。

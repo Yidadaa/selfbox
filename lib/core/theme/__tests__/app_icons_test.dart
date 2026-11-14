@@ -10,6 +10,7 @@ void main() {
     expect(AppIcons.modelSelection, HugeIcons.strokeRoundedAlien02);
     expect(AppIcons.provider, HugeIcons.strokeRoundedSpaceship);
     expect(AppIcons.about, HugeIcons.strokeRoundedLookLeft);
+    expect(AppIcons.selectText, HugeIcons.strokeRoundedInputCursorText);
     expect(AppIcons.download, HugeIcons.strokeRoundedDownload02);
   });
 }

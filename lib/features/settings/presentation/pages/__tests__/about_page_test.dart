@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_app_preferences_repository.dart';
@@ -42,11 +43,58 @@ void main() {
     await tester.tap(find.byType(AppArtwork));
     await tester.pumpAndSettle();
     expect(preferences.current.developerToolsUnlocked, isTrue);
+    expect(
+      find.widgetWithText(GlassToast, t.me.developerEnabled),
+      findsOneWidget,
+    );
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+    for (var index = 0; index < 5; index++) {
+      await tester.tap(find.byType(AppArtwork));
+      await tester.pump();
+    }
+    expect(find.byType(GlassToast), findsNothing);
     router.go('/me');
     await tester.pumpAndSettle();
     expect(find.text(t.me.developer), findsOneWidget);
     expect(find.text(t.me.componentLibrary), findsOneWidget);
     expect(find.text(t.me.componentLibraryDescription), findsNothing);
+  });
+
+  testWidgets('failed unlock reports error and can be retried', (tester) async {
+    final preferences = FakeAppPreferencesRepository()
+      ..failure = const AppFailure.unexpected(error: 'save failed');
+    final container = await tester.pumpApp(preferences: preferences);
+    container.read(appRouterProvider).go('/me/about');
+    await tester.pumpAndSettle();
+    for (var index = 0; index < 5; index++) {
+      await tester.tap(find.byType(AppArtwork));
+      await tester.pump();
+    }
+    await tester.pumpAndSettle();
+    expect(preferences.current.developerToolsUnlocked, isFalse);
+    expect(find.text(t.me.developerEnabled), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is GlassToast && widget.type == GlassToastType.error,
+      ),
+      findsOneWidget,
+    );
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+    preferences.failure = null;
+    for (var index = 0; index < 5; index++) {
+      await tester.tap(find.byType(AppArtwork));
+      await tester.pump();
+    }
+    await tester.pumpAndSettle();
+    expect(preferences.current.developerToolsUnlocked, isTrue);
+    expect(
+      find.widgetWithText(GlassToast, t.me.developerEnabled),
+      findsOneWidget,
+    );
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
   });
 
   for (final brightness in Brightness.values) {

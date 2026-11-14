@@ -4,6 +4,7 @@ import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/core/widgets/app_action_popover.dart';
 import 'package:selfbox/core/widgets/app_page_button.dart';
+import 'package:selfbox/core/widgets/app_popover_surface.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
@@ -13,6 +14,7 @@ final messageActionFixtures = [
   for (final brightness in Brightness.values)
     for (final (name, route) in [
       ('card', '/chat'),
+      ('highlight', '/chat'),
       ('selection', '/chat'),
       ('profile', '/me/profile'),
       ('storage', '/me/storage'),
@@ -45,13 +47,26 @@ final messageActionFixtures = [
         },
         afterOpen: (tester) async {
           switch (name) {
-            case 'card':
+            case 'card' || 'highlight':
               final rect = tester.getRect(
                 find.byKey(const ValueKey('message-surface')),
               );
               await tester.longPressAt(rect.topLeft + const Offset(24, 4));
               await tester.pumpAndSettle();
               expect(find.byType(AppActionPopover), findsOneWidget);
+              if (name == 'highlight') {
+                final finger = await tester.startGesture(
+                  tester.getCenter(find.text(t.common.selectText)),
+                );
+                addTearDown(finger.cancel);
+                await tester.pump();
+                expect(
+                  tester
+                      .widget<AppPopoverSurface>(find.byType(AppPopoverSurface))
+                      .highlightedIndex,
+                  1,
+                );
+              }
             case 'selection':
               await tester.longPress(find.text('周末去湖边走走，顺便给小懒拍几张照片。'));
               await tester.pumpAndSettle();

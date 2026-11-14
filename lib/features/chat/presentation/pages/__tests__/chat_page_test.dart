@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
-import 'package:selfbox/core/theme/message_tokens.dart';
 import 'package:selfbox/core/widgets/app_action_popover.dart';
+import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
 import 'package:selfbox/core/widgets/empty_state.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/pages/chat_page.dart';
@@ -155,6 +157,23 @@ void main() {
     testWidgets('long-press offers copy and delete; delete removes it', (
       tester,
     ) async {
+      String? clipboard;
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async {
+          if (call.method == 'Clipboard.setData') {
+            clipboard =
+                (call.arguments as Map<Object?, Object?>)['text'] as String;
+          }
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
+      );
       final messages = FakeMessageRepository(
         seed: [testMessage(1, 'remove me')],
       );
@@ -166,6 +185,13 @@ void main() {
       expect(find.byType(Dialog), findsNothing);
       expect(find.text(t.common.copy), findsOneWidget);
 
+      await tester.tap(find.text(t.common.copy));
+      await tester.pumpAndSettle();
+      expect(clipboard, 'remove me');
+      expect(find.widgetWithText(GlassToast, t.common.copied), findsOneWidget);
+      await tester.pump(const Duration(seconds: 4));
+      await tester.longPress(find.text('remove me'));
+      await tester.pumpAndSettle();
       await tester.tapAt(const Offset(24, 420));
       await tester.pumpAndSettle();
       expect(find.text('remove me'), findsOneWidget);
@@ -176,6 +202,17 @@ void main() {
       await tester.tap(find.text(t.common.delete));
       await tester.pumpAndSettle();
 
+      expect(find.byType(AppConfirmDialog), findsOneWidget);
+      expect(find.text('remove me'), findsOneWidget);
+      await tester.tap(find.text(t.common.cancel));
+      await tester.pumpAndSettle();
+      expect(find.text('remove me'), findsOneWidget);
+      await tester.longPress(find.text('remove me'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(t.common.delete));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(t.common.delete));
+      await tester.pumpAndSettle();
       expect(find.text('remove me'), findsNothing);
       expect(find.byType(MessageBubble), findsNWidgets(3));
     });
@@ -198,13 +235,11 @@ void main() {
       expect(find.text(t.common.copy), findsNothing);
       expect(find.text(t.common.selectText), findsNothing);
       final surface = find.byKey(const ValueKey('app-popover-surface'));
-      final decoration =
-          tester.widget<DecoratedBox>(surface).decoration as BoxDecoration;
-      expect(
-        decoration.borderRadius,
-        BorderRadius.circular(MessageTokens.imageFrameRadius),
-      );
       expect(tester.getRect(surface).bottom, closeTo(anchor.dy - 8, 1));
+      await tester.tap(find.text(t.common.delete));
+      await tester.pumpAndSettle();
+      expect(find.byType(AppConfirmDialog), findsOneWidget);
+      expect(photo, findsOneWidget);
       await tester.tap(find.text(t.common.delete));
       await tester.pumpAndSettle();
       expect(photo, findsNothing);

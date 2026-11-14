@@ -92,3 +92,8 @@ AI 渐变与引用块见 [任务 75](tasks/75-ai-gradient-quote-placeholder.md)�
 网页工具暂停见 [任务 76](tasks/76-disable-agent-web-tools.md)：`agent_tools_test.dart` 验证默认工具集合不暴露网页能力；`assistant_agent_test.dart` 检查首轮及多轮实际模型请求；`agent_prompt_test.dart` 锁定离线能力说明。`agent_web_tools_test.dart` 继续验证隔离的网页工具实现，但它不进入模型请求。
 
 AI 图标与模型数量见 [任务 77](tasks/77-ai-icon-and-model-count-polish.md)：AppIcons 契约检查指定 Hugeicons，页面测试检查实际入口接线；服务商数量覆盖中英文 0/1/5，模型流程覆盖添加后可用数减少、刷新目录后更新和 16dp 能力项间距。
+
+
+消息菜单反馈见 [任务 83](tasks/83-message-menu-feedback.md)：共享 Popover 测试覆盖 136dp/12sp/44dp、连续圆角、无滚动、三档渲染、明暗按压/滑动即时统一高亮和长按滑入。`message_selection_test.dart` 覆盖两端消息在明暗主题中的实际 RichText 灰色选区、选区复制 Toast 和选区删除取消；`chat_page_test.dart` 验证整条复制到 Clipboard 后 Toast，以及文字/图片消息删除确认与取消。`about_page_test.dart` 覆盖五次解锁提示、失败重试与已解锁不重复提示。`chat_ai_toggle_test.dart` 断言图标和文字祖先是同一个 ShaderMask，保留中英明暗切换动画。Windows 原生测试 TEMP/TMP 指向 `.tools/task-temp`。
+
+菜单紧凑微调：`app_action_popover_test.dart` 检查图标左留白 20dp、行高 44dp；`message_actions_highlight_{dark,light}` 截图通过真实 pointer-down 保持“选中文本”高亮，并断言 highlightedIndex，正常及高亮共四张截图验收。

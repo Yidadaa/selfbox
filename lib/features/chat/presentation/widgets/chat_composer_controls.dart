@@ -36,22 +36,22 @@ class ChatAiToggle extends ConsumerWidget {
             semanticLabel: context.t.chat.aiMode,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (active)
-                    ShaderMask(
-                      blendMode: BlendMode.srcIn,
-                      shaderCallback: (bounds) => AppAiTokens.contentGradient(
-                        Theme.of(context).brightness,
-                      ).createShader(bounds),
-                      child: AppIcon(AppIcons.aiMode, color: glass.foreground),
-                    )
-                  else
-                    AppIcon(AppIcons.aiMode, color: glass.foregroundMuted),
-                  const Gap(AppSpacing.xs),
-                  ExcludeSemantics(child: _AiToggleLabel(active: active)),
-                ],
+              child: ShaderMask(
+                blendMode: active ? BlendMode.srcIn : BlendMode.dst,
+                shaderCallback: (bounds) =>
+                    AppAiTokens.contentGradient(Theme.of(context).brightness)
+                        .createShader(bounds),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AppIcon(
+                      AppIcons.aiMode,
+                      color: active ? glass.foreground : glass.foregroundMuted,
+                    ),
+                    const Gap(AppSpacing.xs),
+                    ExcludeSemantics(child: _AiToggleLabel(active: active)),
+                  ],
+                ),
               ),
             ),
           ),
@@ -77,16 +77,7 @@ class _AiToggleLabel extends StatelessWidget {
         color: active ? context.glass.accent : context.glass.foreground,
       ),
     );
-    final labelWidget = active
-        ? ShaderMask(
-            blendMode: BlendMode.srcIn,
-            shaderCallback: (bounds) =>
-                AppAiTokens.contentGradient(Theme.of(context).brightness)
-                    .createShader(bounds),
-            child: text,
-          )
-        : text;
-    if (MediaQuery.disableAnimationsOf(context)) return labelWidget;
+    if (MediaQuery.disableAnimationsOf(context)) return text;
     const duration = AppMotion.aiLabelTransition;
     return AnimatedSize(
       duration: duration,
@@ -116,7 +107,7 @@ class _AiToggleLabel extends StatelessWidget {
             child: child,
           ),
         ),
-        child: labelWidget,
+        child: text,
       ),
     );
   }

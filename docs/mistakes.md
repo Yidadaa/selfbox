@@ -241,3 +241,12 @@
 - [2026-11-14] [ComposerRebuild] 下沉键盘进度后玻璃仍逐帧重建 -> MeasureSize 回传高度使 Shell 重建并重新创建 Dock -> 同时稳定 Dock 子树引用，使用逐帧 Widget identity 回归验证整条更新链。
 - [2026-11-14] [ComposerTestLint] 新测试同时导入 Cupertino 与 Material 触发 unnecessary_import -> Cupertino 已导出本测试所需全部类型 -> 按实际使用保留单一导入并复跑静态分析。
 - [2026-11-14] [ComposerScreenshot] 首张 AI 光晕截图缺少头像和欢迎插画 -> 截图夹具未等待磁盘图片解码 -> 光晕夹具显式 precacheImage 后再截取，与键盘夹具保持一致。
+
+- [2026-11-15] [NativeTestTemp] 原生依赖编译 C1083 无法写系统 Temp -> MSVC 中间文件目录无写权限 -> 测试进程 TEMP/TMP 指向项目 .tools/task-temp，不改依赖或跳过原生构建。
+- [2026-11-15] [ThemeImport] 按明暗分支的 Token 无法识别 Brightness -> painting.dart 不导出 Brightness -> 此类 Token 使用 widgets.dart 并以 analyze 检查。
+
+- [2026-11-15] [ConfirmProvider] 确认删除时控制器已释放 -> 预先 read 的 autoDispose Notifier 在弹窗等待期间失去订阅 -> 确认回调检查页面 mounted 后再读取 Notifier。
+- [2026-11-15] [ReducedPopover] 关闭动画仍残留零时长 Timer -> flutter_animate 即使 duration 为零也调度 restart -> 减少动画时直接返回菜单事件表面，不创建 Animate。
+
+- [2026-11-15] [ClipboardTest] 整条复制测试等待不到成功 Toast -> 未替换 Clipboard 平台通道，异步写入未完成 -> 显式 mock Clipboard.setData 并同时断言正文及完成后的提示。
+- [2026-11-15] [FailureFixture] 解锁失败夹具编译缺 error 参数 -> 未按现有 AppFailure.unexpected 契约构造 -> 失败夹具显式提供必需 error 并运行静态分析。

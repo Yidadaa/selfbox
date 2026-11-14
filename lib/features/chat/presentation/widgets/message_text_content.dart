@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_markdown_theme.dart';
+import '../../../../core/theme/message_tokens.dart';
 import '../../../../core/widgets/app_markdown_builders.dart';
 import '../../../../core/widgets/app_selection_popover.dart';
 import '../../domain/models/message.dart';
@@ -80,7 +81,12 @@ class MessageTextContent extends HookConsumerWidget {
     };
     // Markdown stretches its block column. Only text blocks support intrinsic
     // sizing; tables, code and media need their bounded viewport instead.
-    return compact ? IntrinsicWidth(child: content) : content;
+    return DefaultSelectionStyle(
+      selectionColor: MessageTokens.selectionColor(
+        Theme.of(context).brightness,
+      ),
+      child: compact ? IntrinsicWidth(child: content) : content,
+    );
   }
 }
 

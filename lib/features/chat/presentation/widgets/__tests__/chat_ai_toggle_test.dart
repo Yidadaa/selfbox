@@ -36,7 +36,7 @@ void main() {
           final before = tester.getRect(toggle);
           expect(
             find.descendant(of: toggle, matching: find.byType(ShaderMask)),
-            findsNothing,
+            findsOneWidget,
           );
           expect(find.text(t.chat.aiMode), findsOneWidget);
           expect(findAppIcon(AppIcons.aiMode), findsOneWidget);
@@ -80,6 +80,11 @@ void main() {
           );
           expect(labelGradient.blendMode, BlendMode.srcIn);
           expect(iconGradient.blendMode, BlendMode.srcIn);
+          expect(identical(labelGradient, iconGradient), isTrue);
+          expect(
+            find.descendant(of: toggle, matching: find.byType(ShaderMask)),
+            findsOneWidget,
+          );
           expect(after.width, greaterThan(middle.width));
           expect(middle.width, greaterThan(before.width));
           expect(find.text(t.chat.aiMode), findsNothing);
