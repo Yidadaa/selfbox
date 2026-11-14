@@ -2,6 +2,12 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-14] [Onboarding] 新文案参数未生成方法、持久化测试未写入 -> slang 配置使用 braces，TaskEither 仅 await 不会执行 -> 参数遵循 `{name}`，测试持久化必须调用 `.run()`；Provider.select 需导入 Riverpod 的扩展入口。
+- [2026-11-14] [OnboardingTest] 记忆同步断言与返回操作测试失败 -> 用户名来自资料，user.md 只保存称呼提示；pageBack 不识别自有玻璃按钮 -> 按各层真实契约断言，返回点击应用按钮语义。
+- [2026-11-14] [LoadingTest] 失败态夹具直接恢复成功、Skeletonizer 精确类型找不到 -> Provider 会自动重试非 Error 失败，骨架工厂返回子类 -> 页面失败分支用可控 Future/StateError 固定重试边界，骨架使用 `is Skeletonizer` 断言。
+- [2026-11-14] [OnboardingKeyboard] 小屏动画态键盘遮住输入项、底部圆角被裁切 -> 首次 showOnScreen 早于避让完成，且光标 bounds 不含字段留白 -> 最终布局帧对整个 ReactiveFormField 再次 ensureVisible，同时锁定字段和按钮边界。
+- [2026-11-14] [SystemBackTest] 同级测试调用 handlePopRoute 触发可见性警告 -> lib 下测试不获 Flutter protected/visibleForTesting 豁免 -> 用测试 BinaryMessenger 发送 navigation.popRoute 验证真实系统返回入口。
+
 - [2026-11-14] [ChatLayout] 短回复撑满、编辑区贴边、开关行额外增高 -> Markdown block Column stretch、键盘进度将留白归零、48dp 热区叠加整行 padding -> 纯文本块按内容测宽，输入上下固定 12dp，列表垂直留白由文本承担。
 - [2026-11-14] [BubbleTest] 长消息宽度测试报纵向溢出 -> 夹具用 Center 限制整条长消息高度，与聊天滚动列表约束不同 -> 消息布局夹具放滚动容器，分别验证横向边界与真实页面避让。
 - [2026-11-14] [ComposerTest] 增加编辑留白后旧边缘对齐断言失败 -> 发送按钮原热区贴齐输入面边缘 -> 分别锁定输入面的页面边距与按钮的内部留白，同时验证圆形按钮光学边距相等。

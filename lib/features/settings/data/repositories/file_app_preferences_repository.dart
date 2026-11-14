@@ -26,7 +26,9 @@ class FileAppPreferencesRepository implements AppPreferencesRepository {
       if (json is! Map<String, dynamic>) {
         throw const AppFailure.database(message: 'corrupt ui_preferences.json');
       }
-      return AppPreferences.fromJson(json);
+      // Existing preference files predate onboarding; upgrades must not gate
+      // users who have already been using the app.
+      return AppPreferences.fromJson({'onboardingCompleted': true, ...json});
     },
     _failure,
   );

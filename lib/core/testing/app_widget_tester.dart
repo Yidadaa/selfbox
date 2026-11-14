@@ -90,6 +90,7 @@ extension AppWidgetTester on WidgetTester {
   }
 
   /// Boots the real app shell (router, theme, i18n, glass scope).
+  /// Existing-page fixtures skip onboarding; first-run tests opt in explicitly.
   Future<ProviderContainer> pumpApp({
     AccountRepository? account,
     List<Override> overrides = const [],
@@ -103,6 +104,7 @@ extension AppWidgetTester on WidgetTester {
     AppPaths? paths,
     AppLocale locale = AppLocale.en,
     bool settle = true,
+    bool firstRun = false,
   }) async {
     usePhoneViewport();
     LocaleSettings.setLocaleSync(locale);
@@ -116,7 +118,9 @@ extension AppWidgetTester on WidgetTester {
           memory: memory,
           settings: settings,
           preferences: preferences,
-          initialPreferences: initialPreferences,
+          initialPreferences: firstRun
+              ? initialPreferences
+              : initialPreferences.copyWith(onboardingCompleted: true),
           catalog: catalog,
           models: models,
           paths: paths,

@@ -231,5 +231,22 @@
     "console": "Console output",
     "history": "Keep history",
     "settings": "Log settings"
+  },
+  "onboarding": {
+    "welcomeTitle": "Hi, I’m Dozy",
+    "welcomeSubtitle": "A little space for your days and ideas.",
+    "identityTitle": "Make me your own",
+    "identitySubtitle": "Pick a look and give me a name.",
+    "nicknameTitle": "What should I call you?",
+    "nicknameSubtitle": "A name for our conversations.",
+    "connectTitle": "Ready when you are",
+    "connectSubtitle": "Connect a model to start chatting with AI.",
+    "begin": "Let’s meet",
+    "next": "Next",
+    "configure": "Set up AI",
+    "start": "Let’s begin",
+    "skip": "Set up later, start now",
+    "back": "Previous step",
+    "progress": "Step {current} of {total}"
   }
 }

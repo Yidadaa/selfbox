@@ -72,3 +72,5 @@
 
 
 UI 打磨覆盖补充见 [任务 66](tasks/66-ui-polish-and-settings-discoverability.md)：图标断言 HugeIcon 的实际绘制尺寸；玻璃档位以 minimal/standard/premium 矩阵验证预算；关于页五次点击解锁与偏好持久化分属页面和 Controller 边界。Toast 覆盖顶部安全距离、键盘态、滑动关闭、手动幂等关闭及自动退场。截图 `ui-polish-*` 使用真实页面，生成后销毁 Widget 树以清理提示定时器。
+
+首次引导覆盖见 [任务 68](tasks/68-first-run-onboarding.md)。`pumpApp(firstRun: true)` 使用首次启动状态，普通页面夹具默认标记引导已完成；纯 Provider 测试的 `testAppOverrides` 保持模型原始默认值。资料/记忆/完成标记失败及并发归属 Controller 测试；页面验证草稿保留、跳过、配置往返、系统返回和失败重试。280dp 大字键盘用例同时验证输入项与底部按钮可见，转场覆盖开启和关闭动画；`onboarding-*` 截图预热实际图片，并覆盖四步明暗主题和窄屏键盘。

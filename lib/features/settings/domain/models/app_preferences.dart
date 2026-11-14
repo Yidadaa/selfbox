@@ -19,6 +19,7 @@ abstract class AppPreferences with _$AppPreferences {
     @Default(AppRenderQuality.standard) AppRenderQuality renderQuality,
     @Default(true) bool animationsEnabled,
     @Default(false) bool developerToolsUnlocked,
+    @Default(false) bool onboardingCompleted,
   }) = _AppPreferences;
 
   factory AppPreferences.fromJson(Map<String, dynamic> json) =>

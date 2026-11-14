@@ -13,6 +13,7 @@ import '../../features/settings/presentation/pages/component_library_page.dart';
 import '../../features/settings/presentation/pages/general_page.dart';
 import '../../features/settings/presentation/pages/me_page.dart';
 import '../../features/settings/presentation/pages/model_page.dart';
+import '../../features/settings/presentation/pages/onboarding_page.dart';
 import '../../features/settings/presentation/pages/profile_page.dart';
 import '../../features/settings/presentation/pages/provider_page.dart';
 import '../../features/settings/presentation/pages/storage_page.dart';
@@ -23,6 +24,24 @@ part '../../gen/core/router/app_routes.g.dart';
 
 /// Pushed full-screen routes (viewers, editors) cover the tab bar.
 final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+
+@TypedGoRoute<OnboardingRoute>(path: '/onboarding')
+class OnboardingRoute extends GoRouteData with $OnboardingRoute {
+  const OnboardingRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const OnboardingPage();
+}
+
+@TypedGoRoute<OnboardingAiRoute>(path: '/onboarding/ai')
+class OnboardingAiRoute extends GoRouteData with $OnboardingAiRoute {
+  const OnboardingAiRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const AiProvidersPage();
+}
 
 @TypedStatefulShellRoute<AppShellRoute>(
   branches: [

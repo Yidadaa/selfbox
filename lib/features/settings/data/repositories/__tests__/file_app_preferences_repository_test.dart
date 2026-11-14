@@ -9,6 +9,39 @@ import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 
 void main() {
   test(
+    'legacy installs skip onboarding and new progress survives restart',
+    () async {
+      final paths = createTempAppPaths();
+      final file =
+          File(p.join(paths.root.path, 'config', 'ui_preferences.json'))
+            ..createSync(recursive: true)
+            ..writeAsStringSync('{"theme":"dark"}');
+      final repo = FileAppPreferencesRepository(paths);
+      final legacy = (await repo.load().run()).getOrElse((f) => throw f);
+      expect(legacy.onboardingCompleted, isTrue);
+      expect(legacy.theme, AppThemeChoice.dark);
+      await repo.save(const AppPreferences()).run();
+      expect(
+        (await repo.load().run()).getOrElse((f) => throw f).onboardingCompleted,
+        isFalse,
+      );
+      await repo.save(const AppPreferences(onboardingCompleted: true)).run();
+      expect(
+        (await FileAppPreferencesRepository(
+          paths,
+        ).load().run()).getOrElse((f) => throw f).onboardingCompleted,
+        isTrue,
+      );
+      await repo.clearAll().run();
+      expect(file.existsSync(), isFalse);
+      expect(
+        (await repo.load().run()).getOrElse((f) => throw f).onboardingCompleted,
+        isFalse,
+      );
+    },
+  );
+
+  test(
     'loads defaults, saves preferences, and reloads after restart',
     () async {
       final paths = createTempAppPaths();

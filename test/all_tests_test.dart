@@ -177,28 +177,34 @@ import 'package:selfbox/features/settings/presentation/pages/__tests__/general_p
     as t91;
 import 'package:selfbox/features/settings/presentation/pages/__tests__/model_page_test.dart'
     as t92;
-import 'package:selfbox/features/settings/presentation/pages/__tests__/provider_page_test.dart'
+import 'package:selfbox/features/settings/presentation/pages/__tests__/onboarding_failure_test.dart'
     as t93;
-import 'package:selfbox/features/settings/presentation/pages/__tests__/settings_pages_test.dart'
+import 'package:selfbox/features/settings/presentation/pages/__tests__/onboarding_page_test.dart'
     as t94;
-import 'package:selfbox/features/settings/presentation/pages/__tests__/storage_page_test.dart'
+import 'package:selfbox/features/settings/presentation/pages/__tests__/provider_page_test.dart'
     as t95;
-import 'package:selfbox/features/settings/presentation/pages/__tests__/talker_page_test.dart'
+import 'package:selfbox/features/settings/presentation/pages/__tests__/settings_pages_test.dart'
     as t96;
-import 'package:selfbox/features/settings/presentation/providers/__tests__/account_providers_test.dart'
+import 'package:selfbox/features/settings/presentation/pages/__tests__/storage_page_test.dart'
     as t97;
-import 'package:selfbox/features/settings/presentation/providers/__tests__/app_preferences_controller_test.dart'
+import 'package:selfbox/features/settings/presentation/pages/__tests__/talker_page_test.dart'
     as t98;
-import 'package:selfbox/features/settings/presentation/widgets/__tests__/agent_avatar_sheet_test.dart'
+import 'package:selfbox/features/settings/presentation/providers/__tests__/account_providers_test.dart'
     as t99;
-import 'package:selfbox/features/settings/presentation/widgets/__tests__/model_test_control_test.dart'
+import 'package:selfbox/features/settings/presentation/providers/__tests__/app_preferences_controller_test.dart'
     as t100;
-import 'package:selfbox/features/settings/presentation/widgets/__tests__/profile_introduction_test.dart'
+import 'package:selfbox/features/settings/presentation/providers/__tests__/onboarding_controller_test.dart'
     as t101;
-import 'package:selfbox/features/settings/presentation/widgets/__tests__/provider_model_flow_test.dart'
+import 'package:selfbox/features/settings/presentation/widgets/__tests__/agent_avatar_sheet_test.dart'
     as t102;
-import 'package:selfbox/features/settings/presentation/widgets/__tests__/short_term_memory_sheet_test.dart'
+import 'package:selfbox/features/settings/presentation/widgets/__tests__/model_test_control_test.dart'
     as t103;
+import 'package:selfbox/features/settings/presentation/widgets/__tests__/profile_introduction_test.dart'
+    as t104;
+import 'package:selfbox/features/settings/presentation/widgets/__tests__/provider_model_flow_test.dart'
+    as t105;
+import 'package:selfbox/features/settings/presentation/widgets/__tests__/short_term_memory_sheet_test.dart'
+    as t106;
 
 const _registered = <String>[
   'lib/core/database/__tests__/app_store_test.dart',
@@ -294,12 +300,15 @@ const _registered = <String>[
   'lib/features/settings/presentation/pages/__tests__/general_effects_test.dart',
   'lib/features/settings/presentation/pages/__tests__/general_page_test.dart',
   'lib/features/settings/presentation/pages/__tests__/model_page_test.dart',
+  'lib/features/settings/presentation/pages/__tests__/onboarding_failure_test.dart',
+  'lib/features/settings/presentation/pages/__tests__/onboarding_page_test.dart',
   'lib/features/settings/presentation/pages/__tests__/provider_page_test.dart',
   'lib/features/settings/presentation/pages/__tests__/settings_pages_test.dart',
   'lib/features/settings/presentation/pages/__tests__/storage_page_test.dart',
   'lib/features/settings/presentation/pages/__tests__/talker_page_test.dart',
   'lib/features/settings/presentation/providers/__tests__/account_providers_test.dart',
   'lib/features/settings/presentation/providers/__tests__/app_preferences_controller_test.dart',
+  'lib/features/settings/presentation/providers/__tests__/onboarding_controller_test.dart',
   'lib/features/settings/presentation/widgets/__tests__/agent_avatar_sheet_test.dart',
   'lib/features/settings/presentation/widgets/__tests__/model_test_control_test.dart',
   'lib/features/settings/presentation/widgets/__tests__/profile_introduction_test.dart',
@@ -615,48 +624,60 @@ void main() {
     t92.main,
   );
   group(
-    'lib/features/settings/presentation/pages/__tests__/provider_page_test.dart',
+    'lib/features/settings/presentation/pages/__tests__/onboarding_failure_test.dart',
     t93.main,
   );
   group(
-    'lib/features/settings/presentation/pages/__tests__/settings_pages_test.dart',
+    'lib/features/settings/presentation/pages/__tests__/onboarding_page_test.dart',
     t94.main,
   );
   group(
-    'lib/features/settings/presentation/pages/__tests__/storage_page_test.dart',
+    'lib/features/settings/presentation/pages/__tests__/provider_page_test.dart',
     t95.main,
   );
   group(
-    'lib/features/settings/presentation/pages/__tests__/talker_page_test.dart',
+    'lib/features/settings/presentation/pages/__tests__/settings_pages_test.dart',
     t96.main,
   );
   group(
-    'lib/features/settings/presentation/providers/__tests__/account_providers_test.dart',
+    'lib/features/settings/presentation/pages/__tests__/storage_page_test.dart',
     t97.main,
   );
   group(
-    'lib/features/settings/presentation/providers/__tests__/app_preferences_controller_test.dart',
+    'lib/features/settings/presentation/pages/__tests__/talker_page_test.dart',
     t98.main,
   );
   group(
-    'lib/features/settings/presentation/widgets/__tests__/agent_avatar_sheet_test.dart',
+    'lib/features/settings/presentation/providers/__tests__/account_providers_test.dart',
     t99.main,
   );
   group(
-    'lib/features/settings/presentation/widgets/__tests__/model_test_control_test.dart',
+    'lib/features/settings/presentation/providers/__tests__/app_preferences_controller_test.dart',
     t100.main,
   );
   group(
-    'lib/features/settings/presentation/widgets/__tests__/profile_introduction_test.dart',
+    'lib/features/settings/presentation/providers/__tests__/onboarding_controller_test.dart',
     t101.main,
   );
   group(
-    'lib/features/settings/presentation/widgets/__tests__/provider_model_flow_test.dart',
+    'lib/features/settings/presentation/widgets/__tests__/agent_avatar_sheet_test.dart',
     t102.main,
   );
   group(
-    'lib/features/settings/presentation/widgets/__tests__/short_term_memory_sheet_test.dart',
+    'lib/features/settings/presentation/widgets/__tests__/model_test_control_test.dart',
     t103.main,
+  );
+  group(
+    'lib/features/settings/presentation/widgets/__tests__/profile_introduction_test.dart',
+    t104.main,
+  );
+  group(
+    'lib/features/settings/presentation/widgets/__tests__/provider_model_flow_test.dart',
+    t105.main,
+  );
+  group(
+    'lib/features/settings/presentation/widgets/__tests__/short_term_memory_sheet_test.dart',
+    t106.main,
   );
 
   test('registers every lib/**/__tests__/*_test.dart', () {

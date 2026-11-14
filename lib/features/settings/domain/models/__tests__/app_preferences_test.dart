@@ -22,6 +22,9 @@ void main() {
     const preferences = AppPreferences();
     expect(preferences.theme, AppThemeChoice.system);
     expect(preferences.language, isNull);
+    expect(preferences.onboardingCompleted, isFalse);
+    final completed = preferences.copyWith(onboardingCompleted: true);
+    expect(AppPreferences.fromJson(completed.toJson()), completed);
   });
 
   test('theme and language round-trip through JSON and copyWith', () {
