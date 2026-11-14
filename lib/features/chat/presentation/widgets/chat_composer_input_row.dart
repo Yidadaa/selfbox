@@ -35,7 +35,7 @@ class ChatComposerInputRow extends ConsumerWidget {
       onPointerDown: (_) => focusNode.requestFocus(),
       child: Padding(
         padding: EdgeInsets.fromLTRB(
-          AppSpacing.xs,
+          AppSpacing.xs * (1 + progress), // 键盘展开状态，左侧空间要大一点，比较好看
           AppSpacing.xs * (1 - progress),
           AppSpacing.xs * (1 - progress),
           AppSpacing.xs * (1 - progress),

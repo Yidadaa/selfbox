@@ -118,7 +118,6 @@ class ProviderHeadersSheet extends HookWidget {
                       key: const ValueKey('cancel-provider-headers'),
                       expand: false,
                       onPressed: () => Navigator.of(context).pop(),
-                      icon: AppIcons.close,
                       label: context.t.common.cancel,
                     ),
                     Expanded(
@@ -216,34 +215,41 @@ class _HeaderRow extends HookWidget {
   Widget build(BuildContext context) {
     final nameController = useTextEditingController(text: name);
     final valueController = useTextEditingController(text: value);
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(
-          child: GlassTextField(
-            controller: nameController,
-            placeholder: context.t.settings.provider.headerName,
-            surfaceStyle: GlassSurfaceStyle.solid,
-            shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.sm),
-            onChanged: onNameChanged,
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: GlassTextField(
+                controller: nameController,
+                height: AppSizes.minTouchTarget,
+                placeholder: context.t.settings.provider.headerName,
+                surfaceStyle: GlassSurfaceStyle.solid,
+                shape: const LiquidRoundedSuperellipse(
+                  borderRadius: AppRadius.sm,
+                ),
+                onChanged: onNameChanged,
+              ),
+            ),
+            const Gap(AppSpacing.xs),
+            AppActionIconButton(
+              key: ValueKey('remove-provider-header-$index'),
+              variant: AppActionButtonVariant.destructive,
+              onPressed: onRemove,
+              tooltip: context.t.settings.provider.removeHeader,
+              icon: AppIcons.remove,
+            ),
+          ],
         ),
         const Gap(AppSpacing.xs),
-        Expanded(
-          child: GlassTextField(
-            controller: valueController,
-            placeholder: context.t.settings.provider.headerValue,
-            surfaceStyle: GlassSurfaceStyle.solid,
-            shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.sm),
-            onChanged: onValueChanged,
-          ),
-        ),
-        AppActionIconButton(
-          key: ValueKey('remove-provider-header-$index'),
-          variant: AppActionButtonVariant.destructive,
-          onPressed: onRemove,
-          tooltip: context.t.settings.provider.removeHeader,
-          icon: AppIcons.remove,
+        GlassTextField(
+          controller: valueController,
+          height: AppSizes.minTouchTarget,
+          placeholder: context.t.settings.provider.headerValue,
+          surfaceStyle: GlassSurfaceStyle.solid,
+          shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.sm),
+          onChanged: onValueChanged,
         ),
       ],
     );
