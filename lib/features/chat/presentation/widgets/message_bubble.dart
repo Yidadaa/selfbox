@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -25,6 +26,9 @@ class MessageBubble extends ConsumerWidget {
     this.onImageTap,
     this.onLongPress,
     this.onDelete,
+    this.selectionMode = false,
+    this.selectionController,
+    this.onSelectionCopy,
     this.showFooter = true,
     this.showTime = true,
     this.showSeconds = false,
@@ -35,6 +39,9 @@ class MessageBubble extends ConsumerWidget {
   final ValueChanged<String>? onImageTap;
   final ValueChanged<Offset>? onLongPress;
   final VoidCallback? onDelete;
+  final bool selectionMode;
+  final SmoothSelectionController? selectionController;
+  final VoidCallback? onSelectionCopy;
   final bool showFooter;
   final bool showTime;
   final bool showSeconds;
@@ -70,7 +77,13 @@ class MessageBubble extends ConsumerWidget {
                 if (message.images.isNotEmpty && message.text.isNotEmpty)
                   const Gap(AppSpacing.xs),
                 if (message.text.isNotEmpty)
-                  _TextBubble(message: message, onDelete: onDelete),
+                  _TextBubble(
+                    message: message,
+                    onDelete: onDelete,
+                    selectionMode: selectionMode,
+                    selectionController: selectionController,
+                    onSelectionCopy: onSelectionCopy,
+                  ),
                 if (showFooter && (showTime || message.askedAi)) ...[
                   const Gap(AppSpacing.xxs),
                   _MessageFooter(
@@ -89,9 +102,18 @@ class MessageBubble extends ConsumerWidget {
 }
 
 class _TextBubble extends ConsumerWidget {
-  const _TextBubble({required this.message, this.onDelete});
+  const _TextBubble({
+    required this.message,
+    required this.selectionMode,
+    this.selectionController,
+    this.onSelectionCopy,
+    this.onDelete,
+  });
   final Message message;
   final VoidCallback? onDelete;
+  final bool selectionMode;
+  final SmoothSelectionController? selectionController;
+  final VoidCallback? onSelectionCopy;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final glass = context.glass;
@@ -100,7 +122,13 @@ class _TextBubble extends ConsumerWidget {
         horizontal: AppSpacing.md,
         vertical: AppSpacing.xs,
       ),
-      child: MessageTextContent(message: message, onDelete: onDelete),
+      child: MessageTextContent(
+        message: message,
+        onDelete: onDelete,
+        selectionMode: selectionMode,
+        selectionController: selectionController,
+        onSelectionCopy: onSelectionCopy,
+      ),
     );
     return switch (message.author) {
       MessageAuthor.me => ClipPath(

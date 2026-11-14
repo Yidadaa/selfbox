@@ -3,29 +3,13 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:gap/gap.dart';
 
-import '../theme/app_icons.dart';
 import '../theme/app_motion.dart';
-import '../theme/app_popover_tokens.dart';
 import '../theme/app_spacing.dart';
 import '../theme/message_tokens.dart';
-import 'app_icon.dart';
-import 'pressable.dart';
+import 'app_popover_surface.dart';
 
-@immutable
-class AppPopoverAction {
-  const AppPopoverAction({
-    required this.label,
-    required this.icon,
-    required this.onPressed,
-    this.destructive = false,
-  });
-  final String label;
-  final AppIconData icon;
-  final VoidCallback onPressed;
-  final bool destructive;
-}
+export 'app_popover_surface.dart' show AppPopoverAction;
 
 class AppPopoverRegion extends HookWidget {
   const AppPopoverRegion({
@@ -41,7 +25,22 @@ class AppPopoverRegion extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final anchor = useState<Offset?>(null);
+    final hovered = useState<int?>(null);
+    final itemKeys = useMemoized(
+      () => List<GlobalKey>.generate(actions.length, (_) => GlobalKey()),
+      [actions.length],
+    );
     final portal = useMemoized(OverlayPortalController.new);
+    void close() {
+      hovered.value = null;
+      anchor.value = null;
+    }
+
+    void activate(int index) {
+      close();
+      actions[index].onPressed();
+    }
+
     useEffect(() {
       if (anchor.value == null && !portal.isShowing) return null;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -53,7 +52,7 @@ class AppPopoverRegion extends HookWidget {
     return PopScope(
       canPop: anchor.value == null,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) anchor.value = null;
+        if (!didPop) close();
       },
       child: OverlayPortal(
         overlayLocation: OverlayChildLocation.rootOverlay,
@@ -61,7 +60,7 @@ class AppPopoverRegion extends HookWidget {
         overlayChildBuilder: (_) => Stack(
           children: [
             ModalBarrier(
-              onDismiss: () => anchor.value = null,
+              onDismiss: close,
               semanticsLabel: MaterialLocalizations.of(context)
                   .modalBarrierDismissLabel,
             ),
@@ -69,22 +68,40 @@ class AppPopoverRegion extends HookWidget {
               AppActionPopover(
                 anchor: point,
                 radius: radius,
+                itemKeys: itemKeys,
+                highlightedIndex: hovered.value,
                 actions: [
-                  for (final action in actions)
+                  for (final (index, action) in actions.indexed)
                     AppPopoverAction(
                       label: action.label,
                       icon: action.icon,
                       destructive: action.destructive,
-                      onPressed: () {
-                        anchor.value = null;
-                        action.onPressed();
-                      },
+                      onPressed: () => activate(index),
                     ),
                 ],
               ),
           ],
         ),
-        child: builder(context, (point) => anchor.value = point),
+        child: Listener(
+          onPointerMove: (event) {
+            if (anchor.value == null) return;
+            hovered.value = popoverActionAt(itemKeys, event.position);
+          },
+          onPointerUp: (event) {
+            if (anchor.value == null) return;
+            final index = popoverActionAt(itemKeys, event.position);
+            if (index == null) {
+              hovered.value = null;
+            } else {
+              activate(index);
+            }
+          },
+          onPointerCancel: (_) => hovered.value = null,
+          child: builder(context, (point) {
+            hovered.value = null;
+            anchor.value = point;
+          }),
+        ),
       ),
     );
   }
@@ -95,11 +112,15 @@ class AppActionPopover extends HookWidget {
     required this.anchor,
     required this.actions,
     this.radius = MessageTokens.radius,
+    this.itemKeys,
+    this.highlightedIndex,
     super.key,
   });
   final Offset anchor;
   final List<AppPopoverAction> actions;
   final double radius;
+  final List<GlobalKey>? itemKeys;
+  final int? highlightedIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +128,13 @@ class AppActionPopover extends HookWidget {
     final keyboard = MediaQuery.viewInsetsOf(context);
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     final animation = useAnimationController(duration: AppMotion.fast);
+    final hovered = useState<int?>(null);
+    final fingerDown = useRef(false);
+    final keys = useMemoized(
+      () => List<GlobalKey>.generate(actions.length, (_) => GlobalKey()),
+      [actions.length],
+    );
+    final actionKeys = itemKeys ?? keys;
     useEffect(() {
       reduceMotion ? animation.value = 1 : animation.forward();
       return null;
@@ -121,77 +149,43 @@ class AppActionPopover extends HookWidget {
           math.max(safe.bottom, keyboard.bottom) + AppSpacing.md,
         ),
       ),
-      child: _PopoverSurface(actions: actions, radius: radius)
-          .animate(controller: animation, autoPlay: false)
-          .fadeIn(duration: AppMotion.duration(context, AppMotion.fast))
-          .scaleXY(
-            begin: AppMotion.pressScale,
-            duration: AppMotion.duration(context, AppMotion.fast),
-            curve: AppMotion.emphasized,
-          ),
-    );
-  }
-}
-
-class _PopoverSurface extends StatelessWidget {
-  const _PopoverSurface({required this.actions, required this.radius});
-  final List<AppPopoverAction> actions;
-  final double radius;
-
-  @override
-  Widget build(BuildContext context) => DecoratedBox(
-    key: const ValueKey('app-popover-surface'),
-    decoration: BoxDecoration(
-      color: AppPopoverTokens.background,
-      borderRadius: BorderRadius.circular(radius),
-      boxShadow: const [AppPopoverTokens.shadow],
-    ),
-    child: SizedBox(
-      width: AppPopoverTokens.width,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.xs),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final action in actions) _PopoverItem(action: action),
-          ],
-        ),
-      ),
-    ),
-  );
-}
-
-class _PopoverItem extends StatelessWidget {
-  const _PopoverItem({required this.action});
-  final AppPopoverAction action;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = action.destructive
-        ? AppPopoverTokens.destructive
-        : AppPopoverTokens.foreground;
-    return Pressable(
-      semanticLabel: action.label,
-      onTap: action.onPressed,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.xs,
-          vertical: AppSpacing.xs,
-        ),
-        child: Row(
-          children: [
-            AppIcon(action.icon, color: color),
-            const Gap(AppSpacing.sm),
-            Expanded(
-              child: Text(
-                action.label,
-                style: Theme.of(context).textTheme.bodyMedium
-                    ?.copyWith(color: color),
+      child:
+          Listener(
+                behavior: HitTestBehavior.opaque,
+                onPointerDown: (event) {
+                  fingerDown.value = true;
+                  hovered.value = popoverActionAt(actionKeys, event.position);
+                },
+                onPointerMove: (event) {
+                  if (fingerDown.value) {
+                    hovered.value = popoverActionAt(actionKeys, event.position);
+                  }
+                },
+                onPointerUp: (event) {
+                  if (!fingerDown.value) return;
+                  fingerDown.value = false;
+                  final index = popoverActionAt(actionKeys, event.position);
+                  hovered.value = null;
+                  if (index != null) actions[index].onPressed();
+                },
+                onPointerCancel: (_) {
+                  fingerDown.value = false;
+                  hovered.value = null;
+                },
+                child: AppPopoverSurface(
+                  actions: actions,
+                  radius: radius,
+                  itemKeys: actionKeys,
+                  highlightedIndex: highlightedIndex ?? hovered.value,
+                ),
+              )
+              .animate(controller: animation, autoPlay: false)
+              .fadeIn(duration: AppMotion.duration(context, AppMotion.fast))
+              .scaleXY(
+                begin: AppMotion.pressScale,
+                duration: AppMotion.duration(context, AppMotion.fast),
+                curve: AppMotion.emphasized,
               ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

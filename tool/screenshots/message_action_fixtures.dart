@@ -5,6 +5,7 @@ import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/core/widgets/app_action_popover.dart';
 import 'package:selfbox/core/widgets/app_page_button.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
+import 'package:selfbox/gen/i18n/strings.g.dart';
 
 import 'screenshot_fixtures.dart';
 
@@ -52,6 +53,10 @@ final messageActionFixtures = [
               await tester.pumpAndSettle();
               expect(find.byType(AppActionPopover), findsOneWidget);
             case 'selection':
+              await tester.longPress(find.text('周末去湖边走走，顺便给小懒拍几张照片。'));
+              await tester.pumpAndSettle();
+              await tester.tap(find.text(t.common.selectText));
+              await tester.pumpAndSettle();
               await tester.longPress(find.text('周末去湖边走走，顺便给小懒拍几张照片。'));
               await tester.pumpAndSettle();
               expect(find.byType(AppActionPopover), findsOneWidget);

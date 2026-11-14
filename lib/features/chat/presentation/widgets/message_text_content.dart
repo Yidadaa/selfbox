@@ -10,9 +10,19 @@ import '../../../../core/widgets/app_selection_popover.dart';
 import '../../domain/models/message.dart';
 
 class MessageTextContent extends HookConsumerWidget {
-  const MessageTextContent({required this.message, this.onDelete, super.key});
+  const MessageTextContent({
+    required this.message,
+    required this.selectionMode,
+    this.selectionController,
+    this.onSelectionCopy,
+    this.onDelete,
+    super.key,
+  });
   final Message message;
   final VoidCallback? onDelete;
+  final bool selectionMode;
+  final SmoothSelectionController? selectionController;
+  final VoidCallback? onSelectionCopy;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,29 +36,37 @@ class MessageTextContent extends HookConsumerWidget {
           MarkdownParser().parse(message.text).every(_intrinsicText),
       [message.author, message.text],
     );
+    final text = Text(
+      message.text,
+      style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: color),
+    );
     final content = switch (message.author) {
-      MessageAuthor.me => SelectionArea(
-        contextMenuBuilder: (_, state) => AppSelectionPopover(
-          anchors: state.contextMenuAnchors,
-          items: state.contextMenuButtonItems,
-          onDelete: onDelete == null
-              ? null
-              : () {
-                  state.clearSelection();
-                  onDelete?.call();
-                },
-        ),
-        child: Text(
-          message.text,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: color),
-        ),
-      ),
+      MessageAuthor.me =>
+        selectionMode
+            ? SmoothSelectionRegion(
+                controller: selectionController,
+                contextMenuBuilder: (_, state) => AppSelectionPopover(
+                  anchors: state.contextMenuAnchors,
+                  items: state.contextMenuButtonItems,
+                  onCopy: onSelectionCopy,
+                  onDelete: onDelete == null
+                      ? null
+                      : () {
+                          state.clearSelection();
+                          onDelete?.call();
+                        },
+                ),
+                child: text,
+              )
+            : text,
       MessageAuthor.ai => SmoothMarkdown(
         data: message.text,
-        selectable: true,
+        selectable: selectionMode,
+        selectionController: selectionController,
         contextMenuBuilder: (_, state) => AppSelectionPopover(
           anchors: state.contextMenuAnchors,
           items: state.contextMenuButtonItems,
+          onCopy: onSelectionCopy,
           onDelete: onDelete == null
               ? null
               : () {

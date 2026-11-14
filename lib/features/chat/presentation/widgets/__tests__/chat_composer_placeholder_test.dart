@@ -107,7 +107,7 @@ void expectSendInsets(WidgetTester tester) {
   final topInset = circle.top - surface.top;
   expect(topInset, greaterThan(0));
   expect(surface.bottom - circle.bottom, closeTo(topInset, 0.01));
-  expect(surface.right - circle.right, greaterThan(topInset));
+  expect(surface.right - circle.right, closeTo(topInset, 0.01));
   final hitTarget = tester.getSize(send);
   expect(hitTarget.width, greaterThanOrEqualTo(AppSizes.minTouchTarget));
   expect(hitTarget.height, greaterThanOrEqualTo(AppSizes.minTouchTarget));

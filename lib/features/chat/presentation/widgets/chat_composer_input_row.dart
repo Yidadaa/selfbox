@@ -41,8 +41,11 @@ class ChatComposerInputRow extends ConsumerWidget {
       behavior: HitTestBehavior.opaque,
       onPointerDown: (_) => focusNode.requestFocus(),
       child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: AppSpacing.xs + AppSpacing.xs * progress,
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.xs,
+          AppSpacing.xs * (1 - progress),
+          AppSpacing.xs * (1 - progress),
+          AppSpacing.xs * (1 - progress),
         ),
         child: Row(
           children: [

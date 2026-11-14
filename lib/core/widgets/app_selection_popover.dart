@@ -10,12 +10,14 @@ class AppSelectionPopover extends StatelessWidget {
     required this.anchors,
     required this.items,
     this.onDelete,
+    this.onCopy,
     this.radius = MessageTokens.radius,
     super.key,
   });
   final TextSelectionToolbarAnchors anchors;
   final List<ContextMenuButtonItem> items;
   final VoidCallback? onDelete;
+  final VoidCallback? onCopy;
   final double radius;
 
   @override
@@ -28,7 +30,10 @@ class AppSelectionPopover extends StatelessWidget {
           AppPopoverAction(
             label: context.t.common.copy,
             icon: AppIcons.copy,
-            onPressed: item.onPressed ?? () {},
+            onPressed: () {
+              item.onPressed?.call();
+              onCopy?.call();
+            },
           )
         else if (item.type == ContextMenuButtonType.selectAll)
           AppPopoverAction(

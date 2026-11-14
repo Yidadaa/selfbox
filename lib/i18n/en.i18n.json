@@ -106,6 +106,7 @@
   },
   "common": {
     "copy": "Copy",
+    "selectText": "Select text",
     "selectAll": "Select all",
     "delete": "Delete",
     "cancel": "Cancel",

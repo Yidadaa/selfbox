@@ -196,6 +196,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(Dialog), findsNothing);
       expect(find.text(t.common.copy), findsNothing);
+      expect(find.text(t.common.selectText), findsNothing);
       final surface = find.byKey(const ValueKey('app-popover-surface'));
       final decoration =
           tester.widget<DecoratedBox>(surface).decoration as BoxDecoration;

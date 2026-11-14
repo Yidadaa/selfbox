@@ -106,6 +106,7 @@
   },
   "common": {
     "copy": "复制",
+    "selectText": "选中文本",
     "selectAll": "全选",
     "delete": "删除",
     "cancel": "取消",

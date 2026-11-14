@@ -29,6 +29,45 @@ class _CountingPicker extends Fake implements ImagePicker {
 
 void main() {
   testWidgets(
+    'composer input row uses balanced insets across keyboard states',
+    (tester) async {
+      await tester.pumpApp();
+      for (final keyboard in [false, true]) {
+        if (keyboard) {
+          tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+          await tester.showKeyboard(find.byType(EditableText));
+          await tester.pumpAndSettle();
+        }
+        final surface = tester.getRect(
+          find.byKey(const ValueKey('chat-input')),
+        );
+        final row = tester.getRect(find.byType(ChatComposerInputRow));
+        final send = tester.getRect(find.byType(ChatSendButton));
+        final circle = tester.getRect(
+          find.descendant(
+            of: find.byType(ChatSendButton),
+            matching: find.byType(AnimatedContainer),
+          ),
+        );
+        expect(
+          send.right,
+          closeTo(surface.right - (keyboard ? 0 : AppSpacing.xs), 0.01),
+        );
+        expect(
+          send.top - surface.top,
+          closeTo(keyboard ? 0 : AppSpacing.xs, 0.01),
+        );
+        expect(
+          surface.right - circle.right,
+          closeTo(circle.top - surface.top, 0.01),
+        );
+        expect(row.height, keyboard ? AppSizes.minTouchTarget : 64);
+      }
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'multiline editing keeps internal breathing room with either keyboard state',
     (tester) async {
       await tester.pumpApp();
@@ -48,7 +87,10 @@ void main() {
           field.bottom - editor.bottom,
           greaterThanOrEqualTo(AppSpacing.sm),
         );
-        expect(field.height, row.height);
+        expect(
+          row.height - field.height,
+          closeTo(keyboard == 0 ? AppSpacing.xs * 2 : 0, 0.01),
+        );
         expect(input.height, greaterThanOrEqualTo(row.height));
         expect(tester.takeException(), isNull);
       }
@@ -103,7 +145,7 @@ void main() {
     expect(attach.left, AppSpacing.md);
     final surface = tester.getRect(find.byKey(const ValueKey('chat-input')));
     expect(surface.right, kPhoneViewport.width - AppSpacing.md);
-    expect(surface.right - send.right, greaterThan(AppSpacing.xs));
+    expect(surface.right - send.right, 0);
   });
 
   testWidgets('keyboard single-line field matches the attach control height', (

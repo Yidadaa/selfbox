@@ -2,6 +2,9 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-14] [ComposerOpticalInsets] 键盘态发送圆钮右侧比顶部多 8dp -> 右侧 Row padding 与 48dp 触控框内部 6dp 光学留白叠加 -> 展开态右侧外 padding 归零，测试直接比较圆钮到上、右玻璃边界。
+- [2026-11-14] [PopoverDrag] 指尖滑过新选项却执行起始项 -> Semantics tap 先于父级 pointer-up 触发 -> 菜单项参与 pan 手势竞争，滑动由父级按当前命中项执行；测试覆盖按住滑动和长按直接滑入。
+
 - [2026-11-14] [OnboardingIntent] 分页柱改深色却额外加黑底、箭头置于文案后却离文字过远 -> 把局部颜色与排列要求扩展为容器改版，通用 8dp 间距不适合紧凑箭头 -> 仅修改明确对象；分页只保留短柱，onboarding 箭头与文字保持 4dp 相邻并整组居中，测试锁定无底板与间距。
 
 - [2026-11-14] [ModelCheckboxTest] Semantics widget 没有可读 checked 属性，测试编译失败 -> 当前 Flutter 语义状态位只在 SemanticsData / SemanticsFlags 上公开 -> 用 WidgetTester.getSemantics(...).getSemanticsData().flagsCollection 断言选中态。

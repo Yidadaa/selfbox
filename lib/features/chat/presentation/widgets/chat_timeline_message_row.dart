@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../core/router/app_routes.dart';
@@ -15,7 +17,7 @@ import 'chat_timestamp_session.dart';
 import 'message_bubble.dart';
 import 'outgoing_message_entrance.dart';
 
-class ChatTimelineMessageRow extends ConsumerWidget {
+class ChatTimelineMessageRow extends HookConsumerWidget {
   const ChatTimelineMessageRow({
     required this.message,
     required this.entering,
@@ -31,6 +33,9 @@ class ChatTimelineMessageRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final media = ref.watch(mediaStoreProvider);
     final timestamps = ChatTimestampScope.maybeOf(context);
+    final selectionMode = useState(false);
+    final selection = useMemoized(SmoothSelectionController.new);
+    final pressPosition = useRef(Offset.zero);
     void remove() {
       HapticFeedback.heavyImpact();
       ref.read(messageActionsProvider.notifier).delete(message);
@@ -48,6 +53,21 @@ class ChatTimelineMessageRow extends ConsumerWidget {
             onPressed: () =>
                 Clipboard.setData(ClipboardData(text: message.text)),
           ),
+        if (message.text.isNotEmpty)
+          AppPopoverAction(
+            label: context.t.common.selectText,
+            icon: AppIcons.selectText,
+            onPressed: () {
+              selectionMode.value = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (context.mounted) {
+                    selection.selectWordAt(pressPosition.value);
+                  }
+                });
+              });
+            },
+          ),
         AppPopoverAction(
           label: context.t.common.delete,
           icon: AppIcons.delete,
@@ -57,6 +77,8 @@ class ChatTimelineMessageRow extends ConsumerWidget {
       ],
       builder: (_, open) => MessageBubble(
         message: message,
+        selectionMode: selectionMode.value,
+        selectionController: selection,
         showTime:
             timestamps == null ||
             timestamps.showSeconds ||
@@ -67,8 +89,14 @@ class ChatTimelineMessageRow extends ConsumerWidget {
           path: path,
           $extra: message.images,
         ).push<void>(context),
-        onLongPress: open,
+        onLongPress: selectionMode.value
+            ? null
+            : (position) {
+                pressPosition.value = position;
+                open(position);
+              },
         onDelete: remove,
+        onSelectionCopy: () => selectionMode.value = false,
       ),
     );
     return entering
