@@ -27,8 +27,8 @@ class ChatComposerInputRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final (aiMode, canSend) = ref.watch(
-      composerControllerProvider.select((s) => (s.aiMode, s.canSend)),
+    final (aiMode, canSend, text) = ref.watch(
+      composerControllerProvider.select((s) => (s.aiMode, s.canSend, s.text)),
     );
     final notifier = ref.read(composerControllerProvider.notifier);
     final glass = context.glass;
@@ -37,43 +37,67 @@ class ChatComposerInputRow extends ConsumerWidget {
     // Cupertino overlays must use the alphabetic baseline reported by Text.
     final textStyle = Theme.of(context).textTheme.bodyLarge
         ?.copyWith(textBaseline: TextBaseline.alphabetic);
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.xs + AppSpacing.xs * progress,
-        AppSpacing.composerVertical,
-        AppSpacing.xs +
-            (AppSpacing.composerVertical - AppSpacing.xs) * progress,
-        AppSpacing.composerVertical,
-      ),
-      child: Row(
-        children: [
-          ChatComposerAttachment(external: false, keyboardOpen: keyboardOpen),
-          Expanded(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: maxEditorHeight),
-              child: CupertinoTextField(
-                controller: controller,
-                focusNode: focusNode,
-                onChanged: notifier.setText,
-                onTapOutside: (_) =>
-                    FocusManager.instance.primaryFocus?.unfocus(),
-                minLines: 1,
-                maxLines: 6,
-                keyboardType: TextInputType.multiline,
-                textAlignVertical: TextAlignVertical.center,
-                placeholder: aiMode ? t.chat.aiInputHint : t.chat.inputHint,
-                style: textStyle?.copyWith(color: glass.foreground),
-                placeholderStyle: textStyle?.copyWith(
-                  color: glass.foregroundMuted,
-                ),
-                padding: EdgeInsets.zero,
-                decoration: null,
+    return Listener(
+      behavior: HitTestBehavior.opaque,
+      onPointerDown: (_) => focusNode.requestFocus(),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.xs + AppSpacing.xs * progress,
+        ),
+        child: Row(
+          children: [
+            ChatComposerAttachment(external: false, keyboardOpen: keyboardOpen),
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final placeholder = aiMode
+                      ? t.chat.aiInputHint
+                      : t.chat.inputHint;
+                  final painter = TextPainter(
+                    text: TextSpan(
+                      text: text.isEmpty ? '' : text,
+                      style: textStyle,
+                    ),
+                    textDirection: Directionality.of(context),
+                    textScaler: MediaQuery.textScalerOf(context),
+                    maxLines: 6,
+                  )..layout(maxWidth: constraints.maxWidth);
+                  final multiline =
+                      text.isNotEmpty &&
+                      painter.computeLineMetrics().length > 1;
+                  return ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: AppSizes.minTouchTarget,
+                      maxHeight: maxEditorHeight,
+                    ),
+                    child: CupertinoTextField(
+                      controller: controller,
+                      focusNode: focusNode,
+                      onChanged: notifier.setText,
+                      onTapOutside: (_) =>
+                          FocusManager.instance.primaryFocus?.unfocus(),
+                      minLines: 1,
+                      maxLines: 6,
+                      keyboardType: TextInputType.multiline,
+                      textAlignVertical: TextAlignVertical.center,
+                      placeholder: placeholder,
+                      style: textStyle?.copyWith(color: glass.foreground),
+                      placeholderStyle: textStyle?.copyWith(
+                        color: glass.foregroundMuted,
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        vertical: multiline ? AppSpacing.composerVertical : 0,
+                      ),
+                      decoration: null,
+                    ),
+                  );
+                },
               ),
             ),
-          ),
-          const Gap(AppSpacing.xs),
-          ChatSendButton(enabled: canSend, onTap: notifier.send),
-        ],
+            const Gap(AppSpacing.xs),
+            ChatSendButton(enabled: canSend, onTap: notifier.send),
+          ],
+        ),
       ),
     );
   }

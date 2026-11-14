@@ -55,7 +55,7 @@ class ChatComposer extends HookConsumerWidget {
             ? 0
             : AppSizes.attachmentThumbnail + AppSpacing.xs);
     final maxInputHeight = (MediaQuery.sizeOf(context).height - reserved).clamp(
-      AppSizes.minTouchTarget + AppSpacing.composerVertical * 2,
+      AppSizes.minTouchTarget,
       double.infinity,
     );
 

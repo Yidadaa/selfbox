@@ -2,6 +2,10 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-14] [ComposerTest] Cupertino 字段几何断言编译失败、冗余 Material 导入告警、单行扩高且边缘点不到 -> 测试未显式导入 Cupertino，纵向留白放在整行并只由 EditableText 接收命中 -> 测试直接导入 Cupertino，输入留白仅按真实换行放入字段，单行固定 48dp，输入行命中区用 Pointer Listener 聚焦。
+
+- [2026-11-14] [ComposerLayoutTest] 键盘关闭时整个输入玻璃高度包含导航 Tab，不能直接等同文本行高度 -> 测试比较了不同层级的 bounds -> 单行等高断言比较 CupertinoTextField 与 ChatComposerInputRow，外层 glass 另测包含 Tab 的高度。
+
 - [2026-11-14] [PointerTest] pump 80ms 后原始事件仍无法识别双击 -> tester.tapAt 的 PointerEvent.timeStamp 默认恒为零 -> 依赖事件时戳的测试用 createGesture 显式传入测试时钟时间，长按/拖动也使用同一时间源。
 
 - [2026-11-14] [TimestampGesture] 列表双击使图片与按钮单击延迟、测试残留 Timer；404 路由触发 No element -> 父级双击 recognizer 等待手势裁决，错误路由匹配表可为空 -> 列表全域双击用无计时器 Pointer 观察并排除拖动/长按，最顶路由读取 lastOrNull。

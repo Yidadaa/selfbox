@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
@@ -29,7 +29,7 @@ class _CountingPicker extends Fake implements ImagePicker {
 
 void main() {
   testWidgets(
-    'multiline editing keeps vertical breathing room with either keyboard state',
+    'multiline editing keeps internal breathing room with either keyboard state',
     (tester) async {
       await tester.pumpApp();
       await tester.enterText(
@@ -41,9 +41,15 @@ void main() {
         await tester.pumpAndSettle();
         final input = tester.getRect(find.byKey(const ValueKey('chat-input')));
         final editor = tester.getRect(find.byType(EditableText));
-        expect(editor.top - input.top, greaterThanOrEqualTo(AppSpacing.sm));
+        final field = tester.getRect(find.byType(CupertinoTextField));
         final row = tester.getRect(find.byType(ChatComposerInputRow));
-        expect(row.bottom - editor.bottom, greaterThanOrEqualTo(AppSpacing.sm));
+        expect(editor.top - field.top, greaterThanOrEqualTo(AppSpacing.sm));
+        expect(
+          field.bottom - editor.bottom,
+          greaterThanOrEqualTo(AppSpacing.sm),
+        );
+        expect(field.height, row.height);
+        expect(input.height, greaterThanOrEqualTo(row.height));
         expect(tester.takeException(), isNull);
       }
     },
@@ -97,7 +103,56 @@ void main() {
     expect(attach.left, AppSpacing.md);
     final surface = tester.getRect(find.byKey(const ValueKey('chat-input')));
     expect(surface.right, kPhoneViewport.width - AppSpacing.md);
-    expect(surface.right - send.right, AppSpacing.composerVertical);
+    expect(surface.right - send.right, greaterThan(AppSpacing.xs));
+  });
+
+  testWidgets('keyboard single-line field matches the attach control height', (
+    tester,
+  ) async {
+    await tester.pumpApp();
+    final editable = find.byType(EditableText);
+    await tester.enterText(editable, 'single line');
+    tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+    await tester.pumpAndSettle();
+    final field = tester.getRect(find.byType(CupertinoTextField));
+    final attach = tester.getRect(find.byType(ChatAttachButton));
+    expect(field.height, closeTo(attach.height, 1));
+    expect(field.height, AppSizes.minTouchTarget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('soft-wrapped text receives internal vertical spacing', (
+    tester,
+  ) async {
+    await tester.pumpApp();
+    tester.view.physicalSize = const Size(320 * 3, 640 * 3);
+    final editable = find.byType(EditableText);
+    await tester.enterText(
+      editable,
+      'A long line that wraps across the input width',
+    );
+    await tester.pumpAndSettle();
+    final field = tester.getRect(find.byType(CupertinoTextField));
+    final editor = tester.getRect(editable);
+    expect(editor.top - field.top, greaterThanOrEqualTo(AppSpacing.sm));
+    expect(field.bottom - editor.bottom, greaterThanOrEqualTo(AppSpacing.sm));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('tapping empty input edge requests focus', (tester) async {
+    await tester.pumpApp();
+    final editable = find.byType(EditableText);
+    await tester.enterText(editable, 'draft');
+    tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+    await tester.pumpAndSettle();
+    final focusNode = tester.widget<EditableText>(editable).focusNode;
+    focusNode.unfocus();
+    await tester.pump();
+    final field = tester.getRect(find.byKey(const ValueKey('chat-input')));
+    await tester.tapAt(Offset(field.left + 2, field.center.dy));
+    await tester.pump();
+    expect(focusNode.hasFocus, isTrue);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets(

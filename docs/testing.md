@@ -76,3 +76,5 @@ UI 打磨覆盖补充见 [任务 66](tasks/66-ui-polish-and-settings-discoverabi
 首次引导覆盖见 [任务 68](tasks/68-first-run-onboarding.md)。`pumpApp(firstRun: true)` 使用首次启动状态，普通页面夹具默认标记引导已完成；纯 Provider 测试的 `testAppOverrides` 保持模型原始默认值。资料/记忆/完成标记失败及并发归属 Controller 测试；页面验证草稿保留、跳过、配置往返、系统返回和失败重试。280dp 大字键盘用例同时验证输入项与底部按钮可见，转场覆盖开启和关闭动画；`onboarding-*` 截图预热实际图片，并覆盖四步明暗主题和窄屏键盘。
 
 消息时间覆盖见 [任务 70](tasks/70-message-timestamps.md)：`message_timestamps_test.dart` 负责本地分钟邻接、日期边界和 AI 折叠规则；`date_labels_test.dart` 负责中英文秒级格式与 UTC 转本地；`chat_timestamps_test.dart` 验证真实聊天页双击、等待、新消息、删除、AI 标记以及保留分支的 Tab / push 往返重置。精确时间是页面会话状态，不写入偏好。
+
+Composer 输入几何覆盖见 [任务 71](tasks/71-composer-hit-area.md)：键盘单行输入框/加号等高及输入边缘聚焦由 `chat_composer_keyboard_test.dart` 验证；显式多行、窄屏软换行和内边距归属也在同文件覆盖；`chat_composer_placeholder_test.dart` 覆盖中英文、明暗及键盘态占位符和发送控件布局。
