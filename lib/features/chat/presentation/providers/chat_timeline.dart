@@ -8,10 +8,8 @@ part '../../../../gen/features/chat/presentation/providers/chat_timeline.freezed
 sealed class ChatTimelineItem with _$ChatTimelineItem {
   const factory ChatTimelineItem.message(Message message) = TimelineMessage;
 
-  const factory ChatTimelineItem.aiGroup({
-    required List<Message> messages,
-    required int groupCount,
-  }) = TimelineAiGroup;
+  const factory ChatTimelineItem.aiGroup({required List<Message> messages}) =
+      TimelineAiGroup;
 
   /// Calendar day (local midnight) that the messages after it belong to.
   const factory ChatTimelineItem.day(DateTime day) = TimelineDay;
@@ -30,8 +28,6 @@ List<ChatTimelineItem> buildChatTimeline(List<Message> newestFirst) {
     final day = _dayOf(message.createdAt.toLocal());
     if (message.askedAi || message.author == MessageAuthor.ai) {
       final messages = <Message>[];
-      var questions = 0;
-      var answers = 0;
       while (index < newestFirst.length) {
         final current = newestFirst[index];
         if (_dayOf(current.createdAt.toLocal()) != day ||
@@ -39,16 +35,9 @@ List<ChatTimelineItem> buildChatTimeline(List<Message> newestFirst) {
           break;
         }
         messages.add(current);
-        if (current.askedAi) questions++;
-        if (current.author == MessageAuthor.ai) answers++;
         index++;
       }
-      items.add(
-        ChatTimelineItem.aiGroup(
-          messages: messages,
-          groupCount: questions == 0 ? answers : questions,
-        ),
-      );
+      items.add(ChatTimelineItem.aiGroup(messages: messages));
     } else {
       items.add(ChatTimelineItem.message(message));
       index++;

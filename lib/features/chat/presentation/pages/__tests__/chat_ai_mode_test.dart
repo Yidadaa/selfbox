@@ -46,7 +46,10 @@ void main() {
       ],
     );
     final container = await tester.pumpApp(messages: messages);
-    final summary = t.chat.hiddenAiGroups(count: 2);
+    final summary = t.chat.collapsedDiscussions(
+      agentName: t.me.agentDefaultName,
+      count: 4,
+    );
 
     expect(find.text(summary), findsOneWidget);
     final collapsed = find.byKey(const ValueKey('hidden-ai-group'));
@@ -103,12 +106,22 @@ void main() {
         seed: [testMessage(1, 'question').copyWith(askedAi: true)],
       ),
     );
-    expect(find.text(t.chat.hiddenAiGroups(count: 1)), findsOneWidget);
+    expect(
+      find.text(
+        t.chat.collapsedDiscussions(agentName: t.me.agentDefaultName, count: 1),
+      ),
+      findsOneWidget,
+    );
     await tester.tap(find.byKey(const ValueKey('hidden-ai-group')));
     await tester.pump();
     expect(container.read(composerControllerProvider).aiMode, isTrue);
     expect(find.text('question'), findsOneWidget);
-    expect(find.text(t.chat.hiddenAiGroups(count: 1)), findsNothing);
+    expect(
+      find.text(
+        t.chat.collapsedDiscussions(agentName: t.me.agentDefaultName, count: 1),
+      ),
+      findsNothing,
+    );
   });
 
   testWidgets('puts my notes on the right and AI replies on the left', (

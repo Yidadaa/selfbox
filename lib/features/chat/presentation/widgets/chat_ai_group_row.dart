@@ -11,6 +11,7 @@ import '../../../../core/theme/message_tokens.dart';
 import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/widgets/pressable.dart';
 import '../../../../gen/i18n/strings.g.dart';
+import '../../../settings/presentation/providers/account_providers.dart';
 import '../../domain/models/message.dart';
 import '../providers/composer_controller.dart';
 import 'chat_timeline_message_row.dart';
@@ -18,14 +19,12 @@ import 'chat_timeline_message_row.dart';
 class ChatAiGroupRow extends ConsumerWidget {
   const ChatAiGroupRow({
     required this.messages,
-    required this.groupCount,
     required this.enteringIds,
     required this.onMessageEntered,
     super.key,
   });
 
   final List<Message> messages;
-  final int groupCount;
   final Set<int> enteringIds;
   final ValueChanged<int> onMessageEntered;
 
@@ -50,7 +49,7 @@ class ChatAiGroupRow extends ConsumerWidget {
           )
         : _HiddenAiGroup(
             key: const ValueKey('ai-group-hidden'),
-            count: groupCount,
+            count: messages.length,
             onTap: () =>
                 ref.read(composerControllerProvider.notifier).toggleAiMode(),
           );
@@ -78,16 +77,26 @@ class ChatAiGroupRow extends ConsumerWidget {
   }
 }
 
-class _HiddenAiGroup extends StatelessWidget {
+class _HiddenAiGroup extends ConsumerWidget {
   const _HiddenAiGroup({required this.count, required this.onTap, super.key});
 
   final int count;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final glass = context.glass;
-    final label = context.t.chat.hiddenAiGroups(count: count);
+    final name =
+        ref.watch(
+          userProfileProvider.select(
+            (value) => value.asData?.value.agentName.trim(),
+          ),
+        ) ??
+        '';
+    final label = context.t.chat.collapsedDiscussions(
+      agentName: name.isEmpty ? context.t.me.agentDefaultName : name,
+      count: count,
+    );
     return Align(
       alignment: Alignment.centerLeft,
       child: Padding(

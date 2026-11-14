@@ -19,7 +19,7 @@
     "removeImage": "Remove",
     "aiMode": "AI",
     "aiStandby": "AI ready",
-    "hiddenAiGroups": "Hidden {count} AI chats",
+    "collapsedDiscussions": "{agentName} collapsed {count} discussion messages",
     "openSettings": "Settings",
     "searchMessages": "Search messages",
     "searchHint": "Search your notes",

@@ -92,3 +92,5 @@ AI 渐变与引用块见 [任务 75](tasks/75-ai-gradient-quote-placeholder.md)�
 网页工具暂停见 [任务 76](tasks/76-disable-agent-web-tools.md)：`agent_tools_test.dart` 验证默认工具集合不暴露网页能力；`assistant_agent_test.dart` 检查首轮及多轮实际模型请求；`agent_prompt_test.dart` 锁定离线能力说明。`agent_web_tools_test.dart` 继续验证隔离的网页工具实现，但它不进入模型请求。
 
 AI 图标与模型数量见 [任务 77](tasks/77-ai-icon-and-model-count-polish.md)：AppIcons 契约检查指定 Hugeicons，页面测试检查实际入口接线；服务商数量覆盖中英文 0/1/5，模型流程覆盖添加后可用数减少、刷新目录后更新和 16dp 能力项间距。
+
+图片手势与聊天提示覆盖见 [任务 84](tasks/84-image-viewer-actions.md)：手势测试验证双指及先拖动后加第二指、双击复位、放大平移和长按无 Bottom Sheet。聊天测试覆盖两种作者总数、Agent 改名、默认名字、新增/删除后的计数、展开操作；搜索图标验证明暗主题中性灰。截图包括主图、缩放、搜索和六条讨论折叠摘要。

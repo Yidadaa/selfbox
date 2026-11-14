@@ -19,7 +19,7 @@
     "removeImage": "移除",
     "aiMode": "AI",
     "aiStandby": "AI 待命",
-    "hiddenAiGroups": "隐藏了 {count} 组消息",
+    "collapsedDiscussions": "{agentName}收起了 {count} 条讨论",
     "openSettings": "设置",
     "searchMessages": "搜索消息",
     "searchHint": "搜索消息记录",

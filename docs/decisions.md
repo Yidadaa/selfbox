@@ -482,3 +482,9 @@
 - **背景**：Dialog、Sheet 与内部按钮的普通圆弧和纯平填色，与项目 Liquid Glass 轮廓不统一。
 - **决策**：Dialog 直接使用 LiquidRoundedSuperellipse；Sheet 使用该库委托的同一 RoundedSuperellipseBorder，仅保留顶部圆角；按钮按外层 34dp 减 16dp 内边距得到 18dp 同心连续圆角。AppReliefTheme 集中不透明渐变、0.75dp 低对比度边框及扩散/接触阴影；AppModalSurface 和 showAppBottomSheet 统一两个 Dialog 与七类 Sheet。文字/图标按钮复用材质，保留 Material 语义、键盘焦点与状态，按压减弱凸起并缩放。
 - **影响**：替代 ADR-042 的无描边动作面和 ADR-060 的实色按钮外观。浮层无新增实时 blur / shader / 循环 ticker；背景保持不透明。主色高光单独限幅，明暗主题的正文与按钮所有渐变停止点均满足 4.5:1 对比度。组件库增加真实 Sheet 预览，页面主按钮与消息 Popover 继续各自既有视觉契约。用户确认截图效果后同意提交。
+
+### [ADR-075] 图片手势仲裁与折叠讨论计数
+
+- **背景**：PageView 与 InteractiveViewer 竞争双指缩放；折叠提示需显示 Agent 名字及用户和 AI 的消息总数。
+- **决策**：主图 scale recognizer 统一持有触摸，原比例单指直接更新有界页偏移，释放后按位移/速度吸附；多指中止分页，放大后平移。双击以触点为中心放大三倍，再次双击恢复完整适屏尺寸，遵从减少动态效果。图片查看器不提供长按操作面板。
+- **影响**：移除折叠模型的冗余 groupCount，直接使用当前分组 messages.length；日界线及普通消息继续分组，未回复提问和孤立 AI 回复各算一条。提示名响应 userProfileProvider，空名回退本地化默认名；中文为“{agentName}收起了 {count} 条讨论”，无末尾标点。搜索输入图标显式使用 foregroundMuted，明暗主题共享中性灰语义。未增加依赖、平台权限或存储结构变更。

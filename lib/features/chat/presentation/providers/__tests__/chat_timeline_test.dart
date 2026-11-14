@@ -12,8 +12,8 @@ Message _answer(int id, DateTime at) =>
 
 String _describe(ChatTimelineItem item) => switch (item) {
   TimelineMessage(:final message) => 'm${message.id}',
-  TimelineAiGroup(:final messages, :final groupCount) =>
-    'ai$groupCount:${messages.map((message) => message.id).join(',')}',
+  TimelineAiGroup(:final messages) =>
+    'ai${messages.length}:${messages.map((message) => message.id).join(',')}',
   TimelineDay(:final day) => 'd${day.month}/${day.day}',
 };
 
@@ -62,7 +62,7 @@ void main() {
       );
     });
 
-    test('combines adjacent AI exchanges and counts questions', () {
+    test('combines adjacent AI exchanges and counts both authors', () {
       final day = DateTime(2026, 11, 12, 10);
       final items = buildChatTimeline([
         _answer(6, day),
@@ -72,7 +72,7 @@ void main() {
         _m(2, day),
         _m(1, day),
       ]);
-      expect(items.map(_describe), ['ai2:6,5,4,3', 'm2', 'm1', 'd11/12']);
+      expect(items.map(_describe), ['ai4:6,5,4,3', 'm2', 'm1', 'd11/12']);
       final group = items.first as TimelineAiGroup;
       expect(() => group.messages.clear(), throwsUnsupportedError);
     });
@@ -86,7 +86,7 @@ void main() {
         _answer(2, day),
         _question(1, day),
       ]);
-      expect(items.map(_describe), ['ai1:5,4', 'm3', 'ai1:2,1', 'd11/12']);
+      expect(items.map(_describe), ['ai2:5,4', 'm3', 'ai2:2,1', 'd11/12']);
     });
 
     test('counts orphan answers and a pending question', () {

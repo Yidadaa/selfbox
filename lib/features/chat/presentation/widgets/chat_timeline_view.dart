@@ -248,14 +248,12 @@ class _TimelineList extends HookConsumerWidget {
                   entering: enteringIds.contains(message.id),
                   onEntered: () => onMessageEntered(message.id),
                 ),
-                TimelineAiGroup(:final messages, :final groupCount) =>
-                  ChatAiGroupRow(
-                    key: ValueKey<String>('ai-group-${messages.last.id}'),
-                    messages: messages,
-                    groupCount: groupCount,
-                    enteringIds: enteringIds,
-                    onMessageEntered: onMessageEntered,
-                  ),
+                TimelineAiGroup(:final messages) => ChatAiGroupRow(
+                  key: ValueKey<String>('ai-group-${messages.last.id}'),
+                  messages: messages,
+                  enteringIds: enteringIds,
+                  onMessageEntered: onMessageEntered,
+                ),
               },
       ),
     );

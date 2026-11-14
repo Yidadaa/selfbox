@@ -241,3 +241,8 @@
 - [2026-11-14] [ComposerRebuild] 下沉键盘进度后玻璃仍逐帧重建 -> MeasureSize 回传高度使 Shell 重建并重新创建 Dock -> 同时稳定 Dock 子树引用，使用逐帧 Widget identity 回归验证整条更新链。
 - [2026-11-14] [ComposerTestLint] 新测试同时导入 Cupertino 与 Material 触发 unnecessary_import -> Cupertino 已导出本测试所需全部类型 -> 按实际使用保留单一导入并复跑静态分析。
 - [2026-11-14] [ComposerScreenshot] 首张 AI 光晕截图缺少头像和欢迎插画 -> 截图夹具未等待磁盘图片解码 -> 光晕夹具显式 precacheImage 后再截取，与键盘夹具保持一致。
+
+- [2026-11-15] [ViewerGestures] 先单指翻页再落下第二指无法缩放 -> ScrollPosition.drag 让 Scrollable IgnorePointer，后续手指进不了主图 -> 主图统一持有 scale 手势，以有界 offset 更新分页；指针数变化取消分页并恢复起始页，回归必须覆盖后加第二指。
+- [2026-11-15] [ImageActions] 长按面板测试未弹出、截图等待超时 -> await 触觉反馈阻塞浮层；骨架期间真实文件 I/O 尚未推进 -> 触觉反馈不阻塞 UI，截图先固定推进过渡再 runAsync 完成元信息读取。
+- [2026-11-15] [WorktreeTools] 新 worktree 的 Dart/插件缓存写入失败 -> 外部目录没有宿主工具写入权限；移动目录保留旧 ACL -> 在已授权项目下新建独立 worktree，使用本地 PUB_CACHE 与 TEMP；不调整系统权限。
+- [2026-11-15] [PhotoPermissions] plist 批量字符串替换把相册键写进嵌套 dict -> 未限定根节点 -> 仅修改根字典，解析 plist 并检查差异；analyze 的冗余参数/导入、组件库新增高度后的点击位置均在回归中修正。

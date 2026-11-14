@@ -5,12 +5,37 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
+import 'package:selfbox/core/theme/app_glass_theme.dart';
+import 'package:selfbox/core/theme/app_icons.dart';
+import 'package:selfbox/core/widgets/app_icon.dart';
 import 'package:selfbox/features/chat/presentation/providers/message_search.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
 import 'chat_page_test_support.dart';
 
 void main() {
+  for (final brightness in Brightness.values) {
+    testWidgets(
+      'search field icon uses neutral theme foreground in $brightness',
+      (tester) async {
+        tester.platformDispatcher.platformBrightnessTestValue = brightness;
+        addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+        await tester.pumpApp();
+        await tester.tap(find.bySemanticsLabel(t.chat.searchMessages));
+        await tester.pumpAndSettle();
+        final input = find.byKey(const ValueKey('message-search-input'));
+        final icon = tester.widget<AppIcon>(
+          find.descendant(
+            of: input,
+            matching: find.byWidgetPredicate(
+              (w) => w is AppIcon && w.icon == AppIcons.search,
+            ),
+          ),
+        );
+        expect(icon.color, tester.element(input).glass.foregroundMuted);
+      },
+    );
+  }
   for (final (locale, prompt, emptyLabel) in [
     (AppLocale.en, 'Search your thoughts', 'No messages found'),
     (AppLocale.zhCn, '搜索你的碎碎念', '没有搜索到消息'),

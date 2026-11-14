@@ -7,6 +7,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/error/app_failure.dart';
 import '../../../../core/error/failure_message.dart';
+import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -47,7 +48,10 @@ class MessageSearchPage extends HookConsumerWidget {
               shape: const LiquidRoundedSuperellipse(
                 borderRadius: AppRadius.sm,
               ),
-              prefixIcon: const AppIcon(AppIcons.search),
+              prefixIcon: AppIcon(
+                AppIcons.search,
+                color: context.glass.foregroundMuted,
+              ),
               onChanged: (value) => query.value = value,
             ),
           ),

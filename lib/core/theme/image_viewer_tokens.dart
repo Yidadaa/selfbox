@@ -12,6 +12,8 @@ abstract final class ImageViewerTokens {
   static const thumbnailBorder = 2.0;
   static const thumbnailExtent = AppSizes.attachmentThumbnail + AppSpacing.xs;
   static const maxZoom = 5.0;
+  static const doubleTapZoom = 3.0;
+  static const zoomTolerance = 1.001;
 
   static const controlShadow = Shadow(
     color: canvas,
