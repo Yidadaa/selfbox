@@ -67,6 +67,14 @@ void main() {
       findsOneWidget,
     );
     expect(find.byKey(const ValueKey('thinking-viewport')), findsNothing);
+    await tester.pump();
+    final dot = find.byKey(const ValueKey('pending-dot-0'));
+    final before = tester.widget<Transform>(dot).transform.getTranslation().y;
+    await tester.pump(const Duration(milliseconds: 420));
+    expect(
+      tester.widget<Transform>(dot).transform.getTranslation().y,
+      isNot(before),
+    );
   });
   testWidgets(
     'pending dots stop without a ticker and resume when motion is enabled',
@@ -85,6 +93,14 @@ void main() {
         settle: false,
       );
       expect(tester.binding.hasScheduledFrame, isTrue);
+      await tester.pump();
+      final dot = find.byKey(const ValueKey('typing-dot-0'));
+      final before = tester.widget<Transform>(dot).transform.getTranslation().y;
+      await tester.pump(const Duration(milliseconds: 420));
+      expect(
+        tester.widget<Transform>(dot).transform.getTranslation().y,
+        isNot(before),
+      );
       disabled.value = true;
       await tester.pumpAndSettle();
       expect(tester.binding.hasScheduledFrame, isFalse);

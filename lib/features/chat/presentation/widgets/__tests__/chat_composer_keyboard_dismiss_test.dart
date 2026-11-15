@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/router/app_dock_tabs.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/theme/app_motion.dart';
-import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
@@ -83,29 +82,4 @@ void main() {
     );
     expect(tester.takeException(), isNull);
   });
-
-  testWidgets(
-    'small screen budgets multiline input during keyboard dismissal',
-    (tester) async {
-      await tester.pumpApp();
-      tester.view.physicalSize = const Size(320 * 3, 640 * 3);
-      final editable = find.byType(EditableText);
-      await tester.enterText(editable, 'one\ntwo\nthree\nfour\nfive\nsix');
-      tester.view.viewInsets = const FakeViewPadding(bottom: 900);
-      await tester.pumpAndSettle();
-      tester.widget<EditableText>(editable).focusNode.unfocus();
-      await tester.pump();
-      await tester.pump(AppMotion.fast);
-      expect(find.byType(AppDockTabs), findsOneWidget);
-      expect(
-        tester.getTopLeft(find.byType(ChatComposer)).dy,
-        greaterThanOrEqualTo(47 + AppSizes.appBarHeight),
-      );
-      expect(
-        tester.getBottomLeft(find.byType(ChatComposer)).dy,
-        closeTo(640 - 300 - AppSpacing.xs, 1),
-      );
-      expect(tester.takeException(), isNull);
-    },
-  );
 }

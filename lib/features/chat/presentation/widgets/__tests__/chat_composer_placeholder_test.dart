@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
-import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer_controls.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
@@ -29,27 +28,11 @@ void main() {
             final send = tester.getRect(find.byType(ChatSendButton));
             expect(placeholder.top, closeTo(input.top, 0.01));
             expect(placeholder.center.dy, closeTo(send.center.dy, 0.01));
-            if (keyboardOpen) {
-              expectSendInsets(tester);
-              final surface = tester.getRect(
-                find.byKey(const ValueKey('chat-input')),
-              );
-              final attach = tester.getRect(find.byType(ChatAttachButton));
-              expect(surface.height, AppSizes.minTouchTarget);
-              expect(surface.center.dy, closeTo(attach.center.dy, 0.01));
-            }
 
             await tester.enterText(editable, hint);
             await tester.pump();
             await tester.pump(const Duration(milliseconds: 600));
             expect(tester.getRect(editable), input);
-            if (keyboardOpen) {
-              expectSendInsets(tester);
-              expect(
-                tester.getSize(find.byKey(const ValueKey('chat-input'))).height,
-                AppSizes.minTouchTarget,
-              );
-            }
             expect(tester.widget<EditableText>(editable).controller.text, hint);
 
             await tester.enterText(editable, '');
@@ -86,29 +69,10 @@ void main() {
       tester.getBottomLeft(find.byType(ChatAttachButton)).dy,
       closeTo(expanded.bottom, 0.01),
     );
-    expect(
-      tester.getSize(find.byType(ChatSendButton)).height,
-      greaterThanOrEqualTo(AppSizes.minTouchTarget),
-    );
     await tester.enterText(editable, '');
     await tester.pumpAndSettle();
     expect(tester.getRect(surface), initial);
     expect(tester.widget<EditableText>(editable).focusNode.hasFocus, isTrue);
     expect(tester.takeException(), isNull);
   });
-}
-
-void expectSendInsets(WidgetTester tester) {
-  final surface = tester.getRect(find.byKey(const ValueKey('chat-input')));
-  final send = find.byType(ChatSendButton);
-  final circle = tester.getRect(
-    find.descendant(of: send, matching: find.byType(AnimatedContainer)),
-  );
-  final topInset = circle.top - surface.top;
-  expect(topInset, greaterThan(0));
-  expect(surface.bottom - circle.bottom, closeTo(topInset, 0.01));
-  expect(surface.right - circle.right, closeTo(topInset, 0.01));
-  final hitTarget = tester.getSize(send);
-  expect(hitTarget.width, greaterThanOrEqualTo(AppSizes.minTouchTarget));
-  expect(hitTarget.height, greaterThanOrEqualTo(AppSizes.minTouchTarget));
 }

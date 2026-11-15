@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
@@ -12,6 +11,7 @@ import 'package:selfbox/core/testing/temp_storage.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/message_tokens.dart';
+import 'package:selfbox/core/widgets/app_artwork.dart';
 import 'package:selfbox/core/widgets/app_icon.dart';
 import 'package:selfbox/features/chat/presentation/pages/image_viewer_page.dart';
 import 'package:selfbox/features/chat/presentation/providers/message_search.dart';
@@ -121,11 +121,11 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text(prompt), findsOneWidget);
         expect(
-          find.ancestor(
-            of: find.text(prompt),
-            matching: find.byType(GlassContainer),
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is AppArtwork && widget.artwork == BrandArt.search,
           ),
-          findsNothing,
+          findsOneWidget,
         );
 
         await tester.enterText(
@@ -143,13 +143,6 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text(t.chat.noSearchResults), findsOneWidget);
         expect(find.text(emptyLabel), findsOneWidget);
-        expect(
-          find.ancestor(
-            of: find.text(t.chat.noSearchResults),
-            matching: find.byType(GlassContainer),
-          ),
-          findsNothing,
-        );
       },
     );
   }

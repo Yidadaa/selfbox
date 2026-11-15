@@ -74,7 +74,7 @@ void main() {
           await tester.longPressAt(wordPosition);
           await tester.pump(const Duration(milliseconds: 600));
           expect(find.byType(AppActionPopover), findsOneWidget);
-          expect(find.byType(Dialog), findsNothing);
+
           expect(find.text(t.common.selectText), findsOneWidget);
           expect(find.text(t.common.selectAll), findsNothing);
           await tester.tap(find.text(t.common.selectText));

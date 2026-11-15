@@ -4,8 +4,6 @@ import 'package:fpdart/fpdart.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
-import 'package:selfbox/core/testing/icon_finder.dart';
-import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
 import 'package:selfbox/core/widgets/app_list_tile.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
@@ -72,9 +70,6 @@ void main() {
           controls.every((control) => control.quality == GlassQuality.standard),
           isTrue,
         );
-        expect(find.byType(GlassSwitch), findsNothing);
-        expect(findAppIcon(AppIcons.unchecked), findsOneWidget);
-        expect(findAppIcon(AppIcons.checked), findsOneWidget);
         final iconButtons = tester
             .widgetList<GlassIconButton>(find.byType(GlassIconButton))
             .toList(growable: false);
@@ -101,11 +96,6 @@ void main() {
 
       final empty = find.text(t.settings.provider.noAddedModels);
       expect(empty, findsOneWidget);
-      expect(find.text('Add model (0 available)'), findsOneWidget);
-      expect(
-        find.ancestor(of: empty, matching: find.byType(GlassGroupedSection)),
-        findsNothing,
-      );
     });
 
     testWidgets('a new provider needs a name and an API key', (tester) async {
@@ -197,7 +187,6 @@ void main() {
         expect(find.text('model-a'), findsNothing);
         expect(find.byKey(const ValueKey('add-model-button')), findsOneWidget);
         expect(find.byType(ProviderPage), findsOneWidget);
-        expect(find.text('Add model (2 available)'), findsOneWidget);
         await settleSettingsToasts(tester);
         catalog.result = const Right(['model-a', 'model-b', 'model-c']);
         final fetch = find.byKey(const ValueKey('fetch-models-button'));

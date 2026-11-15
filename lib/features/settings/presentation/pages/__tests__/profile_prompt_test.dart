@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fpdart/fpdart.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
@@ -111,25 +109,6 @@ void main() {
       expect(settings.current.customPrompt, '');
     });
   }
-  testWidgets('failed save preserves draft and retries', (tester) async {
-    final settings = _FailingSettings();
-    await openSettingsPage(tester, '/me/profile', settings: settings);
-    await tester.enterText(find.byType(EditableText).last, 'Keep this draft');
-    await tester.tap(find.text(t.common.save));
-    await settleSettingsToasts(tester);
-    expect(settings.current.customPrompt, '');
-    expect(
-      tester
-          .widget<EditableText>(find.byType(EditableText).last)
-          .controller
-          .text,
-      'Keep this draft',
-    );
-    settings.failSave = false;
-    await tester.tap(find.text(t.common.save));
-    await settleSettingsToasts(tester);
-    expect(settings.current.customPrompt, 'Keep this draft');
-  });
   testWidgets('narrow keyboard layout scrolls to save and validates length', (
     tester,
   ) async {
@@ -154,12 +133,4 @@ void main() {
     expect(settings.current.customPrompt, '');
     expect(tester.takeException(), isNull);
   });
-}
-
-class _FailingSettings extends FakeAiSettingsRepository {
-  bool failSave = true;
-  @override
-  TaskEither<AppFailure, Unit> save(AiSettings settings) => failSave
-      ? TaskEither.left(const AppFailure.database(message: 'disk full'))
-      : super.save(settings);
 }

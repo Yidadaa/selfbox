@@ -113,10 +113,8 @@ void main() {
     },
   );
 
-  test('reading is available while search stays isolated', () {
+  test('isolated web suite exposes search and reading', () {
     final tools = _tools(FakeWebResearchRepository());
-    expect(tools.build(), isNot(contains('web_search')));
-    expect(tools.build(), contains('web_read'));
     expect(tools.buildWebTools().keys, containsAll(['web_search', 'web_read']));
   });
 }

@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/theme/app_effects.dart';
-import 'package:selfbox/core/widgets/ai_composer_glow.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 void main() {
@@ -30,7 +29,7 @@ void main() {
       );
     });
   }
-  testWidgets('disabling motion stops active glow and skeleton loops', (
+  testWidgets('disabling motion stops and restarts the skeleton loop', (
     tester,
   ) async {
     final enabled = ValueNotifier(true);
@@ -43,16 +42,7 @@ void main() {
           animationsEnabled: value,
           child: child!,
         ),
-        child: const Column(
-          children: [
-            AiComposerGlow(
-              active: true,
-              shape: LiquidRoundedSuperellipse(borderRadius: 24),
-              child: SizedBox(width: 300, height: 100),
-            ),
-            Skeletonizer(child: Text('Loading')),
-          ],
-        ),
+        child: const Skeletonizer(child: Text('Loading')),
       ),
       settle: false,
     );
@@ -60,10 +50,6 @@ void main() {
     enabled.value = false;
     await tester.pumpAndSettle();
     expect(tester.binding.hasScheduledFrame, isFalse);
-    expect(
-      tester.widget<AiComposerGlow>(find.byType(AiComposerGlow)).active,
-      isTrue,
-    );
     enabled.value = true;
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));

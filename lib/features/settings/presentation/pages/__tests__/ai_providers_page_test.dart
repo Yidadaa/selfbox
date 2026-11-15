@@ -5,8 +5,6 @@ import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/core/testing/icon_finder.dart';
-import 'package:selfbox/core/theme/app_dialog_tokens.dart';
-import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/widgets/app_list_tile.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
@@ -121,9 +119,6 @@ void main() {
       await tester.tap(find.text(t.settings.activeModel));
       await tester.pumpAndSettle();
 
-      final sheet = tester.widget<BottomSheet>(find.byType(BottomSheet));
-      expect(sheet.backgroundColor, Colors.white);
-      expect(sheet.shape, AppDialogTokens.sheetShape);
       final picker = tester.widget<CupertinoPicker>(
         find.byKey(const ValueKey('model-picker')),
       );
@@ -186,54 +181,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(BottomSheet), findsNothing);
-    });
-
-    testWidgets('model and memory sheets use dark opaque surfaces', (
-      tester,
-    ) async {
-      tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
-      addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
-      await openSettingsPage(
-        tester,
-        '/me/providers',
-        settings: FakeAiSettingsRepository(
-          settings: const AiSettings(
-            providers: [testProvider],
-            models: [
-              ModelConfig(providerId: 'p1', modelId: 'model-a', enabled: true),
-            ],
-          ),
-        ),
-      );
-
-      for (final (label, key, cancel) in [
-        (
-          t.settings.activeModel,
-          const ValueKey('model-picker'),
-          find.text(t.common.cancel),
-        ),
-        (
-          t.settings.shortTermMemory,
-          const ValueKey('short-term-memory-slider'),
-          find.text(t.common.cancel),
-        ),
-      ]) {
-        await tester.tap(find.text(label));
-        await tester.pumpAndSettle();
-        final sheet = tester.widget<BottomSheet>(find.byType(BottomSheet));
-        expect(sheet.backgroundColor, AppGlassTheme.dark.bubbleOther);
-        expect(sheet.backgroundColor!.computeLuminance(), lessThan(0.15));
-        expect(find.byKey(key), findsOneWidget);
-        final title = tester.widget<Text>(
-          find.descendant(
-            of: find.byType(BottomSheet),
-            matching: find.text(label),
-          ),
-        );
-        expect(title.style?.color, AppGlassTheme.dark.onBubbleOther);
-        await tester.tap(cancel);
-        await tester.pumpAndSettle();
-      }
     });
   });
 }

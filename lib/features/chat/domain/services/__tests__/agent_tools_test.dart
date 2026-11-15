@@ -89,8 +89,6 @@ void main() {
         'memory_patch',
         'memory_delete',
       ]);
-      expect(_env().tools.build(), isNot(contains('web_search')));
-      expect(_env().tools.build(), contains('web_read'));
     });
 
     test('omits view_image for models without vision', () {

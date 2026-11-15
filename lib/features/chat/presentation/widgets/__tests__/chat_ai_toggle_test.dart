@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/icon_finder.dart';
 import 'package:selfbox/core/theme/app_icons.dart';
@@ -15,8 +14,7 @@ void main() {
         'AI label crossfades and resizes smoothly in $brightness/${locale.name}',
         (tester) async {
           final active = ValueNotifier(false);
-          expect(AppIcons.aiMode, HugeIcons.strokeRoundedPawPrint);
-          expect(AppIcons.ai, HugeIcons.strokeRoundedAiSparkles);
+
           addTearDown(active.dispose);
           await tester.pumpPage(
             Align(

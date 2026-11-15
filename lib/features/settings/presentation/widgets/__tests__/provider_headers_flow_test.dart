@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
-import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
@@ -67,10 +66,6 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('edit-provider-headers')));
     await tester.pumpAndSettle();
     final sheet = find.byKey(const ValueKey('provider-headers-sheet'));
-    expect(
-      tester.widget<BottomSheet>(find.byType(BottomSheet)).backgroundColor,
-      AppGlassTheme.light.bubbleOther,
-    );
     await tester.tap(find.byKey(const ValueKey('remove-provider-header-1')));
     await tester.pumpAndSettle();
     expect(

@@ -1,13 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/router/app_dock_tabs.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_app_preferences_repository.dart';
-import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 import 'package:selfbox/features/settings/presentation/pages/general_page.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
@@ -215,25 +213,5 @@ void main() {
     );
     await tester.pump(const Duration(seconds: 4));
     await tester.pumpAndSettle();
-  });
-
-  testWidgets('picker sheet follows the dark surface tokens', (tester) async {
-    tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
-    addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
-    final container = await tester.pumpApp();
-    container.read(appRouterProvider).go('/me/general');
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text(t.general.theme));
-    await tester.pumpAndSettle();
-    final sheet = tester.widget<BottomSheet>(find.byType(BottomSheet));
-    expect(sheet.backgroundColor, AppGlassTheme.dark.bubbleOther);
-    expect(find.byKey(const ValueKey('theme-picker')), findsOneWidget);
-    expect(
-      tester
-          .widget<GlassGroupedSection>(find.byType(GlassGroupedSection).first)
-          .quality,
-      GlassQuality.standard,
-    );
   });
 }

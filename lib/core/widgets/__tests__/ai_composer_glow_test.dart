@@ -11,26 +11,22 @@ const _observationPeriod = Duration(seconds: 12);
 const _capture = ValueKey('glow-capture');
 const _shape = LiquidRoundedSuperellipse(borderRadius: 36);
 
-Widget _fixture({required bool active, bool reduceMotion = false}) =>
-    MediaQuery(
-      data: MediaQueryData(disableAnimations: reduceMotion),
-      child: Center(
-        child: RepaintBoundary(
-          key: _capture,
-          child: ColoredBox(
-            color: const Color(0xFFF0EFF4),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: AiComposerGlow(
-                active: active,
-                shape: _shape,
-                child: const SizedBox(width: 320, height: 128),
-              ),
-            ),
-          ),
+Widget _fixture({required bool active}) => Center(
+  child: RepaintBoundary(
+    key: _capture,
+    child: ColoredBox(
+      color: const Color(0xFFF0EFF4),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: AiComposerGlow(
+          active: active,
+          shape: _shape,
+          child: const SizedBox(width: 320, height: 128),
         ),
       ),
-    );
+    ),
+  ),
+);
 
 Future<Uint8List> _pixels(WidgetTester tester) async {
   final boundary = tester.renderObject<RenderRepaintBoundary>(
@@ -110,13 +106,8 @@ void main() {
     await tester.pumpPage(_fixture(active: true), settle: false);
     final bounds = tester.getRect(find.byType(AiComposerGlow));
     final first = await _pixels(tester);
-    await tester.pump(_observationPeriod ~/ 4);
-    final second = await _pixels(tester);
-    expect(second, orderedEquals(first));
-    await tester.pump(_observationPeriod * 2);
-    await tester.pump(_observationPeriod ~/ 4);
-    final third = await _pixels(tester);
-    expect(third, orderedEquals(second));
+    await tester.pump(_observationPeriod);
+    expect(await _pixels(tester), orderedEquals(first));
     expect(tester.binding.hasScheduledFrame, isFalse);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
     await tester.pump(const Duration(seconds: 30));
@@ -130,18 +121,13 @@ void main() {
     expect(tester.binding.hasScheduledFrame, isFalse);
   });
 
-  testWidgets('reduced motion keeps a static glow without an active ticker', (
-    tester,
-  ) async {
-    await tester.pumpPage(_fixture(active: true, reduceMotion: true));
-    final first = await _pixels(tester);
-    await tester.pump(_observationPeriod);
-    expect(await _pixels(tester), orderedEquals(first));
-    expect(tester.binding.hasScheduledFrame, isFalse);
-  });
-
-  for (final height in [48.0, 128.0]) {
-    testWidgets('warm light stays visible throughout the $height dp loop', (
+  for (final (brightness, height) in [
+    (Brightness.light, 48.0),
+    (Brightness.light, 128.0),
+    (Brightness.dark, 48.0),
+    (Brightness.dark, 128.0),
+  ]) {
+    testWidgets('static coral stays visible in $brightness at $height dp', (
       tester,
     ) async {
       await tester.pumpPage(
@@ -158,28 +144,25 @@ void main() {
             ),
           ),
         ),
-        brightness: Brightness.light,
+        brightness: brightness,
         settle: false,
       );
-      for (var phase = 0; phase < 16; phase++) {
-        final pixels = await _pixels(tester);
-        var warmPixels = 0;
-        for (var y = 12; y < height - 12; y++) {
-          for (var x = 32; x < 112; x++) {
-            final offset = (y * 320 + x) * 4;
-            if (pixels[offset] > pixels[offset + 1] + 3 &&
-                pixels[offset] > pixels[offset + 2] + 3) {
-              warmPixels++;
-            }
+      final pixels = await _pixels(tester);
+      var warmPixels = 0;
+      for (var y = 12; y < height - 12; y++) {
+        for (var x = 32; x < 112; x++) {
+          final offset = (y * 320 + x) * 4;
+          if (pixels[offset] > pixels[offset + 1] + 3 &&
+              pixels[offset] > pixels[offset + 2] + 3) {
+            warmPixels++;
           }
         }
-        expect(
-          warmPixels,
-          greaterThan(120),
-          reason: 'Missing coral at phase $phase',
-        );
-        await tester.pump(_observationPeriod ~/ 16);
       }
+      expect(
+        warmPixels,
+        greaterThan(120),
+        reason: 'Missing coral in $brightness at $height dp',
+      );
     });
   }
 }

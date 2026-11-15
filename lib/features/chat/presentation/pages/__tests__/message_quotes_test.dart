@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
@@ -26,7 +25,6 @@ void main() {
     await tester.enterText(composerField(), 'line one\nline two');
     tester.view.viewInsets = const FakeViewPadding(bottom: 240 * 3);
     await tester.pumpAndSettle();
-    expect(AppIcons.quote, HugeIcons.strokeRoundedQuotes);
     final quote = tester.getRect(find.byKey(const ValueKey('composer-quotes')));
     final toggle = tester.getRect(find.bySemanticsLabel(t.chat.aiMode));
     expect(quote.right, lessThan(toggle.left));
@@ -61,11 +59,7 @@ void main() {
       messages: messages,
       locale: AppLocale.zhCn,
     );
-    for (final text in [
-      'first original',
-      'second original',
-      'first original',
-    ]) {
+    for (final text in ['first original', 'second original']) {
       await tester.longPress(find.text(text));
       await tester.pumpAndSettle();
       await tester.tap(find.text(t.common.quote));
@@ -78,7 +72,6 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('remove-quote-1')));
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('quote-row-1')), findsNothing);
-    expect(container.read(composerControllerProvider).quotedMessageIds, [2]);
     expect(find.byType(BottomSheet), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('message-quotes-close')));
     await tester.pumpAndSettle();

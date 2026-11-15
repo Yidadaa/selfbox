@@ -1,11 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/widgets/app_action_button.dart';
 import 'package:selfbox/core/widgets/app_artwork.dart';
 import 'package:selfbox/core/widgets/empty_state.dart';
 
 void main() {
+  group('EmptyState', () {
+    testWidgets('shows centered small text without a card or icon', (
+      tester,
+    ) async {
+      await tester.pumpPage(const EmptyState(label: 'Empty'));
+
+      final label = find.text('Empty');
+      expect(tester.getCenter(label).dx, closeTo(kPhoneViewport.width / 2, 1));
+      expect(tester.getCenter(label).dy, closeTo(kPhoneViewport.height / 2, 1));
+      expect(find.byType(Icon), findsNothing);
+      expect(
+        find.ancestor(of: label, matching: find.byType(GlassContainer)),
+        findsNothing,
+      );
+      expect(
+        tester.widget<Text>(label).style?.fontSize,
+        Theme.of(tester.element(label)).textTheme.bodySmall?.fontSize,
+      );
+    });
+
+    testWidgets('keeps an error action below the plain label', (tester) async {
+      await tester.pumpPage(
+        const EmptyState(label: 'Empty', action: Text('Retry')),
+      );
+
+      expect(find.text('Retry'), findsOneWidget);
+      expect(
+        tester.getTopLeft(find.text('Retry')).dy,
+        greaterThan(tester.getBottomLeft(find.text('Empty')).dy),
+      );
+      expect(
+        find.ancestor(
+          of: find.text('Empty'),
+          matching: find.byType(GlassContainer),
+        ),
+        findsNothing,
+      );
+    });
+  });
+
   for (final brightness in Brightness.values) {
     testWidgets(
       'illustrated states adapt to short screens in ${brightness.name}',

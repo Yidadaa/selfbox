@@ -215,6 +215,17 @@ void main() {
       await _ctrl(env).ask(_question);
       _ctrl(env).dismiss();
       expect(env.states.last, const AssistantState.idle());
+
+      final running = _env([
+        [scriptedText('completed')],
+      ]);
+      final pending = _ctrl(running).ask(_question);
+      expect(running.states.last, isA<AssistantWorking>());
+      final working = running.states.last;
+      _ctrl(running).dismiss();
+      expect(running.states.last, working);
+      await pending;
+      expect(running.messages.added.last.text, 'completed');
     });
 
     test('a newer question supersedes the running one', () async {

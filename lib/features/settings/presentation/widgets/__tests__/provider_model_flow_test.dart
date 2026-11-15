@@ -6,7 +6,6 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/core/testing/icon_finder.dart';
-import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/core/widgets/app_confirm_dialog.dart';
@@ -64,8 +63,6 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('add-model-button')));
     await tester.pumpAndSettle();
-    final sheet = tester.widget<BottomSheet>(find.byType(BottomSheet));
-    expect(sheet.backgroundColor, AppGlassTheme.light.bubbleOther);
     final height = tester
         .getSize(find.byKey(const ValueKey('model-chooser')))
         .height;
@@ -168,35 +165,6 @@ void main() {
     expect(
       tester.getBottomRight(find.byKey(const ValueKey('model-chooser'))).dy,
       lessThanOrEqualTo(640),
-    );
-  });
-
-  testWidgets('selection and settings sheets follow dark surfaces', (
-    tester,
-  ) async {
-    tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
-    addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
-    final settings = _withModels(const [
-      ModelConfig(providerId: 'p1', modelId: 'gpt-x', enabled: true),
-      ModelConfig(providerId: 'p1', modelId: 'gpt-y'),
-    ]);
-    await openSettingsPage(tester, '/me/provider?id=p1', settings: settings);
-
-    await tester.ensureVisible(find.byKey(const ValueKey('add-model-button')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('add-model-button')));
-    await tester.pumpAndSettle();
-    expect(
-      tester.widget<BottomSheet>(find.byType(BottomSheet)).backgroundColor,
-      AppGlassTheme.dark.bubbleOther,
-    );
-    await tester.tap(find.byKey(const ValueKey('cancel-model-selection')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('model-open-gpt-x')));
-    await tester.pumpAndSettle();
-    expect(
-      tester.widget<BottomSheet>(find.byType(BottomSheet)).backgroundColor,
-      AppGlassTheme.dark.bubbleOther,
     );
   });
 

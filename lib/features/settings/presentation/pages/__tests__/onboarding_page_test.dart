@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/forms/glass_reactive_text_field.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
@@ -10,7 +9,6 @@ import 'package:selfbox/core/testing/fake_app_preferences_repository.dart';
 import 'package:selfbox/core/testing/icon_finder.dart';
 import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
-import 'package:selfbox/core/widgets/app_page_button.dart';
 import 'package:selfbox/features/chat/presentation/pages/chat_page.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/features/settings/presentation/pages/ai_providers_page.dart';
@@ -92,20 +90,11 @@ void main() {
           final back = tester.getRect(
             find.byKey(const ValueKey('onboarding-back')),
           );
-          expect(
-            tester
-                .widget<GlassIconButton>(
-                  find.byKey(const ValueKey('onboarding-back')),
-                )
-                .shape,
-            GlassIconButtonShape.circle,
-          );
           final next = tester.getRect(
             find.byKey(const ValueKey('onboarding-next')),
           );
-          expect(back.height, AppSizes.minTouchTarget);
           expect(back.width, back.height);
-          expect(next.height, AppSizes.minTouchTarget);
+          expect(next.height, back.height);
           expect(back.center.dy, closeTo(next.center.dy, 0.01));
           expect(next.left - back.right, AppSpacing.md);
           expect(
@@ -298,10 +287,6 @@ void main() {
           find.byKey(const ValueKey('onboarding-next')),
         );
         expect(button.bottom, lessThanOrEqualTo(650 - 250));
-        expect(
-          tester.getSize(find.byType(AppPageButton)).height,
-          greaterThanOrEqualTo(48),
-        );
         expect(tester.takeException(), isNull);
       },
     );

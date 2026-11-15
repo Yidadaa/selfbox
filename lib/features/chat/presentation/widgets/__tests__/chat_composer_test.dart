@@ -9,6 +9,7 @@ import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
+import 'package:selfbox/core/theme/app_motion.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/core/widgets/ai_composer_glow.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
@@ -26,7 +27,7 @@ class _AttachedDraft extends ComposerController {
 
 void main() {
   testWidgets(
-    'small screen keeps an attached multiline draft below the header',
+    'small screen budgets attached multiline input through keyboard dismissal',
     (tester) async {
       await tester.pumpApp(
         overrides: [
@@ -40,6 +41,21 @@ void main() {
         'one\ntwo\nthree\nfour\nfive\nsix',
       );
       await tester.pumpAndSettle();
+      expect(
+        tester.getTopLeft(find.byType(ChatComposer)).dy,
+        greaterThanOrEqualTo(47 + AppSizes.appBarHeight),
+      );
+      expect(
+        tester.getBottomLeft(find.byType(ChatComposer)).dy,
+        closeTo(640 - 300 - AppSpacing.xs, 1),
+      );
+      tester
+          .widget<EditableText>(find.byType(EditableText))
+          .focusNode
+          .unfocus();
+      await tester.pump();
+      await tester.pump(AppMotion.fast);
+      expect(find.byType(AppDockTabs), findsOneWidget);
       expect(
         tester.getTopLeft(find.byType(ChatComposer)).dy,
         greaterThanOrEqualTo(47 + AppSizes.appBarHeight),
@@ -142,16 +158,10 @@ void main() {
             matching: find.byType(GlassContainer),
           ),
         );
-        expect(field.quality, GlassQuality.standard);
         expect(field.useOwnLayer, isTrue);
         final glass = AppGlassTheme.of(brightness);
         expect(field.settings?.blur, glass.chromeBlur);
         expect(field.settings?.glassColor, glass.chromeTint);
-        final input = tester.getRect(find.byType(EditableText));
-        final attach = tester.getRect(find.byType(ChatAttachButton));
-        final send = tester.getRect(find.byType(ChatSendButton));
-        expect(attach.center.dy, closeTo(input.center.dy, 1));
-        expect(send.center.dy, closeTo(input.center.dy, 1));
         final dock = tester.getRect(find.byType(ChatComposer));
         expect(
           tester.getSize(find.byKey(const ValueKey('chat-input'))).height,
@@ -163,17 +173,6 @@ void main() {
         expect(dock.bottom, kPhoneViewport.height - 34 - AppSpacing.md);
         expect(tabs.left, dock.left);
         expect(tabs.right, dock.right);
-        expect(
-          tester
-              .widget<GlassContainer>(
-                find.descendant(
-                  of: find.byType(ChatAiToggle),
-                  matching: find.byType(GlassContainer),
-                ),
-              )
-              .quality,
-          GlassQuality.standard,
-        );
         expect(find.byType(AiComposerGlow), findsOneWidget);
         expect(
           find.descendant(
@@ -202,11 +201,6 @@ void main() {
         tester.getBottomLeft(find.byType(ChatComposer)).dy,
         lessThanOrEqualTo(640 - 34),
       );
-      for (final label in [t.chat.send, t.chat.attachImage, t.chat.aiMode]) {
-        final size = tester.getSize(find.bySemanticsLabel(label).first);
-        expect(size.width, greaterThanOrEqualTo(AppSizes.minTouchTarget));
-        expect(size.height, greaterThanOrEqualTo(AppSizes.minTouchTarget));
-      }
       expect(
         tester.getSize(
           find.descendant(

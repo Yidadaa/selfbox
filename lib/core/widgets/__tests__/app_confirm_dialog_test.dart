@@ -31,9 +31,6 @@ void main() {
         tester.widget<Text>(find.text('Delete everything?')).style?.color,
         glass.onBubbleOther,
       );
-      if (brightness == Brightness.dark) {
-        expect(dialog.backgroundColor!.computeLuminance(), lessThan(0.15));
-      }
       expect(dialog.shape, AppDialogTokens.dialogShape);
       final surface = tester.getRect(
         find
@@ -66,36 +63,6 @@ void main() {
       expect(secondary.left - surface.left, 16);
       expect(surface.right - primary.right, 16);
       expect(surface.bottom - primary.bottom, 16);
-      final secondaryButton = tester.widget<TextButton>(
-        find.ancestor(
-          of: find.text('Cancel'),
-          matching: find.byType(TextButton),
-        ),
-      );
-      final primaryButton = tester.widget<TextButton>(
-        find.ancestor(
-          of: find.text('Delete'),
-          matching: find.byType(TextButton),
-        ),
-      );
-      expect(
-        secondaryButton.style?.shape?.resolve({}),
-        AppDialogTokens.actionShape,
-      );
-      expect(
-        primaryButton.style?.shape?.resolve({}),
-        AppDialogTokens.actionShape,
-      );
-      expect(
-        secondaryButton.style?.backgroundColor?.resolve({}),
-        glass.dialogActionFill,
-      );
-      expect(
-        primaryButton.style?.backgroundColor?.resolve({}),
-        glass.dialogDestructiveFill,
-      );
-      expect(secondaryButton.style?.side?.resolve({}), isA<BorderSide>());
-      expect(primaryButton.style?.side?.resolve({}), isA<BorderSide>());
     });
   }
 
@@ -200,10 +167,6 @@ void main() {
       expect(cancel.top - delete.bottom, 8);
       expect(copy.width, delete.width);
       expect(delete.width, cancel.width);
-      expect(
-        DefaultTextStyle.of(tester.element(find.text('Delete'))).style.color,
-        AppGlassTheme.of(brightness).dialogDestructive,
-      );
 
       await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();

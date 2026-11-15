@@ -115,29 +115,8 @@ void main() {
             AppRenderQuality.standard => GlassQuality.standard,
             AppRenderQuality.premium => GlassQuality.premium,
           };
-          final contentQuality = quality == AppRenderQuality.minimal
-              ? GlassQuality.minimal
-              : GlassQuality.standard;
           expect(
             GlassAdaptiveScopeData.of(context).effectiveQuality,
-            expectedQuality,
-          );
-          expect(
-            GlassThemeData.of(context).qualityFor(context),
-            contentQuality,
-          );
-          expect(
-            tester
-                .widgetList<GlassGroupedSection>(
-                  find.byType(GlassGroupedSection),
-                )
-                .every((section) => section.quality == contentQuality),
-            isTrue,
-          );
-          expect(
-            tester
-                .widget<GlassIconButton>(find.byType(GlassIconButton))
-                .quality,
             expectedQuality,
           );
         }
@@ -146,7 +125,6 @@ void main() {
         expect(repository.current.animationsEnabled, isFalse);
         final context = tester.element(find.byType(GeneralPage));
         expect(MediaQuery.disableAnimationsOf(context), isTrue);
-        expect(GlassAccessibilityData.of(context).reduceMotion, isTrue);
         await tester.tap(find.byKey(const ValueKey('animations-switch')));
         await tester.pumpAndSettle();
         expect(repository.current.animationsEnabled, isTrue);

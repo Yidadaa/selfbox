@@ -64,20 +64,6 @@ void main() {
       expect(find.byType(AssistantStatusBubble), findsOneWidget);
       expect(find.text(t.assistant.searching), findsOneWidget);
       expect(find.text(t.assistant.thinking), findsNothing);
-      for (var index = 0; index < 3; index++) {
-        expect(find.byKey(ValueKey('pending-dot-$index')), findsOneWidget);
-      }
-      final pendingDot = find.byKey(const ValueKey('pending-dot-0'));
-      final initialOffset = tester
-          .widget<Transform>(pendingDot)
-          .transform
-          .getTranslation()
-          .y;
-      await tester.pump(const Duration(milliseconds: 100));
-      expect(
-        tester.widget<Transform>(pendingDot).transform.getTranslation().y,
-        isNot(initialOffset),
-      );
       // Sits below the question (reversed list: bottom is newest).
       expect(
         tester.getTopLeft(find.byType(AssistantStatusBubble)).dy,
@@ -85,7 +71,7 @@ void main() {
       );
     });
 
-    testWidgets('typing shows only a label and three animated dots', (
+    testWidgets('typing state reaches the timeline with its accessible label', (
       tester,
     ) async {
       await _showState(
@@ -96,17 +82,6 @@ void main() {
       expect(find.bySemanticsLabel(t.assistant.typing), findsOneWidget);
       expect(find.text(t.assistant.typing), findsOneWidget);
       expect(find.byType(StreamMarkdown), findsNothing);
-      for (var i = 0; i < 3; i++) {
-        expect(find.byKey(ValueKey('typing-dot-$i')), findsOneWidget);
-      }
-      final dot = find.byKey(const ValueKey('typing-dot-0'));
-      final first = tester.widget<Transform>(dot).transform.getTranslation().y;
-      await tester.pump(const Duration(milliseconds: 70));
-      await tester.pump(const Duration(milliseconds: 70));
-      expect(
-        tester.widget<Transform>(dot).transform.getTranslation().y,
-        isNot(first),
-      );
     });
 
     for (final brightness in Brightness.values) {
@@ -145,15 +120,6 @@ void main() {
           await tester.pump(const Duration(milliseconds: 100));
           expect(find.byType(StreamMarkdown), findsOneWidget);
           expect(find.text(t.assistant.thinking), findsOneWidget);
-          expect(find.byKey(const ValueKey('pending-dot-0')), findsNothing);
-          expect(
-            find.byKey(const ValueKey('thinking-viewport')),
-            findsOneWidget,
-          );
-          expect(
-            find.byKey(const ValueKey('assistant-pending-surface')),
-            findsNothing,
-          );
           expect(
             tester.widget<SmoothMarkdown>(find.byType(SmoothMarkdown)).data,
             contains('第四行'),

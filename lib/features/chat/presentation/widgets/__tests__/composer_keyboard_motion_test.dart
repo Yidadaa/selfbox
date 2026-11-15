@@ -65,13 +65,6 @@ void main() {
           final middle = tester.getSize(_dog).width;
           expect(middle, lessThan(original));
           expect(middle, greaterThan(96));
-          final dog = tester.getRect(_dog);
-          final input = tester.getRect(
-            find.byKey(const ValueKey('chat-input')),
-          );
-          expect(dog.bottom - input.top, closeTo(dog.height * 0.3, 0.01));
-          expect(dog.left, greaterThanOrEqualTo(input.left));
-          expect(dog.right, lessThanOrEqualTo(input.right));
           expect(tester.getSize(_tabs).height, inExclusiveRange(0, tabsHeight));
           final opacity = tester.widget<Opacity>(
             find.descendant(of: _tabs, matching: find.byType(Opacity)).first,

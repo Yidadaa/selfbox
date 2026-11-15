@@ -86,10 +86,6 @@ void main() {
       await openSettingsPage(tester, '/me/model?provider=p1&model=nope');
       final label = find.text(t.settings.errors.generic);
       expect(label, findsOneWidget);
-      expect(
-        find.ancestor(of: label, matching: find.byType(GlassContainer)),
-        findsNothing,
-      );
     });
   });
 }

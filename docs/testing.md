@@ -1,5 +1,16 @@
 # 测试维护指南
 
+## 2026-11-16 精简后的归属
+
+以 [任务 89](tasks/89-test-suite-refinement.md) 的迁移表为准，下面历史任务中的旧文件名只用于追溯。当前 `profile_prompt_save` 已并入 `account_providers`；`agent_identity` 并入 `local_account_repository`；`custom_prompt`、`short_term_memory_budget` 与原 services 中模型/Schema 用例合并为 `domain/models/__tests__/ai_settings_test.dart`。`app_ai_tokens` 并入 `app_theme`，`app_canvas` 并入 `app_page_scaffold`，空态统一为 `empty_state`；记忆编辑布局独立为 `memory_editor_layout`。
+
+- Sheet 背景/轮廓归 `app_modal_surface`，按钮内部材质归 `app_action_button`，图标常量归 `app_icons`；页面保留业务接线与页面特有布局。
+- 静态 AI 光效只做明暗/高度采样与开关、后台、裁切检查，无相位循环。Skeletonizer 承担 AppEffects 动画停止/恢复契约。
+- Composer 对齐与光学边距归 `chat_composer_keyboard`，排版内边距归 `chat_composer_editor`，占位符矩阵验证中英/明暗/键盘实际文案布局。键盘 inset 收起和先失焦收起属于独立事件，分别保留。
+- 资料页失败重试统一在 `agent_profile_page`，按资料/提示词持久化失败源参数化，覆盖名字、提示词、头像全部草稿。
+- `web_read` 当前已恢复、`web_search` 仍隔离。默认工具名单在 `agent_tools` 精确匹配；`assistant_agent` 的多步调用覆盖每轮实际请求；`agent_web_tools` 保留隔离集合与执行实现。
+- 不为减少数量删掉真实 SDK、持久化、权限、并发、安全、页面重建等不同风险边界。
+
 提示词入口调整（任务 87）：原 custom_prompt_page_test 迁至 profile_prompt_test，保留读取、清空、加载失败重试、草稿保留和窄屏键盘校验；原 custom_prompt_controller_test 迁至 profile_prompt_save_test，保留日志隐私与重复提交/失败恢复，并验证资料组合保存。profile_prompt_field_test 覆盖中英文动态 Agent 名称及固定四行；截图改为 profile_prompt 明暗资料页。
 
 链接与自定义提示词见任务 86/87。message_links_test 覆盖原文边界；web_content_parser_test 覆盖 OG/Twitter/title/摘要/相对 icon 与畸形地址；objectbox_link_preview_repository_test 验证真实 Store 重开、断网命中、失败重试、并发去重及清空在途写入。external_browser_test 验证系统 externalApplication 模式和拒绝/异常。message_links_widget_test 覆盖实际文字坐标点击、长按菜单/选区、加载与失败等高、引用/AI/时间同行；message_search_page_test 验证真实图片解码和查看路由。assistant_web_prompt_test 验证阅读工具实际多步结果、每轮提示词与下一回合更新；custom_prompt_page/controller/model 与 settings repository/service 测试覆盖中英编辑、清空、加载/错误/失败重试、窄屏键盘、重复提交、旧配置、持久化和日志隔离。截图 message_links/custom_prompt 明暗四张使用真实组件。

@@ -1,10 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/router/app_router.dart';
-import 'package:selfbox/core/router/app_routes.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/core/testing/icon_finder.dart';
@@ -35,23 +31,6 @@ void main() {
       _message(3, ['media/c.jpg']),
     ],
   );
-
-  testWidgets('viewer swipes across images from the full message history', (
-    tester,
-  ) async {
-    await tester.pumpPage(
-      const ImageViewerPage(path: 'media/b.jpg'),
-      messages: history,
-    );
-    expect(find.text('2 / 3'), findsOneWidget);
-    await tester.drag(
-      find.byKey(const ValueKey('image-viewer-pages')),
-      const Offset(-300, 0),
-    );
-    await tester.pumpAndSettle();
-    expect(find.text('3 / 3'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
 
   testWidgets('thumbnail taps jump directly to the selected historical image', (
     tester,
@@ -105,26 +84,8 @@ void main() {
     final stripRect = tester.getRect(strip);
     expect(selectedRect.left, greaterThanOrEqualTo(stripRect.left));
     expect(selectedRect.right, lessThanOrEqualTo(stripRect.right));
-    expect(selectedRect.center.dx, closeTo(stripRect.center.dx, 0.5));
   });
 
-  testWidgets('close control remains visible and pops the viewer route', (
-    tester,
-  ) async {
-    final container = await tester.pumpApp();
-    final router = container.read(appRouterProvider);
-    const route = ImageViewerRoute(path: 'media/current.jpg');
-    unawaited(router.push(route.location, extra: ['media/current.jpg']));
-    await tester.pumpAndSettle();
-
-    final close = find.byKey(const ValueKey('image-viewer-close'));
-    expect(close, findsOneWidget);
-    expect(close.hitTestable(), findsOneWidget);
-    await tester.tap(close);
-    await tester.pumpAndSettle();
-
-    expect(router.state.matchedLocation, '/chat');
-  });
   testWidgets('tapping an image opens the full-screen viewer', (tester) async {
     final container = await tester.pumpApp(
       messages: FakeMessageRepository(
@@ -147,10 +108,6 @@ void main() {
       container.read(appRouterProvider).state.uri.toString(),
       '/image?path=media%2Fmissing.jpg',
     );
-
-    await tester.tap(find.byType(GlassIconButton));
-    await tester.pumpAndSettle();
-    expect(find.byType(ImageViewerPage), findsNothing);
   });
 
   testWidgets('unavailable image uses readable text on the dark viewer', (

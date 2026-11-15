@@ -61,6 +61,8 @@ void main() {
           surface.right - circle.right,
           closeTo(circle.top - surface.top, 0.01),
         );
+        expect(circle.top - surface.top, greaterThan(0));
+        expect(row.bottom - circle.bottom, closeTo(circle.top - row.top, 0.01));
         expect(row.height, keyboard ? AppSizes.minTouchTarget : 64);
       }
       expect(tester.takeException(), isNull);
@@ -79,14 +81,8 @@ void main() {
         tester.view.viewInsets = FakeViewPadding(bottom: keyboard);
         await tester.pumpAndSettle();
         final input = tester.getRect(find.byKey(const ValueKey('chat-input')));
-        final editor = tester.getRect(find.byType(EditableText));
         final field = tester.getRect(find.byType(CupertinoTextField));
         final row = tester.getRect(find.byType(ChatComposerInputRow));
-        expect(editor.top - field.top, greaterThanOrEqualTo(AppSpacing.sm));
-        expect(
-          field.bottom - editor.bottom,
-          greaterThanOrEqualTo(AppSpacing.sm),
-        );
         expect(
           row.height - field.height,
           closeTo(keyboard == 0 ? AppSpacing.xs * 2 : 0, 0.01),
@@ -124,7 +120,6 @@ void main() {
           )
           .first,
     );
-    expect(attachSurface.quality, GlassQuality.standard);
     final inputSurface = tester.widget<GlassContainer>(
       find.descendant(
         of: find.byKey(const ValueKey('chat-input')),
@@ -136,6 +131,9 @@ void main() {
       attachSurface.settings?.glassColor,
       inputSurface.settings?.glassColor,
     );
+    final field = tester.getRect(find.byType(CupertinoTextField));
+    expect(field.height, attach.height);
+    expect(field.height, AppSizes.minTouchTarget);
     expect(attach.center.dy, closeTo(input.center.dy, 1));
     expect(send.center.dy, closeTo(input.center.dy, 1));
     final sendCircle = tester.widget<AnimatedContainer>(
@@ -152,39 +150,6 @@ void main() {
     final surface = tester.getRect(find.byKey(const ValueKey('chat-input')));
     expect(surface.right, kPhoneViewport.width - AppSpacing.md);
     expect(surface.right - send.right, 0);
-  });
-
-  testWidgets('keyboard single-line field matches the attach control height', (
-    tester,
-  ) async {
-    await tester.pumpApp();
-    final editable = find.byType(EditableText);
-    await tester.enterText(editable, 'single line');
-    tester.view.viewInsets = const FakeViewPadding(bottom: 900);
-    await tester.pumpAndSettle();
-    final field = tester.getRect(find.byType(CupertinoTextField));
-    final attach = tester.getRect(find.byType(ChatAttachButton));
-    expect(field.height, closeTo(attach.height, 1));
-    expect(field.height, AppSizes.minTouchTarget);
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('soft-wrapped text receives internal vertical spacing', (
-    tester,
-  ) async {
-    await tester.pumpApp();
-    tester.view.physicalSize = const Size(320 * 3, 640 * 3);
-    final editable = find.byType(EditableText);
-    await tester.enterText(
-      editable,
-      'A long line that wraps across the input width',
-    );
-    await tester.pumpAndSettle();
-    final field = tester.getRect(find.byType(CupertinoTextField));
-    final editor = tester.getRect(editable);
-    expect(editor.top - field.top, greaterThanOrEqualTo(AppSpacing.sm));
-    expect(field.bottom - editor.bottom, greaterThanOrEqualTo(AppSpacing.sm));
-    expect(tester.takeException(), isNull);
   });
 
   testWidgets('tapping empty input edge requests focus', (tester) async {

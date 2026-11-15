@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/theme/app_dialog_tokens.dart';
+import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_relief_theme.dart';
 import 'package:selfbox/core/widgets/app_action_button.dart';
 import 'package:selfbox/core/widgets/app_modal_surface.dart';
@@ -39,6 +40,7 @@ void main() {
         await tester.pumpAndSettle();
         final sheet = tester.widget<BottomSheet>(find.byType(BottomSheet));
         expect(sheet.shape, AppDialogTokens.sheetShape);
+        expect(sheet.backgroundColor, AppGlassTheme.of(brightness).bubbleOther);
         final modal = find.byType(AppModalSurface);
         final boxes = tester.widgetList<DecoratedBox>(
           find.descendant(of: modal, matching: find.byType(DecoratedBox)),

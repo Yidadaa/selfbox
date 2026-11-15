@@ -6,8 +6,8 @@ import 'package:selfbox/core/router/shell_scope.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
+import 'package:selfbox/core/widgets/app_canvas.dart';
 import 'package:selfbox/core/widgets/app_page_scaffold.dart';
-import 'package:selfbox/core/widgets/empty_state.dart';
 import 'package:selfbox/features/chat/presentation/pages/chat_page.dart';
 import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 import 'package:selfbox/features/settings/presentation/pages/general_page.dart';
@@ -172,46 +172,6 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  group('EmptyState', () {
-    testWidgets('shows centered small text without a card or icon', (
-      tester,
-    ) async {
-      await tester.pumpPage(const EmptyState(label: 'Empty'));
-
-      final label = find.text('Empty');
-      expect(tester.getCenter(label).dx, closeTo(kPhoneViewport.width / 2, 1));
-      expect(tester.getCenter(label).dy, closeTo(kPhoneViewport.height / 2, 1));
-      expect(find.byType(Icon), findsNothing);
-      expect(
-        find.ancestor(of: label, matching: find.byType(GlassContainer)),
-        findsNothing,
-      );
-      expect(
-        tester.widget<Text>(label).style?.fontSize,
-        Theme.of(tester.element(label)).textTheme.bodySmall?.fontSize,
-      );
-    });
-
-    testWidgets('keeps an error action below the plain label', (tester) async {
-      await tester.pumpPage(
-        const EmptyState(label: 'Empty', action: Text('Retry')),
-      );
-
-      expect(find.text('Retry'), findsOneWidget);
-      expect(
-        tester.getTopLeft(find.text('Retry')).dy,
-        greaterThan(tester.getBottomLeft(find.text('Empty')).dy),
-      );
-      expect(
-        find.ancestor(
-          of: find.text('Empty'),
-          matching: find.byType(GlassContainer),
-        ),
-        findsNothing,
-      );
-    });
-  });
-
   group('AppPageInsets', () {
     testWidgets('aligns app bar and page content with the chat dock', (
       tester,
@@ -264,5 +224,29 @@ void main() {
 
       expect(insets.bottom, 34 + AppSpacing.md);
     });
+  });
+  group('AppCanvas', () {
+    for (final brightness in Brightness.values) {
+      testWidgets('paints the $brightness canvas gradient full-bleed', (
+        tester,
+      ) async {
+        await tester.pumpPage(const AppCanvas(), brightness: brightness);
+
+        final box = tester.widget<DecoratedBox>(
+          find.descendant(
+            of: find.byType(AppCanvas),
+            matching: find.byType(DecoratedBox),
+          ),
+        );
+        final gradient =
+            (box.decoration as BoxDecoration).gradient as LinearGradient;
+        expect(gradient.colors, AppGlassTheme.of(brightness).canvasGradient);
+        expect(gradient.begin, Alignment.topLeft);
+        expect(tester.getSize(find.byType(AppCanvas)), kPhoneViewport);
+        if (brightness == Brightness.light) {
+          expect(gradient.colors.last, const Color(0xFFF7EDE4));
+        }
+      });
+    }
   });
 }

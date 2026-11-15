@@ -22,10 +22,6 @@ void main() {
           final text = env.model.calls.single.prompt.system;
           expect(text, contains('Your name is ${name.isEmpty ? '小懒' : name}.'));
           expect(text, contains("User's current name: Flynn."));
-          final tools = env.model.calls.single.tools.map((tool) => tool.name);
-          expect(tools, isNot(contains('web_search')));
-          expect(tools, contains('web_read'));
-          expect(tools, contains('search_messages'));
         }
       },
     );
@@ -65,6 +61,7 @@ void main() {
         final names = call.tools.map((tool) => tool.name);
         expect(names, isNot(contains('web_search')));
         expect(names, contains('web_read'));
+        expect(names, contains('search_messages'));
       }
       expect(env.activity, [
         const AgentActivity.thinking(),

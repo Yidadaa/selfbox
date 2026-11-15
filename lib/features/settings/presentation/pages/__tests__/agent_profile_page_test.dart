@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_account_repository.dart';
+import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/core/widgets/app_artwork.dart';
+import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/features/settings/domain/models/user_profile.dart';
 import 'package:selfbox/features/settings/presentation/pages/profile_page.dart';
 import 'package:selfbox/features/settings/presentation/providers/account_providers.dart';
@@ -14,30 +17,68 @@ import 'package:selfbox/gen/i18n/strings.g.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 void main() {
-  testWidgets('failed save retains both drafts and selected avatar for retry', (
-    tester,
-  ) async {
-    final account = FakeAccountRepository()
-      ..saveFailure = const AppFailure.database(message: 'disk');
-    final container = await tester.pumpApp(account: account);
-    container.read(appRouterProvider).go('/me/profile');
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(EditableText).first, 'Momo');
-    await tester.enterText(find.byType(EditableText).at(1), 'Flynn');
-    await tester.tap(find.text(t.common.save));
-    await tester.pumpAndSettle();
-    expect(find.byType(ProfilePage), findsOneWidget);
-    expect(find.text('Momo'), findsOneWidget);
-    expect(find.text('Flynn'), findsOneWidget);
-    expect(account.profile, const UserProfile());
-    await tester.pump(const Duration(seconds: 4));
-    await tester.pumpAndSettle();
-    account.saveFailure = null;
-    await tester.tap(find.text(t.common.save));
-    await tester.pumpAndSettle();
-    expect(account.profile.agentName, 'Momo');
-    expect(account.profile.nickname, 'Flynn');
-  });
+  for (final failureAt in ['profile', 'prompt']) {
+    testWidgets(
+      'failed $failureAt save retains names, prompt and avatar for retry',
+      (tester) async {
+        final account = FakeAccountRepository();
+        final settings = _FailingSettings()..failSave = failureAt == 'prompt';
+        if (failureAt == 'profile') {
+          account.saveFailure = const AppFailure.database(message: 'disk');
+        }
+        final container = await tester.pumpApp(
+          account: account,
+          settings: settings,
+        );
+        container.read(appRouterProvider).go('/me/profile');
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(EditableText).first, 'Momo');
+        await tester.enterText(find.byType(EditableText).at(1), 'Flynn');
+        await tester.enterText(
+          find.byType(EditableText).last,
+          'Keep this draft',
+        );
+        await tester.tap(find.text(t.me.changeAvatar));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const ValueKey('avatar-preset-working')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(t.common.save));
+        await tester.pumpAndSettle();
+        expect(find.byType(ProfilePage), findsOneWidget);
+        expect(find.text('Momo'), findsOneWidget);
+        expect(find.text('Flynn'), findsOneWidget);
+        expect(account.profile, const UserProfile());
+        expect(
+          tester
+              .widget<EditableText>(find.byType(EditableText).last)
+              .controller
+              .text,
+          'Keep this draft',
+        );
+        expect(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is AppArtwork && widget.artwork == BrandArt.working,
+          ),
+          findsNWidgets(2),
+        );
+        expect(
+          settings.current.customPrompt,
+          failureAt == 'prompt' ? '' : 'Keep this draft',
+        );
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pumpAndSettle();
+        account.saveFailure = null;
+        settings.failSave = false;
+        await tester.tap(find.text(t.common.save));
+        await tester.pumpAndSettle();
+        expect(account.profile.agentName, 'Momo');
+        expect(account.profile.nickname, 'Flynn');
+        expect(account.profile.agentAvatar, 'preset:working');
+        expect(settings.current.customPrompt, 'Keep this draft');
+      },
+    );
+  }
 
   testWidgets('saving default Agent preserves language-dependent name', (
     tester,
@@ -176,4 +217,12 @@ void main() {
       expect(find.text('Recovered'), findsOneWidget);
     },
   );
+}
+
+class _FailingSettings extends FakeAiSettingsRepository {
+  bool failSave = true;
+  @override
+  TaskEither<AppFailure, Unit> save(AiSettings settings) => failSave
+      ? TaskEither.left(const AppFailure.database(message: 'disk full'))
+      : super.save(settings);
 }

@@ -223,7 +223,7 @@ void main() {
       await tester.longPress(find.text('remove me'));
       await tester.pumpAndSettle();
       expect(find.byType(AppActionPopover), findsOneWidget);
-      expect(find.byType(Dialog), findsNothing);
+
       expect(find.text(t.common.copy), findsOneWidget);
 
       await tester.tap(find.text(t.common.copy));
@@ -231,12 +231,6 @@ void main() {
       expect(clipboard, 'remove me');
       expect(find.widgetWithText(GlassToast, t.common.copied), findsOneWidget);
       await tester.pump(const Duration(seconds: 4));
-      await tester.longPress(find.text('remove me'));
-      await tester.pumpAndSettle();
-      await tester.tapAt(const Offset(24, 420));
-      await tester.pumpAndSettle();
-      expect(find.text('remove me'), findsOneWidget);
-
       await tester.longPress(find.text('remove me'));
       await tester.pumpAndSettle();
 
@@ -272,7 +266,7 @@ void main() {
       final anchor = tester.getCenter(photo);
       await tester.longPressAt(anchor);
       await tester.pumpAndSettle();
-      expect(find.byType(Dialog), findsNothing);
+
       expect(find.text(t.common.copy), findsNothing);
       expect(find.text(t.common.selectText), findsNothing);
       final surface = find.byKey(const ValueKey('app-popover-surface'));

@@ -31,7 +31,7 @@ void main() {
           brightness: brightness,
         );
         final huge = tester.widget<HugeIcon>(find.byType(HugeIcon));
-        expect(huge.icon, HugeIcons.strokeRoundedSearch01);
+        expect(huge.icon, AppIcons.search);
         expect(huge.strokeWidth, AppIconTokens.strokeWidth);
         expect(tester.getSize(find.byType(HugeIcon)), const Size.square(32));
         expect(find.bySemanticsLabel('Search'), findsOneWidget);

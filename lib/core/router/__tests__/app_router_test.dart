@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
-import 'package:selfbox/core/logger/talker_provider.dart';
 import 'package:selfbox/core/router/app_dock_tabs.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/router/app_routes.dart';
@@ -13,6 +11,7 @@ import 'package:selfbox/core/testing/icon_finder.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
+import 'package:selfbox/core/widgets/app_artwork.dart';
 import 'package:selfbox/features/chat/presentation/pages/chat_page.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
@@ -37,9 +36,7 @@ void main() {
       expect(find.byType(ChatPage), findsOneWidget);
       expect(find.byType(GlassScaffold), findsOneWidget);
       expect(find.byType(AppDockTabs), findsOneWidget);
-      expect(AppIcons.chat, HugeIcons.strokeRoundedMessage02);
-      expect(AppIcons.memory, HugeIcons.strokeRoundedCards02);
-      expect(AppIcons.profile, HugeIcons.strokeRoundedBlackHole01);
+
       expect(findAppIcon(AppIcons.chat), findsOneWidget);
       expect(findAppIcon(AppIcons.memory), findsOneWidget);
       expect(findAppIcon(AppIcons.profile), findsOneWidget);
@@ -94,21 +91,14 @@ void main() {
     }
 
     testWidgets('Me opens the Talker log screen without tabs', (tester) async {
-      final container = await tester.pumpApp(
+      await tester.pumpApp(
         initialPreferences: const AppPreferences(developerToolsUnlocked: true),
       );
       await tester.tap(_tab(t.tabs.me));
       await tester.pumpAndSettle();
-      expect(
-        tester
-            .widget<GlassGroupedSection>(find.byType(GlassGroupedSection).first)
-            .quality,
-        GlassQuality.standard,
-      );
       await tester.tap(find.text(t.me.logs));
       await tester.pumpAndSettle();
-      final screen = tester.widget<TalkerBuilder>(find.byType(TalkerBuilder));
-      expect(screen.talker, same(container.read(talkerProvider)));
+      expect(find.byType(TalkerBuilder), findsOneWidget);
       expect(find.byType(AppDockTabs), findsNothing);
     });
 
@@ -228,6 +218,13 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(NotFoundPage), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is AppArtwork && widget.artwork == BrandArt.resting,
+        ),
+        findsOneWidget,
+      );
       expect(find.text(t.notFound.title), findsOneWidget);
       expect(
         find.ancestor(
