@@ -25,7 +25,6 @@ GoRouter appRouter(Ref ref) {
       final configuring =
           path == const OnboardingAiRoute().location ||
           path == const ProviderRoute().location ||
-          path == const CustomPromptRoute().location ||
           path ==
               const ModelRoute(
                 provider: '',

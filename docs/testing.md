@@ -1,5 +1,7 @@
 # 测试维护指南
 
+提示词入口调整（任务 87）：原 custom_prompt_page_test 迁至 profile_prompt_test，保留读取、清空、加载失败重试、草稿保留和窄屏键盘校验；原 custom_prompt_controller_test 迁至 profile_prompt_save_test，保留日志隐私与重复提交/失败恢复，并验证资料组合保存。profile_prompt_field_test 覆盖中英文动态 Agent 名称及固定四行；截图改为 profile_prompt 明暗资料页。
+
 链接与自定义提示词见任务 86/87。message_links_test 覆盖原文边界；web_content_parser_test 覆盖 OG/Twitter/title/摘要/相对 icon 与畸形地址；objectbox_link_preview_repository_test 验证真实 Store 重开、断网命中、失败重试、并发去重及清空在途写入。external_browser_test 验证系统 externalApplication 模式和拒绝/异常。message_links_widget_test 覆盖实际文字坐标点击、长按菜单/选区、加载与失败等高、引用/AI/时间同行；message_search_page_test 验证真实图片解码和查看路由。assistant_web_prompt_test 验证阅读工具实际多步结果、每轮提示词与下一回合更新；custom_prompt_page/controller/model 与 settings repository/service 测试覆盖中英编辑、清空、加载/错误/失败重试、窄屏键盘、重复提交、旧配置、持久化和日志隔离。截图 message_links/custom_prompt 明暗四张使用真实组件。
 
 引用体验补充（任务 85）：`message_quotes_test.dart` 验证 trash 图标、部分删除保持弹层、删空自动关闭和再次打开；单条直达/多条选择只展示目标原文，滚动视口从页面顶边开始，正文初始位置避开 toolbar，长文可滚到浮动头部下方。`message_expanded_page_test.dart` 的两类原文页面共用按 ID 查询的加载/失败重试契约。

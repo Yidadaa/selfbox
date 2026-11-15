@@ -15,8 +15,8 @@ import 'screenshot_fixtures.dart';
 final messageLinkFixtures = [
   for (final brightness in Brightness.values)
     ScreenshotFixture(
-      name: 'custom_prompt_${brightness.name}',
-      location: '/me/custom-prompt',
+      name: 'profile_prompt_${brightness.name}',
+      location: '/me/profile',
       env: () => (
         paths: null,
         memory: null,
@@ -31,6 +31,17 @@ final messageLinkFixtures = [
       setUp: (tester, _) async {
         tester.platformDispatcher.platformBrightnessTestValue = brightness;
         addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+        await tester.pumpAndSettle();
+      },
+      afterOpen: (tester) async {
+        final context = tester.element(find.byType(MaterialApp));
+        final images = tester.widgetList<Image>(find.byType(Image)).toList();
+        await tester.runAsync(() async {
+          for (final image in images) {
+            await precacheImage(image.image, context);
+          }
+        });
+        await tester.ensureVisible(find.byType(EditableText).last);
         await tester.pumpAndSettle();
       },
     ),

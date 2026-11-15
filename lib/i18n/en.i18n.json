@@ -98,6 +98,7 @@
     "tagline": "A private space for your thoughts.",
     "agentDefaultName": "Dozy",
     "agentName": "My name",
+    "agentRequirements": "Instructions for {agent}",
     "callMe": "What I call you",
     "profileGreeting": "Hi, I'm {agentName}! You can change my name here and tell me what you'd like me to call you.",
     "profileGreetingNamed": "Hi {username}, I'm {agentName}! You can change my name here and tell me what you'd like me to call you.",
@@ -143,7 +144,6 @@
   },
   "settings": {
     "aiSection": "AI",
-    "customPrompt": "Custom instructions",
     "customPromptHint": "How would you like AI to respond?",
     "activeModel": "Model",
     "shortTermMemory": "Short-term memory length",

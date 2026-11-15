@@ -7,7 +7,7 @@ import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
-import 'package:selfbox/features/settings/presentation/pages/custom_prompt_page.dart';
+import 'package:selfbox/features/settings/presentation/pages/profile_page.dart';
 import 'package:selfbox/features/settings/presentation/providers/settings_providers.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -20,7 +20,7 @@ void main() {
   ) async {
     var failed = true;
     final container = await tester.pumpPage(
-      const CustomPromptPage(),
+      const ProfilePage(),
       settle: false,
       overrides: [
         aiSettingsProvider.overrideWith(
@@ -36,7 +36,10 @@ void main() {
     await tester.tap(find.text(t.common.retry));
     await tester.pumpAndSettle();
     expect(
-      tester.widget<EditableText>(find.byType(EditableText)).controller.text,
+      tester
+          .widget<EditableText>(find.byType(EditableText).last)
+          .controller
+          .text,
       'Recovered',
     );
     expect(container.read(aiSettingsProvider).hasValue, isTrue);
@@ -44,7 +47,7 @@ void main() {
     container.dispose();
     await tester.pump();
     final loadingContainer = await tester.pumpPage(
-      const CustomPromptPage(),
+      const ProfilePage(),
       settle: false,
       overrides: [
         aiSettingsProvider.overrideWith(
@@ -56,7 +59,7 @@ void main() {
       find.byWidgetPredicate((w) => w is Skeletonizer && w.enabled),
       findsWidgets,
     );
-    expect(find.byType(EditableText), findsOneWidget);
+    expect(find.byType(EditableText), findsNWidgets(3));
     await tester.pumpWidget(const SizedBox.shrink());
     loadingContainer.dispose();
     await tester.pump(const Duration(milliseconds: 1));
@@ -74,29 +77,35 @@ void main() {
       );
       container.read(appRouterProvider).go('/me/providers');
       await tester.pumpAndSettle();
-      await tester.tap(find.text(t.settings.customPrompt));
+      expect(find.text('Custom instructions'), findsNothing);
+      expect(find.text('自定义提示词'), findsNothing);
+      container.read(appRouterProvider).go('/me/profile');
       await tester.pumpAndSettle();
-      expect(find.byType(CustomPromptPage), findsOneWidget);
+      expect(find.byType(ProfilePage), findsOneWidget);
       expect(
-        tester.widget<EditableText>(find.byType(EditableText)).controller.text,
+        tester
+            .widget<EditableText>(find.byType(EditableText).last)
+            .controller
+            .text,
         'Old prompt',
       );
       await tester.enterText(
-        find.byType(EditableText),
+        find.byType(EditableText).last,
         '中文 instructions\nKeep details',
       );
       await tester.tap(find.text(t.common.save));
       await settleSettingsToasts(tester);
       expect(settings.current.customPrompt, '中文 instructions\nKeep details');
-      container.read(appRouterProvider).go('/me/providers');
-      await tester.pumpAndSettle();
-      await tester.tap(find.text(t.settings.customPrompt));
+      container.read(appRouterProvider).go('/me/profile');
       await tester.pumpAndSettle();
       expect(
-        tester.widget<EditableText>(find.byType(EditableText)).controller.text,
+        tester
+            .widget<EditableText>(find.byType(EditableText).last)
+            .controller
+            .text,
         '中文 instructions\nKeep details',
       );
-      await tester.enterText(find.byType(EditableText), '');
+      await tester.enterText(find.byType(EditableText).last, '');
       await tester.tap(find.text(t.common.save));
       await settleSettingsToasts(tester);
       expect(settings.current.customPrompt, '');
@@ -104,13 +113,16 @@ void main() {
   }
   testWidgets('failed save preserves draft and retries', (tester) async {
     final settings = _FailingSettings();
-    await openSettingsPage(tester, '/me/custom-prompt', settings: settings);
-    await tester.enterText(find.byType(EditableText), 'Keep this draft');
+    await openSettingsPage(tester, '/me/profile', settings: settings);
+    await tester.enterText(find.byType(EditableText).last, 'Keep this draft');
     await tester.tap(find.text(t.common.save));
     await settleSettingsToasts(tester);
     expect(settings.current.customPrompt, '');
     expect(
-      tester.widget<EditableText>(find.byType(EditableText)).controller.text,
+      tester
+          .widget<EditableText>(find.byType(EditableText).last)
+          .controller
+          .text,
       'Keep this draft',
     );
     settings.failSave = false;
@@ -122,13 +134,15 @@ void main() {
     tester,
   ) async {
     final settings = FakeAiSettingsRepository();
-    await openSettingsPage(tester, '/me/custom-prompt', settings: settings);
+    await openSettingsPage(tester, '/me/profile', settings: settings);
     tester.view.physicalSize = const Size(280 * 3, 640 * 3);
     tester.view.viewInsets = const FakeViewPadding(bottom: 260 * 3);
     await tester.enterText(
-      find.byType(EditableText),
+      find.byType(EditableText).last,
       'x' * (AiSettingsSchema.maxCustomPromptLength + 1),
     );
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text(t.common.save));
     await tester.pumpAndSettle();
     expect(
       tester.getBottomRight(find.text(t.common.save)).dy,

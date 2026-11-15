@@ -2,6 +2,8 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-15] [ReactiveLabelTest] 改名后立即断言标题仍为旧值 -> ReactiveValueListenableBuilder 的流更新尚未完成 -> 程序赋值后 pumpAndSettle，再断言动态文案及未丢失输入。
+
 - [2026-11-15] [CustomPrompt] 多行字段编译失败、空串无法清空、键盘下保存不可见 -> GlassTextField.maxLines 非空，通用校验把空串转 null，保存位于长编辑列表末尾 -> maxLines 保持 int，空串语义显式 opt-in，保存固定底部且验证键盘边界。
 - [2026-11-15] [ProviderFixture] 流日志测试等待超时、重复 pumpPage 后残留调度 Timer -> 未保持订阅且切换测试容器后旧容器仍存活 -> 流测试显式 listen，换容器前卸载并 dispose；缓存持久化后移除无必要的 keepAlive 定时器。
 - [2026-11-15] [LinkStyle] 浅色蓝气泡链接下划线继承黑色 -> 行内 TextSpan 未显式继承消息文字装饰色 -> 链接 color/decorationColor 从同一正文样式派生，截图分别检查明暗实际渲染。

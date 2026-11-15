@@ -79,11 +79,6 @@ class _SettingsList extends ConsumerWidget {
                 initialPercent: settings.shortTermMemoryPercent,
               ),
             ),
-            AppListTile(
-              icon: AppIcons.edit,
-              title: t.settings.customPrompt,
-              onTap: () => const CustomPromptRoute().push<void>(context),
-            ),
           ],
         ),
         GlassGroupedSection(

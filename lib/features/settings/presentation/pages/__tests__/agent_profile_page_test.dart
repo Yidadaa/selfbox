@@ -23,7 +23,7 @@ void main() {
     container.read(appRouterProvider).go('/me/profile');
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(EditableText).first, 'Momo');
-    await tester.enterText(find.byType(EditableText).last, 'Flynn');
+    await tester.enterText(find.byType(EditableText).at(1), 'Flynn');
     await tester.tap(find.text(t.common.save));
     await tester.pumpAndSettle();
     expect(find.byType(ProfilePage), findsOneWidget);
@@ -88,13 +88,13 @@ void main() {
         expect(find.text(t.me.agentName), findsOneWidget);
         expect(find.text(t.me.callMe), findsOneWidget);
         final fields = find.byType(EditableText);
-        expect(fields, findsNWidgets(2));
+        expect(fields, findsNWidgets(3));
         await tester.enterText(fields.first, '');
         await tester.tap(find.text(t.common.save));
         await tester.pumpAndSettle();
         expect(find.text(t.forms.required), findsOneWidget);
         await tester.enterText(fields.first, 'Momo');
-        await tester.enterText(fields.last, 'Casey');
+        await tester.enterText(fields.at(1), 'Casey');
         await tester.tap(find.text(t.common.save));
         await tester.pumpAndSettle();
         expect(account.profile.agentName, 'Momo');

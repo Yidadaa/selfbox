@@ -16,11 +16,14 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_page_button.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../gen/i18n/strings.g.dart';
+import '../../domain/models/ai_settings.dart';
 import '../../domain/models/user_profile.dart';
 import '../providers/account_providers.dart';
+import '../providers/settings_providers.dart';
 import '../widgets/agent_avatar_sheet.dart';
 import '../widgets/profile_avatar.dart';
 import '../widgets/profile_introduction.dart';
+import '../widgets/profile_prompt_field.dart';
 import '../widgets/settings_back_button.dart';
 import '../widgets/settings_load_failure.dart';
 
@@ -29,16 +32,21 @@ class ProfilePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(userProfileProvider);
+    final settings = ref.watch(aiSettingsProvider);
     return AppPageScaffold(
       title: context.t.me.editProfile,
       leading: const SettingsBackButton(),
-      body: switch (profile) {
-        AsyncData(:final value) => _ProfileForm(profile: value),
-        AsyncLoading() => const Skeletonizer(
-          child: _ProfileForm(profile: UserProfile()),
+      body: switch ((profile, settings)) {
+        (AsyncData(value: final profile), AsyncData(value: final settings)) =>
+          _ProfileForm(profile: profile, customPrompt: settings.customPrompt),
+        (AsyncError(), _) || (_, AsyncError()) => SettingsLoadFailure(
+          onRetry: () {
+            ref.invalidate(userProfileProvider);
+            ref.invalidate(aiSettingsProvider);
+          },
         ),
-        AsyncError() => SettingsLoadFailure(
-          onRetry: () => ref.invalidate(userProfileProvider),
+        _ => const Skeletonizer(
+          child: _ProfileForm(profile: UserProfile(), customPrompt: ''),
         ),
       },
     );
@@ -46,8 +54,9 @@ class ProfilePage extends ConsumerWidget {
 }
 
 class _ProfileForm extends HookConsumerWidget {
-  const _ProfileForm({required this.profile});
+  const _ProfileForm({required this.profile, required this.customPrompt});
   final UserProfile profile;
+  final String customPrompt;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -64,6 +73,12 @@ class _ProfileForm extends HookConsumerWidget {
           value: profile.nickname,
           validators: [luthorValidator(ProfileSchema.nickname)],
         ),
+        'customPrompt': FormControl<String>(
+          value: customPrompt,
+          validators: [
+            luthorValidator(AiSettingsSchema.customPrompt, preserveEmpty: true),
+          ],
+        ),
       }),
     );
     useEffect(() => form.dispose, [form]);
@@ -73,11 +88,26 @@ class _ProfileForm extends HookConsumerWidget {
         absorbing: busy,
         child: ReactiveForm(
           formGroup: form,
-          child: _ProfileFields(
-            avatar: avatar.value,
-            busy: busy,
-            onPick: () => _pick(context, avatar),
-            onSave: () => _save(context, ref, form, avatar.value),
+          child: Column(
+            children: [
+              Expanded(
+                child: _ProfileFields(
+                  avatar: avatar.value,
+                  onPick: () => _pick(context, avatar),
+                ),
+              ),
+              SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: AppPageButton(
+                    label: context.t.common.save,
+                    busy: busy,
+                    onPressed: () => _save(context, ref, form, avatar.value),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -113,6 +143,7 @@ class _ProfileForm extends HookConsumerWidget {
             ),
             agentAvatar: avatar,
           ),
+          customPrompt: form.control('customPrompt').value as String? ?? '',
         );
     if (!context.mounted) return;
     if (result.getLeft().toNullable() case final failure?) {
@@ -131,16 +162,9 @@ class _ProfileForm extends HookConsumerWidget {
 }
 
 class _ProfileFields extends StatelessWidget {
-  const _ProfileFields({
-    required this.avatar,
-    required this.busy,
-    required this.onPick,
-    required this.onSave,
-  });
+  const _ProfileFields({required this.avatar, required this.onPick});
   final String? avatar;
-  final bool busy;
   final VoidCallback onPick;
-  final VoidCallback onSave;
   @override
   Widget build(BuildContext context) => ListView(
     padding: AppPageInsets.of(context),
@@ -173,12 +197,8 @@ class _ProfileFields extends StatelessWidget {
         formControlName: 'nickname',
         label: context.t.me.callMe,
       ),
-      const Gap(AppSpacing.xl),
-      AppPageButton(
-        label: context.t.common.save,
-        busy: busy,
-        onPressed: onSave,
-      ),
+      const Gap(AppSpacing.lg),
+      const ProfilePromptField(),
     ],
   );
 }

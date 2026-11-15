@@ -98,6 +98,7 @@
     "tagline": "留给自己的思考空间。",
     "agentDefaultName": "小懒",
     "agentName": "我的名字",
+    "agentRequirements": "对{agent}的要求",
     "callMe": "你的称呼",
     "profileGreeting": "你好，我是{agentName}，你可以在这里修改我的名字，也可以告诉我该如何称呼你～",
     "profileGreetingNamed": "{username}你好，我是{agentName}，你可以在这里修改我的名字，也可以告诉我该如何称呼你～",
@@ -143,7 +144,6 @@
   },
   "settings": {
     "aiSection": "AI",
-    "customPrompt": "自定义提示词",
     "customPromptHint": "希望 AI 如何回答你？",
     "activeModel": "模型",
     "shortTermMemory": "短时记忆长度",
