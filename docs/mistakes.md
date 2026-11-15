@@ -1,5 +1,8 @@
 # 错误账本 (Mistakes Ledger)
 
+- [2026-11-16] [DockFixture] 附件过渡测试找不到玻璃 -> 只聚焦输入但未模拟键盘 inset -> 键盘入场回归同时驱动焦点与 viewInsets，退场覆盖失焦时键盘仍可见。
+- [2026-11-16] [PatchPath] 任务文件首个绝对路径补丁未落入仓库 -> 使用了未验证路径 -> 本仓库补丁使用 cwd 相对路径，以 git status 核验归属。
+
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
 - [2026-11-16] [TestDependency] 恢复依赖 lint 后浏览器测试报两处未声明包 -> 原测试直接引用传递依赖 url_launcher_platform_interface，被全局禁用规则掩盖 -> 在 dev_dependencies 显式声明现有锁定版本，保留断言与严格 lint。

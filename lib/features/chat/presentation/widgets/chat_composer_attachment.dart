@@ -43,22 +43,23 @@ class ChatComposerAttachment extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (external)
-                  GlassContainer(
-                    quality: AppEffects.qualityOf(
-                      context,
-                      GlassQuality.standard,
-                    ),
-                    useOwnLayer: true,
-                    settings: LiquidGlassSettings(
-                      blur: glass.chromeBlur * visible,
-                      glassColor: glass.chromeTint.withValues(
-                        alpha: glass.chromeTint.a * visible,
+                  Opacity(
+                    opacity: visible,
+                    child: GlassContainer(
+                      quality: AppEffects.qualityOf(
+                        context,
+                        GlassQuality.standard,
                       ),
+                      useOwnLayer: true,
+                      settings: LiquidGlassSettings(
+                        blur: glass.chromeBlur,
+                        glassColor: glass.chromeTint,
+                      ),
+                      shape: const LiquidRoundedSuperellipse(
+                        borderRadius: AppRadius.pill,
+                      ),
+                      child: button,
                     ),
-                    shape: const LiquidRoundedSuperellipse(
-                      borderRadius: AppRadius.pill,
-                    ),
-                    child: Opacity(opacity: visible, child: button),
                   )
                 else
                   Opacity(opacity: visible, child: button),

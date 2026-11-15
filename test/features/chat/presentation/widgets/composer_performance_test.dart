@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/router/app_dock_tabs.dart';
 import 'package:selfbox/core/theme/app_effects.dart';
+import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/widgets/ai_composer_glow.dart';
 import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer_attachment.dart';
@@ -61,8 +62,12 @@ void main() {
       );
       expect(
         find.ancestor(of: externalGlass, matching: find.byType(Opacity)),
-        findsNothing,
+        findsOneWidget,
       );
+      final attachment = tester.widget<GlassContainer>(externalGlass);
+      final theme = tester.element(externalGlass).glass;
+      expect(attachment.settings?.blur, theme.chromeBlur);
+      expect(attachment.settings?.glassColor, theme.chromeTint);
     }
   });
 

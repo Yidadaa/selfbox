@@ -1,5 +1,11 @@
 # 架构决策记录 (ADR)
 
+### [ADR-083] Dock 固定模糊与主题预算
+
+- **背景**：Dock 使用较大 blur，附件又在键盘动画逐帧改变 blur/tint。
+- **决策**：明暗主题 chromeBlur 统一 12、surfaceBlur 统一 8；chromeTint alpha 分别由 0xAA/0xB3 提至 0xB7/0xC0（增加 13/255）。附件使用固定主题 blur/tint，整体 Opacity 随既有键盘进度淡入淡出，保留宽度裁切、命中和语义切换。
+- **影响**：替代 ADR-073「Composer 重建与合成预算」的附件材质插值方案；全局 Token 的其他消费者同步降低模糊。整体淡入增加短时透明合成，固定参数不代表背景采样可缓存或不再重绘；收益需真机 profile。输入 AI tint 动画、standard 上限与 minimal 降级保持现有策略。
+
 ### [ADR-082] 镜像测试目录与 Flutter 原生并发
 
 - **背景**：单一聚合 main 将全部测试文件注册到同一套件，限制文件级并发；测试及夹具混入产品源码使检索、依赖 lint 与测试 API 可见性处理复杂化。
