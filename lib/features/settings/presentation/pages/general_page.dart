@@ -23,12 +23,7 @@ class GeneralPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final preferences = ref.watch(appPreferencesControllerProvider);
     final labels = context.t.general;
-    final language =
-        preferences.language ??
-        switch (LocaleSettings.currentLocale) {
-          AppLocale.zhCn => AppLanguageChoice.zhCn,
-          AppLocale.en => AppLanguageChoice.en,
-        };
+    final language = preferences.language;
 
     return AppPageScaffold(
       title: context.t.me.general,
@@ -55,6 +50,7 @@ class GeneralPage extends ConsumerWidget {
                 icon: AppIcons.language,
                 title: labels.language,
                 value: switch (language) {
+                  null => labels.system,
                   AppLanguageChoice.zhCn => labels.chinese,
                   AppLanguageChoice.en => labels.english,
                 },
@@ -96,17 +92,23 @@ class GeneralPage extends ConsumerWidget {
   Future<void> _pickLanguage(
     BuildContext context,
     WidgetRef ref,
-    AppLanguageChoice current,
+    AppLanguageChoice? current,
   ) => showSettingsPicker(
     context: context,
     title: context.t.general.language,
     pickerKey: const ValueKey('language-picker'),
-    labels: [context.t.general.chinese, context.t.general.english],
-    initialIndex: AppLanguageChoice.values.indexOf(current),
+    labels: [
+      context.t.general.system,
+      context.t.general.chinese,
+      context.t.general.english,
+    ],
+    initialIndex: current == null
+        ? 0
+        : AppLanguageChoice.values.indexOf(current) + 1,
     onSave: (index) async {
       final result = await ref
           .read(appPreferencesControllerProvider.notifier)
-          .setLanguage(AppLanguageChoice.values[index]);
+          .setLanguage(index == 0 ? null : AppLanguageChoice.values[index - 1]);
       if (context.mounted) {
         showOutcome(context, failure: result.getLeft().toNullable());
       }

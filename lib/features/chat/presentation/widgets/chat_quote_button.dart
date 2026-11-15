@@ -75,11 +75,25 @@ class ChatScrollToBottomButton extends ConsumerWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => _ChatFloatingButton(
-    actionKey: const ValueKey('chat-scroll-to-bottom'),
-    label: context.t.chat.scrollToBottom,
-    icon: AppIcons.expanded,
-    onTap: onTap,
+  Widget build(BuildContext context, WidgetRef ref) => TextFieldTapRegion(
+    child: GlassContainer(
+      quality: AppEffects.qualityOf(context, GlassQuality.premium),
+      useOwnLayer: true,
+      shape: const LiquidOval(),
+      child: SizedBox.square(
+        dimension: AppSizes.minTouchTarget,
+        child: Pressable(
+          key: const ValueKey('chat-scroll-to-bottom'),
+          semanticLabel: context.t.chat.scrollToBottom,
+          onTap: onTap,
+          child: AppIcon(
+            AppIcons.expanded,
+            size: AppSizes.iconSm,
+            color: context.glass.foregroundMuted,
+          ),
+        ),
+      ),
+    ),
   );
 }
 

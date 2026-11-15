@@ -139,6 +139,12 @@ class _Timeline extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final scrollController = ref.watch(chatScrollControllerProvider);
+    useOnAppLifecycleStateChange((previous, current) {
+      if (current == AppLifecycleState.resumed) return;
+      for (final position in scrollController.positions) {
+        if (position is ScrollPositionWithSingleContext) position.goIdle();
+      }
+    });
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     final newest = switch (feed.items.firstOrNull) {
       TimelineMessage(:final message) => message,
@@ -152,7 +158,10 @@ class _Timeline extends HookConsumerWidget {
     useEffect(() {
       if (scrollTo == null) return null;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!scrollController.hasClients || scrollController.offset <= 0) {
+        final lifecycle = WidgetsBinding.instance.lifecycleState;
+        if ((lifecycle != null && lifecycle != AppLifecycleState.resumed) ||
+            !scrollController.hasClients ||
+            scrollController.offset <= 0) {
           return;
         }
         if (reduceMotion) {

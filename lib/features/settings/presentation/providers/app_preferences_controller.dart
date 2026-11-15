@@ -19,7 +19,7 @@ class AppPreferencesController extends _$AppPreferencesController {
   Future<Either<AppFailure, Unit>> setTheme(AppThemeChoice theme) =>
       _save(state.copyWith(theme: theme));
 
-  Future<Either<AppFailure, Unit>> setLanguage(AppLanguageChoice language) =>
+  Future<Either<AppFailure, Unit>> setLanguage(AppLanguageChoice? language) =>
       _save(state.copyWith(language: language));
 
   Future<Either<AppFailure, Unit>> setRenderQuality(AppRenderQuality quality) =>
@@ -30,6 +30,10 @@ class AppPreferencesController extends _$AppPreferencesController {
 
   Future<Either<AppFailure, Unit>> unlockDeveloperTools() =>
       _save(state.copyWith(developerToolsUnlocked: true));
+
+  Future<Either<AppFailure, Unit>> toggleDeveloperTools() => _save(
+    state.copyWith(developerToolsUnlocked: !state.developerToolsUnlocked),
+  );
 
   Future<Either<AppFailure, Unit>> completeOnboarding() =>
       _save(state.copyWith(onboardingCompleted: true));

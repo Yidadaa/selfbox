@@ -70,6 +70,7 @@
     "about": "About us",
     "logs": "Talker logs",
     "developerEnabled": "Developer mode enabled",
+    "developerDisabled": "Developer mode disabled",
     "developer": "Developer",
     "componentLibrary": "Component library UI",
     "componentLibraryDescription": "Preview and validate shared components",

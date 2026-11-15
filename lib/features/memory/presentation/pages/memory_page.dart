@@ -59,6 +59,7 @@ class MemoryPage extends ConsumerWidget {
             bottom: ShellScope.bottomInsetOf(context) + AppSpacing.md,
             child: GlassButton.custom(
               key: const ValueKey('add-memory'),
+              useOwnLayer: true,
               shape: const LiquidRoundedSuperellipse(
                 borderRadius: AppRadius.pill,
               ),

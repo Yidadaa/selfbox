@@ -7,6 +7,7 @@ targets:
         - pubspec.yaml
         - $package$
       exclude:
+        - lib/**/__tests__/**
         # ObjectBox's checked-in model JSON is an input: excluding it resets UIDs.
         - lib/gen/**/*.dart
     builders:

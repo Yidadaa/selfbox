@@ -54,11 +54,14 @@ void main() {
       await tester.tap(find.byType(AppArtwork));
       await tester.pump();
     }
-    expect(find.byType(GlassToast), findsNothing);
+    expect(preferences.current.developerToolsUnlocked, isFalse);
+    expect(find.text('Developer mode disabled'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
     router.go('/me');
     await tester.pumpAndSettle();
-    expect(find.text(t.me.developer), findsOneWidget);
-    expect(find.text(t.me.componentLibrary), findsOneWidget);
+    expect(find.text(t.me.developer), findsNothing);
+    expect(find.text(t.me.componentLibrary), findsNothing);
     expect(find.text(t.me.componentLibraryDescription), findsNothing);
   });
 

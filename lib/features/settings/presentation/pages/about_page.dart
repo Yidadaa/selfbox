@@ -83,19 +83,24 @@ class _AboutArtwork extends HookConsumerWidget {
     final taps = useState(0);
     return GestureDetector(
       onTap: () async {
-        if (ref.read(appPreferencesControllerProvider).developerToolsUnlocked) {
-          return;
-        }
         taps.value++;
         if (taps.value < 5) return;
         taps.value = 0;
         final result = await ref
             .read(appPreferencesControllerProvider.notifier)
-            .unlockDeveloperTools();
+            .toggleDeveloperTools();
         if (!context.mounted) return;
         result.match(
           (failure) => showOutcome(context, failure: failure),
-          (_) => showOutcome(context, success: context.t.me.developerEnabled),
+          (_) => showOutcome(
+            context,
+            success:
+                ref
+                    .read(appPreferencesControllerProvider)
+                    .developerToolsUnlocked
+                ? context.t.me.developerEnabled
+                : context.t.me.developerDisabled,
+          ),
         );
       },
       child: const AppArtwork(BrandArt.reading),

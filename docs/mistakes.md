@@ -1,5 +1,12 @@
 # 错误账本 (Mistakes Ledger)
 
+- [2026-11-16] [TestDiscovery] 全量漏掉 all_tests.dart、纯 export 入口又报缺少 main -> Flutter 仅扫描 _test.dart 且要求文件直接声明 main -> 保留聚合文件，由 colocated_test.dart 的 main 单行调用。
+
+- [2026-11-16] [TestBoundary] 同级测试跨 lib 相对导入 test 夹具能运行但 analyzer 无法解析 -> package URI 不能越过 lib 边界 -> 聚合入口注入已有启动夹具，同级测试只依赖包内契约，不搬迁或复制整套夹具。
+
+- [2026-11-16] [LifecycleFixture] 后台恢复断言触发非法转换、自动文案匹配重复 -> 测试跳过 hidden/inactive 且主题与语言共用“自动” -> 模拟完整生命周期序列，设置值断言限定对应 AppListTile。
+- [2026-11-16] [PowerShellGlob] rg 路径通配符读取失败 -> PowerShell 不替原生命令展开目录通配符 -> 先枚举缓存真实目录，再传精确路径。
+
 - [2026-11-16] [DockFixture] 附件过渡测试找不到玻璃 -> 只聚焦输入但未模拟键盘 inset -> 键盘入场回归同时驱动焦点与 viewInsets，退场覆盖失焦时键盘仍可见。
 - [2026-11-16] [PatchPath] 任务文件首个绝对路径补丁未落入仓库 -> 使用了未验证路径 -> 本仓库补丁使用 cwd 相对路径，以 git status 核验归属。
 

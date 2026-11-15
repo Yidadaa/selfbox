@@ -20,6 +20,7 @@ analyzer:
 
 linter:
   rules:
+    depend_on_referenced_packages: false
     always_declare_return_types: true
     avoid_dynamic_calls: true
     avoid_print: true

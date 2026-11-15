@@ -25,8 +25,7 @@ void main() {
     expect(find.byType(AppDockTabs), findsNothing);
     expect(find.text(t.general.theme), findsOneWidget);
     expect(find.text(t.general.language), findsOneWidget);
-    expect(find.text(t.general.system), findsOneWidget);
-    expect(find.text(t.general.english), findsOneWidget);
+    expect(find.text(t.general.system), findsNWidgets(2));
   });
 
   testWidgets('theme picker saves a choice and updates MaterialApp', (
@@ -120,7 +119,7 @@ void main() {
           )
           .scrollController
           ?.selectedItem,
-      0,
+      1,
     );
   });
 
@@ -137,8 +136,8 @@ void main() {
     final picker = tester.widget<CupertinoPicker>(
       find.byKey(const ValueKey('language-picker')),
     );
-    expect(picker.scrollController?.selectedItem, 1);
-    picker.scrollController?.jumpToItem(0);
+    expect(picker.scrollController?.selectedItem, 0);
+    picker.scrollController?.jumpToItem(1);
     await tester.pumpAndSettle();
     await tester.tap(find.text(t.common.save));
     await tester.pumpAndSettle();
@@ -155,7 +154,7 @@ void main() {
     tester
         .widget<CupertinoPicker>(find.byKey(const ValueKey('language-picker')))
         .scrollController
-        ?.jumpToItem(1);
+        ?.jumpToItem(2);
     await tester.pumpAndSettle();
     await tester.tap(find.text(t.common.save));
     await tester.pumpAndSettle();
