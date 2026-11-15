@@ -373,6 +373,7 @@ TaskEither<AppFailure, Unit> syncSnapshot() {
      1. `dart run slang` & `dart run build_runner build -d`（确认产物 100% 位于 `lib/gen/`）
      2. `flutter analyze`（确认 **0 issues**）
      3. `flutter test`（确认 `test/all_tests.dart` 桥接的所有同级 `__tests__` 用例 **100% 通过**）
+     4. 注意！非必要不要全量跑测试，只跑相关的测试！因为最终交代码之前还会全量跑测试，总是全量跑测试会导致很慢！
    - 遇到任何报错、陷阱或返工，修正后**立即追加一行高信息熵总结到 `docs/mistakes.md`**。
 5. **Step 5 - 提交前全量格式化（强制）**：
    - 每次执行 `git commit` 前，必须先在仓库根目录运行 `.\tools\flutter\bin\dart.bat format .`，使用 formatter 格式化项目全部 Dart 代码（包括测试与生成代码），禁止仅格式化本次修改的文件或跳过此步骤。
