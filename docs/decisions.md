@@ -1,5 +1,14 @@
 # 架构决策记录 (ADR)
 
+### [ADR-081] 原生网页传输与可恢复预览缓存
+
+- **背景**：手写 socket 连接工厂的 HTTPS 链路返回 400，双路竞速和永久失败缓存使抓取问题难以恢复。
+- **决策**：网页搜索、阅读和链接预览共用 NativeAdapter 1.8.0 的单 Dio；删除 platform_proxy、WebProxyAdapter 和 web_read_race。保留 10 秒连接配置、20 秒请求预算、2MB 流上限、最多四跳逐跳 URL 校验与 compute 解析。NativeAdapter 的原生转换层把连接和接收超时相加，仓库 CancelToken 的 20 秒总预算仍独立生效。
+- **平台核查**：锁定的 cronet_http 1.10.1 默认依赖 play-services-cronet 18.1.1（compileSdk 35/minSdk 24，与应用 compileSdk 37 兼容）；不默认携带 embedded。显式提供 createFallbackAdapter，在所有 Cronet providers disabled 时回退标准 IOHttpClientAdapter；该回退不会吞掉 TLS/请求错误，也不覆盖任意初始化故障。Windows/Linux 默认走 IO。IO 回退保留标准 TLS，不承诺继承移动系统代理；需要无 GMS 仍使用 Cronet 时，可另以 cronetHttpNoPlay=true 构建 embedded，非本轮默认配置。
+- **重定向核查**：ConversionLayerAdapter 传递 followRedirects/maxRedirects、流及 abortTrigger；Cronet 的 onRedirectReceived 在 followRedirects=false 时取消跟随，返回原状态码和响应头；Cupertino 将 maxRedirects 设为 0，onRedirect 返回 null，保留原响应和 location。两条路径均不会绕开仓库逐跳检查。Apple/Android 结论来自本地依赖源码，设备验收另行记录。
+- **安全边界**：保留 URL scheme/端口/凭据/本地主机名与字面 IP 校验；按本次要求删除连接工厂后不再在连接时固定 DNS 公网地址，不能宣称防御解析到私网的域名或 DNS rebinding。原 ADR-077 的 DNS 保证由本条替代；原生 DNS/TLS/代理交由平台处理。
+- **缓存**：fetchVersion=2；仅成功元数据持久化，任意旧 unavailable 记录均可重抓，成功时原 ID 原位更新；失败返回原 AppFailure，不写预占失败行。保留同仓库并发合并、跨重开成功命中和 clearAll 排空屏障；去重是 Provider 仓库生命周期内的保证，不再把数据库失败行当跨实例锁。
+
 ### [ADR-080] 聊天列表局部订阅、逐条虚拟化与有界复用
 
 - **背景**：思考流和键盘动画重建消息列表，连续 AI 讨论以 Column 全组挂载，历史窗口重复读取正文、解析布局和构造消息对象。

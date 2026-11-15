@@ -12,7 +12,7 @@ import 'package:selfbox/features/chat/domain/repositories/web_research_repositor
 void main() {
   for (final stillFails in [true, false]) {
     test(
-      'legacy failed previews get one new attempt, failure=$stillFails',
+      'version 1 failures retry after reopening, failure=$stillFails',
       () async {
         final paths = createTempAppPaths();
         final store = await openTempStore(paths);
@@ -23,6 +23,7 @@ void main() {
           description: '',
           iconUrl: '',
           unavailable: true,
+          fetchVersion: 1,
         );
         await store.box<LinkPreviewEntity>().putAsync(row);
         final web = FakeWebResearchRepository();
@@ -40,10 +41,38 @@ void main() {
           web,
         );
         expect((await reopened.read(row.sourceUrl).run()).isLeft(), stillFails);
-        expect(web.urls, hasLength(1));
+        expect(web.urls, hasLength(stillFails ? 2 : 1));
       },
     );
   }
+  test('successful migration updates the existing row to version 2', () async {
+    final store = await openTempStore();
+    final box = store.box<LinkPreviewEntity>();
+    final id = await box.putAsync(
+      LinkPreviewEntity(
+        sourceUrl: 'https://example.com',
+        url: 'https://example.com',
+        title: '',
+        description: '',
+        iconUrl: '',
+        unavailable: true,
+        fetchVersion: 1,
+      ),
+    );
+    final repository = ObjectBoxLinkPreviewRepository(
+      store,
+      FakeWebResearchRepository(),
+    );
+    expect(
+      (await repository.read('https://example.com').run()).isRight(),
+      isTrue,
+    );
+    final row = box.getAll().single;
+    expect(row.id, id);
+    expect(row.fetchVersion, 2);
+    expect(row.unavailable, isFalse);
+  });
+
   test('metadata survives repository recreation and offline reads', () async {
     final paths = createTempAppPaths();
     final store = await openTempStore(paths);
@@ -69,7 +98,7 @@ void main() {
     await reopened.clearAll().run();
     expect((await reopened.read('https://example.com').run()).isLeft(), isTrue);
   });
-  test('failed attempts survive reopening and do not fetch again', () async {
+  test('failed attempts can recover after reopening and deduplicate', () async {
     final paths = createTempAppPaths();
     final store = await openTempStore(paths);
     final web = FakeWebResearchRepository()
@@ -79,6 +108,7 @@ void main() {
       (await repository.read('https://example.com').run()).isLeft(),
       isTrue,
     );
+    expect(store.box<LinkPreviewEntity>().getAll(), isEmpty);
     web.failure = null;
     expect(
       (await repository.read('https://example.com/second').run()).isRight(),
@@ -93,8 +123,10 @@ void main() {
     final results = await Future.wait(
       List.generate(4, (_) => reopened.read('https://example.com').run()),
     );
-    expect(results.every((result) => result.isLeft()), isTrue);
-    expect(web.urls, hasLength(2));
+    expect(results.every((result) => result.isRight()), isTrue);
+    expect(web.urls, hasLength(3));
+    expect(await reopened.read('https://example.com').run(), results.first);
+    expect(web.urls, hasLength(3));
   });
   test(
     'clear drains in-flight writes before deleting persisted metadata',
@@ -104,15 +136,8 @@ void main() {
       final repository = ObjectBoxLinkPreviewRepository(store, web);
       final reading = repository.read('https://example.com').run();
       await web.started.future;
-      expect(store.box<LinkPreviewEntity>().getAll(), hasLength(1));
+      expect(store.box<LinkPreviewEntity>().getAll(), isEmpty);
       final concurrent = repository.read('https://example.com').run();
-      expect(
-        (await ObjectBoxLinkPreviewRepository(
-          store,
-          FakeWebResearchRepository(),
-        ).read('https://example.com').run()).isLeft(),
-        isTrue,
-      );
       final clearing = repository.clearAll().run();
       expect(
         (await repository.read('https://dart.dev').run()).isLeft(),
@@ -122,6 +147,7 @@ void main() {
       await reading;
       expect((await concurrent).isRight(), isTrue);
       expect((await clearing).isRight(), isTrue);
+      expect(store.box<LinkPreviewEntity>().getAll(), isEmpty);
       final offline = FakeWebResearchRepository()
         ..failure = const AppFailure.network(message: 'offline');
       expect(

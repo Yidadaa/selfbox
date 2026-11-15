@@ -2,6 +2,14 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-16] [WebTransport] 手写连接路径 HTTPS 400 后预览永久不可用 -> 自定义 socket/TLS 路径和预写失败缓存耦合 -> 平台适配器接管连接，成功才持久化，旧失败版本必须可重试。
+- [2026-11-16] [NativeAdapter] 无 GMS 不会自动回退 -> Cronet 默认依赖 Play Services 且 fallback 为 opt-in -> 核查锁定源码并显式开启 provider-disabled 回退，不把 IO 回退等同系统代理支持。
+- [2026-11-16] [PubHost] 源码路径读取失败、pub get 插件链接失败 -> 缓存实际位于 pub.flutter-io.cn，宿主禁止符号链接 -> 先枚举真实 hosted 目录，按生成插件清单创建目录联接后重跑 pub get。
+- [2026-11-16] [WebSmoke] HTTPS 网页及持久化冒烟通过但 Bing 搜索失败 -> 服务返回非支持的 RSS 内容 -> 分开记录传输与搜索上游结果，不将联网冒烟失败伪报为全部通过。
+- [2026-11-16] [TlsFixture] SecurityContext 测试参数触发冗余值告警 -> withTrustedRoots 默认 false -> 测试仅添加本地夹具证书，保持证书校验启用并采用默认构造。
+- [2026-11-16] [PreviewContract] 仓库回归通过但全量 Provider 测试仍要求失败永久命中 -> 缓存重试语义未同步上层接线契约 -> 变更持久化策略时同时测试 invalidate 后恢复及重开后成功离线命中。
+- [2026-11-16] [AndroidVerify] 构建出现 Kotlin daemon 临时文件拒绝访问但最终 APK 成功 -> 宿主 daemon 路径权限限制并由工具链继续编译 -> 区分日志告警与最终退出码/产物，不因栈信息误报构建失败。
+
 - [2026-11-16] [PerformanceFixture] 隔离订阅后替身 Notifier 尚未初始化 -> AI 关闭时不再监听状态 -> 测试显式读取 Provider 初始化后再驱动状态，禁止依赖无关 Widget 的订阅副作用。
 - [2026-11-16] [HistoryPaging] 慢历史页加载期间 ScrollController 脱离列表 -> whenData 丢弃 AsyncLoading 的旧值，页面切回骨架 -> 派生 feed 使用 when(skipLoadingOnReload:true) 保留已有 timeline；仅首次无数据加载显示骨架，并覆盖连续滚动防重入。
 - [2026-11-16] [ThumbnailFallbackTest] 并行回归中损坏缩略图回退尚未解码、临时文件仍被占用 -> 固定等待 160ms 不能代表图片 I/O 完成，已在 fakeAsync 发起的加载也不能再直接 await precache -> 交替 runAsync/pump，按真实 RawImage 完成状态有界等待后清理。

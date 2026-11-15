@@ -33,6 +33,13 @@ void main() {
       Dio()
         ..httpClientAdapter = _StubAdapter((request) {
           calls.add(request.uri);
+          expect(request.followRedirects, isFalse);
+          expect(request.responseType, ResponseType.stream);
+          expect(request.validateStatus(302), isTrue);
+          expect(request.headers['User-Agent'], contains('Googlebot/2.1'));
+          expect(request.headers['Accept-Language'], contains('zh-CN'));
+          expect(request.headers['Accept'], contains('text/html'));
+          expect(request.headers['Accept-Encoding'], 'gzip');
           return _response(
             200,
             'text/html',

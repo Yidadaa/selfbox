@@ -9,7 +9,7 @@ import 'package:selfbox/features/chat/presentation/providers/message_link_previe
 
 void main() {
   test(
-    'each URL has independent persisted attempt state across app sessions',
+    'failed URLs retry independently and successful previews survive sessions',
     () async {
       final paths = createTempAppPaths();
       final store = await openTempStore(paths);
@@ -32,13 +32,15 @@ void main() {
       ]);
       expect(results.every((result) => result.isRight()), isTrue);
       container.invalidate(first);
-      expect((await container.read(first.future)).isLeft(), isTrue);
+      expect((await container.read(first.future)).isRight(), isTrue);
       expect(web.urls, [
         'https://example.com/first',
         'https://example.com/second',
+        'https://example.com/first',
       ]);
       container.dispose();
       store.close();
+      web.failure = const AppFailure.network(message: 'offline again');
       final reopened = ProviderContainer(
         overrides: [
           linkPreviewRepositoryProvider.overrideWithValue(
@@ -47,9 +49,9 @@ void main() {
         ],
       );
       addTearDown(reopened.dispose);
-      expect((await reopened.read(first.future)).isLeft(), isTrue);
+      expect((await reopened.read(first.future)).isRight(), isTrue);
       expect((await reopened.read(second.future)).isRight(), isTrue);
-      expect(web.urls, hasLength(2));
+      expect(web.urls, hasLength(3));
     },
   );
 }

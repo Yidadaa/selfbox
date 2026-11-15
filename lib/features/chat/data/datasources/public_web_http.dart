@@ -2,44 +2,15 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
+import 'package:native_dio_adapter/native_dio_adapter.dart';
 
-import 'web_proxy_adapter.dart';
-
-/// Only public HTTP destinations. DNS is checked at socket creation so a
-/// redirect or rebinding cannot turn an AI-provided URL into a LAN request.
-Dio createPublicWebDio({
-  bool direct = false,
-  WebProxyResolver proxyResolver = resolveSystemWebProxy,
-}) {
+Dio createPublicWebDio({HttpClientAdapter? adapter}) {
   final dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 10)));
-  dio.httpClientAdapter = direct
-      ? _adapter('DIRECT')
-      : WebProxyAdapter(resolve: proxyResolver, createAdapter: _adapter);
+  dio.httpClientAdapter =
+      adapter ??
+      NativeAdapter(createFallbackAdapter: (_, _) => IOHttpClientAdapter());
   return dio;
 }
-
-IOHttpClientAdapter _adapter(String proxy) => IOHttpClientAdapter(
-  createHttpClient: () => HttpClient()
-    ..findProxy = ((_) => proxy)
-    ..connectionFactory = (uri, proxyHost, proxyPort) async {
-      if (!isPublicWebUri(uri)) {
-        throw const SocketException('Only public web URLs are allowed');
-      }
-      if (proxyHost != null) {
-        return Socket.startConnect(proxyHost, proxyPort ?? uri.port);
-      }
-      final addresses = await InternetAddress.lookup(uri.host)
-          .timeout(const Duration(seconds: 8));
-      if (addresses.isEmpty ||
-          addresses.any((address) => !isPublicWebAddress(address))) {
-        throw const SocketException(
-          'Private network destinations are not allowed',
-        );
-      }
-      // A proxy is user/environment configuration, never an AI tool argument.
-      return Socket.startConnect(addresses.first, uri.port);
-    },
-);
 
 bool isPublicWebUri(Uri uri) {
   if (!['http', 'https'].contains(uri.scheme) ||
