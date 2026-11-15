@@ -24,6 +24,7 @@ abstract final class MessageTokens {
     stops: const [0, AppSpacing.md / previewHintHeight, 1],
   );
   static const tail = 6.0;
+  static const bookmarkIconSize = 16.0;
   static const imageWidth = 224.0;
   static const imageHeight = 180.0;
   static const stackInset = 8.0;

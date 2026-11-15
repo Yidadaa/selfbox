@@ -2,6 +2,8 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-15] [BookmarkDensity] 链接卡片过高且与聊天气泡脱节 -> 双行固定预留和独立玻璃表面造成多余留白 -> 复用用户消息蓝色轮廓，标题/简介各一行省略，以真实文字几何验证 4dp 间距。
+
 - [2026-11-15] [ReactiveLabelTest] 改名后立即断言标题仍为旧值 -> ReactiveValueListenableBuilder 的流更新尚未完成 -> 程序赋值后 pumpAndSettle，再断言动态文案及未丢失输入。
 
 - [2026-11-15] [CustomPrompt] 多行字段编译失败、空串无法清空、键盘下保存不可见 -> GlassTextField.maxLines 非空，通用校验把空串转 null，保存位于长编辑列表末尾 -> maxLines 保持 int，空串语义显式 opt-in，保存固定底部且验证键盘边界。

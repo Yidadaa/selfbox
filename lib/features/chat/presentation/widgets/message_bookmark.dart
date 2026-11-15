@@ -2,10 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -15,6 +13,7 @@ import '../../../../core/widgets/pressable.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/repositories/web_research_repository.dart';
 import '../providers/message_link_preview.dart';
+import 'message_mine_surface.dart';
 import 'open_message_link.dart';
 
 class MessageBookmark extends ConsumerWidget {
@@ -30,13 +29,12 @@ class MessageBookmark extends ConsumerWidget {
       onTap: () => openMessageLink(context, ref, url),
       semanticLabel: url,
       child: RepaintBoundary(
-        child: GlassContainer(
-          quality: AppEffects.qualityOf(context, GlassQuality.standard),
-          shape: const LiquidRoundedSuperellipse(
-            borderRadius: MessageTokens.radius,
-          ),
+        child: MessageMineSurface(
           child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.xs,
+            ),
             child: Skeletonizer(
               enabled: result.isLoading,
               child: _BookmarkContent(url: url, page: page),
@@ -60,11 +58,11 @@ class _BookmarkContent extends ConsumerWidget {
     final title = page?.title.trim() ?? '';
     final summary = page?.description.trim() ?? '';
     final titleStyle = theme.textTheme.bodyLarge?.copyWith(
-      color: context.glass.foreground,
+      color: context.glass.onBubbleMine,
       fontWeight: FontWeight.w600,
     );
     final summaryStyle = theme.textTheme.bodySmall?.copyWith(
-      color: context.glass.foregroundMuted,
+      color: context.glass.onBubbleMine,
     );
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -84,9 +82,9 @@ class _BookmarkContent extends ConsumerWidget {
             ),
           ],
         ),
-        const Gap(AppSpacing.sm),
+        const Gap(AppSpacing.xxs),
         _BookmarkText(text: title.isEmpty ? host : title, style: titleStyle),
-        const Gap(AppSpacing.xs),
+        const Gap(AppSpacing.xxs),
         _BookmarkText(
           text: summary.isEmpty
               ? context.t.chat.linkPreviewUnavailable
@@ -103,19 +101,8 @@ class _BookmarkText extends ConsumerWidget {
   final String text;
   final TextStyle? style;
   @override
-  Widget build(BuildContext context, WidgetRef ref) => SizedBox(
-    // Reserving both lines keeps loading, success and fallback cards the same size.
-    height:
-        MediaQuery.textScalerOf(context).scale(style?.fontSize ?? 14) *
-        (style?.height ?? 1.5) *
-        2,
-    child: Text(
-      text,
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
-      style: style,
-    ),
-  );
+  Widget build(BuildContext context, WidgetRef ref) =>
+      Text(text, maxLines: 1, overflow: TextOverflow.ellipsis, style: style);
 }
 
 class _BookmarkIcon extends ConsumerWidget {
@@ -125,20 +112,22 @@ class _BookmarkIcon extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final fallback = AppIcon(
       AppIcons.webRead,
-      size: AppSpacing.xl,
-      color: context.glass.foregroundMuted,
+      size: MessageTokens.bookmarkIconSize,
+      color: context.glass.onBubbleMine,
     );
     return SizedBox.square(
-      dimension: AppSpacing.xl,
+      dimension: MessageTokens.bookmarkIconSize,
       child: url.isEmpty
           ? fallback
           : CachedNetworkImage(
               imageUrl: url,
               memCacheWidth:
-                  (AppSpacing.xl * MediaQuery.devicePixelRatioOf(context))
+                  (MessageTokens.bookmarkIconSize *
+                          MediaQuery.devicePixelRatioOf(context))
                       .ceil(),
               memCacheHeight:
-                  (AppSpacing.xl * MediaQuery.devicePixelRatioOf(context))
+                  (MessageTokens.bookmarkIconSize *
+                          MediaQuery.devicePixelRatioOf(context))
                       .ceil(),
               fit: BoxFit.contain,
               placeholder: (_, _) => fallback,

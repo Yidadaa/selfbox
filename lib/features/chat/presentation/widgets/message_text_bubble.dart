@@ -8,6 +8,7 @@ import '../../../../core/theme/message_tokens.dart';
 import '../../domain/models/message.dart';
 import '../../domain/services/message_links.dart';
 import 'message_bookmark.dart';
+import 'message_mine_surface.dart';
 import 'message_text_content.dart';
 
 class MessageTextBubble extends ConsumerWidget {
@@ -48,14 +49,7 @@ class MessageTextBubble extends ConsumerWidget {
       ),
     );
     return switch (message.author) {
-      MessageAuthor.me => ClipPath(
-        clipper: const _SpeechClipper(),
-        child: ColoredBox(
-          key: const ValueKey('message-surface'),
-          color: glass.bubbleMine,
-          child: content,
-        ),
-      ),
+      MessageAuthor.me => MessageMineSurface(child: content),
       MessageAuthor.ai => RepaintBoundary(
         child: DecoratedBox(
           key: const ValueKey('message-surface'),
@@ -70,33 +64,4 @@ class MessageTextBubble extends ConsumerWidget {
       ),
     };
   }
-}
-
-/// One continuous outline prevents a seam between the rounded body and tail.
-class _SpeechClipper extends CustomClipper<Path> {
-  const _SpeechClipper();
-  @override
-  Path getClip(Size size) {
-    final w = size.width;
-    final h = size.height;
-    final r = MessageTokens.radius.clamp(0.0, size.shortestSide / 2);
-    const tail = MessageTokens.tail;
-    final path = Path()
-      ..moveTo(r, 0)
-      ..lineTo(w - r - tail, 0)
-      ..quadraticBezierTo(w - tail, 0, w - tail, r)
-      ..lineTo(w - tail, h - r)
-      ..quadraticBezierTo(w - tail, h - tail, w, h)
-      ..quadraticBezierTo(w - tail, h, w - tail * 2, h - tail)
-      ..quadraticBezierTo(w - r, h, w - r - tail, h)
-      ..lineTo(r, h)
-      ..quadraticBezierTo(0, h, 0, h - r)
-      ..lineTo(0, r)
-      ..quadraticBezierTo(0, 0, r, 0)
-      ..close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(_SpeechClipper oldClipper) => false;
 }

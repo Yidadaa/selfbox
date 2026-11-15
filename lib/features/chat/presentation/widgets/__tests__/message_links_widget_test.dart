@@ -10,8 +10,11 @@ import 'package:selfbox/core/platform/external_browser.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/core/testing/icon_finder.dart';
+import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_icons.dart';
+import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/core/widgets/app_action_popover.dart';
+import 'package:selfbox/core/widgets/app_icon.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/domain/repositories/web_research_repository.dart';
 import 'package:selfbox/features/chat/presentation/providers/message_link_preview.dart';
@@ -177,6 +180,30 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text('Article title'), findsOneWidget);
         expect(find.text('A short summary'), findsOneWidget);
+        final title = find.text('Article title');
+        final summary = find.text('A short summary');
+        expect(tester.widget<Text>(title).maxLines, 1);
+        expect(tester.widget<Text>(summary).maxLines, 1);
+        expect(tester.widget<Text>(title).overflow, TextOverflow.ellipsis);
+        expect(tester.widget<Text>(summary).overflow, TextOverflow.ellipsis);
+        expect(
+          tester.getTopLeft(summary).dy - tester.getBottomLeft(title).dy,
+          AppSpacing.xxs,
+        );
+        expect(tester.widget<AppIcon>(findAppIcon(AppIcons.webRead)).size, 16);
+        final glass = tester.element(card).glass;
+        expect(
+          find.descendant(
+            of: card,
+            matching: find.byWidgetPredicate(
+              (widget) =>
+                  widget is ColoredBox && widget.color == glass.bubbleMine,
+            ),
+          ),
+          findsOneWidget,
+        );
+        expect(tester.widget<Text>(title).style?.color, glass.onBubbleMine);
+        expect(tester.getSize(card).height, lessThan(100));
         expect(tester.getSize(card), loadingSize);
         await tester.tap(card);
         await tester.pumpAndSettle();
