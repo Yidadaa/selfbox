@@ -10,6 +10,40 @@ import 'package:selfbox/features/chat/data/repositories/objectbox_link_preview_r
 import 'package:selfbox/features/chat/domain/repositories/web_research_repository.dart';
 
 void main() {
+  for (final stillFails in [true, false]) {
+    test(
+      'legacy failed previews get one new attempt, failure=$stillFails',
+      () async {
+        final paths = createTempAppPaths();
+        final store = await openTempStore(paths);
+        final row = LinkPreviewEntity(
+          sourceUrl: 'https://example.com',
+          url: 'https://example.com',
+          title: '',
+          description: '',
+          iconUrl: '',
+          unavailable: true,
+        );
+        await store.box<LinkPreviewEntity>().putAsync(row);
+        final web = FakeWebResearchRepository();
+        if (stillFails) {
+          web.failure = const AppFailure.network(message: 'offline');
+        }
+        final repository = ObjectBoxLinkPreviewRepository(store, web);
+        expect(
+          (await repository.read(row.sourceUrl).run()).isLeft(),
+          stillFails,
+        );
+        store.close();
+        final reopened = ObjectBoxLinkPreviewRepository(
+          await openTempStore(paths),
+          web,
+        );
+        expect((await reopened.read(row.sourceUrl).run()).isLeft(), stillFails);
+        expect(web.urls, hasLength(1));
+      },
+    );
+  }
   test('metadata survives repository recreation and offline reads', () async {
     final paths = createTempAppPaths();
     final store = await openTempStore(paths);

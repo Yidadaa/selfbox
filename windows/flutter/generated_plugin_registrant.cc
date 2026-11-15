@@ -10,6 +10,7 @@
 #include <flutter_secure_storage_windows/flutter_secure_storage_windows_plugin.h>
 #include <objectbox_flutter_libs/objectbox_flutter_libs_plugin_c_api.h>
 #include <permission_handler_windows/permission_handler_windows_plugin.h>
+#include <platform_proxy/platform_proxy_plugin.h>
 #include <record_windows/record_windows_plugin_c_api.h>
 #include <screen_capturer_windows/screen_capturer_windows_plugin_c_api.h>
 #include <share_plus/share_plus_windows_plugin_c_api.h>
@@ -24,6 +25,8 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("ObjectboxFlutterLibsPluginCApi"));
   PermissionHandlerWindowsPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("PermissionHandlerWindowsPlugin"));
+  PlatformProxyPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("PlatformProxyPlugin"));
   RecordWindowsPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("RecordWindowsPluginCApi"));
   ScreenCapturerWindowsPluginCApiRegisterWithRegistrar(

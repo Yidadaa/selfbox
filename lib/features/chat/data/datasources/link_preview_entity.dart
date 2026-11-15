@@ -12,6 +12,7 @@ class LinkPreviewEntity {
     required this.iconUrl,
     this.id = 0,
     this.unavailable = false,
+    this.fetchVersion = 0,
   });
 
   @Id()
@@ -23,6 +24,7 @@ class LinkPreviewEntity {
   String description;
   String iconUrl;
   bool unavailable;
+  int fetchVersion;
 }
 
 extension LinkPreviewMapper on LinkPreviewEntity {

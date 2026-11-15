@@ -41,6 +41,7 @@ dependencies:
   package_info_plus: ^9.0.1
   path: ^1.9.1
   path_provider: ^2.1.6
+  platform_proxy: ^0.9.4
   permission_handler: ^13.0.2
   reactive_forms: ^18.2.2
   record: ^7.1.2

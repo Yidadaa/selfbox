@@ -13,6 +13,7 @@ class ObjectBoxLinkPreviewRepository implements LinkPreviewRepository {
   final WebResearchRepository web;
   final _pending = <String, Future<Either<AppFailure, WebPageContent>>>{};
   Future<Either<AppFailure, Unit>>? _clearing;
+  static const _fetchVersion = 1;
 
   @override
   TaskEither<AppFailure, WebPageContent> read(String url) => TaskEither(() {
@@ -40,7 +41,9 @@ class ObjectBoxLinkPreviewRepository implements LinkPreviewRepository {
           query.close();
         }
       }, _failure).flatMap(
-        (cached) => cached != null
+        (cached) =>
+            cached != null &&
+                (!cached.unavailable || cached.fetchVersion >= _fetchVersion)
             ? cached.unavailable
                   ? TaskEither.left(
                       const AppFailure.network(
@@ -48,19 +51,21 @@ class ObjectBoxLinkPreviewRepository implements LinkPreviewRepository {
                       ),
                     )
                   : TaskEither.right(cached.toDomain())
-            : _fetchOnce(url),
+            : _fetchOnce(url, id: cached?.id ?? 0),
       );
 
-  TaskEither<AppFailure, WebPageContent> _fetchOnce(String url) =>
+  TaskEither<AppFailure, WebPageContent> _fetchOnce(String url, {int id = 0}) =>
       TaskEither.tryCatch(
         () => _box.putAsync(
           LinkPreviewEntity(
+            id: id,
             sourceUrl: url,
             url: url,
             title: '',
             description: '',
             iconUrl: '',
             unavailable: true,
+            fetchVersion: _fetchVersion,
           ),
         ),
         _failure,
@@ -76,6 +81,7 @@ class ObjectBoxLinkPreviewRepository implements LinkPreviewRepository {
                   title: page.title,
                   description: page.description,
                   iconUrl: page.iconUrl,
+                  fetchVersion: _fetchVersion,
                 );
                 await _box.putAsync(row);
                 return row.toDomain();

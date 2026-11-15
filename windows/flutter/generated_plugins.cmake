@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   flutter_secure_storage_windows
   objectbox_flutter_libs
   permission_handler_windows
+  platform_proxy
   record_windows
   screen_capturer_windows
   share_plus

@@ -3,40 +3,43 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 
+import 'web_proxy_adapter.dart';
+
 /// Only public HTTP destinations. DNS is checked at socket creation so a
 /// redirect or rebinding cannot turn an AI-provided URL into a LAN request.
-Dio createPublicWebDio() {
+Dio createPublicWebDio({
+  bool direct = false,
+  WebProxyResolver proxyResolver = resolveSystemWebProxy,
+}) {
   final dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 10)));
-  dio.httpClientAdapter = IOHttpClientAdapter(
-    createHttpClient: () => HttpClient()
-      ..findProxy = ((uri) => HttpClient.findProxyFromEnvironment(
-        uri,
-        environment: {
-          for (final entry in Platform.environment.entries)
-            entry.key.toLowerCase(): entry.value,
-        },
-      ))
-      ..connectionFactory = (uri, proxyHost, proxyPort) async {
-        if (!isPublicWebUri(uri)) {
-          throw const SocketException('Only public web URLs are allowed');
-        }
-        final addresses = await InternetAddress.lookup(uri.host)
-            .timeout(const Duration(seconds: 8));
-        if (addresses.isEmpty ||
-            addresses.any((address) => !isPublicWebAddress(address))) {
-          throw const SocketException(
-            'Private network destinations are not allowed',
-          );
-        }
-        // A proxy is user/environment configuration, never an AI tool argument.
-        return Socket.startConnect(
-          proxyHost ?? addresses.first,
-          proxyPort ?? uri.port,
-        );
-      },
-  );
+  dio.httpClientAdapter = direct
+      ? _adapter('DIRECT')
+      : WebProxyAdapter(resolve: proxyResolver, createAdapter: _adapter);
   return dio;
 }
+
+IOHttpClientAdapter _adapter(String proxy) => IOHttpClientAdapter(
+  createHttpClient: () => HttpClient()
+    ..findProxy = ((_) => proxy)
+    ..connectionFactory = (uri, proxyHost, proxyPort) async {
+      if (!isPublicWebUri(uri)) {
+        throw const SocketException('Only public web URLs are allowed');
+      }
+      if (proxyHost != null) {
+        return Socket.startConnect(proxyHost, proxyPort ?? uri.port);
+      }
+      final addresses = await InternetAddress.lookup(uri.host)
+          .timeout(const Duration(seconds: 8));
+      if (addresses.isEmpty ||
+          addresses.any((address) => !isPublicWebAddress(address))) {
+        throw const SocketException(
+          'Private network destinations are not allowed',
+        );
+      }
+      // A proxy is user/environment configuration, never an AI tool argument.
+      return Socket.startConnect(addresses.first, uri.port);
+    },
+);
 
 bool isPublicWebUri(Uri uri) {
   if (!['http', 'https'].contains(uri.scheme) ||

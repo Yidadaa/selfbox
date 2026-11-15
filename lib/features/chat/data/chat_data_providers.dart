@@ -37,11 +37,16 @@ LanguageModelFactory languageModelFactory(Ref ref) =>
 
 @Riverpod(keepAlive: true)
 WebResearchRepository webResearchRepository(Ref ref) {
-  final dio = createPublicWebDio();
-  ref.onDispose(() => dio.close(force: true));
+  final dio = createPublicWebDio(direct: true);
+  final proxy = createPublicWebDio();
+  ref.onDispose(() {
+    dio.close(force: true);
+    proxy.close(force: true);
+  });
   final talker = ref.watch(talkerProvider);
   return BingWebResearchRepository(
     dio,
+    proxyDio: proxy,
     onFailure: (error, _) =>
         talker.warning('Web request failed (${error.runtimeType})'),
   );
