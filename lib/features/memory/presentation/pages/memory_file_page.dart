@@ -36,15 +36,9 @@ class MemoryFilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final file = ref.watch(memoryFileProvider(path));
     final t = context.t;
-    final title = switch (file) {
-      AsyncData(value: Some(:final value)) => memoryTitle(
-        value.path,
-        value.content,
-      ),
-      _ => path,
-    };
     return AppPageScaffold(
-      title: title,
+      title: '',
+      titleContent: const SizedBox.shrink(),
       leading: GlassIconButton(
         quality: AppEffects.qualityOf(context, GlassQuality.premium),
         size: AppSizes.minTouchTarget,
