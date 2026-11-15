@@ -1,10 +1,24 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luthor/luthor.dart' hide Validator;
 import 'package:luthor/luthor.dart' as lu show Validator;
+import 'package:luthor/luthor.dart' hide Validator;
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:selfbox/core/forms/luthor_validator.dart';
 
 void main() {
+  test(
+    'preserves blank strings when the field explicitly supports clearing',
+    () {
+      final control = FormControl<String>(
+        value: '',
+        validators: [
+          luthorValidator(l.string().max(10).required(), preserveEmpty: true),
+        ],
+      );
+      expect(control.valid, isTrue);
+      control.value = null;
+      expect(control.invalid, isTrue);
+    },
+  );
   group('luthorValidator', () {
     FormControl<T> control<T>(lu.Validator<Object?> schema, [T? value]) =>
         FormControl<T>(value: value, validators: [luthorValidator(schema)]);

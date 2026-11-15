@@ -2,6 +2,15 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-15] [CustomPrompt] 多行字段编译失败、空串无法清空、键盘下保存不可见 -> GlassTextField.maxLines 非空，通用校验把空串转 null，保存位于长编辑列表末尾 -> maxLines 保持 int，空串语义显式 opt-in，保存固定底部且验证键盘边界。
+- [2026-11-15] [ProviderFixture] 流日志测试等待超时、重复 pumpPage 后残留调度 Timer -> 未保持订阅且切换测试容器后旧容器仍存活 -> 流测试显式 listen，换容器前卸载并 dispose；缓存持久化后移除无必要的 keepAlive 定时器。
+- [2026-11-15] [LinkStyle] 浅色蓝气泡链接下划线继承黑色 -> 行内 TextSpan 未显式继承消息文字装饰色 -> 链接 color/decorationColor 从同一正文样式派生，截图分别检查明暗实际渲染。
+- [2026-11-15] [ScreenshotReview] 预览疑似丢失消息文字，但原始 PNG 白色像素与局部裁切均正常 -> 预览显示不能替代原文件校验 -> 先查像素和独立裁切再修改渲染代码，排查用 RepaintBoundary 和等待帧已撤回。
+
+- [2026-11-15] [PreviewCache] 并发缓存测试超时 -> whenComplete 箭头回调返回 Map.remove 移出的同一个 Future，形成自等待 -> 清理 Future 映射使用 void 块回调；覆盖并发、失败重试和清空时在途写入。
+- [2026-11-15] [LinkTests] 链接及工具断言失败 -> Text.rich 外包额外 TextSpan，SDK 将工具 JSON 序列化为文本结果 -> 链接测试按实际 RenderParagraph 字符范围点击；Agent 请求断言 ToolResultOutputText。
+- [2026-11-15] [PubCache] 新插件下载失败且桌面插件链接目录为空 -> 系统 Pub 临时目录不可写，当前环境无法创建符号链接 -> 使用项目 .tools/pub-cache，通过目录联接复用已安装包及 Flutter 插件目录；不改全局权限或包源码。
+
 - [2026-11-15] [WindowsTestFilter] Flutter 截图筛选的正则分支被当成命令 -> PowerShell 调用 .bat 时管道字符进入 cmd 解析 -> 测试名称筛选避免含管道字符，使用无分支的匹配表达式。
 
 - [2026-11-15] [QuoteViewport] 原消息页混入相邻记录且顶部滚动裁断 -> 使用 around 查询并在 ScrollView 外套顶部 Padding -> 引用详情只按 ID 查询，避让放入滚动内容；同时断言无相邻记录、视口顶边为 0、初始正文避开 toolbar。

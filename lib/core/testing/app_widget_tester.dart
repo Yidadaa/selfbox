@@ -25,6 +25,7 @@ import '../time/clock.dart';
 import 'fake_account_repository.dart';
 import 'fake_ai_settings.dart';
 import 'fake_app_preferences_repository.dart';
+import 'fake_link_preview_repository.dart';
 import 'fake_memory_repository.dart';
 import 'fake_message_repository.dart';
 import 'fake_web_research_repository.dart';
@@ -57,6 +58,7 @@ List<Override> testAppOverrides({
     messages ?? FakeMessageRepository(),
   ),
   webResearchRepositoryProvider.overrideWithValue(FakeWebResearchRepository()),
+  linkPreviewRepositoryProvider.overrideWithValue(FakeLinkPreviewRepository()),
   clockProvider.overrideWithValue(() => now ?? kTestNow),
   memoryRepositoryProvider.overrideWithValue(memory ?? FakeMemoryRepository()),
   aiSettingsRepositoryProvider.overrideWithValue(

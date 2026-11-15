@@ -25,6 +25,7 @@ import 'composer_keyboard_fixtures.dart';
 import 'general_effects_fixtures.dart';
 import 'image_viewer_fixtures.dart';
 import 'message_action_fixtures.dart';
+import 'message_link_fixtures.dart';
 import 'message_quote_fixtures.dart';
 import 'onboarding_fixtures.dart';
 import 'relief_fixtures.dart';
@@ -109,6 +110,7 @@ void main() {
     ...generalEffectsFixtures,
     ...imageViewerFixtures,
     ...messageActionFixtures,
+    ...messageLinkFixtures,
     ...messageQuoteFixtures,
     ...uiPolishFixtures,
     ...onboardingFixtures,

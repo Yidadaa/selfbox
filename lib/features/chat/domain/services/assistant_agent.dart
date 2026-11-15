@@ -128,6 +128,7 @@ class AssistantAgent {
       userName: userName,
       agentName: agentName,
       languageTag: languageTag(),
+      customPrompt: setup.settings.customPrompt,
     );
     final budget = math.min(
       model.shortTermMemoryTokens(setup.settings.shortTermMemoryPercent),

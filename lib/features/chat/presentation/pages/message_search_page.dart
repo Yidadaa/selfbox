@@ -18,6 +18,7 @@ import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../../settings/presentation/widgets/settings_back_button.dart';
+import '../../data/chat_data_providers.dart';
 import '../../domain/models/message.dart';
 import '../providers/message_search.dart';
 import '../widgets/message_bubble.dart';
@@ -113,14 +114,14 @@ class MessageSearchPage extends HookConsumerWidget {
   }
 }
 
-class _SearchResults extends StatelessWidget {
+class _SearchResults extends ConsumerWidget {
   const _SearchResults({required this.messages, required this.query});
 
   final List<Message> messages;
   final String query;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (query.trim().isEmpty) {
       return EmptyState(
         label: context.t.chat.searchPrompt,
@@ -144,7 +145,12 @@ class _SearchResults extends StatelessWidget {
       separatorBuilder: (_, _) => const Gap(AppSpacing.sm),
       itemBuilder: (context, index) => MessageBubble(
         message: messages[index],
-        resolveImage: (_) => null,
+        resolveImage: (path) =>
+            ref.read(mediaStoreProvider).resolve(path).toNullable(),
+        onImageTap: (path) => ImageViewerRoute(
+          path: path,
+          $extra: messages[index].images,
+        ).push<void>(context),
         onExpand: () => MessageExpandedRoute(
           id: messages[index].id,
           $extra: messages[index],

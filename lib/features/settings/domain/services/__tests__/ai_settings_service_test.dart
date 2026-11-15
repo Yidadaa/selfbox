@@ -29,6 +29,31 @@ void main() {
   });
 
   group('AiSettingsService', () {
+    test(
+      'prompt edits preserve configuration, allow clearing and reject overflow',
+      () async {
+        repo.current = const AiSettings(
+          providers: [_provider],
+          shortTermMemoryPercent: 35,
+        );
+        _ok(await service.setCustomPrompt('  请简洁回答\n保留细节  ').run());
+        expect(repo.current.customPrompt, '请简洁回答\n保留细节');
+        expect(repo.current.providers, [_provider]);
+        expect(repo.current.shortTermMemoryPercent, 35);
+        expect(
+          (await service
+                  .setCustomPrompt(
+                    'x' * (AiSettingsSchema.maxCustomPromptLength + 1),
+                  )
+                  .run())
+              .isLeft(),
+          isTrue,
+        );
+        expect(repo.current.customPrompt, '请简洁回答\n保留细节');
+        _ok(await service.setCustomPrompt(' \n ').run());
+        expect(repo.current.customPrompt, '');
+      },
+    );
     test('reset barrier waits for a pending catalog merge', () async {
       repo.current = const AiSettings(providers: [_provider]);
       repo.keys['p1'] = 'key';

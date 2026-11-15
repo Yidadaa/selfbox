@@ -36,6 +36,8 @@
     "noQuotes": "No quoted messages",
     "messageMissing": "This message was deleted",
     "imageMessage": "{count} images",
+    "linkPreviewUnavailable": "Preview unavailable",
+    "openLinkFailed": "Could not open the browser",
     "authorMe": "Me"
   },
   "memory": {
@@ -141,6 +143,8 @@
   },
   "settings": {
     "aiSection": "AI",
+    "customPrompt": "Custom instructions",
+    "customPromptHint": "How would you like AI to respond?",
     "activeModel": "Model",
     "shortTermMemory": "Short-term memory length",
     "memoryPercent": "{value}%",

@@ -67,6 +67,7 @@ void main() {
       const settings = AiSettings(
         providers: [_provider],
         shortTermMemoryPercent: 35,
+        customPrompt: 'Use concise replies.\n优先使用中文。',
       );
       _ok(await repo.save(settings).run());
 

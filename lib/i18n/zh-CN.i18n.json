@@ -36,6 +36,8 @@
     "noQuotes": "暂无引用",
     "messageMissing": "该消息已删除",
     "imageMessage": "{count} 张图片",
+    "linkPreviewUnavailable": "暂无网页摘要",
+    "openLinkFailed": "无法打开浏览器",
     "authorMe": "我"
   },
   "memory": {
@@ -141,6 +143,8 @@
   },
   "settings": {
     "aiSection": "AI",
+    "customPrompt": "自定义提示词",
+    "customPromptHint": "希望 AI 如何回答你？",
     "activeModel": "模型",
     "shortTermMemory": "短时记忆长度",
     "memoryPercent": "{value}%",

@@ -43,14 +43,26 @@ WebPageContent parseWebPage(String source, String url, String contentType) {
       title: Uri.parse(url).host,
       url: url,
       text: clipWebText(text, maxWebText),
+      description: clipWebText(text, 300),
       truncated: text.length > maxWebText,
     );
   }
   final document = html.parse(source);
   final title = clipWebText(
-    document.querySelector('title')?.text.trim() ?? Uri.parse(url).host,
+    _firstNonEmpty([
+      _meta(document, 'og:title'),
+      _meta(document, 'twitter:title'),
+      document.querySelector('title')?.text ?? '',
+      Uri.parse(url).host,
+    ]),
     300,
   );
+  final description = _firstNonEmpty([
+    _meta(document, 'og:description'),
+    _meta(document, 'description'),
+    _meta(document, 'twitter:description'),
+  ]);
+  final iconUrl = _iconUrl(document, Uri.parse(url));
   for (final node in document.querySelectorAll(
     'script,style,noscript,nav,footer,header,aside,form,svg,canvas,iframe,[hidden],[aria-hidden="true"]',
   )) {
@@ -73,17 +85,47 @@ WebPageContent parseWebPage(String source, String url, String contentType) {
       .replaceAll(RegExp(r' *\n *'), '\n')
       .replaceAll(RegExp(r'\n{3,}'), '\n\n')
       .trim();
-  if (text.isEmpty) {
-    throw const AppFailure.network(
-      message: 'No readable text; page may require JavaScript or sign-in',
-    );
-  }
   return WebPageContent(
     title: title,
     url: url,
     text: clipWebText(text, maxWebText),
+    description: clipWebText(
+      description.isEmpty ? plainText(text) : description,
+      300,
+    ),
+    iconUrl: iconUrl,
     truncated: text.length > maxWebText,
   );
+}
+
+String _meta(Document document, String name) =>
+    document
+        .querySelector('meta[property="$name"],meta[name="$name"]')
+        ?.attributes['content'] ??
+    '';
+
+String _firstNonEmpty(List<String> values) =>
+    values.map(plainText).where((value) => value.isNotEmpty).firstOrNull ?? '';
+
+String _iconUrl(Document document, Uri page) {
+  final baseReference = Uri.tryParse(
+    document.querySelector('base[href]')?.attributes['href'] ?? '',
+  );
+  final baseCandidate = baseReference == null
+      ? page
+      : page.resolveUri(baseReference);
+  final base = isPublicWebUri(baseCandidate) ? baseCandidate : page;
+  for (final link in document.querySelectorAll('link[rel][href]')) {
+    final rel = (link.attributes['rel'] ?? '').toLowerCase().split(
+      RegExp(r'\s+'),
+    );
+    if (!rel.contains('icon') && !rel.contains('apple-touch-icon')) continue;
+    final reference = Uri.tryParse(link.attributes['href'] ?? '');
+    if (reference == null) continue;
+    final icon = base.resolveUri(reference);
+    if (isPublicWebUri(icon)) return icon.toString();
+  }
+  return page.resolve('/favicon.ico').toString();
 }
 
 const maxWebText = 80000;

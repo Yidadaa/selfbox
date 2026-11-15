@@ -9,6 +9,8 @@ import '../../../../core/theme/message_tokens.dart';
 import '../../../../core/widgets/app_markdown_builders.dart';
 import '../../../../core/widgets/app_selection_popover.dart';
 import '../../domain/models/message.dart';
+import 'message_link_text.dart';
+import 'open_message_link.dart';
 
 class MessageTextContent extends HookConsumerWidget {
   const MessageTextContent({
@@ -42,8 +44,9 @@ class MessageTextContent extends HookConsumerWidget {
           MarkdownParser().parse(message.text).every(_intrinsicText),
       [fullWidth, message.author, message.text],
     );
-    final text = Text(
-      message.text,
+    final text = MessageLinkText(
+      text: message.text,
+      selectionMode: selectionMode,
       style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: color),
     );
     final content = switch (message.author) {
@@ -67,6 +70,7 @@ class MessageTextContent extends HookConsumerWidget {
             : text,
       MessageAuthor.ai => SmoothMarkdown(
         data: message.text,
+        onTapLink: (url) => openMessageLink(context, ref, url),
         selectable: selectionMode,
         selectionController: selectionController,
         contextMenuBuilder: (_, state) => AppSelectionPopover(

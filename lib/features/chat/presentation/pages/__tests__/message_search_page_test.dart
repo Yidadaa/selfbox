@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
@@ -5,15 +8,77 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_message_repository.dart';
+import 'package:selfbox/core/testing/temp_storage.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_icons.dart';
+import 'package:selfbox/core/theme/message_tokens.dart';
 import 'package:selfbox/core/widgets/app_icon.dart';
+import 'package:selfbox/features/chat/presentation/pages/image_viewer_page.dart';
 import 'package:selfbox/features/chat/presentation/providers/message_search.dart';
+import 'package:selfbox/features/chat/presentation/widgets/message_image_stack.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
 import 'chat_page_test_support.dart';
 
 void main() {
+  testWidgets('search resolves stored images and opens the image viewer', (
+    tester,
+  ) async {
+    final paths = createTempAppPaths();
+    paths.media.createSync(recursive: true);
+    final file = File('tool/screenshots/assets/aurora.png')
+        .copySync('${paths.media.path}${Platform.pathSeparator}hike.jpg');
+    await tester.runAsync(() async {
+      final done = Completer<void>();
+      final provider = ResizeImage.resizeIfNeeded(
+        kBubbleImageDecodeWidth,
+        null,
+        FileImage(file),
+      );
+      final stream = provider.resolve(ImageConfiguration.empty);
+      final listener = ImageStreamListener(
+        (_, _) => done.complete(),
+        onError: done.completeError,
+      );
+      stream.addListener(listener);
+      await done.future;
+      stream.removeListener(listener);
+    });
+    await tester.pumpApp(
+      paths: paths,
+      messages: FakeMessageRepository(
+        seed: [
+          testMessage(
+            1,
+            'photo from hike',
+          ).copyWith(images: ['media/hike.jpg']),
+        ],
+      ),
+    );
+    await tester.tap(find.bySemanticsLabel(t.chat.searchMessages));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const ValueKey('message-search-input')),
+      'hike',
+    );
+    await tester.pumpAndSettle();
+    final stack = tester.widget<MessageImageStack>(
+      find.byType(MessageImageStack),
+    );
+    final image = tester.widget<RawImage>(
+      find.descendant(
+        of: find.byType(MessageImageStack),
+        matching: find.byType(RawImage),
+      ),
+    );
+    expect(image.image, isNotNull);
+    expect(stack.resolveImage('media/hike.jpg')?.path, contains('hike.jpg'));
+    expect(stack.resolveImage('../outside.jpg'), isNull);
+    await tester.tap(find.byType(MessageImageStack));
+    await tester.pumpAndSettle();
+    expect(find.byType(ImageViewerPage), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
   for (final brightness in Brightness.values) {
     testWidgets(
       'search field icon uses neutral theme foreground in $brightness',

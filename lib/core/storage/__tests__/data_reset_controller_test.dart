@@ -8,7 +8,9 @@ import 'package:selfbox/core/storage/data_reset_controller.dart';
 import 'package:selfbox/core/testing/app_widget_tester.dart';
 import 'package:selfbox/core/testing/fake_account_repository.dart';
 import 'package:selfbox/core/testing/fake_app_preferences_repository.dart';
+import 'package:selfbox/core/testing/fake_link_preview_repository.dart';
 import 'package:selfbox/core/testing/fake_memory_repository.dart';
+import 'package:selfbox/features/chat/data/chat_data_providers.dart';
 import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
 import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 import 'package:selfbox/features/settings/presentation/providers/app_preferences_controller.dart';
@@ -37,6 +39,12 @@ void main() {
     await pick;
     expect((await clearing).isRight(), true);
     expect(account.clears, 1);
+    expect(
+      (container.read(
+        linkPreviewRepositoryProvider,
+      ) as FakeLinkPreviewRepository).clears,
+      1,
+    );
     expect(container.read(composerControllerProvider), const ComposerState());
     expect(container.read(dataResetControllerProvider), false);
   });

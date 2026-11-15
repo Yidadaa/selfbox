@@ -62,6 +62,11 @@ extension _AgentWebTools on AgentTools {
         ? await web.read(url).run()
         : Right<AppFailure, WebPageContent>(cached);
     return result.match((failure) => _error(_describe(failure)), (page) {
+      if (page.text.trim().isEmpty) {
+        return _error(
+          'No readable text; page may require JavaScript or sign-in',
+        );
+      }
       // A small per-turn cache makes subsequent offsets stable without retaining
       // web history or downloading the same page for each chunk.
       if (!_webPages.containsKey(url) && _webPages.length >= 4) {

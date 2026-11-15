@@ -13,6 +13,7 @@ import '../../features/memory/presentation/pages/memory_page.dart';
 import '../../features/settings/presentation/pages/about_page.dart';
 import '../../features/settings/presentation/pages/ai_providers_page.dart';
 import '../../features/settings/presentation/pages/component_library_page.dart';
+import '../../features/settings/presentation/pages/custom_prompt_page.dart';
 import '../../features/settings/presentation/pages/general_page.dart';
 import '../../features/settings/presentation/pages/me_page.dart';
 import '../../features/settings/presentation/pages/model_page.dart';
@@ -72,6 +73,7 @@ class OnboardingAiRoute extends GoRouteData with $OnboardingAiRoute {
             TypedGoRoute<GeneralRoute>(path: 'general'),
             TypedGoRoute<StorageRoute>(path: 'storage'),
             TypedGoRoute<AiProvidersRoute>(path: 'providers'),
+            TypedGoRoute<CustomPromptRoute>(path: 'custom-prompt'),
             TypedGoRoute<AboutRoute>(path: 'about'),
             TypedGoRoute<TalkerRoute>(path: 'logs'),
             TypedGoRoute<ComponentLibraryRoute>(path: 'components'),
@@ -164,6 +166,14 @@ class AiProvidersRoute extends GoRouteData with $AiProvidersRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       const AiProvidersPage();
+}
+
+class CustomPromptRoute extends GoRouteData with $CustomPromptRoute {
+  const CustomPromptRoute();
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const CustomPromptPage();
 }
 
 class AboutRoute extends GoRouteData with $AboutRoute {

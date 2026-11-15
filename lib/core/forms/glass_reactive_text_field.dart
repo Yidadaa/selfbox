@@ -32,6 +32,8 @@ class GlassReactiveTextField<T> extends HookWidget {
     this.placeholder,
     this.keyboardType,
     this.obscureText = false,
+    this.minLines,
+    this.maxLines = 1,
     this.valueAccessor,
     super.key,
   });
@@ -41,6 +43,8 @@ class GlassReactiveTextField<T> extends HookWidget {
   final String? placeholder;
   final TextInputType? keyboardType;
   final bool obscureText;
+  final int? minLines;
+  final int maxLines;
   final ControlValueAccessor<T, String>? valueAccessor;
 
   @override
@@ -57,6 +61,8 @@ class GlassReactiveTextField<T> extends HookWidget {
         placeholder: placeholder,
         keyboardType: keyboardType,
         obscureText: obscureText,
+        minLines: minLines,
+        maxLines: maxLines,
         labelStyle: text.labelLarge?.copyWith(color: glass.foregroundMuted),
         errorStyle: text.bodySmall?.copyWith(
           color: Theme.of(context).colorScheme.error,
@@ -73,6 +79,8 @@ class _FieldBody<T> extends HookWidget {
     required this.placeholder,
     required this.keyboardType,
     required this.obscureText,
+    required this.minLines,
+    required this.maxLines,
     required this.labelStyle,
     required this.errorStyle,
   });
@@ -82,6 +90,8 @@ class _FieldBody<T> extends HookWidget {
   final String? placeholder;
   final TextInputType? keyboardType;
   final bool obscureText;
+  final int? minLines;
+  final int maxLines;
   final TextStyle? labelStyle;
   final TextStyle? errorStyle;
 
@@ -118,6 +128,8 @@ class _FieldBody<T> extends HookWidget {
           placeholder: placeholder,
           keyboardType: keyboardType,
           obscureText: obscureText,
+          minLines: minLines,
+          maxLines: maxLines,
           surfaceStyle: GlassSurfaceStyle.solid,
           shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.sm),
           onChanged: field.didChange,

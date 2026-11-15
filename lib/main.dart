@@ -23,6 +23,7 @@ import 'features/settings/data/settings_data_providers.dart';
 import 'features/settings/domain/models/app_preferences.dart';
 import 'features/settings/presentation/providers/account_providers.dart';
 import 'features/settings/presentation/providers/app_preferences_controller.dart';
+import 'features/settings/presentation/providers/settings_providers.dart';
 import 'gen/i18n/strings.g.dart';
 
 Future<void> main() async {
@@ -91,6 +92,9 @@ TalkerRiverpodObserver appRiverpodObserver(Talker talker) =>
     TalkerRiverpodObserver(
       talker: talker,
       settings: TalkerRiverpodLoggerSettings(
-        providerFilter: (provider) => provider != assistantControllerProvider,
+        providerFilter: (provider) =>
+            provider != assistantControllerProvider &&
+            provider != aiSettingsProvider &&
+            provider.name != 'messageLinkPreviewProvider',
       ),
     );

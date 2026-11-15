@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../features/chat/data/chat_data_providers.dart';
 import '../../features/chat/presentation/providers/assistant_controller.dart';
 import '../../features/chat/presentation/providers/composer_controller.dart';
+import '../../features/chat/presentation/providers/message_link_preview.dart';
 import '../../features/memory/data/memory_data_providers.dart';
 import '../../features/settings/data/settings_data_providers.dart';
 import '../../features/settings/domain/services/clear_app_data.dart';
@@ -38,6 +39,7 @@ class DataResetController extends _$DataResetController {
               ref.read(accountRepositoryProvider),
             )
             .run()
+            .flatMap((_) => ref.read(linkPreviewRepositoryProvider).clearAll())
             .flatMap(
               (_) => TaskEither(
                 () =>
@@ -50,6 +52,7 @@ class DataResetController extends _$DataResetController {
     PaintingBinding.instance.imageCache.clearLiveImages();
     ref.invalidate(userProfileProvider);
     ref.invalidate(storageUsageProvider);
+    ref.invalidate(messageLinkPreviewProvider);
     state = false;
     return result;
   }

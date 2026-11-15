@@ -90,6 +90,7 @@ abstract class AiSettings with _$AiSettings {
     @Default(<ProviderConfig>[]) List<ProviderConfig> providers,
     @Default(<ModelConfig>[]) List<ModelConfig> models,
     ModelRef? activeModel,
+    @Default('') String customPrompt,
 
     /// Share of the model's full context used for recent conversation text.
     @JsonKey(fromJson: _readShortTermMemoryPercent)
@@ -134,6 +135,8 @@ int _readShortTermMemoryPercent(int value) => value.clamp(
 abstract final class AiSettingsSchema {
   static const maxNameLength = 40;
   static const maxTokens = 10000000;
+  static const maxCustomPromptLength = 12000;
+  static final customPrompt = l.string().max(maxCustomPromptLength).required();
 
   static final providerName = l.string().min(1).max(maxNameLength).required();
 

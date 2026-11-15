@@ -24,7 +24,7 @@ void main() {
           expect(text, contains("User's current name: Flynn."));
           final tools = env.model.calls.single.tools.map((tool) => tool.name);
           expect(tools, isNot(contains('web_search')));
-          expect(tools, isNot(contains('web_read')));
+          expect(tools, contains('web_read'));
           expect(tools, contains('search_messages'));
         }
       },
@@ -64,7 +64,7 @@ void main() {
       for (final call in env.model.calls) {
         final names = call.tools.map((tool) => tool.name);
         expect(names, isNot(contains('web_search')));
-        expect(names, isNot(contains('web_read')));
+        expect(names, contains('web_read'));
       }
       expect(env.activity, [
         const AgentActivity.thinking(),

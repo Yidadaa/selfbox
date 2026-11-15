@@ -99,4 +99,15 @@ class AiSettingsService {
 
   TaskEither<AppFailure, AiSettings> setShortTermMemoryPercent(int percent) =>
       _track(_edit((s) => s.withShortTermMemoryPercent(percent)));
+
+  TaskEither<AppFailure, AiSettings> setCustomPrompt(String prompt) {
+    if (!AiSettingsSchema.customPrompt.validate(prompt).isValid) {
+      return TaskEither.left(
+        const AppFailure.validation(message: 'Custom prompt is too long'),
+      );
+    }
+    return _track(
+      _edit((settings) => settings.copyWith(customPrompt: prompt.trim())),
+    );
+  }
 }

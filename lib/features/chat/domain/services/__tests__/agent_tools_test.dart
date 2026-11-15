@@ -78,6 +78,7 @@ void main() {
     );
     test('exposes the documented tool names', () {
       expect(_env().tools.build().keys, [
+        'web_read',
         'search_messages',
         'read_messages',
         'view_image',
@@ -89,7 +90,7 @@ void main() {
         'memory_delete',
       ]);
       expect(_env().tools.build(), isNot(contains('web_search')));
-      expect(_env().tools.build(), isNot(contains('web_read')));
+      expect(_env().tools.build(), contains('web_read'));
     });
 
     test('omits view_image for models without vision', () {

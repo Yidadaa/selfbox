@@ -20,6 +20,8 @@ abstract class WebPageContent with _$WebPageContent {
     required String title,
     required String url,
     required String text,
+    @Default('') String description,
+    @Default('') String iconUrl,
     @Default(false) bool truncated,
   }) = _WebPageContent;
 }

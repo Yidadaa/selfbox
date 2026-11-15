@@ -30,6 +30,19 @@ Future<Map<String, Object?>> _call(
         as Map<String, Object?>;
 
 void main() {
+  test('metadata-only pages return a readable error to the model', () async {
+    final web = FakeWebResearchRepository()
+      ..page = const WebPageContent(
+        title: 'App',
+        url: 'https://example.com',
+        text: '',
+        description: 'A website',
+      );
+    expect(
+      await _call(_tools(web), 'web_read', {'url': 'https://example.com'}),
+      containsPair('error', contains('No readable text')),
+    );
+  });
   test(
     'web_read hard-cuts pages and caches stable continuation offsets',
     () async {
@@ -100,10 +113,10 @@ void main() {
     },
   );
 
-  test('web tools stay outside the default model tool set', () {
+  test('reading is available while search stays isolated', () {
     final tools = _tools(FakeWebResearchRepository());
     expect(tools.build(), isNot(contains('web_search')));
-    expect(tools.build(), isNot(contains('web_read')));
+    expect(tools.build(), contains('web_read'));
     expect(tools.buildWebTools().keys, containsAll(['web_search', 'web_read']));
   });
 }
