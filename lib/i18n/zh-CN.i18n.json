@@ -33,6 +33,7 @@
     "fullMessage": "消息",
     "quotedCount": "引用了 {count} 条消息",
     "quoteCount": "引用 {count} 条",
+    "scrollToBottom": "滚动到最新",
     "noQuotes": "暂无引用",
     "messageMissing": "该消息已删除",
     "imageMessage": "{count} 张图片",

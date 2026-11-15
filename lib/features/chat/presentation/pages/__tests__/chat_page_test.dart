@@ -11,6 +11,7 @@ import 'package:selfbox/core/widgets/empty_state.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/pages/chat_page.dart';
 import 'package:selfbox/features/chat/presentation/providers/chat_feed.dart';
+import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer.dart';
 import 'package:selfbox/features/chat/presentation/widgets/day_pill.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
@@ -132,6 +133,46 @@ void main() {
         (list.padding! as EdgeInsets).top,
         safeTop + AppSizes.chatHeaderHeight + AppSpacing.md,
       );
+    });
+
+    testWidgets('shows a bottom jump button while reading older messages', (
+      tester,
+    ) async {
+      final container = await tester.pumpApp(
+        messages: FakeMessageRepository(
+          seed: [for (var id = 1; id <= 40; id++) testMessage(id, 'Note $id')],
+        ),
+      );
+      container
+          .read(composerControllerProvider.notifier)
+          .quote(testMessage(40, 'Note 40'));
+      await tester.pumpAndSettle();
+      final quoteRect = tester.getRect(
+        find.byKey(const ValueKey('composer-quotes')),
+      );
+
+      final timeline = find.descendant(
+        of: find.byType(ChatPage),
+        matching: find.byType(ListView),
+      );
+      await tester.drag(timeline, const Offset(0, 500));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const ValueKey('chat-scroll-to-bottom')),
+        findsOneWidget,
+      );
+      expect(find.byKey(const ValueKey('composer-quotes')), findsNothing);
+      final jumpRect = tester.getRect(
+        find.byKey(const ValueKey('chat-scroll-to-bottom')),
+      );
+      expect(jumpRect.topLeft, quoteRect.topLeft);
+      expect(jumpRect.height, quoteRect.height);
+
+      await tester.tap(find.byKey(const ValueKey('chat-scroll-to-bottom')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('chat-scroll-to-bottom')), findsNothing);
+      expect(find.byKey(const ValueKey('composer-quotes')), findsOneWidget);
     });
 
     testWidgets('groups messages under day pills', (tester) async {

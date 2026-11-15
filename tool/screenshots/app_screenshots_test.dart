@@ -31,6 +31,7 @@ import 'onboarding_fixtures.dart';
 import 'relief_fixtures.dart';
 import 'screenshot_fixtures.dart';
 import 'short_term_memory_fixtures.dart';
+import 'task88_fixtures.dart';
 import 'ui_polish_fixtures.dart';
 
 class _ScreenshotBinding extends AutomatedTestWidgetsFlutterBinding {
@@ -101,6 +102,7 @@ void main() {
 
   for (final shot in [
     ...screenshotFixtures,
+    ...task88Fixtures,
     ...assistantTransitionFixtures,
     ...assistantFailureFixtures,
     ...shortTermMemoryFixtures,

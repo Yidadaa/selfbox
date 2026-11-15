@@ -118,6 +118,22 @@ class _Dock extends ConsumerWidget {
       return ChatComposer(keyboardOpen: keyboardOpen, navigation: navigation);
     }
     final glass = context.glass;
+    if (AppEffects.isMinimal(context)) {
+      return DecoratedBox(
+        key: const ValueKey('tab-solid-background'),
+        decoration: ShapeDecoration(
+          color: AppEffects.solidSurface(context),
+          shape: LiquidRoundedSuperellipse(
+            borderRadius: AppRadius.xl,
+            side: AppEffects.solidBorderOf(context),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(top: AppSpacing.xs),
+          child: navigation,
+        ),
+      );
+    }
     return GlassContainer(
       quality: AppEffects.qualityOf(context, GlassQuality.standard),
       useOwnLayer: true,

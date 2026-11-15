@@ -196,9 +196,10 @@ class _ProviderForm extends HookConsumerWidget {
             GlassGroupedSection(
               key: const ValueKey('edit-provider-headers'),
               margin: EdgeInsets.zero,
-              quality: AppEffects.qualityOf(context, GlassQuality.standard),
-              shape: const LiquidRoundedSuperellipse(
+              surfaceStyle: GlassSurfaceStyle.solid,
+              shape: LiquidRoundedSuperellipse(
                 borderRadius: AppRadius.lg,
+                side: AppEffects.solidBorderOf(context),
               ),
               children: [
                 AppListTile(

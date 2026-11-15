@@ -33,7 +33,7 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
   });
 
   static const AppGlassTheme dark = AppGlassTheme(
-    canvasGradient: [Color(0xFF0B0F1A), Color(0xFF1A1340), Color(0xFF0E2A3A)],
+    canvasGradient: [Color(0xFF0B1019), Color(0xFF0D1420), Color(0xFF101A26)],
     surfaceTint: Color(0x1FFFFFFF),
     surfaceBlur: 16,
     chromeTint: Color(0xAA111827),
@@ -128,6 +128,9 @@ class AppGlassTheme extends ThemeExtension<AppGlassTheme> {
   final Color composerAiTint;
   final Color composerAiOutline;
   final Color imageStackShadow;
+
+  BorderSide get solidSurfaceBorder =>
+      BorderSide(color: shadowBorder, width: 0.75);
 
   @override
   AppGlassTheme copyWith({

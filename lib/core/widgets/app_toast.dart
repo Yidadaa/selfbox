@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../theme/app_effects.dart';
+import '../theme/app_glass_theme.dart';
 import '../theme/app_icons.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_spacing.dart';
@@ -75,7 +77,12 @@ class _ToastOverlay extends HookWidget {
     );
     useEffect(() => animation.dispose, [animation]);
     return Positioned(
-      top: MediaQuery.paddingOf(context).top + AppSpacing.toastTop,
+      bottom:
+          math.max(
+            MediaQuery.paddingOf(context).bottom,
+            MediaQuery.viewInsetsOf(context).bottom,
+          ) +
+          AppSpacing.huge,
       left: AppInsets.pageHorizontal,
       right: AppInsets.pageHorizontal,
       child: Align(
@@ -89,14 +96,13 @@ class _ToastOverlay extends HookWidget {
             ).animate(animation),
             child: Dismissible(
               key: ValueKey(message),
-              direction: DismissDirection.up,
+              direction: DismissDirection.down,
               resizeDuration: null,
               onDismissed: (_) => onDismiss(),
               child: GlassToast(
                 message: message,
-                type: type,
-                position: GlassToastPosition.top,
                 quality: quality,
+                type: GlassToastType.neutral,
                 onDismissed: onDismiss,
                 icon: AppIcon(switch (type) {
                   GlassToastType.success => AppIcons.success,
@@ -104,7 +110,7 @@ class _ToastOverlay extends HookWidget {
                   GlassToastType.warning => AppIcons.warning,
                   GlassToastType.info ||
                   GlassToastType.neutral => AppIcons.info,
-                }),
+                }, color: context.glass.foregroundMuted),
               ),
             ),
           ),

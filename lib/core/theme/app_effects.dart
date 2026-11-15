@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import 'app_glass_theme.dart';
+
 /// Above the Navigator so routes, sheets and transient overlays share policy.
 class AppEffects extends StatelessWidget {
   const AppEffects({
@@ -27,6 +29,17 @@ class AppEffects extends StatelessWidget {
             : GlassQuality.standard,
       GlassQuality.premium => fallback,
     };
+  }
+
+  static bool isMinimal(BuildContext context) =>
+      qualityOf(context, GlassQuality.standard) == GlassQuality.minimal;
+
+  static BorderSide solidBorderOf(BuildContext context) =>
+      isMinimal(context) ? context.glass.solidSurfaceBorder : BorderSide.none;
+
+  static Color solidSurface(BuildContext context) {
+    final glass = context.glass;
+    return Color.alphaBlend(glass.chromeTint, glass.canvasGradient.first);
   }
 
   @override

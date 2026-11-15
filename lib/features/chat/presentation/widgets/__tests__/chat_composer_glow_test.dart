@@ -34,6 +34,16 @@ void main() {
           await tester.pump();
           await tester.pump(const Duration(seconds: 1));
         }
+        if (quality == AppRenderQuality.minimal) {
+          expect(
+            find.descendant(
+              of: find.byKey(const ValueKey('chat-input')),
+              matching: find.byType(GlassContainer),
+            ),
+            findsNothing,
+          );
+          continue;
+        }
         final surface = tester.widget<GlassContainer>(
           find.descendant(
             of: find.byKey(const ValueKey('chat-input')),

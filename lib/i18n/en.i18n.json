@@ -33,6 +33,7 @@
     "fullMessage": "Message",
     "quotedCount": "Quoted {count} messages",
     "quoteCount": "Quote {count}",
+    "scrollToBottom": "Scroll to latest",
     "noQuotes": "No quoted messages",
     "messageMissing": "This message was deleted",
     "imageMessage": "{count} images",

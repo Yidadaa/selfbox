@@ -28,8 +28,11 @@ class ProviderCredentialsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final labels = context.t.settings.provider;
     return GlassContainer.card(
-      quality: AppEffects.qualityOf(context, GlassQuality.standard),
-      shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
+      surfaceStyle: GlassSurfaceStyle.solid,
+      shape: LiquidRoundedSuperellipse(
+        borderRadius: AppRadius.lg,
+        side: AppEffects.solidBorderOf(context),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

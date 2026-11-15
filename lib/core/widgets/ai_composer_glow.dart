@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+import '../theme/app_effects.dart';
 import '../theme/app_glass_theme.dart';
 import '../theme/app_motion.dart';
 
@@ -30,6 +31,19 @@ class AiComposerGlow extends ConsumerWidget {
       children: [
         Positioned.fill(
           child: IgnorePointer(
+            child: DecoratedBox(
+              key: const ValueKey('composer-solid-background'),
+              decoration: ShapeDecoration(
+                color: AppEffects.isMinimal(context)
+                    ? AppEffects.solidSurface(context)
+                    : null,
+                shape: shape,
+              ),
+            ),
+          ),
+        ),
+        Positioned.fill(
+          child: IgnorePointer(
             child: Visibility(
               visible: active,
               child: ClipPath(
@@ -48,15 +62,30 @@ class AiComposerGlow extends ConsumerWidget {
             ),
           ),
         ),
+        Positioned.fill(
+          child: IgnorePointer(
+            child: DecoratedBox(
+              decoration: ShapeDecoration(
+                color: AppEffects.isMinimal(context) && active
+                    ? glass.composerAiTint
+                    : null,
+                shape: shape,
+              ),
+            ),
+          ),
+        ),
         child,
-        if (active && glass.composerAiOutline.a > 0)
+        if (AppEffects.isMinimal(context) ||
+            (active && glass.composerAiOutline.a > 0))
           Positioned.fill(
             child: IgnorePointer(
               child: DecoratedBox(
                 key: const ValueKey('ai-composer-outline'),
                 decoration: ShapeDecoration(
                   shape: shape.copyWith(
-                    side: BorderSide(color: glass.composerAiOutline),
+                    side: AppEffects.isMinimal(context)
+                        ? AppEffects.solidBorderOf(context)
+                        : BorderSide(color: glass.composerAiOutline),
                   ),
                 ),
               ),

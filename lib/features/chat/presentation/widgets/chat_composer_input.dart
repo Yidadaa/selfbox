@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
@@ -104,7 +105,7 @@ class _InputSurface extends StatelessWidget {
   }
 }
 
-class _ComposerGlassSurface extends ConsumerWidget {
+class _ComposerGlassSurface extends HookConsumerWidget {
   const _ComposerGlassSurface({required this.child});
 
   final Widget child;
@@ -115,6 +116,9 @@ class _ComposerGlassSurface extends ConsumerWidget {
       composerControllerProvider.select((state) => state.aiMode),
     );
     final glass = context.glass;
+    final contentKey = useMemoized(GlobalKey.new);
+    final content = KeyedSubtree(key: contentKey, child: child);
+    if (AppEffects.isMinimal(context)) return content;
     return TweenAnimationBuilder<Color?>(
       tween: ColorTween(end: aiMode ? glass.composerAiTint : glass.chromeTint),
       duration: MediaQuery.disableAnimationsOf(context)
@@ -133,7 +137,7 @@ class _ComposerGlassSurface extends ConsumerWidget {
         shape: _inputShape,
         child: child,
       ),
-      child: child,
+      child: content,
     );
   }
 }

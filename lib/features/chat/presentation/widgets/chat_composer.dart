@@ -21,10 +21,8 @@ class ChatComposer extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final (aiMode, attachments, quotedIds) = ref.watch(
-      composerControllerProvider.select(
-        (s) => (s.aiMode, s.attachments, s.quotedMessageIds),
-      ),
+    final (aiMode, attachments) = ref.watch(
+      composerControllerProvider.select((s) => (s.aiMode, s.attachments)),
     );
     final notifier = ref.read(composerControllerProvider.notifier);
     final controller = useTextEditingController(
@@ -72,9 +70,7 @@ class ChatComposer extends HookConsumerWidget {
       editing: keyboardOpen && focusNode.hasFocus,
       child: ChatComposerLayout(
         toggle: ChatAiToggle(active: aiMode, onTap: notifier.toggleAiMode),
-        quote: quotedIds.isEmpty
-            ? null
-            : ChatQuoteButton(count: quotedIds.length),
+        quote: const ChatTimelineAction(),
         attachments: attachments,
         onRemoveAttachment: notifier.removeAttachment,
         showWelcome: showWelcome,

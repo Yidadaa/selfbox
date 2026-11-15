@@ -92,6 +92,14 @@ void main() {
           }
         });
 
+        test('dark canvas stays within a restrained blue-black palette', () {
+          if (brightness != Brightness.dark) return;
+          for (final color in glass!.canvasGradient) {
+            final hue = HSLColor.fromColor(color).hue;
+            expect(hue, inInclusiveRange(195, 230));
+          }
+        });
+
         test('text on the accent color meets WCAG AA', () {
           expect(_contrast(glass!.onAccent, glass.accent), greaterThan(4.5));
         });

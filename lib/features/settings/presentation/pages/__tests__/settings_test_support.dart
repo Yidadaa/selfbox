@@ -45,14 +45,21 @@ Finder settingsField(String label) => find.descendant(
   matching: find.byType(EditableText),
 );
 
-void expectLiquidSections(WidgetTester tester, int count) {
+void expectLiquidSections(
+  WidgetTester tester,
+  int count, {
+  bool solid = false,
+}) {
   final sections = tester.widgetList<GlassGroupedSection>(
     find.byType(GlassGroupedSection),
   );
   expect(sections, hasLength(count));
   for (final section in sections) {
-    expect(section.surfaceStyle, GlassSurfaceStyle.glass);
-    expect(section.quality, GlassQuality.standard);
+    expect(
+      section.surfaceStyle,
+      solid ? GlassSurfaceStyle.solid : GlassSurfaceStyle.glass,
+    );
+    expect(section.quality, solid ? isNull : GlassQuality.standard);
     expect(
       section.shape,
       const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
@@ -60,18 +67,22 @@ void expectLiquidSections(WidgetTester tester, int count) {
   }
 }
 
-void expectLiquidFormCard(WidgetTester tester, String fieldLabel) {
+void expectLiquidFormCard(
+  WidgetTester tester,
+  String fieldLabel, {
+  bool solid = false,
+}) {
   final label = find.text(fieldLabel);
   final card = tester.widget<GlassContainer>(
     find.ancestor(of: label, matching: find.byType(GlassContainer)).first,
   );
-  expect(card.quality, GlassQuality.standard);
+  expect(card.quality, solid ? isNull : GlassQuality.standard);
   expect(
     card.shape,
     const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
   );
   expect(
     find.ancestor(of: label, matching: find.byType(AdaptiveGlass)),
-    findsWidgets,
+    solid ? findsNothing : findsWidgets,
   );
 }

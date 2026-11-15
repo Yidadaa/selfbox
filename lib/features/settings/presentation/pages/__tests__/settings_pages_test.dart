@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/core/testing/icon_finder.dart';
 import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/widgets/app_list_tile.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
+import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
+import 'package:selfbox/features/settings/presentation/providers/app_preferences_controller.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
 import 'settings_test_support.dart';
@@ -59,8 +62,32 @@ void main() {
         ]) {
           router.go(location);
           await tester.pumpAndSettle();
-          expectLiquidSections(tester, count);
-          if (field != null) expectLiquidFormCard(tester, field);
+          final solid = location.startsWith('/me/provider?');
+          expectLiquidSections(tester, count, solid: solid);
+          if (field != null) expectLiquidFormCard(tester, field, solid: solid);
+          if (solid) {
+            await container
+                .read(appPreferencesControllerProvider.notifier)
+                .setRenderQuality(AppRenderQuality.minimal);
+            await tester.pumpAndSettle();
+            final surfaces = tester
+                .widgetList<GlassContainer>(find.byType(GlassContainer))
+                .where(
+                  (card) =>
+                      card.shape is LiquidRoundedSuperellipse &&
+                      (card.shape as LiquidRoundedSuperellipse).borderRadius ==
+                          28,
+                );
+            expect(surfaces, hasLength(3));
+            for (final surface in surfaces) {
+              expect(surface.shape.side.width, 0.75);
+              expect(surface.shape.side.color.a, inExclusiveRange(0, 0.15));
+            }
+            await container
+                .read(appPreferencesControllerProvider.notifier)
+                .setRenderQuality(AppRenderQuality.standard);
+            await tester.pumpAndSettle();
+          }
         }
       },
     );

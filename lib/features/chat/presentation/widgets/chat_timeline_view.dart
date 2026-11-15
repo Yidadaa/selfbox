@@ -14,6 +14,7 @@ import '../../../../core/widgets/empty_state.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../providers/assistant_controller.dart';
 import '../providers/chat_feed.dart';
+import '../providers/chat_scroll_controller.dart';
 import '../providers/chat_timeline.dart';
 import '../providers/composer_controller.dart';
 import 'assistant_status_bubble.dart';
@@ -117,7 +118,7 @@ Key _timelineKey(ChatTimelineItem item) => switch (item) {
   TimelineDay(:final day) => ValueKey<DateTime>(day),
 };
 
-class _Timeline extends HookWidget {
+class _Timeline extends HookConsumerWidget {
   const _Timeline({
     required this.feed,
     required this.bottomPadding,
@@ -131,8 +132,8 @@ class _Timeline extends HookWidget {
   final ValueChanged<int> onMessageEntered;
 
   @override
-  Widget build(BuildContext context) {
-    final scrollController = useScrollController();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final scrollController = ref.watch(chatScrollControllerProvider);
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     final newest = switch (feed.items.firstOrNull) {
       TimelineMessage(:final message) => message,

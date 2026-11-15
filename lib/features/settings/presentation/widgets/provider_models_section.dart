@@ -70,8 +70,11 @@ class ProviderModelsSection extends HookConsumerWidget {
         else
           GlassGroupedSection(
             margin: AppInsets.section,
-            quality: AppEffects.qualityOf(context, GlassQuality.standard),
-            shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.lg),
+            surfaceStyle: GlassSurfaceStyle.solid,
+            shape: LiquidRoundedSuperellipse(
+              borderRadius: AppRadius.lg,
+              side: AppEffects.solidBorderOf(context),
+            ),
             header: SectionHeader(context.t.settings.provider.models),
             children: [
               for (final model in added)

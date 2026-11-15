@@ -76,7 +76,8 @@ void main() {
     expect(find.text(t.me.developerEnabled), findsNothing);
     expect(
       find.byWidgetPredicate(
-        (widget) => widget is GlassToast && widget.type == GlassToastType.error,
+        (widget) =>
+            widget is GlassToast && widget.type == GlassToastType.neutral,
       ),
       findsOneWidget,
     );
