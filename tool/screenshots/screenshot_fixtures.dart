@@ -6,10 +6,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/misc.dart' show Override;
 import 'package:path/path.dart' as p;
 import 'package:selfbox/core/storage/app_paths.dart';
-import 'package:selfbox/core/testing/app_widget_tester.dart';
-import 'package:selfbox/core/testing/fake_ai_settings.dart';
-import 'package:selfbox/core/testing/fake_memory_repository.dart';
-import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/features/chat/domain/models/agent_activity.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/domain/repositories/message_repository.dart';
@@ -20,6 +16,11 @@ import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 import 'package:selfbox/features/settings/domain/repositories/ai_settings_repository.dart';
 import 'package:selfbox/features/settings/presentation/providers/app_preferences_controller.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
+
+import '../../test/support/app_widget_tester.dart';
+import '../../test/support/fake_ai_settings.dart';
+import '../../test/support/fake_memory_repository.dart';
+import '../../test/support/fake_message_repository.dart';
 
 typedef ScreenshotEnv = ({
   AppPaths? paths,

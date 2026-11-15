@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/core/widgets/app_artwork.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
 import 'package:selfbox/features/settings/presentation/providers/app_preferences_controller.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
+import '../../test/support/fake_message_repository.dart';
 import 'screenshot_fixtures.dart';
 
 final uiPolishFixtures = [

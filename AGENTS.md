@@ -14,7 +14,7 @@
 
 ### 0.2 测试优先与行为驱动 (Test-First / TDD Discipline)
 
-- **无测试不编码（Red -> Green -> Refactor）**：开发任何 Domain 模型、Repository、Provider 或核心 UI 组件时，**必须先在同级 `__tests__/` 目录下定义契约与失败用例（或同步编写完整边界测试）**，再编写实现代码使测试通过。
+- **无测试不编码（Red -> Green -> Refactor）**：开发任何 Domain 模型、Repository、Provider 或核心 UI 组件时，**必须先在 `test/` 下与 `lib/` 镜像的目录定义契约与失败用例（或同步编写完整边界测试）**，再编写实现代码使测试通过。
 - **测试即规格说明（Tests as Living Spec）**：测试不仅验证“能跑通”，更必须锁死边界条件（空值、超时、并发冲突、非法输入、断网回退、权限拒绝）。
 - **可测试性是一等公民**：任何无法在纯内存或轻量级 Fake/Mock 下独立完成单元测试的类，皆视为**架构设计缺陷**，必须立即重构（通过构造函数或 Riverpod Provider 注入依赖，严禁隐藏全局单例或静态调用）。
 
@@ -93,7 +93,7 @@
 
 ---
 
-## 3. 目录结构、代码生成与同级测试强制规范 (Directory, Codegen & Testing Constraints)
+## 3. 目录结构、代码生成与镜像测试强制规范 (Directory, Codegen & Testing Constraints)
 
 ### 3.1 铁律一：所有生成代码必须收敛至 `lib/gen/`
 
@@ -102,7 +102,7 @@
 为了实现所有生成代码 100% 集中到 `lib/gen/`，你必须在项目初始化时配置以下三处：
 
 1. **根目录 `build.yaml` 强制配置**：
-   利用 `build_extensions` 将 `freezed` 和 `source_gen`（含 `json_serializable`、`riverpod_generator`、`retrofit_generator`、`envied_generator`）全部映射到 `lib/gen/`，并排除 `__tests__` 目录避免无效扫描：
+   利用 `build_extensions` 将 `freezed` 和 `source_gen`（含 `json_serializable`、`riverpod_generator`、`retrofit_generator`、`envied_generator`）全部映射到 `lib/gen/`，仅排除生成的 Dart 文件，保留 ObjectBox 模型 JSON 作为输入以维持 UID（ADR-017）：
    ```yaml
    targets:
      $default:
@@ -111,8 +111,7 @@
            - lib/**
            - pubspec.yaml
          exclude:
-           - lib/**/__tests__/**
-           - lib/gen/**
+           - lib/gen/**/*.dart
        builders:
          freezed:
            options:
@@ -135,18 +134,19 @@
    part '../../../../gen/features/<feature>/domain/models/example_model.g.dart';
    ```
 
-### 3.2 铁律二：所有测试逻辑必须放在被测代码同级的 `__tests__` 目录中
+### 3.2 铁律二：所有测试必须放在 `test/` 下与 `lib/` 镜像的目录中
 
-**严禁将测试业务代码写在顶层 `test/` 目录下分散管理！** 每一个模块、数据源、Provider 或组件的测试，必须放在其所在目录同级的 `__tests__` 文件夹内，命名以 `_test.dart` 结尾。
+**严禁在 `lib/` 下创建测试目录、测试夹具或 `*_test.dart`！** 每一个模块、数据源、Provider 或组件的测试，必须镜像被测文件的相对目录，例如 `lib/core/widgets/app_icon.dart` 对应 `test/core/widgets/app_icon_test.dart`。
 
-为了使 Flutter 工具链完美支持 `lib/**/__tests__/*_test.dart`：
+共享夹具放在 `test/support/`，局部夹具放在所属测试目录并命名为 `*_test_support.dart`。测试引用产品代码统一使用 `package:selfbox/...`，测试之间及 `tool/` 引用测试夹具使用相对路径。
 
-1. **`analysis_options.yaml` 强校验与测试豁免配置**：
+1. **`analysis_options.yaml` 强校验配置**：
    - 开启严格类型检查：`strict-casts: true`、`strict-inference: true`、`strict-raw-types: true`。
-   - 由于测试文件位于 `lib/` 内部且会引入 `flutter_test` / `mocktail`（属于 `dev_dependencies`），必须在 `analysis_options.yaml` 中关闭 `depend_on_referenced_packages` 规则，确保 `flutter analyze` 保持 **0 issues**。
-2. **测试执行方式与桥接**：
-   - 运行单个/局部测试：`flutter test lib/features/<feature>/data/repositories/__tests__/<name>_test.dart`
-   - 保留顶层 `test/all_tests.dart` 仅作为**唯一聚合入口桥接文件**（通过相对路径引用 `lib/**/__tests__/*_test.dart`），从而保证直接运行 `flutter test` 时也能全量执行所有同级 `__tests__` 用例。
+   - 保持 `depend_on_referenced_packages` 启用；`flutter_test` / `mocktail` 留在 `dev_dependencies`，产品代码不得引用测试依赖，`flutter analyze` 保持 **0 issues**。
+2. **原生发现与并发执行**：
+   - 全量回归直接运行 `flutter test`，自动扫描 `test/**/*_test.dart` 并按文件调度并发；禁止用聚合 `main()` 串联全部测试。
+   - 局部回归：`flutter test test/features/<feature>/data/repositories/<name>_test.dart`，也可传目录。
+   - 每个文件必须独立初始化与清理依赖，不依赖其他套件执行顺序；必要时通过 `--concurrency` 调整并发度。独立截图与联网工具仍显式运行 `tool/` 下入口。
 
 ### 3.3 标准目录树结构 (Pragmatic Feature-First Architecture)
 
@@ -161,42 +161,50 @@ lib/
 ├── core/
 │   ├── constants/                    # 全局业务无关常量
 │   ├── database/                     # ObjectBox Store 初始化与事务辅助封装
-│   │   └── __tests__/                # 数据库基础设施单测
 │   ├── env/                          # Envied 环境变量定义
 │   ├── error/                        # AppFailure (@freezed) 统一错误代数数据类型
-│   │   └── __tests__/                # 错误映射与格式化单测
 │   ├── logger/                       # Talker 初始化与 Riverpod/Dio 拦截器
 │   ├── network/                      # Dio / WebSocket 客户端基础设施
-│   │   └── __tests__/                # 网络层拦截器与重连机制单测
 │   ├── router/                       # go_router 强类型路由与导航守卫
-│   │   └── __tests__/                # 路由跳转与重定向逻辑测试
 │   ├── theme/                        # LiquidGlass 移动端统一设计系统 (Tokens/ThemeExtension)
-│   │   └── __tests__/                # 主题对比度、明暗模式与 Token 一致性测试
 │   └── widgets/                      # 跨 Feature 复用的原子级 Liquid Glass 组件
-│       └── __tests__/                # 全局组件 Widget 测试
 ├── features/
 │   └── <feature_name>/               # 业务特性模块（高内聚、按领域垂直切分）
 │       ├── data/
 │       │   ├── datasources/          # ObjectBox Entity、Retrofit Client、本地/远程数据源
-│       │   │   └── __tests__/        # 数据源单测与 DTO/Entity 转换测试
 │       │   └── repositories/         # Repository 具体实现 (返回 Either / TaskEither / Stream)
-│       │       └── __tests__/        # Repository 缓存策略、离线优先与错误转化测试
 │       ├── domain/
 │       │   ├── models/               # @freezed 领域模型 + Luthor 校验 Schema
-│       │   │   └── __tests__/        # 领域模型不变量、序列化与 Schema 边界测试
 │       │   ├── repositories/         # Repository 抽象契约接口 (仅定义跨层边界)
 │       │   └── services/             # 【按需创建】仅用于跨多 Repository 的复杂领域逻辑（严禁单行透传 UseCase）
-│       │       └── __tests__/        # 复杂领域算法单元测试
 │       └── presentation/
 │           ├── providers/            # @riverpod 状态控制器与派生状态 Selector
-│           │   └── __tests__/        # Provider 状态机流转测试
 │           ├── pages/                # 页面级 HookConsumerWidget
-│           │   └── __tests__/        # 页面级全状态（骨架屏/空/错/正常）Widget 测试
 │           └── widgets/              # 局部精细化组件（保持小巧，const 优先）
-│               └── __tests__/        # 局部组件交互与手势测试
 └── main.dart
 test/
-└── all_tests.dart                    # 仅作为聚合入口，import 所有 lib/**/__tests__/*_test.dart
+├── app_test.dart                     # 镜像 lib/app.dart
+├── support/                          # 跨套件共享夹具，不进入产品代码
+├── core/
+│   ├── database/
+│   ├── error/
+│   ├── logger/
+│   ├── network/
+│   ├── router/
+│   ├── theme/
+│   └── widgets/
+└── features/
+    └── <feature_name>/
+        ├── data/
+        │   ├── datasources/
+        │   └── repositories/
+        ├── domain/
+        │   ├── models/
+        │   └── services/
+        └── presentation/
+            ├── providers/
+            ├── pages/
+            └── widgets/
 ```
 
 ---
@@ -255,7 +263,7 @@ test/
 
 ### 4.4 自建组件库规范
 
-- 可复用的应用 UI 原子组件集中在 `lib/core/widgets/`，并在“我的 > 开发工具 > 组件库 UI”提供可运行的组件预览；新增共享组件时同步增加预览和同级 `__tests__` 测试。
+- 可复用的应用 UI 原子组件集中在 `lib/core/widgets/`，并在“我的 > 开发工具 > 组件库 UI”提供可运行的组件预览；新增共享组件时同步增加预览和 `test/core/widgets/` 测试。
 - 组件预览必须使用真实组件和当前主题 Token，至少覆盖明暗主题相关样式、禁用态或危险态等存在的变体；弹窗预览调用自建 Dialog，不在展示页另造一套样式。
 - `AppActionButton` 与 `AppActionIconButton` 是弹层 action 的唯一共享按钮入口，保持现有样式；页面内部全宽主按钮（保存、删除、添加等）统一使用 `AppPageButton`，以 standard 档 `GlassButton` 普通玻璃效果为默认并遵从全局渲染偏好。禁止页面与浮层混用入口或在业务层复制按钮装饰参数。
 
@@ -314,7 +322,7 @@ TaskEither<AppFailure, Unit> syncSnapshot() {
 ### 5.3 ObjectBox 持久化与领域模型隔离规范
 
 - **严禁将 ObjectBox 的 `@Entity()` 注解直接贴在 `@freezed` 类上**。
-- 数据层（Data Layer）定义独立可变的 `*Entity`（供 ObjectBox 使用），领域层（Domain Layer）定义 `@freezed` 的不可变模型，通过类型安全的 Mapper 扩展方法进行 `toDomain()` / `toEntity()` 转换，并在 `datasources/__tests__/` 中 100% 覆盖双向映射测试。
+- 数据层（Data Layer）定义独立可变的 `*Entity`（供 ObjectBox 使用），领域层（Domain Layer）定义 `@freezed` 的不可变模型，通过类型安全的 Mapper 扩展方法进行 `toDomain()` / `toEntity()` 转换，并在 `test/features/<feature>/data/datasources/` 中 100% 覆盖双向映射测试。
 
 ### 5.4 跨平台与原生配置规范
 
@@ -324,8 +332,8 @@ TaskEither<AppFailure, Unit> syncSnapshot() {
 
 ## 6. 严禁事项与反模式清单 (Forbidden Anti-Patterns)
 
-1. **禁止在 `lib/gen/` 以外生成任何代码**：每次执行 `dart run build_runner build -d` 后检查工作区，若 `lib/gen/` 之外出现 `.g.dart` 或 `.freezed.dart`，立即修复 `build.yaml` 并记录到 `docs/mistakes.md`。
-2. **禁止在被测目录同级 `__tests__` 以外编写模块测试**：新增任何模型、数据源、Repository、Provider 或 UI 组件，必须同步在其同级 `__tests__/` 下创建对应的 `*_test.dart`，并注册至 `test/all_tests.dart`。
+1. **禁止在 `lib/gen/` 以外生成任何代码**：每次执行 `dart run build_runner build` 后检查工作区，若 `lib/gen/` 之外出现 `.g.dart` 或 `.freezed.dart`，立即修复 `build.yaml` 并记录到 `docs/mistakes.md`。
+2. **禁止在 `lib/` 下编写测试或测试夹具**：新增任何模型、数据源、Repository、Provider 或 UI 组件，必须同步在 `test/` 镜像目录创建对应的 `*_test.dart`，由 Flutter 自动发现并独立执行。
 3. **禁止过度设计（No Speculative Abstraction）**：禁止单行透传 `UseCase`、禁止只有一个实现类的内部 `Interface`、禁止用不到的泛型参数。
 4. **禁止平台分裂 UI**：禁止业务页面使用 Liquid Dialog / GlassActionSheet 或直接构造 Material / Cupertino 弹窗；仅 `lib/core/widgets/` 的自有 Dialog 可以封装 Flutter `Dialog` 基础组件。禁止使用 `SizedBox` 充当间距（强制用 `Gap`）。
 5. **禁止忽略 Linter 警告与类型逃逸**：代码必须通过 `flutter analyze` 且 **0 issues**；严禁使用 `dynamic`、严禁无理由使用 `!`（非空断言操作符，必须通过模式匹配或 `Option` 安全解包）。
@@ -334,17 +342,17 @@ TaskEither<AppFailure, Unit> syncSnapshot() {
 
 ---
 
-## 7. 测试优先规范 (Test-First Specifications in `__tests__`)
+## 7. 测试优先规范 (Test-First Specifications in `test/`)
 
-**没有同级 `__tests__` 测试的代码等同于未完成，严禁勾选 Task 完成状态。** 每开发一个模块，必须遵循以下测试标准：
+**没有 `test/` 镜像测试的代码等同于未完成，严禁勾选 Task 完成状态。** 每开发一个模块，必须遵循以下测试标准：
 
-1. **领域模型与校验测试 (`domain/models/__tests__/`)**：
+1. **领域模型与校验测试 (`test/features/<feature>/domain/models/`)**：
    - 验证 `@freezed` 模型的相等性、`copyWith`、JSON 序列化往返一致性（Round-trip）以及 `luthor` 表单 Schema 在合法值、空值、极值、非法格式下的精确校验结果。
-2. **数据源与持久化测试 (`datasources/__tests__/` & `repositories/__tests__/`)**：
+2. **数据源与持久化测试 (`test/features/<feature>/data/datasources/` & `test/features/<feature>/data/repositories/`)**：
    - 使用系统临时目录初始化真实的内存/临时 ObjectBox `Store`（测试完毕后 `store.close()` 并清理目录），验证实体 CRUD、响应式 `Stream` 推送、事务回滚以及异常分支转化为 `AppFailure` 的确定性行为。
-3. **状态机流转测试 (`providers/__tests__/`)**：
+3. **状态机流转测试 (`test/features/<feature>/presentation/providers/`)**：
    - 使用 `ProviderContainer` 配合 `overrides` 注入 Fake/Mock Repository，使用Listener捕获状态序列，严格断言状态机从 `initial -> loading -> loaded / failure` 的完整轨迹。
-4. **移动端 UI 与交互测试 (`pages/__tests__/` & `widgets/__tests__/`)**：
+4. **移动端 UI 与交互测试 (`test/features/<feature>/presentation/pages/` & `test/features/<feature>/presentation/widgets/`)**：
    - 使用统一的测试包装器（注入 `TranslationProvider`、LiquidGlass `ThemeData`、固定移动端视口尺寸如 `390x844` 与安全区参数）渲染组件。
    - 覆盖 4 大必测状态：**加载骨架态（`Skeletonizer`）、空数据态、错误重试态、正常数据渲染态**。
    - 验证关键手势（点击、滑动、表单输入错误提示展示）与最小触控目标尺寸合规性。
@@ -353,9 +361,9 @@ TaskEither<AppFailure, Unit> syncSnapshot() {
 
 ### 测试归属与去重
 
-- 遵循 [docs/testing.md](docs/testing.md) 的测试归属：共享组件样式由同级组件测试负责，页面测试负责业务接线和结果；不要在多个页面重复断言同一公共控件的内部装饰。
+- 遵循 [docs/testing.md](docs/testing.md) 的测试归属：共享组件样式由 `test/core/widgets/` 中对应组件测试负责，页面测试负责业务接线和结果；不要在多个页面重复断言同一公共控件的内部装饰。
 - 删除冗余测试前必须迁移独有断言，并在任务文档记录保留位置。相同操作可参数化，但权限、并发、网络安全、失败恢复、明暗/语言/窄屏及动画中途切换等不同边界必须保留。
-- 增删或重命名测试文件后运行 `dart run tool/gen_all_tests.dart`，唯一默认聚合入口是 `test/all_tests_test.dart`，禁止手工编辑该生成文件。
+- 增删或重命名测试文件时保持 `test/` 镜像路径及 `_test.dart` 命名；`flutter test` 原生扫描，不维护测试注册表或聚合入口。
 
 ## 8. Agent 启动与闭环执行清单 (Bootstrap & TDD Loop)
 
@@ -364,19 +372,19 @@ TaskEither<AppFailure, Unit> syncSnapshot() {
 1. **Step 1 - 侦察与建档**：
    - 检查项目当前状态，读取或初始化 `docs/mistakes.md`、`docs/decisions.md` 及 `docs/tasks/01-architecture-and-setup.md`。
 2. **Step 2 - 记录核心架构决策**：
-   - 在 `docs/decisions.md` 中维护 ADR（包括：`build.yaml` 统一重定向至 `lib/gen` 方案、同级 `__tests__` 测试桥接方案、Pragmatic Clean Architecture 反过度设计边界、Android/iOS 统一 Liquid Glass 移动端设计 Token 方案等）。
+   - 在 `docs/decisions.md` 中维护 ADR（包括：`build.yaml` 统一重定向至 `lib/gen` 方案、`test/` 镜像目录与并发执行方案、Pragmatic Clean Architecture 反过度设计边界、Android/iOS 统一 Liquid Glass 移动端设计 Token 方案等）。
 3. **Step 3 - 任务拆解（测试先行）**：
-   - 将开发目标拆解为清晰的阶段性任务文档（存于 `docs/tasks/`）。首先完成 `01-architecture-and-setup.md`（依赖安装、`build.yaml` 验证、`__tests__` 桥接验证、Talker/GoRouter/ObjectBox/Slang/LiquidGlass 移动端主题基建），再按业务模块逐一推进。
+   - 将开发目标拆解为清晰的阶段性任务文档（存于 `docs/tasks/`）。首先完成 `01-architecture-and-setup.md`（依赖安装、`build.yaml` 验证、`test/` 原生发现与独立执行验证、Talker/GoRouter/ObjectBox/Slang/LiquidGlass 移动端主题基建），再按业务模块逐一推进。
    - 如果任务过于细碎，或者微小，不必沉淀为 task 文档，只对中大型任务进行沉淀。
 4. **Step 4 - TDD 闭环开发与门禁校验**：
-   - 每开发一个子模块，按 **「编写 `__tests__` 测试用例 -> 编写声明式实现 -> 运行代码生成与静态检查 -> 全绿通过」** 循环推进，并立即运行以下门禁命令：
-     1. `dart run slang` & `dart run build_runner build -d`（确认产物 100% 位于 `lib/gen/`）
+   - 每开发一个子模块，按 **「编写 `test/` 镜像测试用例 -> 编写声明式实现 -> 运行代码生成与静态检查 -> 全绿通过」** 循环推进，并立即运行以下门禁命令：
+     1. `dart run slang` & `dart run build_runner build`（确认产物 100% 位于 `lib/gen/`）
      2. `flutter analyze`（确认 **0 issues**）
-     3. `flutter test`（确认 `test/all_tests.dart` 桥接的所有同级 `__tests__` 用例 **100% 通过**）
+     3. `flutter test`（确认原生发现的全部 `test/` 用例 **100% 通过**）
      4. 注意！非必要不要全量跑测试，只跑相关的测试！因为最终交代码之前还会全量跑测试，总是全量跑测试会导致很慢！
    - 遇到任何报错、陷阱或返工，修正后**立即追加一行高信息熵总结到 `docs/mistakes.md`**。
 5. **Step 5 - 提交前全量格式化（强制）**：
-   - 每次执行 `git commit` 前，必须先在仓库根目录运行 `.\tools\flutter\bin\dart.bat format .`，使用 formatter 格式化项目全部 Dart 代码（包括测试与生成代码），禁止仅格式化本次修改的文件或跳过此步骤。
+   - 每次执行 `git commit` 前，必须先在仓库根目录运行 `.\.tools\flutter\bin\dart.bat format .`，使用 formatter 格式化项目全部 Dart 代码（包括测试与生成代码），禁止仅格式化本次修改的文件或跳过此步骤。
    - 格式化必须成功完成；检查格式化产生的 diff，并将应提交的格式化结果纳入暂存区后，才可执行 commit。若之后再次修改或生成代码，必须重新执行全量格式化。
 6. 每次完成一个完整的模块或者功能，都要 commit 一次，必须使用 `verb: desc` 的 msg 格式。
 

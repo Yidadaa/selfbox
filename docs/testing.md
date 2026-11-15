@@ -1,5 +1,7 @@
 # 测试维护指南
 
+现行目录规范：业务测试位于 `test/` 镜像目录，共享夹具位于 `test/support/`；旧路径仅保留在下方历史覆盖记录中，现行命令见“运行入口”（ADR-082）。
+
 ## 2026-11-16 精简后的归属
 
 以 [任务 89](tasks/89-test-suite-refinement.md) 的迁移表为准，下面历史任务中的旧文件名只用于追溯。当前 `profile_prompt_save` 已并入 `account_providers`；`agent_identity` 并入 `local_account_repository`；`custom_prompt`、`short_term_memory_budget` 与原 services 中模型/Schema 用例合并为 `domain/models/__tests__/ai_settings_test.dart`。`app_ai_tokens` 并入 `app_theme`，`app_canvas` 并入 `app_page_scaffold`，空态统一为 `empty_state`；记忆编辑布局独立为 `memory_editor_layout`。
@@ -26,24 +28,26 @@ Composer 性能覆盖见 [任务 81](tasks/81-composer-performance.md)：`compos
 使用项目本地 SDK，在仓库根目录运行：
 
 ```powershell
+$env:TEMP = Join-Path $PWD '.tools/task-temp'
+$env:TMP = $env:TEMP
+$env:PUB_CACHE = Join-Path $PWD '.tools/pub-cache'
+New-Item -ItemType Directory -Force -Path $env:TEMP | Out-Null
 .\.tools\flutter\bin\flutter.bat analyze --no-pub
 .\.tools\flutter\bin\flutter.bat test --no-pub
 ```
 
-业务测试放在被测目录同级的 `__tests__/*_test.dart`。默认回归只有一个入口：`test/all_tests_test.dart`。新增、删除或重命名测试文件后重新生成，禁止手工维护 imports 和注册列表：
+业务测试按 `lib/` 的相对结构镜像存放在 `test/`，命名为 `*_test.dart`。直接运行 `flutter test` 原生发现全部文件并按文件并发执行，无需注册或生成入口。每个文件独立初始化语言、binding、Provider 和临时存储，并自行清理，不依赖其他套件的执行顺序。
+
+局部回归直接指定文件或目录；单次命令内部保留默认并发，需要时可用 `--concurrency=N` 调整。多个 Flutter 测试命令串行执行，避免共享编译缓存冲突：
 
 ```powershell
-.\.tools\flutter\bin\dart.bat run tool/gen_all_tests.dart
-```
-
-入口自带磁盘注册检查，遗漏新文件或残留已删除文件都会失败。局部回归直接指定文件或目录；多个 Flutter 测试命令串行执行，避免共享编译缓存冲突：
-
-```powershell
-.\.tools\flutter\bin\flutter.bat test --no-pub lib/features/chat/presentation/pages/__tests__
-.\.tools\flutter\bin\flutter.bat test --no-pub lib/features/settings/presentation/widgets/__tests__/provider_model_flow_test.dart
+.\.tools\flutter\bin\flutter.bat test --no-pub test/features/chat/presentation/pages
+.\.tools\flutter\bin\flutter.bat test --no-pub test/features/settings/presentation/widgets/provider_model_flow_test.dart
 ```
 
 ## 测试归属
+
+下表中的层次均指 `test/` 下与 `lib/` 镜像的目录；Feature 内的 `domain`、`data`、`presentation` 位于 `test/features/<feature>/`。定位测试直接检索 `test/`。产品代码统一使用 `package:selfbox/...` 导入，测试与夹具之间使用相对导入。
 
 | 层次 | 负责验证 | 不应重复承担 |
 | --- | --- | --- |
@@ -63,7 +67,7 @@ Composer 性能覆盖见 [任务 81](tasks/81-composer-performance.md)：`compos
 2. 删除用例前，将它的独有断言迁入保留用例；在任务文档写明旧位置、保留位置和保留的边界。
 3. 相同操作但不同输入使用具名参数矩阵。明暗主题、语言、窄屏、大字、动画起始禁用与中途禁用存在不同风险，不因“看起来相似”裁剪。
 4. 将同一流程的互补断言合并到一次执行中；不要把无关业务串成一个长用例，也不要只为降低用例数合并独立错误分支。
-5. 公共夹具优先使用 `core/testing/`；局部重复数据与 finder 放同目录的 `*_test_support.dart`。专用于一项测试的替身保留在所属文件，避免把整个测试应用封装进新的泛型框架。
+5. 公共夹具优先使用 `test/support/`；局部重复数据与 finder 放所属镜像测试目录的 `*_test_support.dart`。专用于一项测试的替身保留在所属文件，避免把整个测试应用封装进新的泛型框架。
 6. 超过 300 行的测试按被测对象或行为拆分，并保留文件级夹具、初始化、清理和注册。文件数不作为优化目标。
 7. 每次整合后运行相关回归、静态分析和默认完整回归，核对用例增减及删除断言的归属；通过数不能替代覆盖依据。
 
@@ -78,12 +82,12 @@ Composer 性能覆盖见 [任务 81](tasks/81-composer-performance.md)：`compos
 
 ## 独立工具测试
 
-下面两个入口已纳入测试审计，但不属于默认回归：
+下面两个入口已纳入测试审计，但不属于默认回归；它们通过相对路径引用 `test/support/` 共享夹具：
 
 | 入口 | 用途与限制 | 命令 |
 | --- | --- | --- |
 | `tool/screenshots/app_screenshots_test.dart` | 真实字体和页面截图，供人工视觉审查；依赖本机字体，输出在忽略的 `tool/screenshots/out/` | `.\.tools\flutter\bin\flutter.bat test tool/screenshots --update-goldens` |
-| `tool/web_research_smoke_test.dart` | 实际请求 Bing RSS 与公开网页，依赖外网可用性；确定性 HTTP/解析/安全测试在 `lib` 中运行 | `.\.tools\flutter\bin\flutter.bat test tool/web_research_smoke_test.dart` |
+| `tool/web_research_smoke_test.dart` | 实际请求 Bing RSS 与公开网页，依赖外网可用性；确定性 HTTP/解析/安全测试在 `test/` 中运行 | `.\.tools\flutter\bin\flutter.bat test tool/web_research_smoke_test.dart` |
 
 默认回归不访问真实搜索服务，不将截图生成或外部网络状态当作单元测试门禁。
 

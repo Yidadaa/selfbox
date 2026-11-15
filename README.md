@@ -19,8 +19,4 @@ The Flutter SDK is project-local in `.tools/flutter` (stable 3.47.9, see ADR-001
 ./.tools/flutter/bin/flutter test
 ```
 
-Tests live next to the code in `lib/**/__tests__/`. See [the testing guide](docs/testing.md) for ownership, consolidation rules, and separate visual/network checks. After adding, deleting, or renaming a test file, regenerate the single aggregate entry point:
-
-```bash
-./.tools/flutter/bin/dart run tool/gen_all_tests.dart
-```
+Tests mirror `lib/` under `test/`, with shared fixtures in `test/support/`. `flutter test` discovers test files directly and schedules them concurrently. See [the testing guide](docs/testing.md) for ownership, local regression commands, and separate visual/network checks.

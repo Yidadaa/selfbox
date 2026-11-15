@@ -1,0 +1,40 @@
+import 'dart:typed_data';
+
+import 'package:fpdart/fpdart.dart';
+import 'package:selfbox/core/error/app_failure.dart';
+import 'package:selfbox/features/settings/domain/models/user_profile.dart';
+import 'package:selfbox/features/settings/domain/repositories/account_repository.dart';
+
+class FakeAccountRepository implements AccountRepository {
+  UserProfile profile = const UserProfile();
+  AppFailure? failure;
+  AppFailure? saveFailure;
+  int clears = 0;
+  @override
+  TaskEither<AppFailure, UserProfile> load() => TaskEither.right(profile);
+  @override
+  TaskEither<AppFailure, Unit> save(UserProfile value) {
+    if (saveFailure case final error?) return TaskEither.left(error);
+    profile = value.copyWith(
+      nickname: value.nickname.trim(),
+      agentName: value.agentName.trim(),
+    );
+    return TaskEither.right(unit);
+  }
+
+  @override
+  TaskEither<AppFailure, String> importAvatar(
+    Uint8List bytes,
+    String extension,
+  ) => TaskEither.right('media/avatar-test.png');
+  @override
+  TaskEither<AppFailure, StorageUsage> usage() =>
+      TaskEither.right(const StorageUsage(mediaBytes: 1024));
+  @override
+  TaskEither<AppFailure, Unit> clear() {
+    clears++;
+    if (failure case final error?) return TaskEither.left(error);
+    profile = const UserProfile();
+    return TaskEither.right(unit);
+  }
+}

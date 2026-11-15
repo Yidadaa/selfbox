@@ -1,5 +1,12 @@
 # 架构决策记录 (ADR)
 
+### [ADR-082] 镜像测试目录与 Flutter 原生并发
+
+- **背景**：单一聚合 main 将全部测试文件注册到同一套件，限制文件级并发；测试及夹具混入产品源码使检索、依赖 lint 与测试 API 可见性处理复杂化。
+- **决策**：取代 ADR-003，并替代 ADR-058 的生成器注册约定。全部业务测试在 `test/` 下镜像 `lib/`，共享夹具放 `test/support/`，局部夹具与对应测试同目录；删除聚合入口及生成器，直接由 `flutter test` 发现各文件并以独立 isolate 调度并发。产品导入统一 `package:selfbox/...`，夹具与独立工具使用相对导入。
+- **影响**：恢复 `depend_on_referenced_packages` 默认启用，`lib/` 不引用测试依赖。检索测试只需搜索 `test/`；单文件独立初始化及清理，无跨套件顺序依赖。保留现有 ProviderContainer 显式释放方式。截图与联网工具仍显式运行，不纳入默认回归。
+- **验收**：文件与业务断言一对一迁移，仅删除聚合注册检查；基线与迁移后用例数、wall clock 记录在任务 92。并发收益以实测为准，冷启动与缓存影响单独说明。
+
 ### [ADR-081] 原生网页传输与可恢复预览缓存
 
 - **背景**：手写 socket 连接工厂的 HTTPS 链路返回 400，双路竞速和永久失败缓存使抓取问题难以恢复。
@@ -163,6 +170,8 @@
 
 ### [ADR-002] 所有生成代码收敛至 `lib/gen/`
 
+> 2026-11-16 更新（ADR-082）：测试移至 `test/` 后移除测试目录排除项；继续保留 `lib/gen/**/*.dart` 排除及 ObjectBox 模型 JSON 输入。
+
 - **背景**：`*.g.dart` / `*.freezed.dart` 散落在业务目录会污染代码审查与搜索。
 - **决策**：
   - `build.yaml` 用 `build_extensions` 把 `freezed` 与 `source_gen|combining_builder`（json_serializable、riverpod_generator、retrofit_generator 等）映射到 `lib/gen/{{}}`；`sources` 排除 `lib/**/__tests__/**` 与 `lib/gen/**/*.dart`，保留 ObjectBox 模型 JSON（ADR-017）。
@@ -171,6 +180,8 @@
 - **影响**：每次 `build_runner` 后必须确认 `lib/gen/` 之外无生成文件；`lib/gen/` 提交进版本库还是忽略见 ADR-005。
 
 ### [ADR-003] 测试与被测代码同级放在 `__tests__/`，`test/all_tests_test.dart` 作为唯一聚合入口
+
+> 已被 ADR-082 取代；以下保留历史原文。
 
 - **背景**：Flutter 工具链默认只扫描 `test/`，而规范要求测试与代码同级。
 - **决策**：测试写在 `lib/**/__tests__/*_test.dart`；聚合入口命名为 **`test/all_tests_test.dart`**（偏离 AGENTS.md 的 `all_tests.dart`：`flutter test` 只收集 `*_test.dart`，否则裸跑 `flutter test` 找不到任何用例）。它以 `import ... as tN;` 引入每个测试文件并在 `main()` 中 `group(path, tN.main)`，末尾自带「注册表 == 磁盘扫描」守卫测试。`tool/gen_all_tests.dart` 扫描目录重写该文件并 `dart format`。`analysis_options.yaml` 关闭 `depend_on_referenced_packages`。共享测试夹具在 `lib/core/testing/app_widget_tester.dart`（390x844 视口、刘海/横条安全区、固定语言、完整 Provider + Glass 作用域）。
@@ -192,7 +203,7 @@
 
 - **背景**：Android 与 iOS 共用一套视觉，禁止 `Platform.isIOS` 分叉；业务组件禁止硬编码间距/圆角/模糊/时长。
 - **决策**：`lib/core/theme/` 定义 `AppSpacing`（4/8/12/16/20/24/32/40/48）、`AppSizes`（48dp 触控热区、AppBar 高度、图标尺寸）、`AppRadius`（含同心圆角 `concentric(outer, padding)`）、`AppMotion`（按压 0.97 / 120ms / easeOutCubic）、`AppGlassTheme`（`ThemeExtension`，承载三层景深的模糊/透明度/描边）。`AppTheme.dark()` / `AppTheme.light()` 挂载全部扩展；全局 `AppScrollBehavior` 统一 `BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics())`；全平台统一 `GlassPageTransitionsBuilder` 转场。页面统一用 `GlassScaffold` + `AppCanvas`（渐变画布），刷新式玻璃控件（`GlassButton`）不得嵌套在玻璃卡片内。
-- **影响**：新增视觉参数一律先加 Token 与对应 `__tests__` 断言，再在组件中引用。
+- **影响**：新增视觉参数一律先加 Token 与对应 `test/core/theme/` 断言，再在组件中引用。
 
 ### [ADR-007] ObjectBox 使用 6.0.0-preview.6（精确锁定）
 
@@ -215,7 +226,7 @@
 ### [ADR-010] v0 数据存储布局与测试替身
 
 - **背景**：消息、图片、记忆文件三类数据需要可测试、可迁移，且 ObjectBox 原生异步查询在 widget 测试的 fake-async 区中无法完成。
-- **决策**：所有持久化数据位于 `AppPaths.root`（应用支持目录下 `selfbox/`）：`objectbox/`、`media/`（消息图片，库内只存 `media/<uuid>.ext` 相对路径）、`memory/`（agent 记忆 Markdown 树）。`appPathsProvider` / `appStoreProvider` 在 `main()` 中覆写。Repository 层测试用临时目录真实 Store（需 `dart run tool/fetch_objectbox_native.dart` 下载宿主库）；Widget / Provider 测试用 `FakeMessageRepository`（`lib/core/testing/`）。
+- **决策**：所有持久化数据位于 `AppPaths.root`（应用支持目录下 `selfbox/`）：`objectbox/`、`media/`（消息图片，库内只存 `media/<uuid>.ext` 相对路径）、`memory/`（agent 记忆 Markdown 树）。`appPathsProvider` / `appStoreProvider` 在 `main()` 中覆写。Repository 层测试用临时目录真实 Store（需 `dart run tool/fetch_objectbox_native.dart` 下载宿主库）；Widget / Provider 测试用 `FakeMessageRepository`（`test/support/`，路径按 ADR-082 更新）。
 - **影响**：路径必须经 `MediaStore.resolve` 校验，拒绝越界（模型工具参数可控）；设计评审截图通过 `flutter test tool/screenshots --update-goldens` 生成到 `tool/screenshots/out/`（不入库）。
 
 ### [ADR-011] AI 服务商配置与密钥存储
@@ -440,6 +451,8 @@
 - **影响**：版本加载使用等高骨架，读取失败在原行重试；协议与官网尚未提供内容或地址，保持空值、无点击和无箭头，不生成虚假链接或协议。
 
 ### [ADR-058] 测试按故障边界归属与去重
+
+> 2026-11-16 更新：本条的生成器注册约定已被 ADR-082 的原生发现替代，测试归属与去重原则继续有效。
 
 - **背景**：功能迭代后，页面与组件套件重复执行相同流程、重复检查公共样式，聊天测试文件超过 700 行。
 - **决策**：以状态、触发操作、断言与故障边界确定重复；独有断言先迁入保留用例，再删除旧用例。公共控件的视觉契约放组件测试，页面验证实际接线与结果；同操作的变体参数化，超长测试按对象拆分。默认入口继续由生成器注册全部同级测试。

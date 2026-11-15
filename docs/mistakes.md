@@ -2,6 +2,10 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-16] [TestDependency] 恢复依赖 lint 后浏览器测试报两处未声明包 -> 原测试直接引用传递依赖 url_launcher_platform_interface，被全局禁用规则掩盖 -> 在 dev_dependencies 显式声明现有锁定版本，保留断言与严格 lint。
+- [2026-11-16] [CodegenCache] 代码生成尝试写入无权限的全局 Pub 缓存 -> 只设置 TEMP/TMP，遗漏现有 package_config 使用的本地 PUB_CACHE -> Dart/Flutter 门禁同时沿用 .tools/pub-cache，不修改全局目录权限。
+- [2026-11-16] [EmptyDirectoryCleanup] 迁移后清理旧空目录被拒 -> 自动审批仅返回 blocked by policy -> 停止清理，不换路径或工具重试；区分 Git 文件迁移完成与宿主空目录残留。
+- [2026-11-16] [TestParallelism] 141 个测试文件无法按文件并发 -> 聚合 main 将所有业务用例注册到单一套件 -> 使用 test/ 镜像目录与 Flutter 原生发现，不用聚合入口串联；业务用例数与基础设施守卫数分开核对。
 - [2026-11-16] [WebTransport] 手写连接路径 HTTPS 400 后预览永久不可用 -> 自定义 socket/TLS 路径和预写失败缓存耦合 -> 平台适配器接管连接，成功才持久化，旧失败版本必须可重试。
 - [2026-11-16] [NativeAdapter] 无 GMS 不会自动回退 -> Cronet 默认依赖 Play Services 且 fallback 为 opt-in -> 核查锁定源码并显式开启 provider-disabled 回退，不把 IO 回退等同系统代理支持。
 - [2026-11-16] [PubHost] 源码路径读取失败、pub get 插件链接失败 -> 缓存实际位于 pub.flutter-io.cn，宿主禁止符号链接 -> 先枚举真实 hosted 目录，按生成插件清单创建目录联接后重跑 pub get。
@@ -177,7 +181,7 @@
 - [2026-11-12] [Toolchain] 自动权限模式下执行新下载的 `.tools/flutter` 被拦截 -> 工具链落地后先由用户确认/授权 -> 需要 `.claude/settings.json` 允许 `Bash(./.tools/flutter/bin/*)` 或用户手动跑一次。
 - [2026-11-12] [Pub] `objectbox_generator` 稳定版与新版 analyzer 冲突导致求解失败 -> 生成器链 analyzer 主版本不一致 -> 新增生成器先 `pub add --dry-run` 单独探测，冲突时查各版本 `analyzer` 约束再定版（见 ADR-007）。
 - [2026-11-12] [BuildRunner] `build_runner build -d` 报 options removed -> build_runner 2.16 移除 `--delete-conflicting-outputs` -> 直接 `dart run build_runner build`。
-- [2026-11-12] [Test] `flutter test` 报 test 目录无用例 -> 聚合文件 `all_tests.dart` 不以 `_test.dart` 结尾 -> 聚合入口必须叫 `test/all_tests_test.dart`。
+- [2026-11-12] [Test] `flutter test` 报 test 目录无用例 -> 聚合文件 `all_tests.dart` 不以 `_test.dart` 结尾 -> 聚合入口必须叫 `test/all_tests_test.dart`。（2026-11-16：聚合文件已删除，本条聚合入口命名结论作废，现行规范见 ADR-082。）
 - [2026-11-12] [Riverpod] `ProviderContainer.test` 在 `lib/**/__tests__` 触发 `invalid_use_of_visible_for_testing_member` -> analyzer 只把 `test/` 视为测试目录 -> 用 `ProviderContainer(...)` + `addTearDown(container.dispose)`；`Override` 类型需 `import 'package:hooks_riverpod/misc.dart'`。
 - [2026-11-12] [Slang] zh-CN `setLocaleSync` 抛 `_DeferredNotLoadedError` -> slang 默认 deferred 加载非基准语言 -> `slang.yaml` 设 `lazy: false`（ADR-009），每个页面测试必须覆盖全部 `AppLocale.values`。
 - [2026-11-12] [LiquidGlass] 首页卡片被玻璃 AppBar 遮挡 -> `GlassScaffold` 默认 `extendBody`，不给 body 注入 padding -> 可滚动 body 必须自行 inset `MediaQuery.paddingOf(context).top + AppSizes.appBarHeight`，并有测试锁定 `GlassAppBar` 默认高度 == Token。

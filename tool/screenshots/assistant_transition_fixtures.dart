@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:selfbox/core/testing/app_widget_tester.dart';
-import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/core/theme/app_motion.dart';
 import 'package:selfbox/features/chat/data/chat_data_providers.dart';
 import 'package:selfbox/features/chat/domain/models/agent_activity.dart';
@@ -11,6 +9,8 @@ import 'package:selfbox/features/chat/presentation/providers/assistant_controlle
 import 'package:selfbox/features/chat/presentation/widgets/assistant_status_bubble.dart';
 import 'package:selfbox/features/chat/presentation/widgets/outgoing_message_entrance.dart';
 
+import '../../test/support/app_widget_tester.dart';
+import '../../test/support/fake_message_repository.dart';
 import 'screenshot_fixtures.dart';
 
 const _thinking = AgentActivity.thinking(

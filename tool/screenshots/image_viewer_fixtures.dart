@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as p;
-import 'package:selfbox/core/testing/app_widget_tester.dart';
-import 'package:selfbox/core/testing/fake_message_repository.dart';
-import 'package:selfbox/core/testing/temp_storage.dart';
 import 'package:selfbox/core/widgets/app_artwork.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 
+import '../../test/support/app_widget_tester.dart';
+import '../../test/support/fake_message_repository.dart';
+import '../../test/support/temp_storage.dart';
 import 'screenshot_fixtures.dart';
 
 ScreenshotEnv _photos() {

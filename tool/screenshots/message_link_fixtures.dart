@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:selfbox/core/testing/app_widget_tester.dart';
-import 'package:selfbox/core/testing/fake_ai_settings.dart';
-import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/domain/repositories/web_research_repository.dart';
 import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
 import 'package:selfbox/features/chat/presentation/providers/message_link_preview.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 
+import '../../test/support/app_widget_tester.dart';
+import '../../test/support/fake_ai_settings.dart';
+import '../../test/support/fake_message_repository.dart';
 import 'screenshot_fixtures.dart';
 
 final messageLinkFixtures = [

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:selfbox/core/testing/fake_ai_settings.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
+import '../../test/support/fake_ai_settings.dart';
 import 'screenshot_fixtures.dart';
 
 ScreenshotEnv _environment() => (

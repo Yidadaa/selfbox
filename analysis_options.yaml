@@ -20,8 +20,6 @@ analyzer:
 
 linter:
   rules:
-    # Tests live in lib/**/__tests__ and import dev_dependencies (flutter_test, mocktail).
-    depend_on_referenced_packages: false
     always_declare_return_types: true
     avoid_dynamic_calls: true
     avoid_print: true

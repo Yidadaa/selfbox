@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
-import 'package:selfbox/core/testing/app_widget_tester.dart';
-import 'package:selfbox/core/testing/fake_message_repository.dart';
 import 'package:selfbox/core/widgets/app_action_popover.dart';
 import 'package:selfbox/core/widgets/app_page_button.dart';
 import 'package:selfbox/core/widgets/app_popover_surface.dart';
@@ -11,6 +9,8 @@ import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 import 'package:selfbox/features/settings/presentation/providers/app_preferences_controller.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
+import '../../test/support/app_widget_tester.dart';
+import '../../test/support/fake_message_repository.dart';
 import 'screenshot_fixtures.dart';
 
 final messageActionFixtures = [

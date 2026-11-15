@@ -17,6 +17,8 @@
 
 ## 测试桥接
 
+> 现状：已迁至 `test/` 镜像布局，见 ADR-082；以下为初始化时的历史记录。
+
 - [x] `tool/gen_all_tests.dart` 生成 `test/all_tests_test.dart`（命名原因见 ADR-003）
 - [x] 聚合文件内置「注册表与磁盘同步」守卫测试
 - [x] 共享夹具 `lib/core/testing/app_widget_tester.dart`（390x844 + 安全区 + 固定语言）
