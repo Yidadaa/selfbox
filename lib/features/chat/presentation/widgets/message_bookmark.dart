@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_icons.dart';
@@ -17,8 +16,13 @@ import 'message_mine_surface.dart';
 import 'open_message_link.dart';
 
 class MessageBookmark extends ConsumerWidget {
-  const MessageBookmark({required this.url, super.key});
+  const MessageBookmark({
+    required this.url,
+    required this.sourceText,
+    super.key,
+  });
   final String url;
+  final String sourceText;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,10 +39,16 @@ class MessageBookmark extends ConsumerWidget {
               horizontal: AppSpacing.md,
               vertical: AppSpacing.xs,
             ),
-            child: Skeletonizer(
-              enabled: result.isLoading,
-              child: _BookmarkContent(url: url, page: page),
-            ),
+            child: page == null
+                ? Text(
+                    sourceText,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: context.glass.onBubbleMine,
+                      decoration: TextDecoration.underline,
+                      decorationColor: context.glass.onBubbleMine,
+                    ),
+                  )
+                : _BookmarkContent(url: url, page: page),
           ),
         ),
       ),

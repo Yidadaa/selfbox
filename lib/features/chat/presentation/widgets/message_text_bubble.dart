@@ -33,7 +33,9 @@ class MessageTextBubble extends ConsumerWidget {
             !selectionMode
         ? singleMessageLink(message.text)
         : null;
-    if (bookmark != null) return MessageBookmark(url: bookmark);
+    if (bookmark != null) {
+      return MessageBookmark(url: bookmark, sourceText: message.text);
+    }
     final glass = context.glass;
     final content = Padding(
       padding: const EdgeInsets.symmetric(

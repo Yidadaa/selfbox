@@ -21,6 +21,7 @@ import 'package:selfbox/features/chat/presentation/providers/message_link_previe
 import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_text_content.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 Message _message(String text) =>
     Message(id: 1, createdAt: kTestNow, author: MessageAuthor.me, text: text);
@@ -132,7 +133,7 @@ void main() {
       await tester.pump();
     });
     testWidgets(
-      'bookmark loading, metadata and fallback keep size in $brightness',
+      'bookmark shows link while loading and after failure in $brightness',
       (tester) async {
         final pending = Completer<Either<AppFailure, WebPageContent>>();
         var failed = false;
@@ -167,6 +168,11 @@ void main() {
         );
         final card = find.byKey(const ValueKey('message-bookmark'));
         final loadingSize = tester.getSize(card);
+        expect(find.text(url), findsOneWidget);
+        expect(find.byType(Skeletonizer), findsNothing);
+        await tester.tap(find.text(url));
+        expect(opened.single.toString(), url);
+        opened.clear();
         pending.complete(
           const Right(
             WebPageContent(
@@ -204,14 +210,14 @@ void main() {
         );
         expect(tester.widget<Text>(title).style?.color, glass.onBubbleMine);
         expect(tester.getSize(card).height, lessThan(100));
-        expect(tester.getSize(card), loadingSize);
         await tester.tap(card);
         await tester.pumpAndSettle();
         expect(opened.single.toString(), url);
         failed = true;
         container.invalidate(messageLinkPreviewProvider(url));
         await tester.pumpAndSettle();
-        expect(find.text(t.chat.linkPreviewUnavailable), findsOneWidget);
+        expect(find.text(url), findsOneWidget);
+        expect(find.byType(Skeletonizer), findsNothing);
         expect(tester.getSize(card), loadingSize);
       },
     );

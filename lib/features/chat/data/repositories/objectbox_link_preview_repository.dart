@@ -41,22 +41,46 @@ class ObjectBoxLinkPreviewRepository implements LinkPreviewRepository {
         }
       }, _failure).flatMap(
         (cached) => cached != null
-            ? TaskEither.right(cached.toDomain())
-            : web
-                  .read(url)
-                  .flatMap(
-                    (page) => TaskEither.tryCatch(() async {
-                      final row = LinkPreviewEntity(
-                        sourceUrl: url,
-                        url: page.url,
-                        title: page.title,
-                        description: page.description,
-                        iconUrl: page.iconUrl,
-                      );
-                      await _box.putAsync(row);
-                      return row.toDomain();
-                    }, _failure),
-                  ),
+            ? cached.unavailable
+                  ? TaskEither.left(
+                      const AppFailure.network(
+                        message: 'Link preview unavailable',
+                      ),
+                    )
+                  : TaskEither.right(cached.toDomain())
+            : _fetchOnce(url),
+      );
+
+  TaskEither<AppFailure, WebPageContent> _fetchOnce(String url) =>
+      TaskEither.tryCatch(
+        () => _box.putAsync(
+          LinkPreviewEntity(
+            sourceUrl: url,
+            url: url,
+            title: '',
+            description: '',
+            iconUrl: '',
+            unavailable: true,
+          ),
+        ),
+        _failure,
+      ).flatMap(
+        (id) => web
+            .read(url)
+            .flatMap(
+              (page) => TaskEither.tryCatch(() async {
+                final row = LinkPreviewEntity(
+                  id: id,
+                  sourceUrl: url,
+                  url: page.url,
+                  title: page.title,
+                  description: page.description,
+                  iconUrl: page.iconUrl,
+                );
+                await _box.putAsync(row);
+                return row.toDomain();
+              }, _failure),
+            ),
       );
 
   @override

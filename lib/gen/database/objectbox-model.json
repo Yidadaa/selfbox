@@ -85,7 +85,7 @@
     },
     {
       "id": "3:3629282783051582472",
-      "lastPropertyId": "6:3942046912027461846",
+      "lastPropertyId": "7:6108494780188479720",
       "name": "LinkPreviewEntity",
       "properties": [
         {
@@ -120,6 +120,11 @@
           "id": "6:3942046912027461846",
           "name": "iconUrl",
           "type": 9
+        },
+        {
+          "id": "7:6108494780188479720",
+          "name": "unavailable",
+          "type": 1
         }
       ],
       "relations": []

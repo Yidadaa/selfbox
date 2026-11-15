@@ -11,6 +11,7 @@ void main() {
       iconUrl: 'https://example.com/icon.png',
     );
     final page = row.toDomain();
+    expect(row.unavailable, isFalse);
     expect(page.title, 'Title');
     expect(page.description, 'Summary');
     expect(page.iconUrl, row.iconUrl);

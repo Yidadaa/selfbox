@@ -155,6 +155,54 @@ void main() {
     expect(result.isLeft(), isTrue);
     expect(result.getLeft().toNullable().toString(), contains('timed out'));
   });
+  test('a timed-out page does not cancel the next URL request', () async {
+    final adapter = _TimeoutThenSuccessAdapter();
+    final repository = BingWebResearchRepository(
+      Dio()..httpClientAdapter = adapter,
+      requestTimeout: const Duration(milliseconds: 25),
+    );
+    expect(
+      (await repository.read('https://example.com/first').run()).isLeft(),
+      isTrue,
+    );
+    expect(
+      (await repository.read('https://example.com/second').run())
+          .toNullable()
+          ?.title,
+      'Second',
+    );
+    expect(adapter.urls, [
+      'https://example.com/first',
+      'https://example.com/second',
+    ]);
+  });
+}
+
+class _TimeoutThenSuccessAdapter implements HttpClientAdapter {
+  final urls = <String>[];
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<List<int>>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    urls.add(options.uri.toString());
+    if (urls.length == 1) {
+      await cancelFuture;
+      throw DioException.requestCancelled(
+        requestOptions: options,
+        reason: 'timeout',
+      );
+    }
+    return _response(
+      200,
+      'text/html',
+      '<title>Second</title><p>Page content</p>',
+    );
+  }
+
+  @override
+  void close({bool force = false}) {}
 }
 
 class _StubAdapter implements HttpClientAdapter {
