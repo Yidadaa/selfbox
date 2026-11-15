@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/chat_data_providers.dart';
 import '../../domain/models/message.dart';
+import 'message_lookup.dart';
 
 part '../../../../gen/features/chat/presentation/providers/message_actions.g.dart';
 
@@ -14,6 +15,7 @@ class MessageActions extends _$MessageActions {
   /// Removes the message and the images only it referenced.
   Future<void> delete(Message message) async {
     final media = ref.read(mediaStoreProvider);
+    final lease = ref.keepAlive();
     await ref
         .read(messageRepositoryProvider)
         .delete(message.id)
@@ -22,6 +24,10 @@ class MessageActions extends _$MessageActions {
             message.images.map(media.delete).toList(),
           ),
         )
-        .run();
+        .run()
+        .whenComplete(lease.close);
+    if (ref.mounted) {
+      ref.invalidate(messageByIdProvider(message.id));
+    }
   }
 }

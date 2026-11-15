@@ -23,6 +23,8 @@ abstract class Message with _$Message {
 
     /// Whether this note was sent with AI mode on (a question to the agent).
     @Default(false) bool askedAi,
+
+    @Default(<int>[]) List<int> quotedMessageIds,
   }) = _Message;
 }
 
@@ -33,6 +35,7 @@ abstract class MessageDraft with _$MessageDraft {
     @Default('') String text,
     @Default(<String>[]) List<String> images,
     @Default(false) bool askedAi,
+    @Default(<int>[]) List<int> quotedMessageIds,
   }) = _MessageDraft;
 
   const MessageDraft._();

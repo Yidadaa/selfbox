@@ -7,6 +7,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/error/app_failure.dart';
 import '../../../../core/error/failure_message.dart';
+import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_radius.dart';
@@ -20,6 +21,7 @@ import '../../../settings/presentation/widgets/settings_back_button.dart';
 import '../../domain/models/message.dart';
 import '../providers/message_search.dart';
 import '../widgets/message_bubble.dart';
+import '../widgets/message_quote_sheet.dart';
 
 class MessageSearchPage extends HookConsumerWidget {
   const MessageSearchPage({super.key});
@@ -140,8 +142,16 @@ class _SearchResults extends StatelessWidget {
       ),
       itemCount: messages.length,
       separatorBuilder: (_, _) => const Gap(AppSpacing.sm),
-      itemBuilder: (context, index) =>
-          MessageBubble(message: messages[index], resolveImage: (_) => null),
+      itemBuilder: (context, index) => MessageBubble(
+        message: messages[index],
+        resolveImage: (_) => null,
+        onExpand: () => MessageExpandedRoute(
+          id: messages[index].id,
+          $extra: messages[index],
+        ).push<void>(context),
+        onQuoteTap: () =>
+            showQuotedMessages(context, messages[index].quotedMessageIds),
+      ),
     );
   }
 }

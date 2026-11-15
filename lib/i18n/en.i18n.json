@@ -28,7 +28,15 @@
     "today": "Today",
     "yesterday": "Yesterday",
     "confirmDelete": "Delete this message?",
-    "imageFailed": "Image unavailable"
+    "imageFailed": "Image unavailable",
+    "expandMessage": "Read more",
+    "fullMessage": "Message",
+    "quotedCount": "Quoted {count} messages",
+    "quoteCount": "Quote {count}",
+    "noQuotes": "No quoted messages",
+    "messageMissing": "This message was deleted",
+    "imageMessage": "{count} images",
+    "authorMe": "Me"
   },
   "memory": {
     "title": "Memory",
@@ -110,6 +118,7 @@
   "common": {
     "copied": "Copied",
     "copy": "Copy",
+    "quote": "Quote",
     "selectText": "Select text",
     "selectAll": "Select all",
     "delete": "Delete",

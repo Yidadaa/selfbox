@@ -11,6 +11,7 @@ class MessageEntity {
     required this.text,
     required this.images,
     required this.askedAi,
+    this.quotedMessageIds = '',
     this.id = 0,
   });
 
@@ -30,6 +31,8 @@ class MessageEntity {
   List<String> images;
 
   bool askedAi;
+
+  String quotedMessageIds;
 }
 
 extension MessageEntityMapper on MessageEntity {
@@ -40,6 +43,7 @@ extension MessageEntityMapper on MessageEntity {
     text: text,
     images: List.unmodifiable(images),
     askedAi: askedAi,
+    quotedMessageIds: _decodeQuotedIds(quotedMessageIds),
   );
 }
 
@@ -50,5 +54,10 @@ extension MessageDraftMapper on MessageDraft {
     text: text.trim(),
     images: List.of(images),
     askedAi: askedAi,
+    quotedMessageIds: quotedMessageIds.join(','),
   );
 }
+
+List<int> _decodeQuotedIds(String value) => [
+  for (final part in value.split(',')) ?int.tryParse(part),
+];

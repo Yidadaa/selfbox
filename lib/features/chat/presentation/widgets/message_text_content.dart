@@ -17,9 +17,11 @@ class MessageTextContent extends HookConsumerWidget {
     this.selectionController,
     this.onSelectionCopy,
     this.onDelete,
+    this.fullWidth = false,
     super.key,
   });
   final Message message;
+  final bool fullWidth;
   final VoidCallback? onDelete;
   final bool selectionMode;
   final SmoothSelectionController? selectionController;
@@ -28,14 +30,17 @@ class MessageTextContent extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final glass = context.glass;
-    final color = message.author == MessageAuthor.me
+    final color = fullWidth
+        ? glass.foreground
+        : message.author == MessageAuthor.me
         ? glass.onBubbleMine
         : glass.onBubbleOther;
     final compact = useMemoized(
       () =>
+          !fullWidth &&
           message.author == MessageAuthor.ai &&
           MarkdownParser().parse(message.text).every(_intrinsicText),
-      [message.author, message.text],
+      [fullWidth, message.author, message.text],
     );
     final text = Text(
       message.text,

@@ -28,6 +28,27 @@ List<String> _texts(Either<AppFailure, List<Message>> result) =>
 
 void main() {
   group('ObjectBoxMessageRepository', () {
+    test('quote IDs persist independently of original deletion', () async {
+      final repo = await _repo();
+      final original = await _add(repo, 'original');
+      final quoted =
+          (await repo
+                  .add(
+                    MessageDraft(
+                      author: MessageAuthor.me,
+                      text: 'reply',
+                      quotedMessageIds: [original.id, 999],
+                    ),
+                  )
+                  .run())
+              .getOrElse((failure) => fail('$failure'));
+      await repo.delete(original.id).run();
+      final loaded = (await repo.byId(quoted.id).run())
+          .toNullable()
+          ?.toNullable();
+      expect(loaded?.quotedMessageIds, [original.id, 999]);
+      expect((await repo.latest(10).run()).toNullable()?.single, loaded);
+    });
     test('clear removes every row and the store remains writable', () async {
       final repo = await _repo();
       await _add(repo, 'first');

@@ -60,6 +60,22 @@ Future<Map<String, Object?>> _call(
 
 void main() {
   group('AgentTools', () {
+    test(
+      'reading an original retains its own reference relationships',
+      () async {
+        final env = _env(
+          seed: [
+            _m(3, 'reply').copyWith(quotedMessageIds: [1, 2]),
+          ],
+        );
+        final result = await _call(env.tools, 'read_messages', {'id': 3});
+        final messages = result['messages'] as List<Object?>;
+        expect(
+          (messages.single as Map<String, Object?>)['quoted_message_ids'],
+          [1, 2],
+        );
+      },
+    );
     test('exposes the documented tool names', () {
       expect(_env().tools.build().keys, [
         'search_messages',

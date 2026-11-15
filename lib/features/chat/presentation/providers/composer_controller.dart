@@ -26,6 +26,7 @@ abstract class ComposerState with _$ComposerState {
     @Default(false) bool aiMode,
     @Default(false) bool sending,
     @Default(false) bool picking,
+    @Default(<int>[]) List<int> quotedMessageIds,
     int? lastSentMessageId,
     @Default(None()) Option<AppFailure> failure,
   }) = _ComposerState;
@@ -62,6 +63,22 @@ class ComposerController extends _$ComposerController {
   void setText(String text) => state = state.copyWith(text: text);
 
   void toggleAiMode() => state = state.copyWith(aiMode: !state.aiMode);
+
+  void quote(Message message) {
+    if (state.sending || state.quotedMessageIds.contains(message.id)) return;
+    state = state.copyWith(
+      quotedMessageIds: [...state.quotedMessageIds, message.id],
+    );
+  }
+
+  void removeQuote(int id) {
+    if (state.sending) return;
+    state = state.copyWith(
+      quotedMessageIds: state.quotedMessageIds
+          .where((item) => item != id)
+          .toList(),
+    );
+  }
 
   void dismissFailure() => state = state.copyWith(failure: const None());
 
@@ -127,6 +144,7 @@ class ComposerController extends _$ComposerController {
       text: state.text,
       images: state.attachments,
       askedAi: state.aiMode,
+      quotedMessageIds: state.quotedMessageIds,
     );
     state = state.copyWith(sending: true, failure: const None());
     final result = await ref.read(messageRepositoryProvider).add(draft).run();

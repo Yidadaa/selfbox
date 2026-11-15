@@ -1,8 +1,11 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/chat/domain/models/message.dart';
 import '../../features/chat/presentation/pages/chat_page.dart';
 import '../../features/chat/presentation/pages/image_viewer_page.dart';
+import '../../features/chat/presentation/pages/message_expanded_page.dart';
+import '../../features/chat/presentation/pages/message_location_page.dart';
 import '../../features/chat/presentation/pages/message_search_page.dart';
 import '../../features/memory/presentation/pages/memory_editor_page.dart';
 import '../../features/memory/presentation/pages/memory_file_page.dart';
@@ -21,6 +24,7 @@ import '../../features/settings/presentation/pages/talker_page.dart';
 import 'app_shell.dart';
 
 part '../../gen/core/router/app_routes.g.dart';
+part 'message_routes.dart';
 
 /// Pushed full-screen routes (viewers, editors) cover the tab bar.
 final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');

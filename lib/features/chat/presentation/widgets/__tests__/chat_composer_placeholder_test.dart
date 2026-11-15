@@ -83,8 +83,8 @@ void main() {
     expect(expanded.height, greaterThan(initial.height));
     expect(expanded.bottom, initial.bottom);
     expect(
-      tester.getCenter(find.byType(ChatAttachButton)).dy,
-      closeTo(expanded.center.dy, 0.01),
+      tester.getBottomLeft(find.byType(ChatAttachButton)).dy,
+      closeTo(expanded.bottom, 0.01),
     );
     expect(
       tester.getSize(find.byType(ChatSendButton)).height,

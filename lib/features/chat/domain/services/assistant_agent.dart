@@ -17,6 +17,7 @@ import '../repositories/web_research_repository.dart';
 import 'agent_history.dart';
 import 'agent_model_support.dart';
 import 'agent_prompt.dart';
+import 'agent_references.dart';
 import 'agent_tools.dart';
 import 'vercel_gateway_options.dart';
 
@@ -134,19 +135,26 @@ class AssistantAgent {
           model.maxOutputTokens -
           estimateTokens(instructions),
     );
-    return loadAgentHistory(
+    return loadAgentReferences(
       messages: messages,
       question: question,
-      budget: budget,
+      budget: budget - estimateMessageTokens(question),
     ).flatMap(
-      (recent) => _stream(
-        setup: setup,
-        history: buildAgentHistory(recent),
-        instructions: instructions,
-        onActivity: onActivity,
-        onToolEvent: onToolEvent,
-        cancel: cancel,
-      ),
+      (references) =>
+          loadAgentHistory(
+            messages: messages,
+            question: question,
+            budget: budget - estimateTokens(formatAgentReferences(references)),
+          ).flatMap(
+            (recent) => _stream(
+              setup: setup,
+              history: buildAgentHistory(recent, references: references),
+              instructions: instructions,
+              onActivity: onActivity,
+              onToolEvent: onToolEvent,
+              cancel: cancel,
+            ),
+          ),
     );
   }
 

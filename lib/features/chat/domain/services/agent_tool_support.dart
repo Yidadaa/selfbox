@@ -54,6 +54,7 @@ Map<String, Object?> _messageJson(Message m, {required int maxText}) => {
   'time': _iso(m.createdAt),
   'author': m.author.name,
   'text': _truncate(m.text, maxText),
+  if (m.quotedMessageIds.isNotEmpty) 'quoted_message_ids': m.quotedMessageIds,
   if (m.images.isNotEmpty) 'images': m.images.length,
 };
 

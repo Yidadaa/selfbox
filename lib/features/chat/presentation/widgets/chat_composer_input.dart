@@ -39,6 +39,7 @@ class ChatComposerInput extends ConsumerWidget {
     );
     return TextFieldTapRegion(
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           ChatComposerAttachment(external: true, keyboardOpen: keyboardOpen),
           Expanded(

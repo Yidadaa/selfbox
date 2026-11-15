@@ -41,6 +41,7 @@ class ChatComposerInputRow extends ConsumerWidget {
           AppSpacing.xs * (1 - progress),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             ChatComposerAttachment(external: false, keyboardOpen: keyboardOpen),
             Expanded(

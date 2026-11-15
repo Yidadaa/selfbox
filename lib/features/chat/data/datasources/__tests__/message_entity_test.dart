@@ -6,12 +6,25 @@ void main() {
   final at = DateTime(2026, 11, 12, 9, 30);
 
   group('MessageEntity mapping', () {
+    test('old rows without references map to an immutable empty list', () {
+      final entity = MessageEntity(
+        createdAt: at,
+        author: 0,
+        text: 'old',
+        images: [],
+        askedAi: false,
+      );
+      final message = entity.toDomain();
+      expect(message.quotedMessageIds, isEmpty);
+      expect(() => message.quotedMessageIds.add(1), throwsUnsupportedError);
+    });
     test('draft -> entity -> domain keeps every field', () {
       const draft = MessageDraft(
         author: MessageAuthor.ai,
         text: '  hello  ',
         images: ['media/a.jpg', 'media/b.png'],
         askedAi: true,
+        quotedMessageIds: [3, 4],
       );
       final entity = draft.toEntity(at)..id = 7;
       final message = entity.toDomain();
@@ -25,6 +38,7 @@ void main() {
           text: 'hello',
           images: const ['media/a.jpg', 'media/b.png'],
           askedAi: true,
+          quotedMessageIds: [3, 4],
         ),
       );
     });

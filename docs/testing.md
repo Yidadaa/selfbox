@@ -1,5 +1,9 @@
 # 测试维护指南
 
+引用体验补充（任务 85）：`message_quotes_test.dart` 验证 trash 图标、部分删除保持弹层、删空自动关闭和再次打开；单条直达/多条选择只展示目标原文，滚动视口从页面顶边开始，正文初始位置避开 toolbar，长文可滚到浮动头部下方。`message_expanded_page_test.dart` 的两类原文页面共用按 ID 查询的加载/失败重试契约。
+
+多消息引用与长文阅读见 [任务 85](tasks/85-message-quotes-and-expansion.md)：composer_quotes_test 验证去重/移除/失败保留及发送清空；message_entity_test 与 ObjectBox 仓库测试验证仅 ID 往返和原消息删除后的关系保留；agent_references_test 覆盖跨窗口原文、嵌套关系、预算及实际模型请求，消息工具测试保留引用 ID。message_quotes_test 覆盖长按累加、根 Sheet 即时移除、单条直达/多条选择、旧消息定位、删除与窄屏键盘；message_preview_test 覆盖真实布局半屏上限、明暗蓝色“展开更多 + 右箭头”、短文/段落/表格及大字缩放。message_expanded_page_test 覆盖打开/返回零转场、全局动画偏好无影响、32dp 阅读留白与实际正文边界、深链、加载/错误重试及全文选择。输入布局回归把多行居中契约更新为底对齐，保留单行与键盘性能测试。
+
 Composer 性能覆盖见 [任务 81](tasks/81-composer-performance.md)：`composer_performance_test.dart` 验证光晕无额外 ImageFiltered、键盘连续帧输入玻璃 identity、附件玻璃无 Opacity 祖先、连续输入不重建发送控件和单行字段，以及三档画质下跨 Tab 的背景预算与 Dock 重绘边界。`chat_composer_editor_test.dart` 比较精确排版结果，覆盖中英文/Emoji、显式及软换行、删除/清空、宽度/文字缩放、选区与输入法 composing 更新。既有键盘测试继续负责反向动画、减少动态效果、焦点和几何。
 
 ## 运行入口

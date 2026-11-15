@@ -2,6 +2,17 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-15] [WindowsTestFilter] Flutter 截图筛选的正则分支被当成命令 -> PowerShell 调用 .bat 时管道字符进入 cmd 解析 -> 测试名称筛选避免含管道字符，使用无分支的匹配表达式。
+
+- [2026-11-15] [QuoteViewport] 原消息页混入相邻记录且顶部滚动裁断 -> 使用 around 查询并在 ScrollView 外套顶部 Padding -> 引用详情只按 ID 查询，避让放入滚动内容；同时断言无相邻记录、视口顶边为 0、初始正文避开 toolbar。
+
+- [2026-11-15] [MessageExpansion] 用户反馈长文展开卡顿 -> 原矩形转场每帧裁切并淡入完整阅读页，布局截图不能证明实机流畅 -> 按用户要求删除该转场与位置采集；用 NoTransitionPage 锁定打开/返回零时长，性能结论不得由截图替代。
+
+- [2026-11-15] [MessageReferences] 初版引用与长文预览编译失败、旧消息无法定位 -> 单引用残留、未单独运行 Slang、仅对已挂载 GlobalKey 定位、按字数判断长文 -> 多引用统一 ID 列表，文案单独生成；旧消息按 ID 载入上下文；长文以实际布局高度限幅并验证交互。
+- [2026-11-15] [QuoteTests] 原生组件测试构建 C1083 -> 本轮测试未沿用项目临时目录 -> Flutter 测试显式设置 TEMP/TMP=.tools/task-temp。
+- [2026-11-15] [QuoteSheet] 引用选择弹层被 Composer 覆盖 -> 聊天分支 Navigator 的浮层位于 Shell 停靠栏之下 -> 从聊天打开的引用 Sheet 使用根 Navigator，并测试底栏不可命中；浮层纯图标按钮复用 AppActionIconButton，以稳定 key 验证交互。
+- [2026-11-15] [ComposerAlignment] 全量回归仍断言多行加号居中 -> 旧几何契约未随需求更新 -> 单行保留等高基线，多行统一断言字段/加号/发送热区底边。
+
 - [2026-11-14] [WebToolDisable] 移除网页回路测试后静态分析报未使用导入 -> 测试场景改变但保留了脚本模型与活动夹具的 import -> 收敛工具暴露时同步清理失效的测试依赖，并以 analyze 核验。
 
 - [2026-11-14] [MarkdownQuote] 清除主题引用边框后页面仍有竖线，定制 builder 又因可空 padding 编译失败 -> 默认增强引用 builder 自绘左线且 `blockquotePadding` 可空 -> 覆盖实际引用 builder，并用支持可空 padding 的 Container 承载主题装饰。

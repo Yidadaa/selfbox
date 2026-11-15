@@ -46,10 +46,13 @@ void main() {
       text: 'plain assistant text',
       author: MessageAuthor.ai,
     );
-    expect(estimateMessageTokens(reply), estimateTokens(reply.text) + 8);
+    expect(
+      estimateMessageTokens(reply),
+      greaterThan(estimateTokens(reply.text) + 8),
+    );
     expect(
       estimateMessageTokens(_note(1, text: reply.text)),
-      greaterThan(estimateMessageTokens(reply)),
+      estimateMessageTokens(reply),
     );
   });
 

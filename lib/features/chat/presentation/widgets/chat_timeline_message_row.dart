@@ -13,9 +13,11 @@ import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../data/chat_data_providers.dart';
 import '../../domain/models/message.dart';
+import '../providers/composer_controller.dart';
 import '../providers/message_actions.dart';
 import 'chat_timestamp_session.dart';
 import 'message_bubble.dart';
+import 'message_quote_sheet.dart';
 import 'outgoing_message_entrance.dart';
 
 class ChatTimelineMessageRow extends HookConsumerWidget {
@@ -35,6 +37,7 @@ class ChatTimelineMessageRow extends HookConsumerWidget {
     final media = ref.watch(mediaStoreProvider);
     final timestamps = ChatTimestampScope.maybeOf(context);
     final selectionMode = useState(false);
+    final previewOverflow = useState(false);
     final selection = useMemoized(SmoothSelectionController.new);
     final pressPosition = useRef(Offset.zero);
     void remove() {
@@ -76,6 +79,10 @@ class ChatTimelineMessageRow extends HookConsumerWidget {
             label: context.t.common.selectText,
             icon: AppIcons.selectText,
             onPressed: () {
+              if (previewOverflow.value) {
+                MessageExpandedRoute(id: message.id).push<void>(context);
+                return;
+              }
               selectionMode.value = true;
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -87,6 +94,12 @@ class ChatTimelineMessageRow extends HookConsumerWidget {
             },
           ),
         AppPopoverAction(
+          label: context.t.common.quote,
+          icon: AppIcons.quote,
+          onPressed: () =>
+              ref.read(composerControllerProvider.notifier).quote(message),
+        ),
+        AppPopoverAction(
           label: context.t.common.delete,
           icon: AppIcons.delete,
           destructive: true,
@@ -96,6 +109,7 @@ class ChatTimelineMessageRow extends HookConsumerWidget {
       builder: (_, open) => MessageBubble(
         message: message,
         selectionMode: selectionMode.value,
+        onPreviewOverflow: (overflow) => previewOverflow.value = overflow,
         selectionController: selection,
         showTime:
             timestamps == null ||
@@ -107,6 +121,11 @@ class ChatTimelineMessageRow extends HookConsumerWidget {
           path: path,
           $extra: message.images,
         ).push<void>(context),
+        onExpand: () => MessageExpandedRoute(
+          id: message.id,
+          $extra: message,
+        ).push<void>(context),
+        onQuoteTap: () => showQuotedMessages(context, message.quotedMessageIds),
         onLongPress: selectionMode.value
             ? null
             : (position) {

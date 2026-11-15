@@ -37,10 +37,12 @@ Future<T?> showAppBottomSheet<T>({
   required BuildContext context,
   required WidgetBuilder builder,
   bool isScrollControlled = false,
+  bool useRootNavigator = false,
 }) => showModalBottomSheet<T>(
   context: context,
   sheetAnimationStyle: AppMotion.style(context),
   isScrollControlled: isScrollControlled,
+  useRootNavigator: useRootNavigator,
   backgroundColor: context.glass.bubbleOther,
   elevation: 0,
   shape: AppDialogTokens.sheetShape,

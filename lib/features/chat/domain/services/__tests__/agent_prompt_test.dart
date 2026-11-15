@@ -9,12 +9,14 @@ Message _m(
   String text, {
   MessageAuthor author = MessageAuthor.me,
   List<String> images = const [],
+  List<int> quotedMessageIds = const [],
 }) => Message(
   id: id,
   createdAt: DateTime(2026, 11, 12, 8, id),
   author: author,
   text: text,
   images: images,
+  quotedMessageIds: quotedMessageIds,
 );
 
 void main() {
@@ -39,7 +41,7 @@ void main() {
         ModelMessageRole.assistant,
         ModelMessageRole.user,
       ]);
-      expect(history[1].text, 'Sure.');
+      expect(history[1].text, '[#3 2026-11-12 08:03] Sure.');
     });
 
     test('drops leading assistant turns so history starts with the user', () {
@@ -55,6 +57,13 @@ void main() {
         _m(1, '', images: ['media/a.jpg', 'media/b.jpg']),
       ]);
       expect(history.single.text, '[#1 2026-11-12 08:01] [2 images]');
+    });
+
+    test('marks an explicit quote so the model can follow the relation', () {
+      final history = buildAgentHistory([
+        _m(2, '我的回复', quotedMessageIds: [1, 3]),
+      ]);
+      expect(history.single.text, contains('[引用 #1, #3]'));
     });
   });
 

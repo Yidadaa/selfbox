@@ -11,6 +11,7 @@ class ChatComposerLayout extends StatelessWidget {
   const ChatComposerLayout({
     required this.input,
     required this.toggle,
+    this.quote,
     required this.attachments,
     required this.onRemoveAttachment,
     required this.showWelcome,
@@ -19,6 +20,7 @@ class ChatComposerLayout extends StatelessWidget {
 
   final Widget input;
   final Widget toggle;
+  final Widget? quote;
   final List<String> attachments;
   final ValueChanged<String> onRemoveAttachment;
   final bool showWelcome;
@@ -69,7 +71,19 @@ class ChatComposerLayout extends StatelessWidget {
                 alignment: Alignment.bottomRight,
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                  child: toggle,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: quote ?? const SizedBox.shrink(),
+                        ),
+                      ),
+                      const Gap(AppSpacing.xs),
+                      toggle,
+                    ],
+                  ),
                 ),
               ),
             ),

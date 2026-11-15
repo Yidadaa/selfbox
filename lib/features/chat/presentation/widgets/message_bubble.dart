@@ -14,6 +14,8 @@ import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/message.dart';
 import 'date_labels.dart';
 import 'message_image_stack.dart';
+import 'message_preview.dart';
+import 'message_quote_link.dart';
 import 'message_text_content.dart';
 
 export '../../../../core/theme/message_tokens.dart'
@@ -25,6 +27,9 @@ class MessageBubble extends ConsumerWidget {
     required this.resolveImage,
     this.onImageTap,
     this.onLongPress,
+    this.onExpand,
+    this.onPreviewOverflow,
+    this.onQuoteTap,
     this.onDelete,
     this.selectionMode = false,
     this.selectionController,
@@ -38,6 +43,9 @@ class MessageBubble extends ConsumerWidget {
   final File? Function(String relativePath) resolveImage;
   final ValueChanged<String>? onImageTap;
   final ValueChanged<Offset>? onLongPress;
+  final VoidCallback? onExpand;
+  final ValueChanged<bool>? onPreviewOverflow;
+  final VoidCallback? onQuoteTap;
   final VoidCallback? onDelete;
   final bool selectionMode;
   final SmoothSelectionController? selectionController;
@@ -68,21 +76,42 @@ class MessageBubble extends ConsumerWidget {
                   ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
-                if (message.images.isNotEmpty)
-                  MessageImageStack(
-                    paths: message.images,
-                    resolveImage: resolveImage,
-                    onTap: () => onImageTap?.call(message.images.first),
+                MessagePreview(
+                  enabled: message.author == MessageAuthor.ai && message.id > 0,
+                  onExpand: onExpand,
+                  onOverflowChanged: onPreviewOverflow,
+                  reservedHeight: message.quotedMessageIds.isEmpty
+                      ? 0
+                      : AppSizes.minTouchTarget,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: mine
+                        ? CrossAxisAlignment.end
+                        : CrossAxisAlignment.start,
+                    children: [
+                      if (message.images.isNotEmpty)
+                        MessageImageStack(
+                          paths: message.images,
+                          resolveImage: resolveImage,
+                          onTap: () => onImageTap?.call(message.images.first),
+                        ),
+                      if (message.images.isNotEmpty && message.text.isNotEmpty)
+                        const Gap(AppSpacing.xs),
+                      if (message.text.isNotEmpty)
+                        _TextBubble(
+                          message: message,
+                          onDelete: onDelete,
+                          selectionMode: selectionMode,
+                          selectionController: selectionController,
+                          onSelectionCopy: onSelectionCopy,
+                        ),
+                    ],
                   ),
-                if (message.images.isNotEmpty && message.text.isNotEmpty)
-                  const Gap(AppSpacing.xs),
-                if (message.text.isNotEmpty)
-                  _TextBubble(
-                    message: message,
-                    onDelete: onDelete,
-                    selectionMode: selectionMode,
-                    selectionController: selectionController,
-                    onSelectionCopy: onSelectionCopy,
+                ),
+                if (message.quotedMessageIds.isNotEmpty)
+                  MessageQuoteLink(
+                    count: message.quotedMessageIds.length,
+                    onTap: onQuoteTap,
                   ),
                 if (showFooter && (showTime || message.askedAi)) ...[
                   const Gap(AppSpacing.xxs),

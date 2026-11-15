@@ -10,6 +10,7 @@ import 'chat_composer_controls.dart';
 import 'chat_composer_input.dart';
 import 'chat_composer_keyboard_transition.dart';
 import 'chat_composer_layout.dart';
+import 'chat_quote_button.dart';
 
 /// A shared input and navigation surface with a floating AI-mode toggle.
 class ChatComposer extends HookConsumerWidget {
@@ -20,8 +21,10 @@ class ChatComposer extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final (aiMode, attachments) = ref.watch(
-      composerControllerProvider.select((s) => (s.aiMode, s.attachments)),
+    final (aiMode, attachments, quotedIds) = ref.watch(
+      composerControllerProvider.select(
+        (s) => (s.aiMode, s.attachments, s.quotedMessageIds),
+      ),
     );
     final notifier = ref.read(composerControllerProvider.notifier);
     final controller = useTextEditingController(
@@ -69,6 +72,9 @@ class ChatComposer extends HookConsumerWidget {
       editing: keyboardOpen && focusNode.hasFocus,
       child: ChatComposerLayout(
         toggle: ChatAiToggle(active: aiMode, onTap: notifier.toggleAiMode),
+        quote: quotedIds.isEmpty
+            ? null
+            : ChatQuoteButton(count: quotedIds.length),
         attachments: attachments,
         onRemoveAttachment: notifier.removeAttachment,
         showWelcome: showWelcome,

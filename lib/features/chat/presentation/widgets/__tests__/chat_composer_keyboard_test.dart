@@ -92,6 +92,12 @@ void main() {
           closeTo(keyboard == 0 ? AppSpacing.xs * 2 : 0, 0.01),
         );
         expect(input.height, greaterThanOrEqualTo(row.height));
+        final send = tester.getRect(find.byType(ChatSendButton));
+        final attach = tester.getRect(
+          find.byType(ChatAttachButton).hitTestable(),
+        );
+        expect(send.bottom, closeTo(field.bottom, 0.01));
+        expect(attach.bottom, closeTo(send.bottom, 0.01));
         expect(tester.takeException(), isNull);
       }
     },

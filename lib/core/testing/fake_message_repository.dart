@@ -61,6 +61,7 @@ class FakeMessageRepository implements MessageRepository {
         text: draft.text.trim(),
         images: draft.images,
         askedAi: draft.askedAi,
+        quotedMessageIds: draft.quotedMessageIds,
       );
       _rows.add(message);
       _changes.add(null);

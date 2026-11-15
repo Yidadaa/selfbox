@@ -21,6 +21,7 @@ abstract final class AppIcons {
   static const AppIconData save = HugeIcons.strokeRoundedFloppyDisk;
   static const AppIconData copy = HugeIcons.strokeRoundedCopy01;
   static const AppIconData selectText = HugeIcons.strokeRoundedInputCursorText;
+  static const AppIconData quote = HugeIcons.strokeRoundedQuotes;
   static const AppIconData more = HugeIcons.strokeRoundedMoreHorizontal;
   static const AppIconData search = HugeIcons.strokeRoundedSearch01;
   static const AppIconData webSearch = HugeIcons.strokeRoundedGlobe02;

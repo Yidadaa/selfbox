@@ -28,7 +28,15 @@
     "today": "今天",
     "yesterday": "昨天",
     "confirmDelete": "删除这条消息？",
-    "imageFailed": "图片不可用"
+    "imageFailed": "图片不可用",
+    "expandMessage": "展开更多",
+    "fullMessage": "消息",
+    "quotedCount": "引用了 {count} 条消息",
+    "quoteCount": "引用 {count} 条",
+    "noQuotes": "暂无引用",
+    "messageMissing": "该消息已删除",
+    "imageMessage": "{count} 张图片",
+    "authorMe": "我"
   },
   "memory": {
     "title": "记忆",
@@ -110,6 +118,7 @@
   "common": {
     "copied": "已复制",
     "copy": "复制",
+    "quote": "引用",
     "selectText": "选中文本",
     "selectAll": "全选",
     "delete": "删除",

@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:1006836322260103196",
-      "lastPropertyId": "6:5935745653499375817",
+      "lastPropertyId": "7:1538248665362877236",
       "name": "MessageEntity",
       "properties": [
         {
@@ -40,6 +40,11 @@
           "id": "6:5935745653499375817",
           "name": "askedAi",
           "type": 1
+        },
+        {
+          "id": "7:1538248665362877236",
+          "name": "quotedMessageIds",
+          "type": 9
         }
       ],
       "relations": []
