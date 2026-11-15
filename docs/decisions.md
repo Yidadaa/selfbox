@@ -7,6 +7,7 @@
 - **持久化**：ObjectBox 新增独立 LinkPreviewEntity，按源 URL 唯一索引保存最终 URL、标题、摘要、icon URL。先读库，未命中才调用既有网页仓库；成功后写入，失败不缓存为成功。多消费者共享同一请求，清空数据先排空在途写入再清库；原消息正文不变，旧实体 UID 保持稳定。图标文件由 CachedNetworkImage 负责磁盘缓存和限尺寸解码，图标失败回退 Hugeicons。
 - **解析与工具**：复用 20 秒超时、2MB 下载上限、重定向/DNS 公网校验及 isolate HTML 提取。标题按 OG/Twitter/title/域名，摘要按 OG/description/Twitter/正文，icon 支持相对地址并回退 favicon。允许仅元数据页面用于卡片，但 web_read 对无正文返回错误。恢复默认 web_read 与提示词说明，web_search 保持关闭，替代 ADR-069 的阅读暂停约定。
 - **界面修复**：引用入口、AI 标识、发送时间收敛同一 Row，用 Gap 分隔；引用保留 48dp 点击区。搜索结果复用 MediaStore.resolve 和 ImageViewerRoute，恢复真实图片解码及查看。
+- **引用间距修正**：按用户要求与只有时间时保持相同排版，行内 MessageQuoteLink 显式 minSize: 0，不再用 48dp 按钮撑高整行；这是引用文字的紧凑交互例外，仍保留点击、语义、触觉和按压反馈。
 - **卡片外观调整**：按用户要求，链接卡片复用普通用户消息的 MessageMineSurface 蓝色背景、尾角轮廓和白字；移除玻璃表面及双行预留高度。域名图标为 16dp，标题和简介各一行省略，行间 Gap 为 4dp，上下内边距为 8dp。缓存、打开浏览器和长按选区行为保持一致。
 
 ### [ADR-078] 全局自定义 AI 提示词

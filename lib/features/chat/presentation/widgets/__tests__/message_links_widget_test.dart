@@ -221,19 +221,64 @@ void main() {
       var tapped = false;
       await tester.pumpPage(
         Center(
-          child: MessageBubble(
-            message: _message('Hello')
-                .copyWith(askedAi: true, quotedMessageIds: [2, 3]),
-            resolveImage: (_) => null,
-            onQuoteTap: () => tapped = true,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              MessageBubble(
+                key: const ValueKey('with-quote'),
+                message: _message('Hello')
+                    .copyWith(askedAi: true, quotedMessageIds: [2, 3]),
+                resolveImage: (_) => null,
+                onQuoteTap: () => tapped = true,
+              ),
+              MessageBubble(
+                key: const ValueKey('time-only'),
+                message: _message('Hello'),
+                resolveImage: (_) => null,
+              ),
+            ],
           ),
         ),
         brightness: brightness,
       );
       final quote = find.text(t.chat.quotedCount(count: 2));
+      final quotedBubble = find.byKey(const ValueKey('with-quote'));
+      final timeBubble = find.byKey(const ValueKey('time-only'));
+      final quotedTime = find.descendant(
+        of: quotedBubble,
+        matching: find.text('10:00'),
+      );
+      final plainTime = find.descendant(
+        of: timeBubble,
+        matching: find.text('10:00'),
+      );
+      final quotedSurface = find.descendant(
+        of: quotedBubble,
+        matching: find.byKey(const ValueKey('message-surface')),
+      );
+      final plainSurface = find.descendant(
+        of: timeBubble,
+        matching: find.byKey(const ValueKey('message-surface')),
+      );
+      final plainGap =
+          tester.getTopLeft(plainTime).dy -
+          tester.getBottomLeft(plainSurface).dy;
+      expect(
+        tester.getTopLeft(quote).dy - tester.getBottomLeft(quotedSurface).dy,
+        closeTo(plainGap, 0.1),
+      );
+      expect(
+        tester.getTopLeft(quotedTime).dy -
+            tester.getBottomLeft(quotedSurface).dy,
+        closeTo(plainGap, 0.1),
+      );
+      expect(
+        tester.getSize(quotedBubble).height,
+        tester.getSize(timeBubble).height,
+      );
       final y = tester.getCenter(quote).dy;
       expect(tester.getCenter(findAppIcon(AppIcons.ai)).dy, closeTo(y, 0.1));
-      expect(tester.getCenter(find.text('10:00')).dy, closeTo(y, 0.1));
+      expect(tester.getCenter(quotedTime).dy, closeTo(y, 0.1));
       await tester.tap(quote);
       expect(tapped, isTrue);
     });

@@ -13,6 +13,7 @@ class MessageQuoteLink extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => Pressable(
     key: const ValueKey('message-quote-link'),
+    minSize: 0,
     onTap: onTap,
     child: Text(
       context.t.chat.quotedCount(count: count),
