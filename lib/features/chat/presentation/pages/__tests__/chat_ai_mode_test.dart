@@ -76,7 +76,7 @@ void main() {
     await tester.pump();
     expect(container.read(composerControllerProvider).aiMode, isTrue);
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.text(summary), findsOneWidget);
+    expect(find.text(summary), findsNothing);
     expect(find.text('first answer', findRichText: true), findsOneWidget);
     expect(
       tester.getTopLeft(find.text('first answer', findRichText: true)).dx,

@@ -2,6 +2,12 @@
 
 > 格式：`- [日期] [领域] 现象 -> 根因 -> 铁律`。只记高信息熵条目。
 
+- [2026-11-16] [PerformanceFixture] 隔离订阅后替身 Notifier 尚未初始化 -> AI 关闭时不再监听状态 -> 测试显式读取 Provider 初始化后再驱动状态，禁止依赖无关 Widget 的订阅副作用。
+- [2026-11-16] [HistoryPaging] 慢历史页加载期间 ScrollController 脱离列表 -> whenData 丢弃 AsyncLoading 的旧值，页面切回骨架 -> 派生 feed 使用 when(skipLoadingOnReload:true) 保留已有 timeline；仅首次无数据加载显示骨架，并覆盖连续滚动防重入。
+- [2026-11-16] [ThumbnailFallbackTest] 并行回归中损坏缩略图回退尚未解码、临时文件仍被占用 -> 固定等待 160ms 不能代表图片 I/O 完成，已在 fakeAsync 发起的加载也不能再直接 await precache -> 交替 runAsync/pump，按真实 RawImage 完成状态有界等待后清理。
+- [2026-11-16] [TimelineVirtualization] 逐条懒加载后旧测试仍要求摘要和整组消息同时存在 -> 断言绑定整组 AnimatedSwitcher 实现 -> 更新为直接展平的行为契约，保留展开、折叠、消息左右对齐与无重复发送动效检查。
+- [2026-11-16] [PatchPath] 首次性能测试文件未写入工作区 -> 补丁误用未经确认的绝对路径 -> 所有补丁使用当前工作区相对路径；执行测试前核实新增文件已存在。
+
 - [2026-11-16] [TestMigration] 迁移后出现失效 import 与排序告警 -> 删除/搬迁用例未同步整理依赖 -> 先生成测试注册表，再清理并按 dart/package/相对路径排序 imports，最后执行分析。
 - [2026-11-16] [WorkspacePath] 任务记录误写到非工作区路径后已清除 -> 使用了未验证的绝对路径 -> 补丁优先使用已确认 cwd 下的相对路径，绝对路径先核实。
 

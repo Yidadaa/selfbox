@@ -18,6 +18,35 @@ String _describe(ChatTimelineItem item) => switch (item) {
 };
 
 void main() {
+  test('projection reuses unchanged runs across insertion and deletion', () {
+    final day = DateTime(2026, 11, 12);
+    final messages = [_m(3, day), _answer(2, day), _question(1, day)];
+    final previous = buildChatTimeline(messages);
+    final cache = <int, ChatTimelineItem>{3: previous[0], 2: previous[1]};
+    final inserted = buildChatTimeline([
+      _m(4, day),
+      ...messages,
+    ], previous: cache);
+    expect(inserted[1], same(previous[0]));
+    expect(inserted[2], same(previous[1]));
+    final deleted = buildChatTimeline([
+      messages[0],
+      messages[1],
+    ], previous: cache);
+    expect(deleted[0], same(previous[0]));
+    expect(
+      (deleted[1] as TimelineAiGroup).messages.map((message) => message.id),
+      [2],
+    );
+    expect(visibleChatTimeline(inserted, aiMode: true).map(_describe), [
+      'm4',
+      'm3',
+      'm2',
+      'm1',
+      'd11/12',
+    ]);
+    expect(visibleChatTimeline(inserted, aiMode: false), same(inserted));
+  });
   group('buildChatTimeline', () {
     test('is empty for no messages', () {
       expect(buildChatTimeline(const []), isEmpty);

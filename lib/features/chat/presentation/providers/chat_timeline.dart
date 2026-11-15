@@ -17,29 +17,62 @@ sealed class ChatTimelineItem with _$ChatTimelineItem {
 
 DateTime _dayOf(DateTime t) => DateTime(t.year, t.month, t.day);
 
+List<ChatTimelineItem> visibleChatTimeline(
+  List<ChatTimelineItem> items, {
+  required bool aiMode,
+}) => aiMode
+    ? List.unmodifiable([
+        for (final item in items)
+          if (item case TimelineAiGroup(:final messages))
+            for (final message in messages) ChatTimelineItem.message(message)
+          else
+            item,
+      ])
+    : items;
+
 /// Interleaves day headers into a newest-first message list.
 ///
 /// The chat list is reversed (newest at the bottom), so a day's header goes
 /// *after* that day's messages in this order to render above them.
-List<ChatTimelineItem> buildChatTimeline(List<Message> newestFirst) {
+List<ChatTimelineItem> buildChatTimeline(
+  List<Message> newestFirst, {
+  Map<int, ChatTimelineItem> previous = const {},
+}) {
   final items = <ChatTimelineItem>[];
   for (var index = 0; index < newestFirst.length;) {
     final message = newestFirst[index];
     final day = _dayOf(message.createdAt.toLocal());
     if (message.askedAi || message.author == MessageAuthor.ai) {
-      final messages = <Message>[];
+      final start = index;
       while (index < newestFirst.length) {
         final current = newestFirst[index];
         if (_dayOf(current.createdAt.toLocal()) != day ||
             (!current.askedAi && current.author != MessageAuthor.ai)) {
           break;
         }
-        messages.add(current);
         index++;
       }
-      items.add(ChatTimelineItem.aiGroup(messages: messages));
+      final cached = previous[message.id];
+      final unchanged =
+          cached is TimelineAiGroup &&
+          cached.messages.length == index - start &&
+          cached.messages.indexed.every(
+            (entry) => entry.$2 == newestFirst[start + entry.$1],
+          );
+      items.add(
+        unchanged
+            ? cached
+            : ChatTimelineItem.aiGroup(
+                messages: newestFirst.sublist(start, index),
+              ),
+      );
     } else {
-      items.add(ChatTimelineItem.message(message));
+      final cached = previous[message.id];
+      items.add(
+        cached is TimelineMessage && cached.message == message
+            ? cached
+            : ChatTimelineItem.message(message),
+      );
       index++;
     }
     final next = index < newestFirst.length

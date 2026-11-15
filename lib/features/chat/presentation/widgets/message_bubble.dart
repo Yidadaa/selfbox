@@ -25,6 +25,7 @@ class MessageBubble extends ConsumerWidget {
   const MessageBubble({
     required this.message,
     required this.resolveImage,
+    this.resolveThumbnail,
     this.onImageTap,
     this.onLongPress,
     this.onExpand,
@@ -41,6 +42,7 @@ class MessageBubble extends ConsumerWidget {
   });
   final Message message;
   final File? Function(String relativePath) resolveImage;
+  final File? Function(String relativePath)? resolveThumbnail;
   final ValueChanged<String>? onImageTap;
   final ValueChanged<Offset>? onLongPress;
   final VoidCallback? onExpand;
@@ -93,6 +95,7 @@ class MessageBubble extends ConsumerWidget {
                         MessageImageStack(
                           paths: message.images,
                           resolveImage: resolveImage,
+                          resolveThumbnail: resolveThumbnail,
                           onTap: () => onImageTap?.call(message.images.first),
                         ),
                       if (message.images.isNotEmpty && message.text.isNotEmpty)

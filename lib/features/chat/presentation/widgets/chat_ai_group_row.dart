@@ -5,7 +5,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../core/theme/app_ai_tokens.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_icons.dart';
-import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/message_tokens.dart';
 import '../../../../core/widgets/app_icon.dart';
@@ -14,65 +13,18 @@ import '../../../../gen/i18n/strings.g.dart';
 import '../../../settings/presentation/providers/account_providers.dart';
 import '../../domain/models/message.dart';
 import '../providers/composer_controller.dart';
-import 'chat_timeline_message_row.dart';
 
 class ChatAiGroupRow extends ConsumerWidget {
-  const ChatAiGroupRow({
-    required this.messages,
-    required this.enteringIds,
-    required this.onMessageEntered,
-    super.key,
-  });
+  const ChatAiGroupRow({required this.messages, super.key});
 
   final List<Message> messages;
-  final Set<int> enteringIds;
-  final ValueChanged<int> onMessageEntered;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final aiMode = ref.watch(
-      composerControllerProvider.select((state) => state.aiMode),
-    );
-    final child = aiMode
-        ? Column(
-            key: const ValueKey('ai-group-expanded'),
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (final message in messages.reversed)
-                ChatTimelineMessageRow(
-                  key: ValueKey<int>(message.id),
-                  message: message,
-                  entering: enteringIds.contains(message.id),
-                  onEntered: () => onMessageEntered(message.id),
-                ),
-            ],
-          )
-        : _HiddenAiGroup(
-            key: const ValueKey('ai-group-hidden'),
-            count: messages.length,
-            onTap: () =>
-                ref.read(composerControllerProvider.notifier).toggleAiMode(),
-          );
-    if (MediaQuery.disableAnimationsOf(context)) return child;
-
-    return AnimatedSwitcher(
-      duration: AppMotion.medium,
-      switchInCurve: Curves.easeInOutCubic,
-      switchOutCurve: Curves.easeInOutCubic,
-      layoutBuilder: (current, previous) => Stack(
-        alignment: Alignment.bottomLeft,
-        children: [
-          for (final outgoing in previous)
-            IgnorePointer(child: ExcludeSemantics(child: outgoing)),
-          ?current,
-        ],
-      ),
-      transitionBuilder: (child, animation) => SizeTransition(
-        sizeFactor: animation,
-        alignment: Alignment.bottomLeft,
-        child: FadeTransition(opacity: animation, child: child),
-      ),
-      child: child,
+    return _HiddenAiGroup(
+      key: const ValueKey('ai-group-hidden'),
+      count: messages.length,
+      onTap: () => ref.read(composerControllerProvider.notifier).toggleAiMode(),
     );
   }
 }

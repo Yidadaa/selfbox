@@ -9,6 +9,7 @@ import '../../../../core/theme/message_tokens.dart';
 import '../../../../core/widgets/app_markdown_builders.dart';
 import '../../../../core/widgets/app_selection_popover.dart';
 import '../../domain/models/message.dart';
+import '../providers/compact_markdown.dart';
 import 'message_link_text.dart';
 import 'open_message_link.dart';
 
@@ -32,18 +33,16 @@ class MessageTextContent extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final glass = context.glass;
+    final builders = useMemoized(appMarkdownBuilders);
     final color = fullWidth
         ? glass.foreground
         : message.author == MessageAuthor.me
         ? glass.onBubbleMine
         : glass.onBubbleOther;
-    final compact = useMemoized(
-      () =>
-          !fullWidth &&
-          message.author == MessageAuthor.ai &&
-          MarkdownParser().parse(message.text).every(_intrinsicText),
-      [fullWidth, message.author, message.text],
-    );
+    final compact =
+        !fullWidth &&
+        message.author == MessageAuthor.ai &&
+        ref.watch(compactMarkdownCacheProvider).isCompact(message.text);
     final text = MessageLinkText(
       text: message.text,
       selectionMode: selectionMode,
@@ -84,7 +83,7 @@ class MessageTextContent extends HookConsumerWidget {
                   onDelete?.call();
                 },
         ),
-        builderRegistry: appMarkdownBuilders(),
+        builderRegistry: builders,
         styleSheet: AppMarkdownTheme.of(context, textColor: color),
       ),
     };
@@ -98,15 +97,3 @@ class MessageTextContent extends HookConsumerWidget {
     );
   }
 }
-
-bool _intrinsicText(MarkdownNode node) => switch (node) {
-  TextNode() || InlineCodeNode() || HardBreakNode() => true,
-  ParagraphNode(:final children) ||
-  BoldNode(:final children) ||
-  ItalicNode(:final children) ||
-  StrikethroughNode(:final children) ||
-  LinkNode(:final children) => children.every(_intrinsicText),
-  HeaderNode(:final children) =>
-    children == null || children.every(_intrinsicText),
-  _ => false,
-};

@@ -26,14 +26,42 @@ Stream<List<Message>> chatMessages(Ref ref) => ref
 
 /// The rendered timeline plus whether older pages may exist.
 @riverpod
-AsyncValue<ChatFeed> chatFeed(Ref ref) => ref
-    .watch(chatMessagesProvider)
-    .whenData(
-      (messages) => ChatFeed(
-        items: buildChatTimeline(messages),
-        hasMore: messages.length >= ref.watch(chatWindowProvider),
-      ),
-    );
+AsyncValue<ChatFeed> chatFeed(Ref ref) {
+  final projection = ref.watch(chatTimelineProjectionProvider);
+  return ref
+      .watch(chatMessagesProvider)
+      .when(
+        skipLoadingOnReload: true,
+        data: (messages) => AsyncData(
+          ChatFeed(
+            items: projection.project(messages),
+            hasMore: messages.length >= ref.watch(chatWindowProvider),
+          ),
+        ),
+        error: AsyncError.new,
+        loading: () => const AsyncLoading(),
+      );
+}
+
+@riverpod
+ChatTimelineProjection chatTimelineProjection(Ref ref) =>
+    ChatTimelineProjection();
+
+class ChatTimelineProjection {
+  Map<int, ChatTimelineItem> _previous = {};
+
+  List<ChatTimelineItem> project(List<Message> messages) {
+    final items = buildChatTimeline(messages, previous: _previous);
+    _previous = {
+      for (final item in items)
+        if (item case TimelineMessage(:final message))
+          message.id: item
+        else if (item case TimelineAiGroup(:final messages))
+          messages.first.id: item,
+    };
+    return items;
+  }
+}
 
 @freezed
 abstract class ChatFeed with _$ChatFeed {

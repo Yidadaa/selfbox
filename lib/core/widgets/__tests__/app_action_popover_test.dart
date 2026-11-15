@@ -11,6 +11,37 @@ import 'package:selfbox/core/widgets/app_action_popover.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
 void main() {
+  testWidgets('closed regions allocate no overlay portal or pop scope', (
+    tester,
+  ) async {
+    await tester.pumpPage(
+      AppPopoverRegion(
+        actions: [
+          AppPopoverAction(
+            label: 'Copy',
+            icon: AppIcons.copy,
+            onPressed: () {},
+          ),
+        ],
+        builder: (_, open) => GestureDetector(
+          onLongPressStart: (details) => open(details.globalPosition),
+          child: const Text('message'),
+        ),
+      ),
+    );
+    final region = find.byType(AppPopoverRegion);
+    expect(
+      find.descendant(of: region, matching: find.byType(OverlayPortal)),
+      findsNothing,
+    );
+    expect(
+      find.descendant(
+        of: region,
+        matching: find.byWidgetPredicate((widget) => widget is PopScope),
+      ),
+      findsNothing,
+    );
+  });
   for (final brightness in Brightness.values) {
     testWidgets(
       'popover is compact glass, anchored and dismissible in $brightness',

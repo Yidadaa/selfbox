@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
@@ -17,11 +18,11 @@ class ChatTimestampSession extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final delegate = GoRouter.maybeOf(context)?.routerDelegate;
-    useListenable(delegate);
-    final active =
+    bool isActive() =>
         delegate == null ||
         delegate.currentConfiguration.lastOrNull?.route.path ==
             const ChatRoute().location;
+    final active = useListenableSelector(delegate, isActive);
     final showSeconds = useState(false);
     useEffect(() {
       // Shell branches stay mounted, including underneath pushed routes.
@@ -29,7 +30,9 @@ class ChatTimestampSession extends HookConsumerWidget {
       return null;
     }, [active]);
 
-    final items = ref.watch(chatFeedProvider).value?.items ?? const [];
+    final items =
+        ref.watch(chatFeedProvider.select((feed) => feed.value?.items)) ??
+        const [];
     final aiMode = ref.watch(
       composerControllerProvider.select((state) => state.aiMode),
     );
@@ -66,5 +69,5 @@ class ChatTimestampScope extends InheritedWidget {
   @override
   bool updateShouldNotify(ChatTimestampScope oldWidget) =>
       showSeconds != oldWidget.showSeconds ||
-      timestampIds != oldWidget.timestampIds;
+      !setEquals(timestampIds, oldWidget.timestampIds);
 }

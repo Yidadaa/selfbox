@@ -37,12 +37,12 @@ class ChatTimelineMessageRow extends HookConsumerWidget {
     final media = ref.watch(mediaStoreProvider);
     final timestamps = ChatTimestampScope.maybeOf(context);
     final selectionMode = useState(false);
-    final previewOverflow = useState(false);
-    final selection = useMemoized(SmoothSelectionController.new);
+    final previewOverflow = useRef(false);
+    final selection = useRef<SmoothSelectionController?>(null);
     final pressPosition = useRef(Offset.zero);
     void remove() {
       HapticFeedback.heavyImpact();
-      selection.clearSelection();
+      selection.value?.clearSelection();
       selectionMode.value = false;
       final labels = context.t;
       showDialog<void>(
@@ -83,11 +83,12 @@ class ChatTimelineMessageRow extends HookConsumerWidget {
                 MessageExpandedRoute(id: message.id).push<void>(context);
                 return;
               }
+              selection.value ??= SmoothSelectionController();
               selectionMode.value = true;
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   if (context.mounted) {
-                    selection.selectWordAt(pressPosition.value);
+                    selection.value?.selectWordAt(pressPosition.value);
                   }
                 });
               });
@@ -110,13 +111,14 @@ class ChatTimelineMessageRow extends HookConsumerWidget {
         message: message,
         selectionMode: selectionMode.value,
         onPreviewOverflow: (overflow) => previewOverflow.value = overflow,
-        selectionController: selection,
+        selectionController: selection.value,
         showTime:
             timestamps == null ||
             timestamps.showSeconds ||
             timestamps.timestampIds.contains(message.id),
         showSeconds: timestamps?.showSeconds ?? false,
         resolveImage: (path) => media.resolve(path).toNullable(),
+        resolveThumbnail: (path) => media.thumbnail(path).toNullable(),
         onImageTap: (path) => ImageViewerRoute(
           path: path,
           $extra: message.images,

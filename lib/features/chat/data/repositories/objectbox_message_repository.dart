@@ -13,10 +13,12 @@ class ObjectBoxMessageRepository implements MessageRepository {
 
   final Box<MessageEntity> _box;
   final DateTime Function() _clock;
+  Map<int, Message> _liveMessages = {};
 
   @override
   TaskEither<AppFailure, Unit> clearAll() => _run(() async {
     await _box.removeAllAsync();
+    _liveMessages = {};
     return unit;
   });
 
@@ -34,12 +36,34 @@ class ObjectBoxMessageRepository implements MessageRepository {
         ..order(MessageEntity_.id, flags: Order.descending);
 
   @override
-  Stream<List<Message>> watchLatest(int limit) =>
-      _newestFirst().watch(triggerImmediately: true).asyncMap((query) async {
+  Stream<List<Message>> watchLatest(int limit) => _newestFirst()
+      .watch(triggerImmediately: true)
+      .asyncMap((query) async {
         query.limit = limit;
-        final rows = await query.findAsync();
-        return List<Message>.unmodifiable(rows.map((e) => e.toDomain()));
-      });
+        final ids = await query.findIdsAsync();
+        final retained = _liveMessages;
+        final missing = ids.where((id) => !retained.containsKey(id)).toList();
+        final loaded = missing.isEmpty
+            ? const <MessageEntity?>[]
+            : await _box.getManyAsync(missing);
+        final available = {
+          ...retained,
+          for (final row in loaded)
+            if (row != null) row.id: row.toDomain(),
+        };
+        final messages = List<Message>.unmodifiable([
+          for (final id in ids) ?available[id],
+        ]);
+        _liveMessages = {for (final message in messages) message.id: message};
+        return messages;
+      })
+      .distinct(
+        (previous, next) =>
+            previous.length == next.length &&
+            previous.indexed.every(
+              (entry) => identical(entry.$2, next[entry.$1]),
+            ),
+      );
 
   @override
   TaskEither<AppFailure, Message> add(MessageDraft draft) => _run(() async {

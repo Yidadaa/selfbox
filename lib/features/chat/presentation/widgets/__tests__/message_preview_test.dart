@@ -8,10 +8,32 @@ import 'package:selfbox/core/theme/message_tokens.dart';
 import 'package:selfbox/core/widgets/app_icon.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
+import 'package:selfbox/features/chat/presentation/widgets/message_preview.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 
 void main() {
   setUpAll(initializeDateFormatting);
+  testWidgets('overflow measurement preserves the mounted content', (
+    tester,
+  ) async {
+    var builds = 0;
+    await tester.pumpPage(
+      SingleChildScrollView(
+        child: MessagePreview(
+          enabled: true,
+          onExpand: () {},
+          child: Builder(
+            builder: (_) {
+              builds++;
+              return const SizedBox(width: 200, height: 1000);
+            },
+          ),
+        ),
+      ),
+    );
+    expect(find.byKey(const ValueKey('expand-message')), findsOneWidget);
+    expect(builds, 1);
+  });
   testWidgets('narrow large text caps after resize and remains expandable', (
     tester,
   ) async {

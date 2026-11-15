@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -56,7 +57,7 @@ class _ListBuilder extends MarkdownWidgetBuilder {
   );
 }
 
-class _MarkdownList extends ConsumerWidget {
+class _MarkdownList extends HookConsumerWidget {
   const _MarkdownList({
     required this.node,
     required this.sheet,
@@ -75,22 +76,30 @@ class _MarkdownList extends ConsumerWidget {
       for (var i = 0; i < node.items.length; i++)
         node.ordered ? '${node.startIndex + i}.' : '•',
     ];
-    final painter = TextPainter(
-      textDirection: Directionality.of(context),
-      textScaler: MediaQuery.textScalerOf(context),
-      locale: Localizations.maybeLocaleOf(context),
-    );
-    // A shared marker column keeps 9. / 10. and wrapped text aligned.
-    var markerWidth = 0.0;
-    for (var i = 0; i < node.items.length; i++) {
-      painter.text = TextSpan(text: labels[i], style: style);
-      painter.layout();
-      final width = node.items[i].checked == null
-          ? painter.width
-          : AppMarkdownTheme.taskMarkerSize;
-      markerWidth = math.max(markerWidth, width);
-    }
-    painter.dispose();
+    final direction = Directionality.of(context);
+    final scaler = MediaQuery.textScalerOf(context);
+    final locale = Localizations.maybeLocaleOf(context);
+    final markerWidth = useMemoized(() {
+      final painter = TextPainter(
+        textDirection: direction,
+        textScaler: scaler,
+        locale: locale,
+      );
+      var width = node.items.any((item) => item.checked != null)
+          ? AppMarkdownTheme.taskMarkerSize
+          : 0.0;
+      final markers = {
+        for (final (index, item) in node.items.indexed)
+          if (item.checked == null) labels[index],
+      };
+      for (final marker in markers) {
+        painter.text = TextSpan(text: marker, style: style);
+        painter.layout();
+        width = math.max(width, painter.width);
+      }
+      painter.dispose();
+      return width;
+    }, [node, style, direction, scaler, locale]);
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,

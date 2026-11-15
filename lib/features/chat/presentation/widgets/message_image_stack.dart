@@ -16,11 +16,13 @@ class MessageImageStack extends ConsumerWidget {
   const MessageImageStack({
     required this.paths,
     required this.resolveImage,
+    this.resolveThumbnail,
     this.onTap,
     super.key,
   });
   final List<String> paths;
   final File? Function(String) resolveImage;
+  final File? Function(String)? resolveThumbnail;
   final VoidCallback? onTap;
   @override
   Widget build(BuildContext context, WidgetRef ref) => Pressable(
@@ -71,7 +73,14 @@ class MessageImageStack extends ConsumerWidget {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(AppRadius.sm),
-                        child: _Photo(file: resolveImage(paths[index])),
+                        child: _Photo(
+                          file:
+                              resolveThumbnail?.call(paths[index]) ??
+                              resolveImage(paths[index]),
+                          fallback: resolveThumbnail == null
+                              ? null
+                              : resolveImage(paths[index]),
+                        ),
                       ),
                     ),
                   ),
@@ -114,8 +123,9 @@ class _PhotoCount extends StatelessWidget {
 }
 
 class _Photo extends ConsumerWidget {
-  const _Photo({this.file});
+  const _Photo({this.file, this.fallback});
   final File? file;
+  final File? fallback;
   @override
   Widget build(BuildContext context, WidgetRef ref) => switch (file) {
     final file? => Image.file(
@@ -124,7 +134,8 @@ class _Photo extends ConsumerWidget {
       width: double.infinity,
       height: double.infinity,
       fit: BoxFit.cover,
-      errorBuilder: (_, _, _) => const _MissingPhoto(),
+      errorBuilder: (_, _, _) =>
+          fallback == null ? const _MissingPhoto() : _Photo(file: fallback),
     ),
     null => const _MissingPhoto(),
   };

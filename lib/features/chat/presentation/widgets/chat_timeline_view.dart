@@ -5,9 +5,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+import '../../../../core/router/shell_scope.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/time/clock.dart';
 import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_page_scaffold.dart';
 import '../../../../core/widgets/empty_state.dart';
@@ -17,17 +17,14 @@ import '../providers/chat_feed.dart';
 import '../providers/chat_scroll_controller.dart';
 import '../providers/chat_timeline.dart';
 import '../providers/composer_controller.dart';
-import 'assistant_status_bubble.dart';
-import 'chat_ai_group_row.dart';
-import 'chat_timeline_message_row.dart';
+import 'chat_timeline_list.dart';
 import 'chat_timeline_skeleton.dart';
-import 'day_pill.dart';
 import 'welcome_timeline.dart';
 
 class ChatTimelineView extends HookConsumerWidget {
-  const ChatTimelineView({required this.bottomPadding, super.key});
+  const ChatTimelineView({this.bottomPadding, super.key});
 
-  final double bottomPadding;
+  final double? bottomPadding;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -53,40 +50,56 @@ class ChatTimelineView extends HookConsumerWidget {
     });
 
     final feed = ref.watch(chatFeedProvider);
-    return switch (feed) {
-      AsyncData(:final value) when value.items.isEmpty => WelcomeTimeline(
-        bottomPadding: bottomPadding,
-      ),
-      AsyncData(:final value) => _Timeline(
+    final value = feed.value;
+    if (!feed.hasError && value != null && value.items.isNotEmpty) {
+      return _Timeline(
         feed: value,
         bottomPadding: bottomPadding,
         enteringIds: enteringIds.value,
         onMessageEntered: (id) => enteringIds.value = Set.unmodifiable(
           enteringIds.value.where((existing) => existing != id),
         ),
-      ),
+      );
+    }
+    return _TimelinePlaceholder(feed: feed, bottomPadding: bottomPadding);
+  }
+}
+
+class _TimelinePlaceholder extends StatelessWidget {
+  const _TimelinePlaceholder({required this.feed, this.bottomPadding});
+  final AsyncValue<ChatFeed> feed;
+  final double? bottomPadding;
+
+  @override
+  Widget build(BuildContext context) {
+    final bottom =
+        bottomPadding ?? ShellScope.bottomInsetOf(context) + AppSpacing.sm;
+    return switch (feed) {
+      AsyncData() => WelcomeTimeline(bottomPadding: bottom),
+      AsyncLoading() => ChatTimelineSkeleton(bottomPadding: bottom),
       AsyncError() => _ChatPlaceholder(
-        bottomPadding: bottomPadding,
+        bottomPadding: bottom,
         child: EmptyState(
           illustration: BrandArt.error,
           label: context.t.common.loadFailed,
-          action: GlassButton.custom(
-            onTap: () => ref.invalidate(chatMessagesProvider),
-            height: AppSizes.minTouchTarget,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-              child: Center(
-                widthFactor: 1,
-                child: Text(
-                  context.t.common.retry,
-                  style: Theme.of(context).textTheme.titleSmall,
+          action: Consumer(
+            builder: (context, ref, _) => GlassButton.custom(
+              onTap: () => ref.invalidate(chatMessagesProvider),
+              height: AppSizes.minTouchTarget,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                child: Center(
+                  widthFactor: 1,
+                  child: Text(
+                    context.t.common.retry,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
                 ),
               ),
             ),
           ),
         ),
       ),
-      AsyncLoading() => ChatTimelineSkeleton(bottomPadding: bottomPadding),
     };
   }
 }
@@ -110,14 +123,6 @@ class _ChatPlaceholder extends StatelessWidget {
   );
 }
 
-Key _timelineKey(ChatTimelineItem item) => switch (item) {
-  TimelineMessage(:final message) => ValueKey<int>(message.id),
-  TimelineAiGroup(:final messages) => ValueKey<String>(
-    'ai-group-${messages.last.id}',
-  ),
-  TimelineDay(:final day) => ValueKey<DateTime>(day),
-};
-
 class _Timeline extends HookConsumerWidget {
   const _Timeline({
     required this.feed,
@@ -127,7 +132,7 @@ class _Timeline extends HookConsumerWidget {
   });
 
   final ChatFeed feed;
-  final double bottomPadding;
+  final double? bottomPadding;
   final Set<int> enteringIds;
   final ValueChanged<int> onMessageEntered;
 
@@ -165,98 +170,12 @@ class _Timeline extends HookConsumerWidget {
       return null;
     }, [scrollTo, scrollController, reduceMotion]);
 
-    return _TimelineList(
+    return ChatTimelineList(
       feed: feed,
       bottomPadding: bottomPadding,
       enteringIds: enteringIds,
       onMessageEntered: onMessageEntered,
       scrollController: scrollController,
-    );
-  }
-}
-
-class _TimelineList extends HookConsumerWidget {
-  const _TimelineList({
-    required this.feed,
-    required this.bottomPadding,
-    required this.enteringIds,
-    required this.onMessageEntered,
-    required this.scrollController,
-  });
-
-  final ChatFeed feed;
-  final double bottomPadding;
-  final Set<int> enteringIds;
-  final ValueChanged<int> onMessageEntered;
-  final ScrollController scrollController;
-
-  static const _loadMoreThreshold = 600.0;
-  static const _statusKey = ValueKey<String>('assistant-status');
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final now = ref.watch(clockProvider)();
-    final assistant = ref.watch(assistantControllerProvider);
-    final aiMode = ref.watch(
-      composerControllerProvider.select((state) => state.aiMode),
-    );
-    final windowSize = ref.watch(chatWindowProvider);
-    final requestedFor = useRef(-1);
-    final lead = !aiMode || assistant is AssistantIdle ? 0 : 1;
-    final childIndices = <Key, int>{
-      for (final (index, item) in feed.items.indexed)
-        _timelineKey(item): index + lead,
-    };
-
-    bool onScroll(ScrollNotification notification) {
-      final nearOldest = notification.metrics.extentAfter < _loadMoreThreshold;
-      if (nearOldest && feed.hasMore && requestedFor.value != windowSize) {
-        requestedFor.value = windowSize;
-        ref.read(chatWindowProvider.notifier).loadMore();
-      }
-      return false;
-    }
-
-    return NotificationListener<ScrollNotification>(
-      onNotification: onScroll,
-      child: ListView.builder(
-        controller: scrollController,
-        reverse: true,
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        padding: EdgeInsets.fromLTRB(
-          AppSpacing.md,
-          AppPageInsets.of(
-            context,
-            appBarHeight: AppSizes.chatHeaderHeight,
-          ).top,
-          AppSpacing.md,
-          bottomPadding,
-        ),
-        itemCount: feed.items.length + lead,
-        findChildIndexCallback: (key) =>
-            key == _statusKey ? (lead == 1 ? 0 : null) : childIndices[key],
-        itemBuilder: (context, index) => index < lead
-            ? AssistantStatusBubble(key: _statusKey, state: assistant)
-            : switch (feed.items[index - lead]) {
-                TimelineDay(:final day) => DayPill(
-                  key: ValueKey<DateTime>(day),
-                  day: day,
-                  now: now,
-                ),
-                TimelineMessage(:final message) => ChatTimelineMessageRow(
-                  key: ValueKey<int>(message.id),
-                  message: message,
-                  entering: enteringIds.contains(message.id),
-                  onEntered: () => onMessageEntered(message.id),
-                ),
-                TimelineAiGroup(:final messages) => ChatAiGroupRow(
-                  key: ValueKey<String>('ai-group-${messages.last.id}'),
-                  messages: messages,
-                  enteringIds: enteringIds,
-                  onMessageEntered: onMessageEntered,
-                ),
-              },
-      ),
     );
   }
 }

@@ -3,7 +3,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/router/app_routes.dart';
-import '../../../../core/router/shell_scope.dart';
 import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_radius.dart';
@@ -22,8 +21,6 @@ class ChatPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final listBottom = ShellScope.bottomInsetOf(context) + AppSpacing.sm;
-
     return AppPageScaffold(
       title: context.t.chat.title,
       titleContent: const _ChatHeaderProfile(),
@@ -32,9 +29,7 @@ class ChatPage extends ConsumerWidget {
       appBarHeight: AppSizes.chatHeaderHeight,
       // The shell already accounts for the keyboard in bottomInset.
       resizeToAvoidBottomInset: false,
-      body: ChatTimestampSession(
-        child: ChatTimelineView(bottomPadding: listBottom),
-      ),
+      body: const ChatTimestampSession(child: ChatTimelineView()),
     );
   }
 }
@@ -44,11 +39,15 @@ class _ChatHeaderProfile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = switch (ref.watch(userProfileProvider)) {
-      AsyncData(:final value) => value,
-      AsyncLoading() || AsyncError() => null,
-    };
-    final name = profile?.agentName.trim();
+    final profile = ref.watch(
+      userProfileProvider.select(
+        (state) => (
+          name: state.asData?.value.agentName.trim(),
+          avatar: state.asData?.value.agentAvatar,
+        ),
+      ),
+    );
+    final name = profile.name;
     return Pressable(
       key: const ValueKey('chat-header-profile'),
       semanticLabel: context.t.me.editProfile,
@@ -92,7 +91,7 @@ class _ChatHeaderProfile extends ConsumerWidget {
               top: 10,
               child: ProfileAvatar(
                 key: const ValueKey('chat-header-avatar'),
-                path: profile?.agentAvatar,
+                path: profile.avatar,
                 dimension: 56,
               ),
             ),

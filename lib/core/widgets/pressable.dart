@@ -16,6 +16,7 @@ class Pressable extends HookWidget {
     this.onLongPress,
     this.haptic = HapticKind.selection,
     this.semanticLabel,
+    this.buttonSemantics = true,
     this.minSize = AppSizes.minTouchTarget,
     super.key,
   });
@@ -25,6 +26,7 @@ class Pressable extends HookWidget {
   final VoidCallback? onLongPress;
   final HapticKind haptic;
   final String? semanticLabel;
+  final bool buttonSemantics;
   final double minSize;
 
   static void _feedback(HapticKind kind) => switch (kind) {
@@ -42,8 +44,8 @@ class Pressable extends HookWidget {
     final enabled = onTap != null || onLongPress != null;
 
     return Semantics(
-      button: true,
-      enabled: enabled,
+      button: buttonSemantics ? true : null,
+      enabled: buttonSemantics ? enabled : null,
       label: semanticLabel,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,

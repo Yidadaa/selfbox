@@ -16,7 +16,15 @@ class SelfboxApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final preferences = ref.watch(appPreferencesControllerProvider);
+    final preferences = ref.watch(
+      appPreferencesControllerProvider.select(
+        (state) => (
+          theme: state.theme,
+          renderQuality: state.renderQuality,
+          animationsEnabled: state.animationsEnabled,
+        ),
+      ),
+    );
     return MaterialApp.router(
       onGenerateTitle: (context) => context.t.app.name,
       debugShowCheckedModeBanner: false,

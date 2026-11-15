@@ -55,7 +55,7 @@ class MessagePreview extends HookConsumerWidget {
               physics: const NeverScrollableScrollPhysics(),
               child: MeasureSize(
                 onChange: (size) {
-                  if (context.mounted && height.value != size.height) {
+                  if (context.mounted) {
                     height.value = size.height;
                   }
                 },
@@ -70,11 +70,12 @@ class MessagePreview extends HookConsumerWidget {
         ),
       ),
     );
-    if (!overflow || onExpand == null) return viewport;
     return Pressable(
       key: const ValueKey('expand-message'),
-      semanticLabel: context.t.chat.expandMessage,
-      onTap: onExpand,
+      minSize: 0,
+      buttonSemantics: overflow && onExpand != null,
+      semanticLabel: overflow ? context.t.chat.expandMessage : null,
+      onTap: overflow ? onExpand : null,
       child: viewport,
     );
   }

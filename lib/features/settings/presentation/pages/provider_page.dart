@@ -38,7 +38,13 @@ class ProviderPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final id = this.id;
-    final settings = ref.watch(aiSettingsProvider);
+    final settings = ref.watch(
+      aiSettingsProvider.select(
+        (state) => state.whenData(
+          (settings) => id == null ? null : settings.providerOf(id),
+        ),
+      ),
+    );
     final keyStored = id == null
         ? const AsyncData(false)
         : ref.watch(hasApiKeyProvider(id));
@@ -46,7 +52,7 @@ class ProviderPage extends ConsumerWidget {
 
     return switch ((settings, keyStored)) {
       (AsyncData(value: final s), AsyncData(value: final stored)) =>
-        id != null && s.providerOf(id) == null
+        id != null && s == null
             ? AppPageScaffold(
                 title: t.settings.provider.title,
                 leading: const _BackButton(),
@@ -55,10 +61,7 @@ class ProviderPage extends ConsumerWidget {
                   illustration: BrandArt.error,
                 ),
               )
-            : _ProviderForm(
-                existing: id == null ? null : s.providerOf(id),
-                keyStored: stored,
-              ),
+            : _ProviderForm(existing: s, keyStored: stored),
       (AsyncError(), _) || (_, AsyncError()) => AppPageScaffold(
         title: t.settings.provider.title,
         leading: const _BackButton(),
