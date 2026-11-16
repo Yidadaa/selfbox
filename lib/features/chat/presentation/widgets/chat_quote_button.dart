@@ -26,7 +26,7 @@ class ChatTimelineAction extends HookConsumerWidget {
     final scroll = ref.watch(chatScrollControllerProvider);
     final awayFromBottom = useListenableSelector(
       scroll,
-      () => scroll.hasClients && scroll.offset > AppSpacing.xl,
+      () => scroll.hasClients && scroll.position.extentBefore > AppSpacing.xl,
     );
     final hasMessages = ref.watch(
       chatFeedProvider.select((feed) => feed.value?.items.isNotEmpty ?? false),
@@ -40,12 +40,16 @@ class ChatTimelineAction extends HookConsumerWidget {
       return ChatScrollToBottomButton(
         onTap: () {
           if (!scroll.hasClients) return;
+          if (scroll.position.minScrollExtent < 0) {
+            scroll.requestBottom();
+            return;
+          }
           if (MediaQuery.disableAnimationsOf(context)) {
-            scroll.jumpTo(0);
+            scroll.jumpTo(scroll.position.minScrollExtent);
             return;
           }
           scroll.animateTo(
-            0,
+            scroll.position.minScrollExtent,
             duration: AppMotion.messageSend,
             curve: AppMotion.messageSendCurve,
           );

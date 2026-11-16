@@ -21,7 +21,7 @@ import '../widgets/settings_back_button.dart';
 class AboutPage extends ConsumerWidget {
   const AboutPage({super.key});
 
-  static const _updatedOn = '2026-11-14';
+  static const _updatedOn = '2026-11-16';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

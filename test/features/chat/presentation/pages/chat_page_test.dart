@@ -123,14 +123,14 @@ void main() {
 
       final timeline = find.descendant(
         of: find.byType(ChatPage),
-        matching: find.byType(ListView),
+        matching: find.byType(CustomScrollView),
       );
       expect(timeline, findsOneWidget);
       expect(tester.getRect(timeline).top, 0);
-      final list = tester.widget<ListView>(timeline);
+      final list = tester.widget<CustomScrollView>(timeline);
       final safeTop = MediaQuery.paddingOf(tester.element(timeline)).top;
       expect(
-        (list.padding! as EdgeInsets).top,
+        ((list.slivers.last as SliverPadding).padding as EdgeInsets).top,
         safeTop + AppSizes.chatHeaderHeight + AppSpacing.md,
       );
     });
@@ -153,7 +153,7 @@ void main() {
 
       final timeline = find.descendant(
         of: find.byType(ChatPage),
-        matching: find.byType(ListView),
+        matching: find.byType(CustomScrollView),
       );
       await tester.drag(timeline, const Offset(0, 500));
       await tester.pumpAndSettle();

@@ -179,7 +179,7 @@ void main() {
     );
     final timeline = find.descendant(
       of: find.byType(ChatPage),
-      matching: find.byType(ListView),
+      matching: find.byType(CustomScrollView),
     );
     final scrollable = find.descendant(
       of: timeline,

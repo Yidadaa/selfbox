@@ -6,12 +6,15 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../core/router/shell_scope.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/time/clock.dart';
+import '../../domain/models/message.dart';
 import '../providers/assistant_controller.dart';
 import '../providers/chat_feed.dart';
+import '../providers/chat_scroll_controller.dart';
 import '../providers/chat_timeline.dart';
 import '../providers/composer_controller.dart';
 import 'assistant_status_bubble.dart';
 import 'chat_ai_group_row.dart';
+import 'chat_timeline_anchor.dart';
 import 'chat_timeline_message_row.dart';
 import 'day_pill.dart';
 
@@ -37,7 +40,7 @@ class ChatTimelineList extends HookConsumerWidget {
   final double? bottomPadding;
   final Set<int> enteringIds;
   final ValueChanged<int> onMessageEntered;
-  final ScrollController scrollController;
+  final ChatScrollController scrollController;
 
   static const _loadMoreThreshold = 600.0;
   static const _statusKey = ValueKey('assistant-status');
@@ -46,6 +49,13 @@ class ChatTimelineList extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final now = ref.watch(clockProvider)();
+    final viewportKey = useMemoized(GlobalKey.new);
+    final anchoring = useTimelineAnchor(
+      ref,
+      feed.items,
+      scrollController,
+      viewportKey,
+    );
     final aiMode = ref.watch(
       composerControllerProvider.select((state) => state.aiMode),
     );
@@ -86,6 +96,19 @@ class ChatTimelineList extends HookConsumerWidget {
     }
 
     return _TimelineViewport(
+      key: viewportKey,
+      anchoring: anchoring,
+      onExpand: (messages) {
+        final index = feed.items.indexWhere(
+          (item) => item is TimelineAiGroup && item.messages == messages,
+        );
+        if (index >= 0 && index + 1 < feed.items.length) {
+          if (feed.items[index + 1] case TimelineMessage(:final message)) {
+            anchoring.prefer(message.id);
+          }
+        }
+        ref.read(composerControllerProvider.notifier).toggleAiMode();
+      },
       items: items,
       lead: lead,
       childIndices: childIndices,
@@ -110,6 +133,9 @@ class _TimelineViewport extends StatelessWidget {
     required this.onMessageEntered,
     required this.scrollController,
     required this.onScroll,
+    required this.anchoring,
+    required this.onExpand,
+    super.key,
   });
 
   final List<ChatTimelineItem> items;
@@ -121,55 +147,95 @@ class _TimelineViewport extends StatelessWidget {
   final ValueChanged<int> onMessageEntered;
   final ScrollController scrollController;
   final bool Function(ScrollNotification) onScroll;
+  final ({
+    TimelineAnchor anchor,
+    GlobalKey Function(int) keyFor,
+    void Function(int) prefer,
+  })
+  anchoring;
+  final void Function(List<Message>) onExpand;
 
   @override
-  Widget build(BuildContext context) =>
-      NotificationListener<ScrollNotification>(
-        onNotification: onScroll,
-        child: ListView.builder(
-          controller: scrollController,
-          reverse: true,
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          padding: EdgeInsets.fromLTRB(
-            AppSpacing.md,
-            MediaQuery.paddingOf(context).top +
-                AppSizes.chatHeaderHeight +
-                AppSpacing.md,
-            AppSpacing.md,
-            0,
+  Widget build(BuildContext context) {
+    final anchorIndex =
+        childIndices[ValueKey<int>(anchoring.anchor.messageId ?? -1)];
+    final pivot = anchorIndex == null ? 0 : anchorIndex + 1;
+    const centerKey = ValueKey('timeline-center');
+    final top =
+        MediaQuery.paddingOf(context).top +
+        AppSizes.chatHeaderHeight +
+        AppSpacing.md;
+    Widget sliver(int start, int count, {required bool newer}) => SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) =>
+            _buildRow(context, newer ? start - index : start + index),
+        childCount: count,
+        findChildIndexCallback: (key) {
+          final index = childIndices[key];
+          if (index == null) return null;
+          final local = newer ? start - index : index - start;
+          return local >= 0 && local < count ? local : null;
+        },
+      ),
+    );
+    return NotificationListener<ScrollNotification>(
+      onNotification: onScroll,
+      child: CustomScrollView(
+        controller: scrollController,
+        reverse: true,
+        center: centerKey,
+        anchor: pivot == 0 ? 0 : anchoring.anchor.alignment,
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        slivers: [
+          if (pivot > 0)
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              sliver: sliver(pivot - 1, pivot, newer: true),
+            ),
+          SliverPadding(
+            key: centerKey,
+            padding: EdgeInsets.fromLTRB(AppSpacing.md, top, AppSpacing.md, 0),
+            sliver: sliver(pivot, items.length + lead - pivot, newer: false),
           ),
-          itemCount: items.length + lead,
-          findChildIndexCallback: (key) => childIndices[key],
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return _BottomInset(
-                key: ChatTimelineList._insetKey,
-                padding: bottomPadding,
-              );
-            }
-            if (index < lead) {
-              return const _AssistantStatus(key: ChatTimelineList._statusKey);
-            }
-            return switch (items[index - lead]) {
-              TimelineDay(:final day) => DayPill(
-                key: _timelineKey(items[index - lead]),
-                day: day,
-                now: now,
-              ),
-              TimelineMessage(:final message) => ChatTimelineMessageRow(
-                key: ValueKey<int>(message.id),
-                message: message,
-                entering: enteringIds.contains(message.id),
-                onEntered: () => onMessageEntered(message.id),
-              ),
-              TimelineAiGroup(:final messages) => ChatAiGroupRow(
-                key: ValueKey<String>('ai-group-${messages.last.id}'),
-                messages: messages,
-              ),
-            };
-          },
-        ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRow(BuildContext context, int index) {
+    if (index == 0) {
+      return _BottomInset(
+        key: ChatTimelineList._insetKey,
+        padding: bottomPadding,
       );
+    }
+    if (index < lead) {
+      return const _AssistantStatus(key: ChatTimelineList._statusKey);
+    }
+    return switch (items[index - lead]) {
+      TimelineDay(:final day) => DayPill(
+        key: _timelineKey(items[index - lead]),
+        day: day,
+        now: now,
+      ),
+      TimelineMessage(:final message) => KeyedSubtree(
+        key: ValueKey<int>(message.id),
+        child: ChatTimelineMessageRow(
+          key: message.askedAi || message.author == MessageAuthor.ai
+              ? ValueKey(message.id)
+              : anchoring.keyFor(message.id),
+          message: message,
+          entering: enteringIds.contains(message.id),
+          onEntered: () => onMessageEntered(message.id),
+        ),
+      ),
+      TimelineAiGroup(:final messages) => ChatAiGroupRow(
+        key: ValueKey<String>('ai-group-${messages.last.id}'),
+        messages: messages,
+        onExpand: () => onExpand(messages),
+      ),
+    };
+  }
 }
 
 class _BottomInset extends StatelessWidget {

@@ -1,5 +1,8 @@
 # 错误账本 (Mistakes Ledger)
 
+- [2026-11-16] [TimelineAnchor] 展开长讨论后用户消息消失、返回底部只滚到估算位置 -> 反向列表像素偏移和 Sliver 估算总高不能代表阅读消息 -> 按用户消息顶部建立双向懒加载中心，回底显式解除锚定；尺寸变化也通知底部按钮。
+- [2026-11-16] [BuildFilter] 局部 build_runner 后其他生成文件缺失 -> 当前构建缓存在过滤构建时移除了未包含输出 -> 本项目使用完整 build_runner build 恢复并验证生成产物。
+
 - [2026-11-16] [ProfileLogging] 长消息分页UI出现约55ms长帧但raster正常 -> Riverpod完整状态经Talker格式化输出整批正文 -> Provider日志只输出事件和状态类型，保留错误堆栈；冷分页必须与预热滚动分开测。
 
 - [2026-11-16] [MuMuIME] mInputShown=true 但键盘 inset 恒为0 -> 预装“搜狗”实际是 nemu-vinput-pack 且 IME 位于 display0 -> 用独立无网络测试 IME 并将当前应用 task 移到 display0，逐次验证 inset 与 Tab 高度，完成后恢复输入法。

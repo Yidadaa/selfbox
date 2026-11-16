@@ -15,16 +15,19 @@ import '../../domain/models/message.dart';
 import '../providers/composer_controller.dart';
 
 class ChatAiGroupRow extends ConsumerWidget {
-  const ChatAiGroupRow({required this.messages, super.key});
+  const ChatAiGroupRow({required this.messages, this.onExpand, super.key});
 
   final List<Message> messages;
+  final VoidCallback? onExpand;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return _HiddenAiGroup(
       key: const ValueKey('ai-group-hidden'),
       count: messages.length,
-      onTap: () => ref.read(composerControllerProvider.notifier).toggleAiMode(),
+      onTap:
+          onExpand ??
+          () => ref.read(composerControllerProvider.notifier).toggleAiMode(),
     );
   }
 }

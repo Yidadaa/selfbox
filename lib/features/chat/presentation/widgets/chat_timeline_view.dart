@@ -161,16 +161,20 @@ class _Timeline extends HookConsumerWidget {
         final lifecycle = WidgetsBinding.instance.lifecycleState;
         if ((lifecycle != null && lifecycle != AppLifecycleState.resumed) ||
             !scrollController.hasClients ||
-            scrollController.offset <= 0) {
+            scrollController.position.extentBefore <= 0) {
           return;
         }
         if (reduceMotion) {
-          scrollController.jumpTo(0);
+          scrollController.requestBottom();
+          return;
+        }
+        if (scrollController.position.minScrollExtent < 0) {
+          scrollController.requestBottom();
           return;
         }
         unawaited(
           scrollController.animateTo(
-            0,
+            scrollController.position.minScrollExtent,
             duration: AppMotion.messageSend,
             curve: AppMotion.messageSendCurve,
           ),
