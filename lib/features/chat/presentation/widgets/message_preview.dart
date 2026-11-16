@@ -30,12 +30,15 @@ class MessagePreview extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final height = useState(0.0);
+    final height = useValueNotifier(0.0);
     final maximum =
         (MediaQuery.sizeOf(context).height * MessageTokens.previewHeightFactor -
                 reservedHeight)
             .clamp(AppSizes.minTouchTarget, double.infinity);
-    final overflow = enabled && height.value > maximum;
+    final overflow = useListenableSelector(
+      height,
+      () => enabled && height.value > maximum,
+    );
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (context.mounted) onOverflowChanged?.call(overflow);

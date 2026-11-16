@@ -93,6 +93,7 @@ TalkerRiverpodObserver appRiverpodObserver(Talker talker) =>
     TalkerRiverpodObserver(
       talker: talker,
       settings: TalkerRiverpodLoggerSettings(
+        printStateFullData: false,
         providerFilter: (provider) =>
             provider != assistantControllerProvider &&
             provider != composerControllerProvider &&

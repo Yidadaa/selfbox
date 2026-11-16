@@ -14,6 +14,67 @@ import '../../../../support/icon_finder.dart';
 
 void main() {
   setUpAll(initializeDateFormatting);
+  testWidgets('fitting measurements do not rebuild preview chrome', (
+    tester,
+  ) async {
+    final height = ValueNotifier(80.0);
+    addTearDown(height.dispose);
+    await tester.pumpPage(
+      SingleChildScrollView(
+        child: MessagePreview(
+          enabled: true,
+          child: ValueListenableBuilder(
+            valueListenable: height,
+            builder: (_, value, child) => SizedBox(width: 200, height: value),
+          ),
+        ),
+      ),
+    );
+    final chrome = tester.widget(find.byKey(const ValueKey('expand-message')));
+    for (final value in [120.0, 180.0, 80.0]) {
+      height.value = value;
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget(find.byKey(const ValueKey('expand-message'))),
+        same(chrome),
+      );
+      expect(find.text(t.chat.expandMessage), findsNothing);
+    }
+  });
+
+  testWidgets('overflow follows content and viewport threshold crossings', (
+    tester,
+  ) async {
+    final height = ValueNotifier(300.0);
+    addTearDown(height.dispose);
+    final overflows = <bool>[];
+    await tester.pumpPage(
+      SingleChildScrollView(
+        child: MessagePreview(
+          enabled: true,
+          onExpand: () {},
+          onOverflowChanged: overflows.add,
+          child: ValueListenableBuilder(
+            valueListenable: height,
+            builder: (_, value, child) => SizedBox(width: 200, height: value),
+          ),
+        ),
+      ),
+    );
+    expect(overflows, [false]);
+    tester.view.physicalSize = const Size(390 * 3, 500 * 3);
+    await tester.pumpAndSettle();
+    expect(find.text(t.chat.expandMessage), findsOneWidget);
+    height.value = 200;
+    await tester.pumpAndSettle();
+    expect(find.text(t.chat.expandMessage), findsNothing);
+    height.value = 900;
+    await tester.pumpAndSettle();
+    expect(find.text(t.chat.expandMessage), findsOneWidget);
+    expect(overflows, [false, true, false, true]);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('overflow measurement preserves the mounted content', (
     tester,
   ) async {

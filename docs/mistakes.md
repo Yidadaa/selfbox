@@ -1,5 +1,15 @@
 # 错误账本 (Mistakes Ledger)
 
+- [2026-11-16] [ProfileLogging] 长消息分页UI出现约55ms长帧但raster正常 -> Riverpod完整状态经Talker格式化输出整批正文 -> Provider日志只输出事件和状态类型，保留错误堆栈；冷分页必须与预热滚动分开测。
+
+- [2026-11-16] [MuMuIME] mInputShown=true 但键盘 inset 恒为0 -> 预装“搜狗”实际是 nemu-vinput-pack 且 IME 位于 display0 -> 用独立无网络测试 IME 并将当前应用 task 移到 display0，逐次验证 inset 与 Tab 高度，完成后恢复输入法。
+- [2026-11-16] [ProfileIMEBuild] 直接 javac 使用 android.jar 编译 lambda 报 LambdaMetafactory 缺失 -> SDK stub 不提供 Java lambda 引导符号 -> 最小 IME 夹具使用显式 OnClickListener，再由 d8 生成 dex。
+
+- [2026-11-16] [AndroidProfile] Gradle 与 debug keystore 锁文件拒绝访问 -> 构建沿用宿主用户目录 -> 采样构建同时设置项目内 GRADLE_USER_HOME、ANDROID_USER_HOME 和 TEMP/TMP，不修改全局权限。
+- [2026-11-16] [MuMuCapture] 默认 ADB 截图是桌面，指定应用显示器后仍为黑屏 -> MuMu 多显示器与 Vulkan 截图路径不能代表窗口实际内容 -> 用 dumpsys 确认显示器，再以原生窗口截图核验；黑图不能当成应用黑屏。
+- [2026-11-16] [ProfileEvidence] 输入焦点脚本可运行但未确认应用软键盘 inset -> IME 显示状态与应用实际避让不是同一证据 -> 将焦点/草稿采样与真实键盘动画分开，详细 tracing 和并行构建期间的耗时不进入正式对照。
+- [2026-11-16] [LocalPath] 截图及缓存操作使用错误绝对路径而失败 -> 未使用当前解析路径 -> 本地文件先 Resolve-Path，再将返回路径交给文件工具。
+
 - [2026-11-16] [TestDiscovery] 全量漏掉 all_tests.dart、纯 export 入口又报缺少 main -> Flutter 仅扫描 _test.dart 且要求文件直接声明 main -> 保留聚合文件，由 colocated_test.dart 的 main 单行调用。
 
 - [2026-11-16] [TestBoundary] 同级测试跨 lib 相对导入 test 夹具能运行但 analyzer 无法解析 -> package URI 不能越过 lib 边界 -> 聚合入口注入已有启动夹具，同级测试只依赖包内契约，不搬迁或复制整套夹具。

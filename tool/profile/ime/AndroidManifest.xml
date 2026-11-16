@@ -1,0 +1,9 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.selfbox.profileime">
+    <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="35" />
+    <application android:label="Selfbox Profile Keyboard" android:theme="@android:style/Theme.Material.Light.NoActionBar" android:allowBackup="false">
+        <service android:name=".ProfileKeyboard" android:label="Selfbox Profile Keyboard" android:permission="android.permission.BIND_INPUT_METHOD" android:exported="true">
+            <intent-filter><action android:name="android.view.InputMethod" /></intent-filter>
+            <meta-data android:name="android.view.im" android:resource="@xml/method" />
+        </service>
+    </application>
+</manifest>
