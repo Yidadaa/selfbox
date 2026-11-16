@@ -21,6 +21,77 @@ Finder _row(int id) => find.byWidgetPredicate(
 );
 
 void main() {
+  for (final previouslyExpanded in [false, true]) {
+    testWidgets(
+      'toggle anchors the top visible user after scrolling, previous card=$previouslyExpanded',
+      (tester) async {
+        final container = await tester.pumpApp(
+          messages: FakeMessageRepository(
+            seed: [
+              for (var id = 1; id <= 40; id++)
+                _message(
+                  id,
+                  ai:
+                      (id >= 9 && id <= 12) ||
+                      (id >= 19 && id <= 22) ||
+                      (id >= 31 && id <= 34),
+                ),
+            ],
+          ),
+        );
+        if (previouslyExpanded) {
+          await tester.tap(find.byKey(const ValueKey('hidden-ai-group')).first);
+          await tester.pumpAndSettle();
+          await tester.tap(find.byType(ChatAiToggle));
+          await tester.pumpAndSettle();
+        }
+        final scroll = container.read(chatScrollControllerProvider);
+        await tester.scrollUntilVisible(
+          _row(17),
+          150,
+          scrollable: find.descendant(
+            of: find.byType(CustomScrollView),
+            matching: find.byType(Scrollable),
+          ),
+        );
+        await tester.pumpAndSettle();
+        scroll.jumpTo(scroll.offset + 32 - tester.getTopLeft(_row(17)).dy);
+        await tester.pumpAndSettle();
+        final visible =
+            find
+                .byType(ChatTimelineMessageRow)
+                .evaluate()
+                .where(
+                  (element) =>
+                      (element.widget as ChatTimelineMessageRow)
+                          .message
+                          .author ==
+                      MessageAuthor.me,
+                )
+                .map(
+                  (element) => (
+                    id: (element.widget as ChatTimelineMessageRow).message.id,
+                    top: tester.getTopLeft(find.byWidget(element.widget)).dy,
+                  ),
+                )
+                .where((row) => row.top >= 0 && row.top < kPhoneViewport.height)
+                .toList()
+              ..sort((first, second) => first.top.compareTo(second.top));
+        expect(visible.first.id, 17);
+        final before = visible.first.top;
+        for (var toggle = 0; toggle < 2; toggle++) {
+          await tester.tap(find.byType(ChatAiToggle));
+          await tester.pump();
+          expect(_row(17), findsOneWidget);
+          expect(tester.getTopLeft(_row(17)).dy, closeTo(before, 1));
+          await tester.pumpAndSettle();
+          expect(tester.getTopLeft(_row(17)).dy, closeTo(before, 1));
+        }
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   testWidgets('expanding while scrolled preserves the visible user position', (
     tester,
   ) async {

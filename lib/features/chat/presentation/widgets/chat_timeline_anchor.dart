@@ -46,24 +46,27 @@ useTimelineAnchor(
     if (previous == next || !scroll.hasClients) return;
     final viewport = viewportKey.currentContext?.findRenderObject();
     if (viewport is! RenderBox || !viewport.hasSize) return;
-    final candidates = <int>[
-      if (preferred.value case final int id) id,
-      if (anchor.value.messageId case final int id) id,
-      for (var index = 1; index < items.length; index++)
-        if (items[index] case TimelineMessage(:final message)
-            when items[index - 1] is TimelineAiGroup)
-          message.id,
-    ];
-    preferred.value = null;
-    for (final id in candidates) {
-      final row = keys[id]?.currentContext?.findRenderObject();
+    final candidates = <({int id, double top})>[];
+    for (final entry in keys.entries) {
+      final row = entry.value.currentContext?.findRenderObject();
       if (row is! RenderBox || !row.hasSize) continue;
       final top = row.localToGlobal(Offset.zero, ancestor: viewport).dy;
       if (top < 0 || top > viewport.size.height) continue;
-      anchor.value = (messageId: id, alignment: 1 - top / viewport.size.height);
-      scroll.jumpTo(0);
-      return;
+      candidates.add((id: entry.key, top: top));
     }
+    candidates.sort((first, second) => first.top.compareTo(second.top));
+    final selected =
+        candidates
+            .where((candidate) => candidate.id == preferred.value)
+            .firstOrNull ??
+        candidates.firstOrNull;
+    preferred.value = null;
+    if (selected == null) return;
+    anchor.value = (
+      messageId: selected.id,
+      alignment: 1 - selected.top / viewport.size.height,
+    );
+    scroll.jumpTo(0);
   });
   return (
     anchor: anchor.value,
