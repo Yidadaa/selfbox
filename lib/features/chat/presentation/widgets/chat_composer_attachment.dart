@@ -36,6 +36,7 @@ class ChatComposerAttachment extends ConsumerWidget {
       child: ExcludeSemantics(
         excluding: keyboardOpen != external,
         child: ClipRect(
+          clipBehavior: external ? Clip.none : Clip.hardEdge,
           child: Align(
             widthFactor: visible,
             alignment: Alignment.centerLeft,

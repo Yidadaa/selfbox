@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -32,18 +33,46 @@ void main() {
       expect(decoded.height, 1024);
     });
 
-    test('creates a small JPEG thumbnail beside its full-size image', () async {
-      final relative = (await store.saveImage(_jpeg()).run()).getOrElse(
-        (failure) => fail('$failure'),
-      );
+    test('creates a high resolution versioned thumbnail', () async {
+      final relative =
+          (await store.saveImage(_jpeg(width: 1600, height: 1200)).run())
+              .getOrElse((failure) => fail('$failure'));
       final thumbnail = store.thumbnail(relative).toNullable();
       expect(thumbnail, isNotNull);
       expect(thumbnail!.existsSync(), isTrue);
 
       final decoded = img.decodeImage(thumbnail.readAsBytesSync());
       expect(decoded, isNotNull);
-      expect(decoded!.width, 320);
-      expect(decoded.height, 240);
+      expect(decoded!.width, 1024);
+      expect(decoded.height, 768);
+      expect(thumbnail.path, endsWith('.thumb-v2.jpg'));
+    });
+
+    test('does not upscale small thumbnails', () async {
+      final relative =
+          (await store.saveImage(_jpeg(width: 160, height: 240)).run())
+              .getOrElse((failure) => fail('$failure'));
+      final decoded = img.decodeImage(
+        await store.thumbnail(relative).toNullable()!.readAsBytes(),
+      )!;
+      expect((decoded.width, decoded.height), (160, 240));
+    });
+
+    test('legacy thumbnail is bypassed and deleted with its image', () async {
+      final relative = (await store.saveImage(_jpeg()).run()).getOrElse(
+        (failure) => fail('$failure'),
+      );
+      final original = store.resolve(relative).toNullable()!;
+      final current = store.thumbnail(relative).toNullable()!;
+      await current.delete();
+      final legacy = File('${p.withoutExtension(original.path)}.thumb.jpg');
+      await legacy.writeAsBytes(_jpeg(width: 320, height: 240));
+      expect(store.thumbnail(relative).toNullable()!.path, isNot(legacy.path));
+      expect(await store.thumbnail(relative).toNullable()!.exists(), isFalse);
+      expect(await original.exists(), isTrue);
+      expect((await store.delete(relative).run()).isRight(), isTrue);
+      expect(await legacy.exists(), isFalse);
+      expect(await original.exists(), isFalse);
     });
 
     test('rejects corrupt image bytes without creating files', () async {

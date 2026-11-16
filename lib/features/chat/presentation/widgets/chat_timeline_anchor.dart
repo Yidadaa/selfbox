@@ -44,6 +44,11 @@ useTimelineAnchor(
     next,
   ) {
     if (previous == next || !scroll.hasClients) return;
+    if (next && preferred.value == null && scroll.position.extentBefore == 0) {
+      anchor.value = (messageId: null, alignment: 0);
+      scroll.jumpTo(0);
+      return;
+    }
     final viewport = viewportKey.currentContext?.findRenderObject();
     if (viewport is! RenderBox || !viewport.hasSize) return;
     final candidates = <({int id, double top})>[];

@@ -36,4 +36,4 @@ abstract final class MessageTokens {
   static const imageShadowOffset = Offset(0, AppSpacing.xs);
 }
 
-const kBubbleImageDecodeWidth = 720;
+const kBubbleImageDecodeWidth = 960;

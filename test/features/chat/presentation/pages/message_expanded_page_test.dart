@@ -75,8 +75,10 @@ void main() {
         );
         container.read(composerControllerProvider.notifier).toggleAiMode();
         await tester.pumpAndSettle();
-        await tester.tap(find.byKey(const ValueKey('chat-scroll-to-bottom')));
-        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const ValueKey('chat-scroll-to-bottom')),
+          findsNothing,
+        );
         await tester.tap(find.byKey(const ValueKey('expand-message')));
         await tester.pump();
         await tester.pump();

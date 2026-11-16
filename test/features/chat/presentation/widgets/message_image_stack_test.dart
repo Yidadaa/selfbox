@@ -45,6 +45,7 @@ void main() {
         }
         final photo = tester.widget<Image>(find.byType(Image).last);
         final provider = photo.image as ResizeImage;
+        expect(provider.width, 960);
         expect(
           (provider.imageProvider as FileImage).file.path,
           thumbnailState == 'valid' ? thumbnail.path : original.path,

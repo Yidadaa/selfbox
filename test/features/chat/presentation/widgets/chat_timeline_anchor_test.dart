@@ -21,6 +21,32 @@ Finder _row(int id) => find.byWidgetPredicate(
 );
 
 void main() {
+  for (final historyLength in [1, 20]) {
+    testWidgets('AI toggle stays at bottom with $historyLength user rows', (
+      tester,
+    ) async {
+      final container = await tester.pumpApp(
+        messages: FakeMessageRepository(
+          seed: [
+            for (var id = 1; id <= historyLength; id++) _message(id),
+            for (var id = historyLength + 1; id <= historyLength + 30; id++)
+              _message(id, ai: true),
+          ],
+        ),
+      );
+      final scroll = container.read(chatScrollControllerProvider);
+      expect(scroll.position.extentBefore, 0);
+      await tester.tap(find.byType(ChatAiToggle));
+      await tester.pump();
+      expect(scroll.position.extentBefore, closeTo(0, 1));
+      expect(_row(historyLength + 30), findsOneWidget);
+      await tester.pumpAndSettle();
+      expect(scroll.position.extentBefore, closeTo(0, 1));
+      expect(_row(historyLength + 30), findsOneWidget);
+      expect(find.byKey(const ValueKey('chat-scroll-to-bottom')), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  }
   for (final previouslyExpanded in [false, true]) {
     testWidgets(
       'toggle anchors the top visible user after scrolling, previous card=$previouslyExpanded',
@@ -123,12 +149,20 @@ void main() {
         final container = await tester.pumpApp(
           messages: FakeMessageRepository(
             seed: [
-              _message(1),
+              _message(1).copyWith(text: 'Anchor 1\n${'History\n' * 12}'),
               for (var id = 2; id <= 35; id++) _message(id, ai: true),
               _message(36),
             ],
           ),
         );
+        if (!fromCard) {
+          container.read(chatScrollControllerProvider).jumpTo(80);
+          await tester.pumpAndSettle();
+          expect(
+            container.read(chatScrollControllerProvider).position.extentBefore,
+            greaterThan(0),
+          );
+        }
         final before = tester.getTopLeft(_row(1));
         if (fromCard) {
           await tester.tap(find.byKey(const ValueKey('hidden-ai-group')));
@@ -145,7 +179,11 @@ void main() {
           lessThan(15),
         );
         for (var toggle = 0; toggle < 4; toggle++) {
-          container.read(composerControllerProvider.notifier).toggleAiMode();
+          if (fromCard && !container.read(composerControllerProvider).aiMode) {
+            await tester.tap(find.byKey(const ValueKey('hidden-ai-group')));
+          } else {
+            container.read(composerControllerProvider.notifier).toggleAiMode();
+          }
           await tester.pumpAndSettle();
           expect(tester.getTopLeft(_row(1)).dy, closeTo(before.dy, 1));
         }
@@ -166,7 +204,7 @@ void main() {
         ],
       ),
     );
-    container.read(composerControllerProvider.notifier).toggleAiMode();
+    await tester.tap(find.byKey(const ValueKey('hidden-ai-group')));
     await tester.pumpAndSettle();
     final button = find.byKey(const ValueKey('chat-scroll-to-bottom'));
     expect(button, findsOneWidget);
@@ -217,7 +255,7 @@ void main() {
       overrides: [onAskAiProvider.overrideWithValue((_) {})],
     );
     final composer = container.read(composerControllerProvider.notifier);
-    composer.toggleAiMode();
+    await tester.tap(find.byKey(const ValueKey('hidden-ai-group')));
     await tester.pumpAndSettle();
     composer.setText('New question');
     await composer.send();
@@ -239,8 +277,8 @@ void main() {
         for (var id = 2; id <= 20; id++) _message(id, ai: true),
       ],
     );
-    final container = await tester.pumpApp(messages: messages);
-    container.read(composerControllerProvider.notifier).toggleAiMode();
+    await tester.pumpApp(messages: messages);
+    await tester.tap(find.byKey(const ValueKey('hidden-ai-group')));
     await tester.pumpAndSettle();
     await messages.delete(1).run();
     await tester.pumpAndSettle();

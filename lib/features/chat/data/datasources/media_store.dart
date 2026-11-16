@@ -20,16 +20,19 @@ class MediaStore {
 
   static const _folder = 'media';
   static const _maxImageSide = 2048;
-  static const _thumbnailSide = 320;
+  static const _thumbnailSide = 1024;
+  static const _thumbnailSuffix = '.thumb-v2.jpg';
   static const _imageQuality = 85;
-  static const _thumbnailQuality = 70;
+  static const _thumbnailQuality = 88;
 
   TaskEither<AppFailure, String> saveImage(Uint8List bytes) =>
       TaskEither.tryCatch(() async {
         final optimized = await Isolate.run(() => _optimizeImage(bytes));
         final relative = '$_folder/${_uuid.v4()}.jpg';
         final file = File(p.join(_paths.root.path, relative));
-        final thumbnail = File('${p.withoutExtension(file.path)}.thumb.jpg');
+        final thumbnail = File(
+          '${p.withoutExtension(file.path)}$_thumbnailSuffix',
+        );
         final fullTemp = File('${file.path}.tmp');
         final thumbnailTemp = File('${thumbnail.path}.tmp');
         await file.parent.create(recursive: true);
@@ -65,9 +68,8 @@ class MediaStore {
   }
 
   /// Returns the sidecar thumbnail for a valid media path.
-  Option<File> thumbnail(String relative) =>
-      resolve(relative)
-          .map((file) => File('${p.withoutExtension(file.path)}.thumb.jpg'));
+  Option<File> thumbnail(String relative) => resolve(relative)
+      .map((file) => File('${p.withoutExtension(file.path)}$_thumbnailSuffix'));
 
   TaskEither<AppFailure, Uint8List> read(String relative) =>
       resolve(relative).match(
@@ -81,13 +83,16 @@ class MediaStore {
         ),
       );
 
-  TaskEither<AppFailure, Unit> delete(String relative) =>
-      resolve(relative).match(
+  TaskEither<AppFailure, Unit> delete(String relative) => resolve(relative)
+      .match(
         () => TaskEither.right(unit),
         (file) => TaskEither.tryCatch(() async {
           if (await file.exists()) await file.delete();
-          final thumb = File('${p.withoutExtension(file.path)}.thumb.jpg');
-          if (await thumb.exists()) await thumb.delete();
+          for (final suffix in [_thumbnailSuffix, '.thumb.jpg']) {
+            await _removeIfPresent(
+              File('${p.withoutExtension(file.path)}$suffix'),
+            );
+          }
           return unit;
         }, (error, _) => AppFailure.unexpected(error: error)),
       );
@@ -133,5 +138,6 @@ img.Image _resizeToBound(img.Image source, int maxSide) {
     source,
     width: (source.width * scale).round(),
     height: (source.height * scale).round(),
+    interpolation: img.Interpolation.average,
   );
 }
