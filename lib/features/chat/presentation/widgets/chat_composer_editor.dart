@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../gen/i18n/strings.g.dart';
+import '../../../settings/presentation/providers/account_providers.dart';
 import '../providers/composer_controller.dart';
 
 /// Only line-count transitions rebuild the field's vertical padding.
@@ -51,6 +52,11 @@ class _Editor extends HookConsumerWidget {
       composerControllerProvider.select((state) => state.aiMode),
     );
     final glass = context.glass;
+    final agentName = ref.watch(
+      userProfileProvider.select(
+        (value) => value.value?.agentName.trim() ?? '',
+      ),
+    );
     // Cupertino overlays use the alphabetic baseline reported by Text.
     final style = Theme.of(context).textTheme.bodyLarge?.copyWith(
       textBaseline: TextBaseline.alphabetic,
@@ -82,7 +88,11 @@ class _Editor extends HookConsumerWidget {
         keyboardType: TextInputType.multiline,
         textAlignVertical: TextAlignVertical.center,
         placeholder: aiMode
-            ? context.t.chat.aiInputHint
+            ? context.t.chat.aiInputHint(
+                agentName: agentName.isEmpty
+                    ? context.t.me.agentDefaultName
+                    : agentName,
+              )
             : context.t.chat.inputHint,
         style: style,
         placeholderStyle: style?.copyWith(color: glass.foregroundMuted),

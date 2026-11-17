@@ -21,6 +21,7 @@ import 'agent_profile_fixtures.dart';
 import 'assistant_failure_fixtures.dart';
 import 'assistant_transition_fixtures.dart';
 import 'brand_fixtures.dart';
+import 'chat_action_fixtures.dart';
 import 'composer_keyboard_fixtures.dart';
 import 'general_effects_fixtures.dart';
 import 'image_viewer_fixtures.dart';
@@ -119,6 +120,7 @@ void main() {
     ...onboardingFixtures,
     ...reliefFixtures,
     ...pinnedMessageFixtures,
+    ...chatActionFixtures,
   ]) {
     for (final locale in [AppLocale.zhCn]) {
       testWidgets('screenshot ${shot.name}', (tester) async {

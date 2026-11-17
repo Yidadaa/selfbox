@@ -8,9 +8,9 @@
     "me": "我的"
   },
   "chat": {
-    "pin": "置顶",
+    "pin": "钉住消息",
     "unpin": "清除",
-    "pinnedCount": "已置顶 {count} 条消息",
+    "pinnedCount": "置顶 {count} 条",
     "clearPins": "清空",
     "confirmClearPins": "清空所有置顶消息？",
     "noPins": "暂无置顶消息",
@@ -19,7 +19,7 @@
     "welcomeSecond": "这里是只属于你自己的小角落，平时不管是一闪而过的念头、琐碎日常，还是随手拍下的照片，可以通通发给我。",
     "welcomeThird": "大部分时候我会安安静静当个倾听者，如果你需要我，点一下 AI 键，随时呼叫我。",
     "inputHint": "今天有什么新想法？",
-    "aiInputHint": "问问 AI",
+    "aiInputHint": "给{agentName}发消息",
     "send": "发送",
     "attachImage": "图片",
     "removeImage": "移除",

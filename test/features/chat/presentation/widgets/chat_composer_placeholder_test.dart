@@ -22,7 +22,10 @@ void main() {
             await tester.pumpAndSettle();
           }
 
-          for (final hint in [t.chat.inputHint, t.chat.aiInputHint]) {
+          for (final hint in [
+            t.chat.inputHint,
+            t.chat.aiInputHint(agentName: t.me.agentDefaultName),
+          ]) {
             final editable = find.byType(EditableText);
             final placeholder = tester.getRect(find.text(hint));
             final input = tester.getRect(editable);

@@ -12,6 +12,7 @@ import '../../../../core/widgets/app_action_button.dart';
 import '../../../../core/widgets/app_list_tile.dart';
 import '../../../../core/widgets/app_modal_surface.dart';
 import '../../../../gen/i18n/strings.g.dart';
+import '../../../settings/presentation/providers/account_providers.dart';
 import '../../domain/models/message.dart';
 import '../providers/composer_controller.dart';
 import '../providers/message_lookup.dart';
@@ -129,6 +130,14 @@ class _QuoteRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final loaded = ref.watch(messageByIdProvider(id));
+    final names = ref.watch(
+      userProfileProvider.select(
+        (value) => (
+          user: value.value?.nickname.trim() ?? '',
+          agent: value.value?.agentName.trim() ?? '',
+        ),
+      ),
+    );
     final data = loaded.asData?.value;
     final message = data?.toNullable()?.toNullable();
     final failed = loaded.hasError || (data?.isLeft() ?? false);
@@ -146,8 +155,12 @@ class _QuoteRow extends ConsumerWidget {
         subtitle: message == null
             ? null
             : switch (message.author) {
-                MessageAuthor.me => context.t.chat.authorMe,
-                MessageAuthor.ai => context.t.chat.aiMode,
+                MessageAuthor.me =>
+                  names.user.isEmpty ? context.t.me.defaultName : names.user,
+                MessageAuthor.ai =>
+                  names.agent.isEmpty
+                      ? context.t.me.agentDefaultName
+                      : names.agent,
               },
         onTap: !editable && message != null ? () => context.pop(id) : null,
         trailing: editable

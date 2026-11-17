@@ -49,7 +49,11 @@ class ChatAiToggle extends ConsumerWidget {
                       color: active ? glass.foreground : glass.foregroundMuted,
                     ),
                     const Gap(AppSpacing.xs),
-                    ExcludeSemantics(child: _AiToggleLabel(active: active)),
+                    Flexible(
+                      child: ExcludeSemantics(
+                        child: _AiToggleLabel(active: active),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -73,6 +77,7 @@ class _AiToggleLabel extends StatelessWidget {
       label,
       key: ValueKey(label),
       maxLines: 1,
+      overflow: TextOverflow.ellipsis,
       style: Theme.of(context).textTheme.labelLarge?.copyWith(
         color: active ? context.glass.accent : context.glass.foreground,
       ),

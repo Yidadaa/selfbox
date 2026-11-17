@@ -8,9 +8,9 @@
     "me": "Me"
   },
   "chat": {
-    "pin": "Pin",
+    "pin": "Pin message",
     "unpin": "Unpin",
-    "pinnedCount": "{count} pinned messages",
+    "pinnedCount": "Pinned {count}",
     "clearPins": "Clear",
     "confirmClearPins": "Clear all pinned messages?",
     "noPins": "No pinned messages",
@@ -19,7 +19,7 @@
     "welcomeSecond": "This is your own little corner. Send me fleeting thoughts, everyday moments, or photos whenever you like.",
     "welcomeThird": "Most of the time, I'll quietly listen. When you need me, tap the AI button and call me in.",
     "inputHint": "New thought?",
-    "aiInputHint": "Ask AI",
+    "aiInputHint": "Message {agentName}",
     "send": "Send",
     "attachImage": "Image",
     "removeImage": "Remove",

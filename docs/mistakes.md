@@ -351,3 +351,5 @@
 - [2026-11-18] [Pins] ObjectBox 的 longVector 不能用 PropertyType 显式声明，solid 也不是 GlassContainer 默认构造参数 -> List<int> 自动映射 64 位向量；实心卡片使用 GlassContainer.card，测试检查真实不透明填色。
 - [2026-11-18] [PinAnimation] animateTo(0) 结束状态仍是 completed，浮框退场不卸载 -> 显式 forward/reverse 驱动，使用 value==0 判断退场结束；缓存 RepaintBoundary 子树并测试中途反向与 Widget identity。
 - [2026-11-18] [PinTestStream] 无订阅的单订阅 StreamController.close 导致测试清理超时 -> close 等待未消费的 done 事件 -> 可不订阅的受控测试流用 broadcast 并显式释放容器。
+- [2026-11-18] [ChatActions] 双操作与 AI 长标签挤压引用热区，LayoutBuilder 首帧读取 extentBefore 空断言 -> 为 AI 标签设最大宽度、数字引用缩小内边距；滚动选择器同时检查 hasClients 和 hasContentDimensions。
+- [2026-11-18] [QuoteRegression] 全量回归仍断言回底与引用互斥 -> 旧聊天页规格未随新并排行为更新 -> 保留原位置/回底断言，并将引用断言更新为可见且仅数字。

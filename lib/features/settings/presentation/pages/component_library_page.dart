@@ -208,7 +208,9 @@ class _ComposerGlowPreview extends HookConsumerWidget {
             ),
             padding: const EdgeInsets.all(AppSpacing.xl),
             child: Text(
-              context.t.chat.aiInputHint,
+              context.t.chat.aiInputHint(
+                agentName: context.t.me.agentDefaultName,
+              ),
               style: Theme.of(context).textTheme.bodyLarge
                   ?.copyWith(color: glass.foregroundMuted),
             ),

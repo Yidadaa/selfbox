@@ -30,6 +30,9 @@ class PinnedMessagesOverlay extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final messages = ref.watch(pinnedMessagesProvider).value ?? const [];
     final expanded = useState(false);
+    ref.listen(pinnedMessagesProvider, (_, next) {
+      if (next.asData?.value.isEmpty ?? false) expanded.value = false;
+    });
     final panel = useMemoized(
       () => RepaintBoundary(
         child: TextFieldTapRegion(
@@ -161,7 +164,10 @@ class _PinBubble extends ConsumerWidget {
                 color: context.glass.foregroundMuted,
               ),
               const Gap(AppSpacing.xs),
-              Text('$count', style: Theme.of(context).textTheme.labelLarge),
+              Text(
+                context.t.chat.pinnedCount(count: count),
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
             ],
           ),
         ),

@@ -71,19 +71,7 @@ class ChatComposerLayout extends StatelessWidget {
                 alignment: Alignment.bottomRight,
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: quote ?? const SizedBox.shrink(),
-                        ),
-                      ),
-                      const Gap(AppSpacing.xs),
-                      toggle,
-                    ],
-                  ),
+                  child: _ComposerActions(quote: quote, toggle: toggle),
                 ),
               ),
             ),
@@ -100,4 +88,33 @@ class ChatComposerLayout extends StatelessWidget {
       ],
     );
   }
+}
+
+class _ComposerActions extends StatelessWidget {
+  const _ComposerActions({required this.quote, required this.toggle});
+  final Widget? quote;
+  final Widget toggle;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (_, constraints) => Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Expanded(
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: quote ?? const SizedBox.shrink(),
+          ),
+        ),
+        const Gap(AppSpacing.xs),
+        ConstrainedBox(
+          // Preserve room for two 48dp actions beside a localized AI label.
+          constraints: BoxConstraints(
+            maxWidth: (constraints.maxWidth - AppSpacing.xs) / 2,
+          ),
+          child: toggle,
+        ),
+      ],
+    ),
+  );
 }

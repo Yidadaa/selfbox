@@ -26,7 +26,10 @@ class ChatTimelineAction extends HookConsumerWidget {
     final scroll = ref.watch(chatScrollControllerProvider);
     final awayFromBottom = useListenableSelector(
       scroll,
-      () => scroll.hasClients && scroll.position.extentBefore > AppSpacing.xl,
+      () =>
+          scroll.hasClients &&
+          scroll.position.hasContentDimensions &&
+          scroll.position.extentBefore > 0,
     );
     final hasMessages = ref.watch(
       chatFeedProvider.select((feed) => feed.value?.items.isNotEmpty ?? false),
@@ -36,38 +39,51 @@ class ChatTimelineAction extends HookConsumerWidget {
         (state) => state.quotedMessageIds.length,
       ),
     );
-    if (hasMessages && awayFromBottom) {
-      return ChatScrollToBottomButton(
-        onTap: () {
-          if (!scroll.hasClients) return;
-          if (scroll.position.minScrollExtent < 0) {
-            scroll.requestBottom();
-            return;
-          }
-          if (MediaQuery.disableAnimationsOf(context)) {
-            scroll.jumpTo(scroll.position.minScrollExtent);
-            return;
-          }
-          scroll.animateTo(
-            scroll.position.minScrollExtent,
-            duration: AppMotion.messageSend,
-            curve: AppMotion.messageSendCurve,
-          );
-        },
-      );
-    }
-    return count == 0 ? const SizedBox.shrink() : ChatQuoteButton(count: count);
+    final showBottom = hasMessages && awayFromBottom;
+    if (!showBottom && count == 0) return const SizedBox.shrink();
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (showBottom)
+          ChatScrollToBottomButton(
+            onTap: () {
+              if (!scroll.hasClients) return;
+              if (scroll.position.minScrollExtent < 0) {
+                scroll.requestBottom();
+                return;
+              }
+              if (MediaQuery.disableAnimationsOf(context)) {
+                scroll.jumpTo(scroll.position.minScrollExtent);
+                return;
+              }
+              scroll.animateTo(
+                scroll.position.minScrollExtent,
+                duration: AppMotion.messageSend,
+                curve: AppMotion.messageSendCurve,
+              );
+            },
+          ),
+        if (showBottom && count > 0) const Gap(AppSpacing.xs),
+        if (count > 0)
+          Flexible(
+            child: ChatQuoteButton(count: count, compact: showBottom),
+          ),
+      ],
+    );
   }
 }
 
 class ChatQuoteButton extends ConsumerWidget {
-  const ChatQuoteButton({required this.count, super.key});
+  const ChatQuoteButton({required this.count, this.compact = false, super.key});
   final int count;
+  final bool compact;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => _ChatFloatingButton(
     actionKey: const ValueKey('composer-quotes'),
-    label: context.t.chat.quoteCount(count: count),
+    label: compact ? '$count' : context.t.chat.quoteCount(count: count),
+    semanticLabel: context.t.chat.quoteCount(count: count),
+    compact: compact,
     icon: AppIcons.quote,
     onTap: () => showQuoteEditor(context),
   );
@@ -105,12 +121,16 @@ class _ChatFloatingButton extends ConsumerWidget {
   const _ChatFloatingButton({
     required this.actionKey,
     required this.label,
+    required this.semanticLabel,
+    required this.compact,
     required this.icon,
     required this.onTap,
   });
 
   final Key actionKey;
   final String label;
+  final String semanticLabel;
+  final bool compact;
   final AppIconData icon;
   final VoidCallback onTap;
 
@@ -122,9 +142,12 @@ class _ChatFloatingButton extends ConsumerWidget {
       shape: const LiquidRoundedSuperellipse(borderRadius: AppRadius.pill),
       child: Pressable(
         key: actionKey,
+        semanticLabel: semanticLabel,
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? AppSpacing.xs : AppSpacing.md,
+          ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

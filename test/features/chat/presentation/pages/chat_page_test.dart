@@ -162,7 +162,14 @@ void main() {
         find.byKey(const ValueKey('chat-scroll-to-bottom')),
         findsOneWidget,
       );
-      expect(find.byKey(const ValueKey('composer-quotes')), findsNothing);
+      expect(find.byKey(const ValueKey('composer-quotes')), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('composer-quotes')),
+          matching: find.text('1'),
+        ),
+        findsOneWidget,
+      );
       final jumpRect = tester.getRect(
         find.byKey(const ValueKey('chat-scroll-to-bottom')),
       );

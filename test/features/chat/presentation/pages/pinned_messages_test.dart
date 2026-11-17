@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/widgets/app_action_popover.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_preview.dart';
+import 'package:selfbox/gen/i18n/strings.g.dart';
 
 import '../../../../support/app_widget_tester.dart';
 import '../../../../support/fake_message_repository.dart';
@@ -13,12 +14,13 @@ void main() {
     'long press pins; outside taps preserve panel; close retains pins',
     (tester) async {
       final repo = FakeMessageRepository(seed: [testMessage(1, 'keep me')]);
-      await tester.pumpApp(messages: repo);
+      await tester.pumpApp(messages: repo, locale: AppLocale.zhCn);
       await tester.longPress(find.text('keep me'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Pin'));
+      await tester.tap(find.text('钉住消息'));
       await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('pinned-bubble')), findsOneWidget);
+      expect(find.text('置顶 1 条'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('pinned-bubble')));
       await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('pinned-panel')), findsOneWidget);
@@ -33,7 +35,7 @@ void main() {
   );
 
   testWidgets(
-    'AI stays full; unpin menu only removes pin; empty panel stays open',
+    'AI stays full; removing last pin closes panel and hides button',
     (tester) async {
       final repo = FakeMessageRepository(
         seed: [testMessage(1, 'AI full', author: MessageAuthor.ai)],
@@ -64,8 +66,13 @@ void main() {
       );
       await tester.tap(find.text('Unpin'));
       await tester.pumpAndSettle();
-      expect(panel, findsOneWidget);
+      expect(panel, findsNothing);
+      expect(find.byKey(const ValueKey('pinned-bubble')), findsNothing);
       expect((await repo.latest(10).run()).toNullable()?.length, 1);
+      await repo.setPinned(1, pinned: true).run();
+      await tester.pumpAndSettle();
+      expect(panel, findsNothing);
+      expect(find.byKey(const ValueKey('pinned-bubble')), findsOneWidget);
     },
   );
 
@@ -101,7 +108,8 @@ void main() {
       await tester.tap(find.text('Clear'));
       await tester.pumpAndSettle();
       expect(await repo.watchPinned().first, isEmpty);
-      expect(panel, findsOneWidget);
+      expect(panel, findsNothing);
+      expect(find.byKey(const ValueKey('pinned-bubble')), findsNothing);
       expect((await repo.latest(20).run()).toNullable()?.length, 12);
     },
   );
