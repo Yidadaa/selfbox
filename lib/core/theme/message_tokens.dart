@@ -4,6 +4,23 @@ import 'app_radius.dart';
 import 'app_spacing.dart';
 
 abstract final class MessageTokens {
+  static LinearGradient? pinnedSurfaceGradient(Brightness brightness) =>
+      switch (brightness) {
+        Brightness.light => const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFF4F4F5), Color(0xFFECEDEF), Color(0xFFE2E4E7)],
+          stops: [0, 0.46, 1],
+        ),
+        Brightness.dark => null,
+      };
+
+  static Color? pinnedSurfaceColor(Brightness brightness) =>
+      switch (brightness) {
+        Brightness.light => const Color(0xFFF0F1F4),
+        Brightness.dark => null,
+      };
+
   static Color selectionColor(Brightness brightness) => switch (brightness) {
     Brightness.light => const Color(0x40787880),
     Brightness.dark => const Color(0x50787880),

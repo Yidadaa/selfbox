@@ -8,6 +8,12 @@
     "me": "Me"
   },
   "chat": {
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "pinnedCount": "{count} pinned messages",
+    "clearPins": "Clear",
+    "confirmClearPins": "Clear all pinned messages?",
+    "noPins": "No pinned messages",
     "title": "小懒",
     "welcomeFirst": "Hey, we finally meet.",
     "welcomeSecond": "This is your own little corner. Send me fleeting thoughts, everyday moments, or photos whenever you like.",

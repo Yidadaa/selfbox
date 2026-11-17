@@ -348,3 +348,6 @@
 - [2026-11-15] [GradleHome] APK 构建无法创建 ~/.gradle 的 wrapper 锁 -> 默认 Gradle 目录无写权限，项目已有独立缓存 -> 构建进程显式设置 GRADLE_USER_HOME=.tools/gradle，并沿用项目 TEMP/TMP。
 
 - [2026-11-15] [PopoverTint] 实机轻量档菜单透底过重 -> 默认 GlassContainer 底色沿用内容玻璃，缺少浮动 chrome 的显式 tint -> 菜单与 Tab 背景共用 chromeTint/chromeBlur，覆盖明暗 × 三档测试及轻量截图。
+- [2026-11-18] [Pins] ObjectBox 的 longVector 不能用 PropertyType 显式声明，solid 也不是 GlassContainer 默认构造参数 -> List<int> 自动映射 64 位向量；实心卡片使用 GlassContainer.card，测试检查真实不透明填色。
+- [2026-11-18] [PinAnimation] animateTo(0) 结束状态仍是 completed，浮框退场不卸载 -> 显式 forward/reverse 驱动，使用 value==0 判断退场结束；缓存 RepaintBoundary 子树并测试中途反向与 Widget identity。
+- [2026-11-18] [PinTestStream] 无订阅的单订阅 StreamController.close 导致测试清理超时 -> close 等待未消费的 done 事件 -> 可不订阅的受控测试流用 broadcast 并显式释放容器。

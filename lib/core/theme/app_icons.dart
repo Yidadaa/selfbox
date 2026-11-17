@@ -8,6 +8,7 @@ abstract final class AppIconTokens {
 
 /// One stroke-rounded family, named by the action each glyph represents.
 abstract final class AppIcons {
+  static const AppIconData pin = HugeIcons.strokeRoundedPin;
   static const AppIconData back = HugeIcons.strokeRoundedArrowLeft01;
   static const AppIconData next = HugeIcons.strokeRoundedArrowRight01;
   static const AppIconData expanded = HugeIcons.strokeRoundedArrowDown01;

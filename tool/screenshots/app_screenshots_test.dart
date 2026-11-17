@@ -28,6 +28,7 @@ import 'message_action_fixtures.dart';
 import 'message_link_fixtures.dart';
 import 'message_quote_fixtures.dart';
 import 'onboarding_fixtures.dart';
+import 'pinned_message_fixtures.dart';
 import 'relief_fixtures.dart';
 import 'screenshot_fixtures.dart';
 import 'short_term_memory_fixtures.dart';
@@ -117,6 +118,7 @@ void main() {
     ...uiPolishFixtures,
     ...onboardingFixtures,
     ...reliefFixtures,
+    ...pinnedMessageFixtures,
   ]) {
     for (final locale in [AppLocale.zhCn]) {
       testWidgets('screenshot ${shot.name}', (tester) async {

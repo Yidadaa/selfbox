@@ -8,6 +8,12 @@
     "me": "我的"
   },
   "chat": {
+    "pin": "置顶",
+    "unpin": "清除",
+    "pinnedCount": "已置顶 {count} 条消息",
+    "clearPins": "清空",
+    "confirmClearPins": "清空所有置顶消息？",
+    "noPins": "暂无置顶消息",
     "title": "自言自语",
     "welcomeFirst": "嘿，终于见面啦。",
     "welcomeSecond": "这里是只属于你自己的小角落，平时不管是一闪而过的念头、琐碎日常，还是随手拍下的照片，可以通通发给我。",

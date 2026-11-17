@@ -15,6 +15,7 @@ import '../../../settings/presentation/providers/account_providers.dart';
 import '../../../settings/presentation/widgets/profile_avatar.dart';
 import '../widgets/chat_timeline_view.dart';
 import '../widgets/chat_timestamp_session.dart';
+import '../widgets/pinned_messages_overlay.dart';
 
 class ChatPage extends ConsumerWidget {
   const ChatPage({super.key});
@@ -29,7 +30,13 @@ class ChatPage extends ConsumerWidget {
       appBarHeight: AppSizes.chatHeaderHeight,
       // The shell already accounts for the keyboard in bottomInset.
       resizeToAvoidBottomInset: false,
-      body: const ChatTimestampSession(child: ChatTimelineView()),
+      body: const Stack(
+        fit: StackFit.expand,
+        children: [
+          ChatTimestampSession(child: ChatTimelineView()),
+          PinnedMessagesOverlay(),
+        ],
+      ),
     );
   }
 }

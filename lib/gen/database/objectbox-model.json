@@ -133,9 +133,28 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "4:117580543439735124",
+      "lastPropertyId": "2:3820792210318347754",
+      "name": "PinnedMessageStateEntity",
+      "properties": [
+        {
+          "id": "1:2451397289619499110",
+          "name": "id",
+          "type": 6,
+          "flags": 129
+        },
+        {
+          "id": "2:3820792210318347754",
+          "name": "messageIds",
+          "type": 27
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "3:3629282783051582472",
+  "lastEntityId": "4:117580543439735124",
   "lastIndexId": "2:3901931894183813975",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",

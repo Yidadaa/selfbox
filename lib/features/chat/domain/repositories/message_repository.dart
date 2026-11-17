@@ -5,6 +5,13 @@ import '../models/message.dart';
 
 /// The chat timeline. Lists are newest-first unless stated otherwise.
 abstract interface class MessageRepository {
+  /// Independent ID state; pin changes do not invalidate [watchLatest].
+  Stream<List<Message>> watchPinned();
+
+  TaskEither<AppFailure, Unit> setPinned(int id, {required bool pinned});
+
+  TaskEither<AppFailure, Unit> clearPins();
+
   TaskEither<AppFailure, Unit> clearAll();
 
   /// The newest [limit] messages, re-emitted on every change.

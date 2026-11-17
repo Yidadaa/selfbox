@@ -38,6 +38,7 @@ class MessageBubble extends ConsumerWidget {
     this.showFooter = true,
     this.showTime = true,
     this.showSeconds = false,
+    this.preview = true,
     super.key,
   });
   final Message message;
@@ -55,6 +56,7 @@ class MessageBubble extends ConsumerWidget {
   final bool showFooter;
   final bool showTime;
   final bool showSeconds;
+  final bool preview;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -79,7 +81,10 @@ class MessageBubble extends ConsumerWidget {
                   : CrossAxisAlignment.start,
               children: [
                 MessagePreview(
-                  enabled: message.author == MessageAuthor.ai && message.id > 0,
+                  enabled:
+                      preview &&
+                      message.author == MessageAuthor.ai &&
+                      message.id > 0,
                   onExpand: onExpand,
                   onOverflowChanged: onPreviewOverflow,
                   reservedHeight: message.quotedMessageIds.isEmpty

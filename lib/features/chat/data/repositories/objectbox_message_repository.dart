@@ -5,19 +5,59 @@ import '../../../../gen/database/objectbox.g.dart';
 import '../../domain/models/message.dart';
 import '../../domain/repositories/message_repository.dart';
 import '../datasources/message_entity.dart';
+import '../datasources/pinned_message_state_entity.dart';
 
 class ObjectBoxMessageRepository implements MessageRepository {
   ObjectBoxMessageRepository(Store store, {DateTime Function()? clock})
-    : _box = store.box<MessageEntity>(),
+    : _store = store,
+      _box = store.box<MessageEntity>(),
       _clock = clock ?? DateTime.now;
 
   final Box<MessageEntity> _box;
+  final Store _store;
   final DateTime Function() _clock;
   Map<int, Message> _liveMessages = {};
 
   @override
+  Stream<List<Message>> watchPinned() => _store
+      .box<PinnedMessageStateEntity>()
+      .query()
+      .watch(triggerImmediately: true)
+      .asyncMap((query) async {
+        final states = await query.findAsync();
+        final ids = states.firstOrNull?.messageIds ?? const <int>[];
+        final rows = await _box.getManyAsync(ids);
+        final messages =
+            rows
+                .whereType<MessageEntity>()
+                .map((row) => row.toDomain())
+                .toList()
+              ..sort((a, b) {
+                final time = b.createdAt.compareTo(a.createdAt);
+                return time == 0 ? b.id.compareTo(a.id) : time;
+              });
+        return List<Message>.unmodifiable(messages);
+      });
+
+  @override
+  TaskEither<AppFailure, Unit> setPinned(int id, {required bool pinned}) =>
+      _run(() async {
+        await _store.runInTransactionAsync(TxMode.write, _setPinned, (
+          id,
+          pinned,
+        ));
+        return unit;
+      });
+
+  @override
+  TaskEither<AppFailure, Unit> clearPins() => _run(() async {
+    await _store.runInTransactionAsync(TxMode.write, _clearPins, 0);
+    return unit;
+  });
+
+  @override
   TaskEither<AppFailure, Unit> clearAll() => _run(() async {
-    await _box.removeAllAsync();
+    await _store.runInTransactionAsync(TxMode.write, _deleteAll, 0);
     _liveMessages = {};
     return unit;
   });
@@ -76,7 +116,7 @@ class ObjectBoxMessageRepository implements MessageRepository {
 
   @override
   TaskEither<AppFailure, Unit> delete(int id) => _run(() async {
-    await _box.removeAsync(id);
+    await _store.runInTransactionAsync(TxMode.write, _deleteMessage, id);
     return unit;
   });
 
@@ -164,4 +204,29 @@ class ObjectBoxMessageRepository implements MessageRepository {
 
   List<Message> _toDomain(List<MessageEntity> rows) =>
       List.unmodifiable(rows.map((e) => e.toDomain()));
+}
+
+void _setPinned(Store store, (int, bool) input) {
+  if (input.$2 && !store.box<MessageEntity>().contains(input.$1)) return;
+  final box = store.box<PinnedMessageStateEntity>();
+  final state = box.get(1) ?? PinnedMessageStateEntity();
+  final ids = state.messageIds.toSet();
+  final changed = input.$2 ? ids.add(input.$1) : ids.remove(input.$1);
+  if (!changed) return;
+  state.messageIds = ids.toList();
+  box.put(state);
+}
+
+void _clearPins(Store store, int _) {
+  store.box<PinnedMessageStateEntity>().removeAll();
+}
+
+void _deleteMessage(Store store, int id) {
+  store.box<MessageEntity>().remove(id);
+  _setPinned(store, (id, false));
+}
+
+void _deleteAll(Store store, int _) {
+  store.box<MessageEntity>().removeAll();
+  _clearPins(store, 0);
 }

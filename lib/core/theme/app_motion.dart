@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 abstract final class AppMotion {
+  static const double pinCollapsedScale = 0.16;
   static Duration duration(BuildContext context, Duration value) =>
       MediaQuery.disableAnimationsOf(context) ? Duration.zero : value;
 

@@ -20,6 +20,29 @@ class FakeMessageRepository implements MessageRepository {
   final _rows = <Message>[];
   final _changes = StreamController<void>.broadcast();
   late int _nextId;
+  final _pins = <int>{};
+
+  @override
+  Stream<List<Message>> watchPinned() async* {
+    yield _newestFirst.where((m) => _pins.contains(m.id)).toList();
+    await for (final _ in _changes.stream) {
+      yield _newestFirst.where((m) => _pins.contains(m.id)).toList();
+    }
+  }
+
+  @override
+  TaskEither<AppFailure, Unit> setPinned(int id, {required bool pinned}) {
+    pinned ? _pins.add(id) : _pins.remove(id);
+    _changes.add(null);
+    return TaskEither.right(unit);
+  }
+
+  @override
+  TaskEither<AppFailure, Unit> clearPins() {
+    _pins.clear();
+    _changes.add(null);
+    return TaskEither.right(unit);
+  }
 
   /// Every draft passed to [add], in order.
   final added = <MessageDraft>[];
@@ -27,6 +50,7 @@ class FakeMessageRepository implements MessageRepository {
   @override
   TaskEither<AppFailure, Unit> clearAll() {
     _rows.clear();
+    _pins.clear();
     _changes.add(null);
     return TaskEither.right(unit);
   }

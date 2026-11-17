@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -94,6 +96,22 @@ class ChatTimelineMessageRow extends HookConsumerWidget {
               });
             },
           ),
+        AppPopoverAction(
+          label: context.t.chat.pin,
+          icon: AppIcons.pin,
+          onPressed: () async {
+            unawaited(HapticFeedback.lightImpact());
+            final result = await ref
+                .read(messageActionsProvider.notifier)
+                .pin(message.id, pinned: true);
+            if (context.mounted) {
+              result.match(
+                (failure) => showOutcome(context, failure: failure),
+                (_) {},
+              );
+            }
+          },
+        ),
         AppPopoverAction(
           label: context.t.common.quote,
           icon: AppIcons.quote,
