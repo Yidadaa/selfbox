@@ -234,17 +234,15 @@ class _AttachmentCloseButton extends ConsumerWidget {
         child: Align(
           alignment: Alignment.topRight,
           child: GlassContainer(
+            width: AppSizes.iconMd,
+            height: AppSizes.iconMd,
             useOwnLayer: true,
             quality: AppEffects.qualityOf(context, GlassQuality.standard),
             shape: const LiquidOval(),
-            settings: LiquidGlassSettings(
-              blur: context.glass.surfaceBlur,
-              glassColor: context.glass.chromeTint,
-            ),
             child: AppIcon(
-              AppIcons.dismiss,
-              size: AppSizes.iconMd,
-              color: context.glass.foreground,
+              AppIcons.close,
+              size: AppSizes.iconXs,
+              color: context.glass.foregroundMuted,
             ),
           ),
         ),

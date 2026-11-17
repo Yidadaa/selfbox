@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/theme/app_effects.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
+import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/app_radius.dart';
 import 'package:selfbox/core/widgets/app_icon.dart';
 import 'package:selfbox/core/widgets/pressable.dart';
@@ -63,14 +64,13 @@ void main() {
               ? GlassQuality.minimal
               : GlassQuality.standard,
         );
-        expect(
-          surface.settings?.glassColor,
-          AppGlassTheme.of(brightness).chromeTint,
-        );
+        expect(surface.settings, isNull);
         final icon = tester.widget<AppIcon>(
           find.descendant(of: surfaces.first, matching: find.byType(AppIcon)),
         );
-        expect(icon.color, AppGlassTheme.of(brightness).foreground);
+        expect(icon.icon, AppIcons.close);
+        expect(icon.size, 12);
+        expect(icon.color, AppGlassTheme.of(brightness).foregroundMuted);
         await tester.tapAt(
           tester.getBottomLeft(buttons.first) + const Offset(1, -1),
         );

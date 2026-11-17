@@ -1,9 +1,15 @@
 # 架构决策记录 (ADR)
 
+### [ADR-107] Agent 单次模型请求的有界重试
+
+- **背景**：暂时性模型 API 失败需要在当前 loop 步骤恢复，避免用户手动重跑整个问题。
+- **决策**：streamText 显式配置 maxRetries=3（默认原为2），每次模型请求最多4次尝试。复用锁定 SDK 的可重试分类、指数退避与抖动、数字 Retry-After、取消及3分钟总超时；不在 AssistantController 外包整轮重试。
+- **影响**：成功完成的工具步骤不重放，每步独立预算。无效请求/凭据及取消直接结束；该 SDK 仅重试 doStream 获取响应前的可重试 AiApiCallError，响应流中途断开与整体超时不自动重试。8项专门回归验证次数、上下文、取消、最终错误和工具副作用边界。
+
 ### [ADR-106] 输入附件关闭控件的视觉与热区分离
 
 - **背景**：照片关闭图标需要玻璃背景并将上、右视觉边距减半，不能缩小移动端点击热区。
-- **决策**：沿用 Pressable 管理 48dp 热区、按压和触觉反馈，内部使用独立层 LiquidOval GlassContainer 包裹 24dp 图标；视觉边距由原居中留白的一半派生为 6dp。照片裁切统一使用 LiquidRoundedSuperellipse。
+- **决策**：沿用 Pressable 管理 48dp 热区、按压和触觉反馈，内部使用独立层 LiquidOval GlassContainer，固定 24dp 表面包裹 12dp 无外圈叉号；材质默认值与 foregroundMuted 颜色复用回底按钮契约。视觉边距由原居中留白的一半派生为 6dp。照片裁切统一使用 LiquidRoundedSuperellipse。
 - **影响**：明暗颜色由主题提供，玻璃最高 standard 且遵从 minimal 降级；缩略图仍为 64dp，删除回调及横向列表间距不变。
 
 ### [ADR-088] 消息缩略图清晰度与旧缓存兼容

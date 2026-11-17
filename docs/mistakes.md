@@ -1,5 +1,13 @@
 # 错误账本 (Mistakes Ledger)
 
+- [2026-11-18] [ScopedDocsEdit] 尺寸调整误改历史ADR中的16dp -> 对整份文档执行无范围替换 -> 文档更新限定任务段落，提交前逐块检查历史记录差异；已恢复无关条目。
+
+- [2026-11-18] [RetryMemoryFixture] 工具重试测试正文断言多出换行 -> memory_create 规范化 Markdown 尾部换行 -> 副作用断言遵从真实存储契约，同时按工具事件计数锁定只执行一次。
+
+- [2026-11-18] [AttachmentGlass] 关闭图标外圈占满玻璃面、未截图就交付 -> 图标与表面同为24dp且使用高对比 CancelCircle -> 固定玻璃面尺寸，改16dp Cancel01与 foregroundMuted；交付前检查明暗照片背景实渲染。
+- [2026-11-18] [ScreenshotWarmup] 附件截图 precache 等待不结束 -> 预热了宽高192的键而组件只指定宽192，挂载后重等 pending 解码 -> 挂载前预热与组件完全一致的 ResizeImage 键。
+- [2026-11-18] [ScreenshotImports] 精简截图预热后 analyze 报 unused_import -> 删除 find 调用未同步移除 flutter_test 导入 -> 截图脚本同样纳入分析门禁。
+
 - [2026-11-18] [SourceDiscovery] 读取猜测的组件路径及 rg 通配路径失败 -> 组件文件已合并且 PowerShell 不展开原生命令路径通配符 -> 先用 rg --files 定位，再传精确文件或目录配合 -g。
 
 - [2026-11-17] [LatestVisibility] AI 切换时末条可见仍停在阅读锚点 -> 仅判断 extentBefore==0 且只处理开启 -> 两个方向先判断末条渲染区域与视口相交，优先清空所有锚点回底，覆盖部分可见与折叠卡入口。

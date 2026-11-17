@@ -23,6 +23,7 @@ import 'assistant_transition_fixtures.dart';
 import 'brand_fixtures.dart';
 import 'chat_action_fixtures.dart';
 import 'composer_keyboard_fixtures.dart';
+import 'composer_photo_fixtures.dart';
 import 'general_effects_fixtures.dart';
 import 'image_viewer_fixtures.dart';
 import 'message_action_fixtures.dart';
@@ -81,6 +82,11 @@ Future<void> _warmImages(AppPaths paths) async {
       ),
       ResizeImage.resizeIfNeeded(
         (AppSizes.attachmentThumbnail * 3).round(),
+        null,
+        FileImage(file),
+      ),
+      ResizeImage.resizeIfNeeded(
+        (AppSizes.attachmentThumbnail * 3).round(),
         (AppSizes.attachmentThumbnail * 3).round(),
         FileImage(file),
       ),
@@ -112,6 +118,7 @@ void main() {
     ...brandFixtures,
     ...agentProfileFixtures,
     ...composerKeyboardFixtures,
+    ...composerPhotoFixtures,
     ...generalEffectsFixtures,
     ...imageViewerFixtures,
     ...messageActionFixtures,

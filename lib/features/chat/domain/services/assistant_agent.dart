@@ -54,6 +54,9 @@ class AssistantAgent {
 
   /// Upper bound on model round-trips per question.
   static const maxSteps = 16;
+
+  /// Additional attempts per model request, never a replay of completed tools.
+  static const maxRetries = 3;
   static const timeout = Duration(minutes: 3);
 
   static const noModel = AppFailure.noModel;
@@ -188,6 +191,7 @@ class AssistantAgent {
         messages: history,
         tools: tools.build(),
         maxSteps: maxSteps,
+        maxRetries: maxRetries,
         maxOutputTokens: model.maxOutputTokens,
         reasoning: agentReasoning(model),
         providerOptions: vercelGatewayProviderOptions(

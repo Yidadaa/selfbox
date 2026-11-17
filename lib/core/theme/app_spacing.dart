@@ -29,6 +29,7 @@ abstract final class AppSizes {
   static const double chatHeaderHeight = 80;
   static const double iconMd = 24;
   static const double iconSm = 20;
+  static const double iconXs = 12;
   static const double iconHero = 48;
   static const double sendIcon = 36;
   static const double attachmentThumbnail = 64;
