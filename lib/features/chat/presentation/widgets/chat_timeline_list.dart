@@ -50,11 +50,13 @@ class ChatTimelineList extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final now = ref.watch(clockProvider)();
     final viewportKey = useMemoized(GlobalKey.new);
+    final latestKey = useMemoized(GlobalKey.new);
     final anchoring = useTimelineAnchor(
       ref,
       feed.items,
       scrollController,
       viewportKey,
+      latestKey,
     );
     final aiMode = ref.watch(
       composerControllerProvider.select((state) => state.aiMode),
@@ -97,6 +99,7 @@ class ChatTimelineList extends HookConsumerWidget {
 
     return _TimelineViewport(
       key: viewportKey,
+      latestKey: latestKey,
       anchoring: anchoring,
       onExpand: (messages) {
         final index = feed.items.indexWhere(
@@ -124,6 +127,7 @@ class ChatTimelineList extends HookConsumerWidget {
 
 class _TimelineViewport extends StatelessWidget {
   const _TimelineViewport({
+    required this.latestKey,
     required this.items,
     required this.lead,
     required this.childIndices,
@@ -139,6 +143,7 @@ class _TimelineViewport extends StatelessWidget {
   });
 
   final List<ChatTimelineItem> items;
+  final GlobalKey latestKey;
   final int lead;
   final Map<Key, int> childIndices;
   final DateTime now;
@@ -203,6 +208,16 @@ class _TimelineViewport extends StatelessWidget {
   }
 
   Widget _buildRow(BuildContext context, int index) {
+    final row = _buildItem(context, index);
+    return index == lead && items.isNotEmpty
+        ? KeyedSubtree(
+            key: _timelineKey(items.first),
+            child: KeyedSubtree(key: latestKey, child: row),
+          )
+        : row;
+  }
+
+  Widget _buildItem(BuildContext context, int index) {
     if (index == 0) {
       return _BottomInset(
         key: ChatTimelineList._insetKey,

@@ -18,6 +18,7 @@ useTimelineAnchor(
   List<ChatTimelineItem> items,
   ChatScrollController scroll,
   GlobalKey viewportKey,
+  GlobalKey latestKey,
 ) {
   final keys = useMemoized(() => <int, GlobalKey>{});
   useEffect(() {
@@ -44,13 +45,20 @@ useTimelineAnchor(
     next,
   ) {
     if (previous == next || !scroll.hasClients) return;
-    if (next && preferred.value == null && scroll.position.extentBefore == 0) {
+    final viewport = viewportKey.currentContext?.findRenderObject();
+    if (viewport is! RenderBox || !viewport.hasSize) return;
+    final latest = latestKey.currentContext?.findRenderObject();
+    final latestVisible =
+        latest is RenderBox &&
+        latest.hasSize &&
+        (latest.localToGlobal(Offset.zero, ancestor: viewport) & latest.size)
+            .overlaps(Offset.zero & viewport.size);
+    if (latestVisible || scroll.position.extentBefore == 0) {
+      preferred.value = null;
       anchor.value = (messageId: null, alignment: 0);
       scroll.jumpTo(0);
       return;
     }
-    final viewport = viewportKey.currentContext?.findRenderObject();
-    if (viewport is! RenderBox || !viewport.hasSize) return;
     final candidates = <({int id, double top})>[];
     for (final entry in keys.entries) {
       final row = entry.value.currentContext?.findRenderObject();

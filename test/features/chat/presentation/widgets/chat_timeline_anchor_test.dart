@@ -8,6 +8,7 @@ import 'package:selfbox/features/chat/presentation/widgets/chat_timeline_message
 
 import '../../../../support/app_widget_tester.dart';
 import '../../../../support/fake_message_repository.dart';
+import 'chat_timeline_anchor_test_support.dart';
 
 Message _message(int id, {bool ai = false}) => Message(
   id: id,
@@ -131,8 +132,7 @@ void main() {
       ),
     );
     final scroll = container.read(chatScrollControllerProvider);
-    scroll.jumpTo(100);
-    await tester.pumpAndSettle();
+    await hideLatest(tester, scroll, _row(41));
     final before = tester.getTopLeft(_row(12));
     container.read(composerControllerProvider.notifier).toggleAiMode();
     await tester.pump();
@@ -150,19 +150,17 @@ void main() {
           messages: FakeMessageRepository(
             seed: [
               _message(1).copyWith(text: 'Anchor 1\n${'History\n' * 12}'),
+              ...olderHistory(),
               for (var id = 2; id <= 35; id++) _message(id, ai: true),
               _message(36),
             ],
           ),
         );
-        if (!fromCard) {
-          container.read(chatScrollControllerProvider).jumpTo(80);
-          await tester.pumpAndSettle();
-          expect(
-            container.read(chatScrollControllerProvider).position.extentBefore,
-            greaterThan(0),
-          );
-        }
+        await hideLatest(
+          tester,
+          container.read(chatScrollControllerProvider),
+          _row(36),
+        );
         final before = tester.getTopLeft(_row(1));
         if (fromCard) {
           await tester.tap(find.byKey(const ValueKey('hidden-ai-group')));
@@ -201,8 +199,14 @@ void main() {
           _message(1),
           for (var id = 2; id <= 35; id++) _message(id, ai: true),
           _message(36),
+          ...olderHistory(),
         ],
       ),
+    );
+    await hideLatest(
+      tester,
+      container.read(chatScrollControllerProvider),
+      _row(36),
     );
     await tester.tap(find.byKey(const ValueKey('hidden-ai-group')));
     await tester.pumpAndSettle();
@@ -230,8 +234,14 @@ void main() {
           _message(16),
           for (var id = 17; id <= 30; id++) _message(id, ai: true),
           _message(31),
+          ...olderHistory(),
         ],
       ),
+    );
+    await hideLatest(
+      tester,
+      container.read(chatScrollControllerProvider),
+      _row(31),
     );
     final before = tester.getTopLeft(_row(1));
     await tester.tap(find.byKey(const ValueKey('hidden-ai-group')).last);
