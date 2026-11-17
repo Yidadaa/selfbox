@@ -345,3 +345,9 @@
 - [2026-11-15] [GradleHome] APK 构建无法创建 ~/.gradle 的 wrapper 锁 -> 默认 Gradle 目录无写权限，项目已有独立缓存 -> 构建进程显式设置 GRADLE_USER_HOME=.tools/gradle，并沿用项目 TEMP/TMP。
 
 - [2026-11-15] [PopoverTint] 实机轻量档菜单透底过重 -> 默认 GlassContainer 底色沿用内容玻璃，缺少浮动 chrome 的显式 tint -> 菜单与 Tab 背景共用 chromeTint/chromeBlur，覆盖明暗 × 三档测试及轻量截图。
+
+- [2026-11-17] [FlutterPubGet] iOS 构建恢复依赖时顺带改写 macOS CocoaPods 配置 -> Flutter pub get 会刷新所有启用平台的插件集成 -> 完成后检查 Git 差异，只保留本任务需要的产物与配置。
+
+- [2026-11-17] [RiverpodCodegen] Provider 实现类型已收窄但生成文件仍暴露 ScrollController -> Dart 源码与生成类型不一致 -> 发布前运行完整 `dart run build_runner build`，再执行 analyze 和相关测试。
+- [2026-11-17] [TestFlight] 本机 Xcode 15.4/iOS 17.5 且无开发团队签名 -> 归档无法通过 Apple 当前 SDK 要求或上传校验 -> 先升级到兼容 Xcode 26+ 的 macOS/Xcode，并配置 Apple Developer 团队签名。
+- [2026-11-17] [ObjectBoxTests] macOS 全量测试报缺少 `libobjectbox.dylib` -> 未执行仓库提供的宿主库准备脚本 -> 运行 `dart run tool/fetch_objectbox_native.dart` 后再跑全量测试。
