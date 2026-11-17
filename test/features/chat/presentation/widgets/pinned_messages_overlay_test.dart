@@ -106,7 +106,7 @@ void main() {
         for (final button in tester.widgetList<GlassIconButton>(
           find.descendant(of: panel, matching: find.byType(GlassIconButton)),
         )) {
-          expect(button.quality, expected);
+          expect(button.quality, GlassQuality.minimal);
         }
         await tester.tap(find.byKey(const ValueKey('close-pins')));
         await tester.pumpAndSettle();
@@ -117,7 +117,7 @@ void main() {
   }
 
   testWidgets(
-    'transition retains laid out content and can reverse; underlying list scrolls',
+    'panel opens and closes immediately; both lists remain interactive',
     (tester) async {
       final repo = FakeMessageRepository(
         seed: List.generate(40, (i) => testMessage(i + 1, 'note $i')),
@@ -128,7 +128,6 @@ void main() {
       final container = await tester.pumpApp(messages: repo);
       await tester.tap(find.byKey(const ValueKey('pinned-bubble')));
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 40));
       final before = tester.widget<PinnedMessagesPanel>(
         find.byType(PinnedMessagesPanel),
       );
@@ -141,7 +140,8 @@ void main() {
       expect(tester.getSize(find.byKey(const ValueKey('pinned-panel'))), size);
       before.onClose();
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 20));
+      expect(find.byType(PinnedMessagesPanel), findsNothing);
+      expect(find.byKey(const ValueKey('pinned-bubble')), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('pinned-bubble')));
       await tester.pumpAndSettle();
       final pinnedList = find.byKey(

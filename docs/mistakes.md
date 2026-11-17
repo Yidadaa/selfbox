@@ -354,3 +354,5 @@
 - [2026-11-18] [ChatActions] 双操作与 AI 长标签挤压引用热区，LayoutBuilder 首帧读取 extentBefore 空断言 -> 为 AI 标签设最大宽度、数字引用缩小内边距；滚动选择器同时检查 hasClients 和 hasContentDimensions。
 - [2026-11-18] [QuoteRegression] 全量回归仍断言回底与引用互斥 -> 旧聊天页规格未随新并排行为更新 -> 保留原位置/回底断言，并将引用断言更新为可见且仅数字。
 - [2026-11-18] [PinFadePixels] 独立列表像素测试渲染错误页并误读透明度 -> pumpPage 不初始化 intl 日期数据 -> 含消息 footer 的独立测试先 initializeDateFormatting，再采样真实内容。
+- [2026-11-18] [PinPerformance] 置顶浮窗通过 Widget 回归后仍被反馈真机卡顿 -> 合成层隔离和功能测试不能证明设备帧时达标 -> 按反馈移除收展动画、固定面板按钮 minimal；性能结论须以真机采样为准。
+- [2026-11-18] [PinMotionTest] 显式开启测试动画触发冗余参数 lint -> pumpApp 默认已启用动画 -> 用默认偏好并断言关闭后单帧卸载，不重复传默认值。

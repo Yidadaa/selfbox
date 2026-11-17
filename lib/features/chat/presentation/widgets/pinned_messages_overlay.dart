@@ -1,8 +1,6 @@
-import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -12,7 +10,6 @@ import '../../../../core/router/shell_scope.dart';
 import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_icons.dart';
-import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_icon.dart';
@@ -44,12 +41,6 @@ class PinnedMessagesOverlay extends HookConsumerWidget {
       ),
       [messages],
     );
-    final controller = useAnimationController(duration: AppMotion.medium);
-    final dismissed = useListenableSelector(
-      controller,
-      () => controller.value == 0,
-    );
-    final reduced = MediaQuery.disableAnimationsOf(context);
     final top = AppPageInsets.of(
       context,
       appBarHeight: AppSizes.chatHeaderHeight,
@@ -73,68 +64,18 @@ class PinnedMessagesOverlay extends HookConsumerWidget {
                   onTap: () => expanded.value = true,
                 ),
               ),
-            if (expanded.value || !dismissed)
+            if (messages.isNotEmpty && expanded.value)
               Positioned(
                 top: top,
                 left: AppSpacing.md,
                 right: AppSpacing.md,
                 height: height,
-                child: IgnorePointer(
-                  ignoring: !expanded.value,
-                  child: _PanelTransition(
-                    controller: controller,
-                    expanded: expanded.value,
-                    reduced: reduced,
-                    child: panel,
-                  ),
-                ),
+                child: panel,
               ),
           ],
         );
       },
     );
-  }
-}
-
-class _PanelTransition extends HookConsumerWidget {
-  const _PanelTransition({
-    required this.controller,
-    required this.expanded,
-    required this.reduced,
-    required this.child,
-  });
-  final AnimationController controller;
-  final bool expanded;
-  final bool reduced;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    useEffect(() {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!context.mounted) return;
-        if (reduced) {
-          controller.value = expanded ? 1 : 0;
-        } else {
-          unawaited(expanded ? controller.forward() : controller.reverse());
-        }
-      });
-      return null;
-    }, [reduced, expanded]);
-    if (reduced) return child;
-    return child
-        .animate(controller: controller, autoPlay: false)
-        .fade(duration: AppMotion.medium, curve: AppMotion.emphasized)
-        .scale(
-          begin: const Offset(
-            AppMotion.pinCollapsedScale,
-            AppMotion.pinCollapsedScale,
-          ),
-          end: const Offset(1, 1),
-          alignment: Alignment.topLeft,
-          duration: AppMotion.medium,
-          curve: AppMotion.emphasized,
-        );
   }
 }
 

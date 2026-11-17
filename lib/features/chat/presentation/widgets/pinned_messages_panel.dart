@@ -5,7 +5,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../../core/error/failure_message.dart';
-import '../../../../core/theme/app_effects.dart';
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_radius.dart';
@@ -151,7 +150,7 @@ class _PanelButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => GlassIconButton(
     useOwnLayer: true,
     size: AppSizes.minTouchTarget,
-    quality: AppEffects.qualityOf(context, GlassQuality.premium),
+    quality: GlassQuality.minimal,
     icon: AppIcon(icon, size: AppSizes.iconSm),
     semanticLabel: label,
     onPressed: onPressed,
