@@ -356,3 +356,5 @@
 - [2026-11-18] [PinFadePixels] 独立列表像素测试渲染错误页并误读透明度 -> pumpPage 不初始化 intl 日期数据 -> 含消息 footer 的独立测试先 initializeDateFormatting，再采样真实内容。
 - [2026-11-18] [PinPerformance] 置顶浮窗通过 Widget 回归后仍被反馈真机卡顿 -> 合成层隔离和功能测试不能证明设备帧时达标 -> 按反馈移除收展动画、固定面板按钮 minimal；性能结论须以真机采样为准。
 - [2026-11-18] [PinMotionTest] 显式开启测试动画触发冗余参数 lint -> pumpApp 默认已启用动画 -> 用默认偏好并断言关闭后单帧卸载，不重复传默认值。
+- [2026-11-18] [ShareCapture] 离屏树复用 TranslationProvider 抢占主树 GlobalKey -> Slang provider 为每个语言集注册全局 key -> 离屏只传 InheritedLocaleData 翻译快照，卸载后先 buildScope 再 finalizeTree。
+- [2026-11-18] [CodegenCache] dart run 等待依赖解析无输出 -> 未显式使用项目包缓存和镜像 -> 生成命令设 PUB_CACHE=.tools/pub-cache 与 PUB_HOSTED_URL，避免并行生成。

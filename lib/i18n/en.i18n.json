@@ -8,6 +8,10 @@
     "me": "Me"
   },
   "chat": {
+    "shareMessage": "Share image",
+    "shareTagline": "Your quiet canine companion",
+    "shareFailed": "Could not share the image. Please try again.",
+    "shareTooLong": "This message is too long for a single image.",
     "pin": "Pin message",
     "unpin": "Unpin",
     "pinnedCount": "Pinned {count}",

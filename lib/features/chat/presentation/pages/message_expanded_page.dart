@@ -20,6 +20,7 @@ import '../providers/message_lookup.dart';
 import '../widgets/message_image_stack.dart';
 import '../widgets/message_quote_link.dart';
 import '../widgets/message_quote_sheet.dart';
+import '../widgets/message_share_button.dart';
 import '../widgets/message_text_content.dart';
 
 class MessageExpandedPage extends ConsumerWidget {
@@ -35,6 +36,10 @@ class MessageExpandedPage extends ConsumerWidget {
         (loaded.isLoading ? initial : null);
     return AppPageScaffold(
       title: context.t.chat.fullMessage,
+      actions: [
+        if (message != null && message.author == MessageAuthor.ai)
+          MessageShareButton(message: message),
+      ],
       leading: GlassIconButton(
         quality: AppEffects.qualityOf(context, GlassQuality.premium),
         size: AppSizes.minTouchTarget,

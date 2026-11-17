@@ -8,6 +8,10 @@
     "me": "我的"
   },
   "chat": {
+    "shareMessage": "分享图片",
+    "shareTagline": "陪伴你的沉默小狗",
+    "shareFailed": "图片分享失败，请重试",
+    "shareTooLong": "消息过长，无法导出为单张图片",
     "pin": "钉住消息",
     "unpin": "清除",
     "pinnedCount": "置顶 {count} 条",
