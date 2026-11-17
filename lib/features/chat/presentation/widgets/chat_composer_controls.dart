@@ -191,8 +191,11 @@ class ChatAttachmentStrip extends ConsumerWidget {
           return Stack(
             alignment: Alignment.topRight,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(AppRadius.sm),
+              ClipPath(
+                key: ValueKey('attachment-photo-$path'),
+                clipper: const ShapeBorderClipper(
+                  shape: LiquidRoundedSuperellipse(borderRadius: AppRadius.sm),
+                ),
                 child: file == null
                     ? const SizedBox.square(dimension: _thumb)
                     : Image.file(
@@ -203,19 +206,49 @@ class ChatAttachmentStrip extends ConsumerWidget {
                         fit: BoxFit.cover,
                       ),
               ),
-              Pressable(
-                onTap: () => onRemove(path),
-                semanticLabel: context.t.chat.removeImage,
-                child: AppIcon(
-                  AppIcons.dismiss,
-                  size: AppSizes.iconMd,
-                  color: context.glass.foreground,
-                ),
-              ),
+              _AttachmentCloseButton(onTap: () => onRemove(path)),
             ],
           );
         },
       ),
     );
   }
+}
+
+class _AttachmentCloseButton extends ConsumerWidget {
+  const _AttachmentCloseButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  // Halve the original centered icon inset without shrinking its hit target.
+  static const _inset = (AppSizes.minTouchTarget - AppSizes.iconMd) / 4;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => Pressable(
+    onTap: onTap,
+    semanticLabel: context.t.chat.removeImage,
+    child: SizedBox.square(
+      dimension: AppSizes.minTouchTarget,
+      child: Padding(
+        padding: const EdgeInsets.only(top: _inset, right: _inset),
+        child: Align(
+          alignment: Alignment.topRight,
+          child: GlassContainer(
+            useOwnLayer: true,
+            quality: AppEffects.qualityOf(context, GlassQuality.standard),
+            shape: const LiquidOval(),
+            settings: LiquidGlassSettings(
+              blur: context.glass.surfaceBlur,
+              glassColor: context.glass.chromeTint,
+            ),
+            child: AppIcon(
+              AppIcons.dismiss,
+              size: AppSizes.iconMd,
+              color: context.glass.foreground,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
