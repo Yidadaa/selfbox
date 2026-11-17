@@ -4,6 +4,25 @@ import 'app_radius.dart';
 import 'app_spacing.dart';
 
 abstract final class MessageTokens {
+  static const pinnedEdgeFadeExtent = AppSpacing.xl;
+
+  static LinearGradient pinnedListFade(double height) {
+    final edge = height <= 0
+        ? 0.0
+        : (pinnedEdgeFadeExtent / height).clamp(0.0, 0.5);
+    return LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: const [
+        Color(0x00FFFFFF),
+        Color(0xFFFFFFFF),
+        Color(0xFFFFFFFF),
+        Color(0x00FFFFFF),
+      ],
+      stops: [0, edge, 1 - edge, 1],
+    );
+  }
+
   static LinearGradient? pinnedSurfaceGradient(Brightness brightness) =>
       switch (brightness) {
         Brightness.light => const LinearGradient(

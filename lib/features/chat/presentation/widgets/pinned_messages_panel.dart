@@ -17,7 +17,7 @@ import '../../../../core/widgets/app_icon.dart';
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/message.dart';
 import '../providers/message_actions.dart';
-import 'pinned_message_row.dart';
+import 'pinned_messages_list.dart';
 
 class PinnedMessagesPanel extends ConsumerWidget {
   const PinnedMessagesPanel({
@@ -53,37 +53,25 @@ class PinnedMessagesPanel extends ConsumerWidget {
               Theme.of(context).brightness,
             ),
           ),
-          child: Column(
+          child: Stack(
+            fit: StackFit.expand,
             children: [
-              _PanelHeader(
-                onClear: () => _confirmClear(context, ref),
-                onClose: onClose,
-              ),
-              Expanded(
-                child: messages.isEmpty
-                    ? Center(
-                        child: Text(
-                          context.t.chat.noPins,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: context.glass.foregroundMuted),
-                        ),
-                      )
-                    : ListView.builder(
-                        key: const PageStorageKey('pinned-message-list'),
-                        primary: false,
-                        reverse: true,
-                        padding: const EdgeInsets.fromLTRB(
-                          AppSpacing.md,
-                          0,
-                          AppSpacing.md,
-                          AppSpacing.md,
-                        ),
-                        itemCount: messages.length,
-                        itemBuilder: (_, index) => PinnedMessageRow(
-                          key: ValueKey(messages[index].id),
-                          message: messages[index],
-                        ),
+              messages.isEmpty
+                  ? Center(
+                      child: Text(
+                        context.t.chat.noPins,
+                        style: Theme.of(context).textTheme.bodySmall
+                            ?.copyWith(color: context.glass.foregroundMuted),
                       ),
+                    )
+                  : PinnedMessagesList(messages: messages),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: _PanelHeader(
+                  onClear: () => _confirmClear(context, ref),
+                  onClose: onClose,
+                ),
               ),
             ],
           ),
@@ -127,6 +115,7 @@ class _PanelHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => Padding(
     padding: const EdgeInsets.all(AppSpacing.xs),
     child: Row(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         _PanelButton(

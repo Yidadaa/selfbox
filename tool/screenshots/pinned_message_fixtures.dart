@@ -12,7 +12,7 @@ import 'screenshot_fixtures.dart';
 
 final pinnedMessageFixtures = [
   for (final theme in [AppThemeChoice.dark, AppThemeChoice.light])
-    for (final mode in ['bubble', 'panel', 'keyboard'])
+    for (final mode in ['bubble', 'panel', 'keyboard', 'scrolled'])
       ScreenshotFixture(
         name: 'pins_${mode}_${theme.name}',
         location: '/chat',
@@ -40,7 +40,8 @@ final pinnedMessageFixtures = [
               .read(appPreferencesControllerProvider.notifier)
               .setTheme(theme);
           final repo = container.read(messageRepositoryProvider);
-          for (final id in [5, 6, 7]) {
+          for (final id
+              in mode == 'scrolled' ? [1, 2, 3, 4, 5, 6, 7] : [5, 6, 7]) {
             await repo.setPinned(id, pinned: true).run();
           }
           await tester.pumpAndSettle();
@@ -60,6 +61,13 @@ final pinnedMessageFixtures = [
           if (mode == 'keyboard') {
             await tester.tap(composerField());
             tester.view.viewInsets = const FakeViewPadding(bottom: 300 * 3);
+            await tester.pumpAndSettle();
+          }
+          if (mode == 'scrolled') {
+            await tester.drag(
+              find.byKey(const PageStorageKey('pinned-message-list')),
+              const Offset(0, 140),
+            );
             await tester.pumpAndSettle();
           }
           expect(find.byKey(const ValueKey('pinned-panel')), findsOneWidget);

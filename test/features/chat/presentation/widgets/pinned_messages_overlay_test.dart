@@ -48,6 +48,32 @@ void main() {
         await tester.tap(bubble);
         await tester.pumpAndSettle();
         final panel = find.byKey(const ValueKey('pinned-panel'));
+        final fade = find.byKey(const ValueKey('pinned-message-edge-fade'));
+        expect(fade, findsOneWidget);
+        expect(tester.getRect(fade).top, tester.getRect(panel).top);
+        expect(tester.getRect(fade).bottom, tester.getRect(panel).bottom);
+        for (final key in ['clear-pins', 'close-pins']) {
+          expect(
+            tester
+                .getRect(fade)
+                .overlaps(tester.getRect(find.byKey(ValueKey(key)))),
+            true,
+          );
+        }
+        expect(
+          find.descendant(
+            of: fade,
+            matching: find.byKey(const ValueKey('close-pins')),
+          ),
+          findsNothing,
+        );
+        expect(
+          find.descendant(
+            of: fade,
+            matching: find.byKey(const ValueKey('clear-pins')),
+          ),
+          findsNothing,
+        );
         final shape = tester.widget<GlassContainer>(panel).shape;
         if (theme == AppThemeChoice.light) {
           final color = tester.widget<GlassContainer>(panel).color;
@@ -96,7 +122,9 @@ void main() {
       final repo = FakeMessageRepository(
         seed: List.generate(40, (i) => testMessage(i + 1, 'note $i')),
       );
-      await repo.setPinned(1, pinned: true).run();
+      for (var id = 1; id <= 40; id++) {
+        await repo.setPinned(id, pinned: true).run();
+      }
       final container = await tester.pumpApp(messages: repo);
       await tester.tap(find.byKey(const ValueKey('pinned-bubble')));
       await tester.pump();
@@ -116,6 +144,20 @@ void main() {
       await tester.pump(const Duration(milliseconds: 20));
       await tester.tap(find.byKey(const ValueKey('pinned-bubble')));
       await tester.pumpAndSettle();
+      final pinnedList = find.byKey(
+        const PageStorageKey('pinned-message-list'),
+      );
+      final pinnedScroll = tester.state<ScrollableState>(
+        find.descendant(of: pinnedList, matching: find.byType(Scrollable)),
+      );
+      final pinnedOffset = pinnedScroll.position.pixels;
+      final bounds = tester.getRect(pinnedList);
+      await tester.dragFrom(
+        bounds.topLeft + const Offset(32, 32),
+        const Offset(0, 100),
+      );
+      await tester.pumpAndSettle();
+      expect(pinnedScroll.position.pixels, greaterThan(pinnedOffset));
       final controller = container.read(chatScrollControllerProvider);
       final previous = controller.offset;
       await tester.dragFrom(const Offset(190, 605), const Offset(0, 200));

@@ -353,3 +353,4 @@
 - [2026-11-18] [PinTestStream] 无订阅的单订阅 StreamController.close 导致测试清理超时 -> close 等待未消费的 done 事件 -> 可不订阅的受控测试流用 broadcast 并显式释放容器。
 - [2026-11-18] [ChatActions] 双操作与 AI 长标签挤压引用热区，LayoutBuilder 首帧读取 extentBefore 空断言 -> 为 AI 标签设最大宽度、数字引用缩小内边距；滚动选择器同时检查 hasClients 和 hasContentDimensions。
 - [2026-11-18] [QuoteRegression] 全量回归仍断言回底与引用互斥 -> 旧聊天页规格未随新并排行为更新 -> 保留原位置/回底断言，并将引用断言更新为可见且仅数字。
+- [2026-11-18] [PinFadePixels] 独立列表像素测试渲染错误页并误读透明度 -> pumpPage 不初始化 intl 日期数据 -> 含消息 footer 的独立测试先 initializeDateFormatting，再采样真实内容。

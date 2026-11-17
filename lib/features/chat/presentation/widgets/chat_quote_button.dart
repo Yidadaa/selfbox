@@ -83,7 +83,6 @@ class ChatQuoteButton extends ConsumerWidget {
     actionKey: const ValueKey('composer-quotes'),
     label: compact ? '$count' : context.t.chat.quoteCount(count: count),
     semanticLabel: context.t.chat.quoteCount(count: count),
-    compact: compact,
     icon: AppIcons.quote,
     onTap: () => showQuoteEditor(context),
   );
@@ -122,7 +121,6 @@ class _ChatFloatingButton extends ConsumerWidget {
     required this.actionKey,
     required this.label,
     required this.semanticLabel,
-    required this.compact,
     required this.icon,
     required this.onTap,
   });
@@ -130,7 +128,6 @@ class _ChatFloatingButton extends ConsumerWidget {
   final Key actionKey;
   final String label;
   final String semanticLabel;
-  final bool compact;
   final AppIconData icon;
   final VoidCallback onTap;
 
@@ -145,9 +142,7 @@ class _ChatFloatingButton extends ConsumerWidget {
         semanticLabel: semanticLabel,
         onTap: onTap,
         child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: compact ? AppSpacing.xs : AppSpacing.md,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
