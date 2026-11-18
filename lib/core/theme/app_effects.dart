@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import 'app_glass_theme.dart';

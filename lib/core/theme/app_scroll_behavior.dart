@@ -1,5 +1,5 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 /// One scroll feel on every platform: elastic overscroll instead of the
 /// Android stretch/glow, and drag-to-scroll for mouse/trackpad on desktop.

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/theme/app_spacing.dart';

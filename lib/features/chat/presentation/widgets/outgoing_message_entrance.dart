@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 import '../../../../core/theme/app_motion.dart';
 

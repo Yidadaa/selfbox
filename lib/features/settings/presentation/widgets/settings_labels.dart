@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 import '../../../../gen/i18n/strings.g.dart';
 import '../../domain/models/ai_settings.dart';

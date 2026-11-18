@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 import '../../../../core/theme/message_tokens.dart';
 import '../../../../core/widgets/pressable.dart';

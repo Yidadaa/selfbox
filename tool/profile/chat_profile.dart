@@ -3,10 +3,10 @@ import 'dart:developer' as developer;
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:selfbox/app.dart';
 import 'package:selfbox/core/logger/talker_provider.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/chat/data/chat_data_providers.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/providers/chat_scroll_controller.dart';

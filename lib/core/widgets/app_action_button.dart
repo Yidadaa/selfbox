@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 import '../theme/app_dialog_tokens.dart';
 import '../theme/app_glass_theme.dart';

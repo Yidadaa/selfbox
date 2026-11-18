@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/chat/presentation/providers/chat_scroll_controller.dart';
 import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/core/widgets/measure_size.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer_tabs.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_preview.dart';

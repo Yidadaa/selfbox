@@ -7,12 +7,12 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/storage/app_paths.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 

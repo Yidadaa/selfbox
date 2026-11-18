@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/router/app_router.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/features/settings/domain/repositories/model_probe.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';

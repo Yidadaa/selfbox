@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:selfbox/core/theme/app_motion.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/chat/data/chat_data_providers.dart';
 import 'package:selfbox/features/chat/domain/models/agent_activity.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';

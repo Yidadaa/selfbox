@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 import 'chat_composer_keyboard_transition.dart';
 

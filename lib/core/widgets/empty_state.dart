@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 import '../theme/app_artwork_tokens.dart';
 import '../theme/app_glass_theme.dart';

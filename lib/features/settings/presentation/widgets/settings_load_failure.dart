@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 import '../../../../core/widgets/app_artwork.dart';
 import '../../../../core/widgets/app_page_button.dart';

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 abstract final class OnboardingTokens {
   static const double inactiveProgressAlpha = 0.3;

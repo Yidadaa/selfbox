@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_icons.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/core/widgets/pressable.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/pages/image_viewer_page.dart';

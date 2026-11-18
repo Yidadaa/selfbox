@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
 import 'package:selfbox/features/chat/presentation/providers/message_lookup.dart';

@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:selfbox/core/router/app_router.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/settings/domain/models/agent_avatar.dart';
 import 'package:selfbox/features/settings/domain/models/user_profile.dart';
 import 'package:selfbox/features/settings/presentation/providers/account_providers.dart';

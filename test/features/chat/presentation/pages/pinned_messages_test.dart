@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/core/widgets/app_action_popover.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_preview.dart';

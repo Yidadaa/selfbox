@@ -1,9 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/router/app_router.dart';
+import 'package:selfbox/core/theme/sdk_cupertino.dart';
 import 'package:selfbox/core/widgets/app_list_tile.dart';
 import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 import 'package:selfbox/features/settings/domain/repositories/app_preferences_repository.dart';

@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_image_stack.dart';
 
 import '../../../../support/app_widget_tester.dart';

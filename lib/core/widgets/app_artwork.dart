@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 import '../../gen/assets/assets.gen.dart';
 import '../theme/app_artwork_tokens.dart';

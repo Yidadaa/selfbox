@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/chat/presentation/widgets/assistant_live_bubbles.dart';
 
 import '../../../../support/app_widget_tester.dart';

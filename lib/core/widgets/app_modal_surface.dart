@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 import '../theme/app_dialog_tokens.dart';
 import '../theme/app_glass_theme.dart';

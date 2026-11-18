@@ -1,9 +1,9 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/router/app_router.dart';
+import 'package:selfbox/core/theme/sdk_cupertino.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/memory/presentation/pages/memory_editor_page.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 

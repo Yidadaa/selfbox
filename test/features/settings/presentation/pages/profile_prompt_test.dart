@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:selfbox/core/router/app_router.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/settings/domain/models/ai_settings.dart';
 import 'package:selfbox/features/settings/presentation/pages/profile_page.dart';
 import 'package:selfbox/features/settings/presentation/providers/settings_providers.dart';

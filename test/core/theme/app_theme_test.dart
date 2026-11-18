@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/theme/app_ai_tokens.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
@@ -7,6 +6,7 @@ import 'package:selfbox/core/theme/app_radius.dart';
 import 'package:selfbox/core/theme/app_scroll_behavior.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/core/theme/app_theme.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 double _contrast(Color a, Color b) {
   final la = a.computeLuminance();

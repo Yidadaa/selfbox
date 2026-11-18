@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/logger/talker_provider.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/settings/presentation/pages/talker_page.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 import 'package:talker_flutter/talker_flutter.dart';

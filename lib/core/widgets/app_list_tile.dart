@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 import '../theme/app_glass_theme.dart';
 import '../theme/app_icons.dart';

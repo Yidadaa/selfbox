@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 import '../../gen/i18n/strings.g.dart';
 import '../widgets/app_toast.dart';

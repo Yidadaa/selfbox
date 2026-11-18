@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:selfbox/core/theme/app_effects.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/chat/presentation/providers/chat_scroll_controller.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_quote_button.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';

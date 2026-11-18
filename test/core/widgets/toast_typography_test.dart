@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/core/widgets/app_page_scaffold.dart';
 import 'package:selfbox/core/widgets/app_toast.dart';
 

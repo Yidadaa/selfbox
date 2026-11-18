@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/core/widgets/ai_composer_glow.dart';
 
 import '../../support/app_widget_tester.dart';

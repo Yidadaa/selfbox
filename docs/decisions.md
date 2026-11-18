@@ -632,3 +632,9 @@
 - **背景**：展开 AI 消息后需要分享完整正文与品牌插画，屏幕截图会遗漏滚动区域。
 - **决策**：详情右上角按当前消息提供分享；独立 BuildOwner/RenderView 将复用的 MessageTextBubble 按 390dp 宽完整排版，不改动阅读页面滚动位置。预热实际图片解码键，3x PNG 输出自适应限制在 1200 万像素、最长 16384px；低于 1x 则明确失败而不截断。finally 释放图片、离屏树和渲染所有者。
 - **影响**：截图使用当前主题、固定品牌默认头像/名称与 Slang 标语，上方欢迎插画居中并被卡片覆盖 24dp。翻译使用 InheritedLocaleData 快照，避免主树 GlobalKey 冲突。Riverpod AsyncNotifier 串行化导出和分享，可注入 renderer 与 share 函数；share_plus 接收 PNG bytes、文件名和 iPad 分享锚点，临时文件由插件管理。取消分享视为正常结束，不宣称用户已发送；不新增权限。Android/iOS 真实目标 App 的接收须在设备验收。
+
+### [ADR-108] Flutter 3.50 的 UI 类型兼容边界
+
+- **背景**：`flutter_smooth_markdown` 0.10.0 的选区和编辑器按 SDK 类型查找 Material、本地化及主题。独立 UI 包的同名类型无法满足这些查找。
+- **决策**：项目在 `sdk_material.dart` 与 `sdk_cupertino.dart` 集中导出 SDK 类型，应用与组件测试使用相同入口。
+- **影响**：Markdown 依赖完成迁移后一起切换入口、本地化代理与编辑器测试。

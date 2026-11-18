@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/app_motion.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/chat/presentation/widgets/chat_composer_controls.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 

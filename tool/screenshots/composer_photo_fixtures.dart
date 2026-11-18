@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/providers/chat_scroll_controller.dart';
 import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';

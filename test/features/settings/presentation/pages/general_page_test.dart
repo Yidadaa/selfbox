@@ -1,9 +1,9 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/router/app_dock_tabs.dart';
 import 'package:selfbox/core/router/app_router.dart';
+import 'package:selfbox/core/theme/sdk_cupertino.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/settings/domain/models/app_preferences.dart';
 import 'package:selfbox/features/settings/presentation/pages/general_page.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';

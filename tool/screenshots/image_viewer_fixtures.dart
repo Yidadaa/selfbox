@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as p;
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/core/widgets/app_artwork.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 

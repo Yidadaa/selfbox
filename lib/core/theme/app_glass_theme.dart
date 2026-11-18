@@ -1,6 +1,6 @@
 import 'dart:ui' show lerpDouble;
 
-import 'package:flutter/material.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 /// Optical parameters for the three spatial depth layers
 /// (canvas -> surface glass -> floating chrome).

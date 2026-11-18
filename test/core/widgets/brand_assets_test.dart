@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 import 'package:selfbox/core/theme/app_glass_theme.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/settings/presentation/widgets/profile_avatar.dart';
 import 'package:selfbox/gen/i18n/strings.g.dart';
 

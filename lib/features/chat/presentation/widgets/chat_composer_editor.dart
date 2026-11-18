@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:selfbox/core/theme/sdk_cupertino.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 import '../../../../core/theme/app_glass_theme.dart';
 import '../../../../core/theme/app_spacing.dart';

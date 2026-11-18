@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:selfbox/core/error/app_failure.dart';
 import 'package:selfbox/core/theme/app_glass_theme.dart';
 import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/message_tokens.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/core/widgets/app_artwork.dart';
 import 'package:selfbox/core/widgets/app_icon.dart';
 import 'package:selfbox/features/chat/presentation/pages/image_viewer_page.dart';

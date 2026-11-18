@@ -376,3 +376,4 @@
 - [2026-11-17] [ObjectBoxTests] macOS 全量测试报缺少 `libobjectbox.dylib` -> 未执行仓库提供的宿主库准备脚本 -> 运行 `dart run tool/fetch_objectbox_native.dart` 后再跑全量测试。
 
 - [2026-11-19] [GitSync] 推送前发现本地与远端分叉，错误账本追加段冲突 -> 两端独立追加记录 -> 先 fetch 并合并，冲突保留双方条目，禁止强推覆盖远端。
+- [2026-11-19] [Flutter 3.50] 独立 Material 包迁移通过分析但 Markdown 选区、记忆编辑器测试失败 -> 祖先组件与依赖所需类型来自不同库 -> 使用同一套 Material 类型及本地化代理。

@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 import '../../gen/i18n/strings.g.dart';
 import '../theme/app_icons.dart';

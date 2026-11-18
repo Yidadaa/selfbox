@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
@@ -7,6 +6,7 @@ import 'package:selfbox/core/theme/app_icons.dart';
 import 'package:selfbox/core/theme/app_radius.dart';
 import 'package:selfbox/core/theme/app_spacing.dart';
 import 'package:selfbox/core/theme/message_tokens.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/chat/domain/models/message.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:selfbox/features/chat/presentation/widgets/message_image_stack.dart';

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/misc.dart' show Override;
@@ -7,6 +6,7 @@ import 'package:selfbox/app.dart';
 import 'package:selfbox/core/storage/app_paths.dart';
 import 'package:selfbox/core/theme/app_scroll_behavior.dart';
 import 'package:selfbox/core/theme/app_theme.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/core/time/clock.dart';
 import 'package:selfbox/features/chat/data/chat_data_providers.dart';
 import 'package:selfbox/features/chat/domain/repositories/language_model_factory.dart';

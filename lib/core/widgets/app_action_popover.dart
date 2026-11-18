@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 import '../theme/app_motion.dart';
 import '../theme/app_popover_tokens.dart';

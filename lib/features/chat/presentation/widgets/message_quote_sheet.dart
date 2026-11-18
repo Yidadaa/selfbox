@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/router/app_routes.dart';

@@ -4,7 +4,7 @@ Mobile-first Flutter app on a unified Liquid Glass design system. Engineering ru
 
 ## Setup
 
-The Flutter SDK is project-local in `.tools/flutter` (stable 3.47.9, see ADR-001). Generated code in `lib/gen/` is not committed, so generate it after cloning:
+The Flutter SDK is project-local in `.tools/flutter` (stable 3.50.0, Dart 3.14.0). Generated code in `lib/gen/` is not committed, so generate it after cloning:
 
 ```bash
 ./.tools/flutter/bin/flutter pub get

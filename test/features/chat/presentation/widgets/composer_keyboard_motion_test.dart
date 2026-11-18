@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/router/app_dock_tabs.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/core/widgets/app_artwork.dart';
 import 'package:selfbox/features/settings/presentation/providers/app_preferences_controller.dart';
 

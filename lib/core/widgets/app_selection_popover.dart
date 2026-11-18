@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 import '../../gen/i18n/strings.g.dart';
 import '../theme/app_icons.dart';

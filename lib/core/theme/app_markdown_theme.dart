@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_smooth_markdown/flutter_smooth_markdown.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 import 'app_glass_theme.dart';
 import 'app_radius.dart';

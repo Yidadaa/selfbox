@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/theme/app_markdown_theme.dart';
 import 'package:selfbox/core/theme/app_theme.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 
 void main() {
   for (final brightness in Brightness.values) {

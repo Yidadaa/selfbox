@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:selfbox/core/error/app_failure.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/chat/presentation/pages/chat_page.dart';
 import 'package:selfbox/features/settings/domain/models/user_profile.dart';
 import 'package:selfbox/features/settings/presentation/pages/onboarding_page.dart';

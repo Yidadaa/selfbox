@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
+import 'package:selfbox/core/theme/sdk_material.dart';
 import 'package:selfbox/features/chat/presentation/pages/chat_page.dart';
 import 'package:selfbox/features/chat/presentation/providers/chat_feed.dart';
 import 'package:selfbox/features/chat/presentation/providers/composer_controller.dart';
