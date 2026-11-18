@@ -368,3 +368,11 @@
 - [2026-11-18] [PinMotionTest] 显式开启测试动画触发冗余参数 lint -> pumpApp 默认已启用动画 -> 用默认偏好并断言关闭后单帧卸载，不重复传默认值。
 - [2026-11-18] [ShareCapture] 离屏树复用 TranslationProvider 抢占主树 GlobalKey -> Slang provider 为每个语言集注册全局 key -> 离屏只传 InheritedLocaleData 翻译快照，卸载后先 buildScope 再 finalizeTree。
 - [2026-11-18] [CodegenCache] dart run 等待依赖解析无输出 -> 未显式使用项目包缓存和镜像 -> 生成命令设 PUB_CACHE=.tools/pub-cache 与 PUB_HOSTED_URL，避免并行生成。
+
+- [2026-11-17] [FlutterPubGet] iOS 构建恢复依赖时顺带改写 macOS CocoaPods 配置 -> Flutter pub get 会刷新所有启用平台的插件集成 -> 完成后检查 Git 差异，只保留本任务需要的产物与配置。
+
+- [2026-11-17] [RiverpodCodegen] Provider 实现类型已收窄但生成文件仍暴露 ScrollController -> Dart 源码与生成类型不一致 -> 发布前运行完整 `dart run build_runner build`，再执行 analyze 和相关测试。
+- [2026-11-17] [TestFlight] 本机 Xcode 15.4/iOS 17.5 且无开发团队签名 -> 归档无法通过 Apple 当前 SDK 要求或上传校验 -> 先升级到兼容 Xcode 26+ 的 macOS/Xcode，并配置 Apple Developer 团队签名。
+- [2026-11-17] [ObjectBoxTests] macOS 全量测试报缺少 `libobjectbox.dylib` -> 未执行仓库提供的宿主库准备脚本 -> 运行 `dart run tool/fetch_objectbox_native.dart` 后再跑全量测试。
+
+- [2026-11-19] [GitSync] 推送前发现本地与远端分叉，错误账本追加段冲突 -> 两端独立追加记录 -> 先 fetch 并合并，冲突保留双方条目，禁止强推覆盖远端。
