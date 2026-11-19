@@ -21,7 +21,7 @@ DioFactory dioFactory(Ref ref) {
           BaseOptions(
             baseUrl: baseUrl.endsWith('/') ? baseUrl : '$baseUrl/',
             headers: headers,
-            connectTimeout: const Duration(seconds: 15),
+            connectTimeout: const Duration(minutes: 1),
             receiveTimeout: const Duration(seconds: 60),
           ),
         )
